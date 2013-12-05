@@ -1,0 +1,23 @@
+{% load session_security_tags %}
+{% load i18n %}
+{% load url from future %}
+{% load staticfiles %}
+
+{% if request.user.is_authenticated %}
+
+    <link rel="stylesheet" type="text/css" href="{% static 'session_security/style.css'%}"></link>
+
+    {# Include the template that actually contains the modal dialog #}
+    {% include 'session_security/dialog.html' %}
+
+    <script type="text/javascript" src="{% static 'session_security/script.js'%}"/>
+    <script type="text/javascript">
+        var sessionSecurity = new yourlabs.SessionSecurity({
+            pingUrl: '{% url 'session_security_ping' %}',
+            warnAfter: {{ request|warn_after }},
+            expireAfter: {{ request|expire_after }},
+            confirmFormDiscard: "{% trans 'You have unsaved changes in a form of this page.' %}"
+        });
+    </script>
+    
+{% endif %}

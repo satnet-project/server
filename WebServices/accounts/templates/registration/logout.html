@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+    <p>{% trans "Logged out" %}</p>
+    <p><i>( back <a class='link' href="{% url "index" %}">Home</a>? )</i></p>
+{% endblock %}

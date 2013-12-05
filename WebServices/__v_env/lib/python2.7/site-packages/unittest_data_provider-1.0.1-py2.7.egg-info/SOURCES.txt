@@ -1,0 +1,12 @@
+CHANGELOG
+MANIFEST.in
+README
+README.rst
+setup.cfg
+setup.py
+unittest_data_provider/__init__.py
+unittest_data_provider.egg-info/PKG-INFO
+unittest_data_provider.egg-info/SOURCES.txt
+unittest_data_provider.egg-info/dependency_links.txt
+unittest_data_provider.egg-info/not-zip-safe
+unittest_data_provider.egg-info/top_level.txt

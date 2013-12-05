@@ -1,0 +1,34 @@
+Metadata-Version: 1.1
+Name: django-user-accounts
+Version: 1.0b13
+Summary: a Django user account app
+Home-page: http://github.com/pinax/django-user-accounts
+Author: Brian Rosner
+Author-email: brosner@gmail.com
+License: MIT
+Description: ==============================================
+        django-user-accounts: user accounts for Django
+        ==============================================
+        
+        Provides user accounts to a Django project.
+        
+        Requirements
+        ============
+        
+        * Django 1.4
+        * django-appconf (included in ``install_requires``)
+        * pytz (included in ``install_requires``)
+        
+        Documentation
+        =============
+        
+        See http://django-user-accounts.readthedocs.org/
+        
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Framework :: Django

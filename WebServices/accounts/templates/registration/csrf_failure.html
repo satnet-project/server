@@ -1,0 +1,16 @@
+{# extends "base.html" #}
+{% load i18n %}
+
+{% block content %}
+    <h1 class='warning'>Problem with your navigator while loging/registering</h1>
+    <p>
+    Please try any of the following before re-attempting:
+    <ol>
+        <li>restart your browser completely (closing all windows),</li>
+        <li>reset your cookies/navigation history.</li>
+    </ol>
+    If the problem persists, please contact rtubiopa@calpoly.edu.
+    <p><i>( back <a class='link' href="{% url "index" %}">Home</a>? )</i></p>
+    </p>
+{% endblock %}
+

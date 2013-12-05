@@ -1,0 +1,35 @@
+{% extends "base-extended.html" %}
+{% load i18n %}
+
+{% block content %}
+<form class='login' action="." method="post">{% csrf_token %}
+
+    <div id='login-form'>
+    
+        <h1>Login / Register / Change password</h1>
+        <br/>
+    
+        <table>
+        <tr>
+            <td width='300px'>
+            <center>
+                {{ form.as_p }}
+                <br/>
+                <input type="submit" value="{% trans 'Log in' %}" />
+            </center>
+            </td>
+            <td class='col-separator'></td>
+            <td style='padding:25px;'>
+                <p><a class='button-light' href="{% url 'auth_password_reset' %}">
+                    {% trans 'Reset your password' %}</a></p>
+                <p><a class='button-light' href="{% url 'registration_register' %}">
+                    {% trans 'Register' %}</a></p>
+            </td>
+        </tr>
+        </table>
+    </div>
+    <input type="hidden" name="next" value="{{ next }}" />
+</form>
+
+{% endblock %}
+

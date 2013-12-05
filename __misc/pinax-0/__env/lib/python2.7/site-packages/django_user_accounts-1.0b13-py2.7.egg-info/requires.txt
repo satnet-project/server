@@ -1,0 +1,2 @@
+django-appconf==0.5
+pytz==2012j

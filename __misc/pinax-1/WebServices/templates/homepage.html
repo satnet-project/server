@@ -1,0 +1,54 @@
+{% extends "banner_base.html" %}
+
+{% load i18n %}
+{% load url from future %}
+
+{% block head_title %}{% trans "Welcome" %}{% endblock %}
+
+{% block body_class %}home{% endblock %}
+
+{% block banner %}
+
+    {% if user.is_authenticated %}
+        {% if request.user.is_staff %}
+            <li>You are STAFF!</li>
+        {% else %}
+            <li>You are a regular user!</li>
+        {% endif %}
+    {% else %}
+        <h1>{% trans "The SATNet Network" %}</h1>
+        <p>
+            {% blocktrans %}
+            The <b>SATNet</b> network is a software development project hosted at
+            <a href="https://github.com/satnet-project/satnet-main/wiki">GitHub</a>.
+            Its objective is to develop the software for the nodes of a 
+            communications network for sharing Ground Stations among CubeSat 
+            operators. In that websiste, both detailed and brief project 
+            descriptions can be found.
+            {% endblocktrans %}
+        </p>
+        <h2>Still unregistered?</h2>
+        <p>
+        {% url "account_login" as login_url %}
+        {% url "account_signup" as signup_url %}
+        {% blocktrans %}
+        For accessing to the services of the system, you must register
+        within this portal. This registration process will grant you access 
+        both through this website and through the software protocol. It only
+        takes the following steps to start sharing your ground station:
+        <ol>
+            <li><a href="{{ signup_url }}">Sign up</a> for a user account.</li>
+            <li>Check your e-m@il and <a href="{{ login_url }}">log in</a>!</li>
+        </ol>
+        {% endblocktrans %}
+        </p>
+    {% endif %}
+{% endblock %}
+
+{% block column-1 %}
+{% endblock %}
+{% block column-2 %}
+{% endblock %}
+{% block column-3 %}
+{% endblock %}
+        
