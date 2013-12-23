@@ -9,22 +9,14 @@ from django_countries import countries
 from accounts.models import UserProfile
 from passwords.fields import PasswordField
 
-class UserProfileModelForm(ModelForm):
+class BaseUserProfileForm(ModelForm):
     """
-    This class extracts all information from the database, related to a given 
-    user and its linked UserProfile.
-
-    """ 
-
-    """ Field for password confirmation. """
-    password_c = PasswordField(label="Password (confirm)")
-
-    """Model to be used from within this form."""
-    class Meta:
-        model = UserProfile
-        fields = ('username', 'first_name', 'last_name','email',\
-                    'organization', 'country', 'password')
-        widgets = { 'password': forms.PasswordInput() }
+    Base class with common methods for all those forms that deal with the
+    UserProfile model.
+    
+    :Author:
+        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
+    """
 
     def clean_username(self):
         """
@@ -100,4 +92,42 @@ class UserProfileModelForm(ModelForm):
                                                 match."))
 
         return self.cleaned_data
+
+class RegistrationForm(BaseUserProfileForm):
+    """
+    This class extracts all information from the database, related to a given 
+    user and its linked UserProfile.
+    
+    :Author:
+        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
+    """ 
+
+    username = forms.CharField(label=_("Username"))    
+    password_c = PasswordField(label=_("Confirm password"))
+
+    """Model to be used from within this form."""
+    class Meta:
+    
+        model = UserProfile
+        fields = ('username', 'first_name', 'last_name','email',\
+                    'organization', 'country', 'password')
+        widgets = { 'password': forms.PasswordInput() }
+
+class EditProfileForm(BaseUserProfileForm):
+    """
+    This class extracts only a few of all of the data fields that define the
+    profile from a given user. Its objective is to show only the information
+    that the user can edit from the associated view.
+    
+    :Author:
+        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
+    """
+    
+    username = forms.CharField(label=_("Username"))
+
+    """Model to be used from within this form."""
+    class Meta:
+        model = UserProfile
+        fields = ('username', 'first_name', 'last_name',\
+                    'organization', 'country')
 

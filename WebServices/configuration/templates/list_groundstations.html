@@ -1,0 +1,56 @@
+{% extends "users/users_home.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+
+<div>
+
+    <a class='button-dark' href="{% url 'add_groundstation' %}"
+        style='font-size:175%;padding:15px;'>
+        (+) Add Ground Station
+    </a>
+    <br/><br/><br/>
+    <hr class='spacer'/>
+    <br/>
+    <h1>Owned Ground Stations</h1>
+    
+    <div id='groundstations_list'>
+    
+{% if groundstations_list|length == 0 %}
+
+        <p><b><i>(empty list)</i></b></p>
+        
+{% else %}
+
+{% for g in groundstations_list %}
+
+        <ul>
+            <li class='results-list'>
+                <div class='gs-identifier'>
+                    <span style='vertical-align:middle;'>
+                        {{ g.identifier }}
+                    </span>
+                </div>
+                <div class='gs-information'>
+                    <ul class='results-list'>
+                        <li>{{ g.callsign }}</li>
+                        <li>{{ g.contact_elevation }}</li>
+                        <li>{{ g.latitude }}</li>
+                        <li>{{ g.longitude }}</li>
+                    </ul>
+                </div>
+            </li>
+        </ul>
+
+{% endfor %}
+
+{% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+    

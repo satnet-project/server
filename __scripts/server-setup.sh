@@ -34,10 +34,10 @@ install_packages()
     apt-get install python-pip python-virtualenv python-django-countries
     apt-get install python-django-registration
     apt-get install python-dev libmysqlclient-dev
+    apt-get install binutils libproj-dev gdal-bin
 
     apt-get clean
 
-    pip install django-passwords django-jquery 
     pip install virtualenvwrapper
     
 }
@@ -102,11 +102,34 @@ create_virtualenv()
     pip install six
     pip install unittest-data-provider
     
+    pip install git+https://github.com/hzdg/django-periodically.git#egg=django-periodically
+    
     # ### TODO make it relocatable...
     # ### rellocatable virtual environment: --relocatable
     # virtualenv --relocatable $venv
 
 }
+
+# ### This is the function utilized for adding the crontab task required by
+# django-periodically for executing periodic maintenance tasks of the web
+# applications
+
+add_crontab_django_periodically()
+{
+    echo 'Adding crontab task for django-periodically...'
+    #crontab_task=$( "*/5 * * * * python $MANAGE_PY runtasks" )
+    echo '#!/bin/sh' > $__crontab_conf
+    echo "source $venv_activate" >> $__crontab_conf
+    echo "python $MANAGE_PY runtasks" >> $__crontab_conf
+    chmod +x $__crontab_conf
+}
+
+# ### TODO Configuration of system dependencies by GeoDjango.
+
+# configure_geodjango()
+# {
+#     
+# }
 
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
 bashrc_file="$HOME/.bashrc"
@@ -149,10 +172,15 @@ configure_pinax_repository()
 # ### Main variables and parameters
 
 __mysql_batch='/tmp/__mysql_batch'
+__crontab_conf='/etc/cron.daily/satnet_periodically'
 
 django_user='satnet_django'
 django_user_password='_805Django'
 django_db='satnet_db'
+
+project_path="/home/rtubio/repositories/satnet-release-1/WebServices"
+manage_py="$project_path/manage.py"
+venv_activate="$project_path/__v_env/bin/activate"
 
 ################################################################################
 # ### Main execution loop
@@ -171,11 +199,14 @@ django_db='satnet_db'
 echo 'This process is not unattended, user interaction is required.'
 echo 'Press any key to start the configuration process...'
 read
+echo 'Before going ahead, check if project path is correctly configured.'
+read
 
-install_packages
-configure_mysql
+# install_packages
+# configure_mysql
+# add_crontab_django_periodically
 # ### just in case the database needs to be restored:
-#delete_mysql_db
+# delete_mysql_db
 
 exit 1
 

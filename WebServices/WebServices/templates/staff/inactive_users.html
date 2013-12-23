@@ -1,0 +1,15 @@
+{% extends "staff/registration_requests.html" %}
+{% load i18n %}
+
+{% block reg-heading %}
+    <h1>Inactive Users</h1>
+    <script type="text/javascript">
+        window.onload = activateMark('mark_inactive');
+    </script>
+{% endblock %}
+
+{% block reg-actions%}
+                <a id='activate'    class='green-action'>(A)</a>
+                <a id='delete'      class='red-action'>(X)</a>
+{% endblock %}
+

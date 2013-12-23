@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block toolbar_login %}
+{% if request.user.is_authenticated %}
+
+    <hr />
+
+    <div>
+        <a id='button_staff' class='toolbar_button'
+            href="{% url 'index' %}"
+            style='font-size:65%;'>
+        {{ request.user.username }}
+        <b>
+{% if request.user.is_staff %}
+            ({% trans 'STAFF' %})
+{% else %}
+            ({% trans 'USER' %})
+{% endif %}
+        </b>
+    </a></div>
+    
+    <div><a class='toolbar_button' href="{% url 'auth_logout' %}">
+        ({% trans 'Log out' %})
+    </a></div>
+    
+{% endif %}
+{% endblock %}
+

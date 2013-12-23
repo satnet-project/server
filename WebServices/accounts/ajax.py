@@ -1,5 +1,5 @@
 import logging
-logger = logging.getLogger('accounts')
+logger = logging.getLogger(__name__)
 
 import json
 

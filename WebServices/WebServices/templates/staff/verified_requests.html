@@ -1,0 +1,15 @@
+{% extends "staff/registration_requests.html" %}
+{% load i18n %}
+
+{% block reg-heading %}
+    <h1>Verified Requests</h1>
+    <script type="text/javascript">
+        window.onload = activateMark('mark_verified');
+    </script>
+{% endblock %}
+
+{% block reg-actions%}
+                <a id='deactivate'  class='action'>(D)</a>
+                <a id='delete'      class='red-action'>(X)</a>
+{% endblock %}
+

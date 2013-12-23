@@ -8,39 +8,54 @@ from django.contrib.sites.models import Site
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.response import TemplateResponse
+from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
 from registration import signals
 from registration.models import RegistrationProfile
 from registration.backends.default.views import RegistrationView
 
-from accounts.forms import UserProfileModelForm
+from accounts.forms import RegistrationForm, EditProfileForm
 from accounts.helpers import get_user_operations
 from accounts.models import UserProfile, UserProfileManager
 
-class UserProfileView(RegistrationView):
+from smtplib import SMTPSenderRefused
+
+class UserProfileView(UpdateView):
+    """
+    This class shows a view for users to edit the details of their profiles.
+    
+    :Author:
+        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
+    """
+    
+    """HTML template to be used"""
+    model = UserProfile
+    form_class = EditProfileForm
+    template_name = 'users/user_profile_form.html'
+    success_url = '/accounts/login_ok/'
+    
+    def get_object(self, queryset=None):
+        return UserProfile.objects.get(pk=self.request.user.id)
+
+class RegisterView(RegistrationView):
     """
     This is a form that contains all the required fields from the UserProfile 
     and User tables, as selected by the constructor of the form_class class.
-
-    :Author:
-        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
-    
     """
 
     """HTML template to be used"""
     template_name = 'registration/registration_form.html'
     success_url = '/'
-    form_class = UserProfileModelForm 
+    form_class = RegistrationForm 
 
     def register(self, request, **cleaned_data):
         """
         This method overrides the register method of the selected backend. It
         implements all the same operations than the original one, with the
-        exception that it does not send the confirmation email to the user. This
-        way, it permits an intermediate step in which the network administrator
-        first accepts the registration request.
-        
+        exception that it does not send the confirmation email to the user. 
+        This way, it permits an intermediate step in which the network 
+        administrator first accepts the registration request.
         """
         
         username, email, password = cleaned_data['username'], \
@@ -85,14 +100,10 @@ class PendingRegView(ListView):
     administrator, so that their activation can be initiated. This is the
     second step of the registration process, that takes place after a user has
     sent the registration request.
-    
-    :Author:
-        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
-    
     """
     
     model = UserProfile
-    template_name = 'registration_requests.html'
+    template_name = 'staff/registration_requests.html'
     queryset = UserProfile.objects.filter(is_verified=False)\
                                     .filter(is_blocked=False)
     context_object_name = "user_list"
@@ -101,7 +112,7 @@ class PendingRegView(ListView):
         """
         POST method handler. This method is invoked once the submit button of 
         the form is pressed.
-    
+
         """
         
         # 1) from the request, get all username tags with operations pending
@@ -163,7 +174,11 @@ class PendingRegView(ListView):
 
         # 1) first, the confirmation email is sent
         r_profile = get_object_or_404(RegistrationProfile, user_id=user_id)
-        r_profile.send_activation_email(site)
+        try:
+            r_profile.send_activation_email(site)
+        except SMTPSenderRefused, e:
+            logger.exception(e)
+            
         # 2) afterwards, the profile is set as verified and saved
         UserProfile.objects.verify_user(user_id)
    
@@ -182,7 +197,7 @@ class PendingRegView(ListView):
         """
         
         UserProfile.objects.block_user(user_id)
-        
+
     def delete_user(self, user_id):
         """
         Deletes all the information related to a given user from the 3 tables
@@ -237,7 +252,7 @@ class BlockedRegView(PendingRegView):
     
     """
     
-    template_name = 'blocked_requests.html'
+    template_name = 'staff/blocked_requests.html'
     queryset = UserProfile.objects.filter(is_blocked=True)
 
     def unblock_user(self, user_id):
@@ -270,7 +285,7 @@ class VerifiedView(PendingRegView):
     
     """
 
-    template_name = 'verified_requests.html'
+    template_name = 'staff/verified_requests.html'
     queryset = UserProfile.objects.filter(is_active=True) \
                                     .filter(is_verified=True) \
                                     .filter(is_blocked=False)
@@ -305,7 +320,7 @@ class InactiveView(PendingRegView):
     
     """
 
-    template_name = 'inactive_users.html'
+    template_name = 'staff/inactive_users.html'
     queryset = UserProfile.objects.filter(is_active=False) \
                                     .filter(is_verified=True) \
                                     .filter(is_blocked=False)
@@ -351,8 +366,9 @@ def redirect_home(request):
     
     """
 
-    print request
-
+    logger.info('>>>>>> redirect_home, is_staff? ' \
+                                    + str(request.user.is_staff))
+    
     if request.user.is_authenticated():
         return redirect_login(request)
     else:
@@ -365,8 +381,11 @@ def redirect_login(request):
     
     """
     
+    logger.info('>>>>>> redirect_login, is_staff? ' \
+                                    + str(request.user.is_staff))
+    
     if request.user.is_staff:
-        return TemplateResponse(request, "users/staff_home.html")
+        return TemplateResponse(request, "staff/staff_home.html")
     else:
         return TemplateResponse(request, "users/users_home.html")
 

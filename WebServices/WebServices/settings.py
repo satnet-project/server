@@ -59,10 +59,11 @@ STATIC_ROOT = ''
 STATIC_URL = '/static/'
 
 # Additional locations of static files
+import os
+main_static = os.path.join(os.path.dirname(__file__),\
+                            'static')
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
+    main_static,
 )
 
 # List of finder classes that know how to find static files in
@@ -92,7 +93,6 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     # Uncomment the next line for simple clickjacking protection:
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
     # ### Session security middleware
     'session_security.middleware.SessionSecurityMiddleware',
     
@@ -101,6 +101,7 @@ MIDDLEWARE_CLASSES = (
 # ### Context processors as required by django-session-security
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
+    'django.contrib.auth.context_processors.auth',
 )
 
 ROOT_URLCONF = 'WebServices.urls'
@@ -108,17 +109,18 @@ ROOT_URLCONF = 'WebServices.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'WebServices.wsgi.application'
 
-
 # ### templates directories loading, relative to project's structure
-import os
 main_templates = os.path.join(os.path.dirname(__file__),\
-                        'templates')
+                            'templates')
 accounts_templates = os.path.join(os.path.dirname(__file__),\
-                        '..', 'accounts', 'templates')
+                            '..', 'accounts', 'templates')
+configuration_templates = os.path.join(os.path.dirname(__file__),\
+                            '..', 'configuration', 'templates')
 
 TEMPLATE_DIRS = (
     main_templates,
     accounts_templates,
+    configuration_templates,
 )
 
 INSTALLED_APPS = (
@@ -128,16 +130,23 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # Uncomment the next line to enable the admin:
-    # 'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
     
     # ### django-registration
     'registration',
-    'accounts',
     # ### django-session-security
     'session_security',
+    # ### mapping!
+    'leaflet',
+    # ### periodical task scheduling
+    'periodically',
+    
+    # ### developed applications
+    'accounts',
+    'configuration',
+    
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+
 )
 
 # A sample logging configuration. The only tangible logging
@@ -172,7 +181,17 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': False,
         },
+        'periodically': {
+            'handlers': ['console'],
+            'level': 'ERROR',
+            'propagate': True,
+        },
         'accounts': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'configuration': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
@@ -183,7 +202,7 @@ LOGGING = {
 # ### django-registration: 4 days for the user to activate the account
 ACCOUNT_ACTIVATION_DAYS = 4
 LOGIN_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/accounts/login_ok'
+LOGIN_REDIRECT_URL = '/accounts/login_ok/'
 LOGOUT_URL = '/accounts/logout'
 CSRF_FAILURE_VIEW = 'accounts.views.csrf_failure_handler'
 # ### this parameter links __my__ UserProfile with the User from contrib.auth
@@ -194,8 +213,8 @@ AUTH_PROFILE_MODULE = 'accounts.UserProfile'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # ### django-session-security
-SESSION_SECURITY_WARN_AFTER = 540
-SESSION_SECURITY_EXPIRE_AFTER = 600
+SESSION_SECURITY_WARN_AFTER = 600
+SESSION_SECURITY_EXPIRE_AFTER = 540
 # ### List with the urls that do not provoke the inactivity timer to be 
 # restarted
 # SESSION_SECURITY_PASSIVE_URLS = 
@@ -204,8 +223,9 @@ SESSION_SECURITY_EXPIRE_AFTER = 600
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST='mail.calpoly.edu'
 EMAIL_PORT=25
+
 # ### TODO Real non-personal account
 EMAIL_HOST_USER='rtubiopa@calpoly.edu'
-EMAIL_HOST_PASSWORD='_805rT709'
+# ### EMAIL_HOST_PASSWORD=''
 EMAIL_USE_TLS='True'
 

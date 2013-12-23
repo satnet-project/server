@@ -1,31 +1,27 @@
-{% extends "users/users_base.html" %}
+{% extends "registered.html" %}
 {% load i18n %}
 
-{% block toolbar %}
+{% block toolbar_content %}
 
-    {% if request.user.is_authenticated %}
-            <table id='staff-menu'>
-                <tr><td id='staff-e-login'>
-                    <a class='staff-login'>{{ user.username }}<b>
-                        (USER)
-                    </b></a>
-                </td></tr>
-            </table>
-            <hr id='hr'/>
-            <table id='staff-menu'>
-                <tr><td class='staff-e'>
-                    <a class='button-entry'> {# href="{% url 'spacecraft' %}"> #}
-                        Spacecraft
-                    </a>
-                </td></tr>
-                <tr><td class='staff-e'>
-                    <a class='button-entry'> {# href="{% url 'groundstations' %}"> #}
-                        Ground Stations
-                    </a>
-                </td></tr>
-            </table>   
-    {% endif %}
-    <hr id='hr'/>
-                
+{% if request.user.is_authenticated %}
+
+    <hr />
+    
+    <div><a id='button_profile' class='toolbar_button'
+            href="{% url 'user_profile' %}">
+            Profile
+    </a></div>
+    
+    <div><a id='button_sc' class='toolbar_button'>
+            {# href="{% url 'spacecraft' %}"> #}
+                        {% trans 'Spacecraft' %}
+    </a></div>
+    
+    <div><a id='button_gs' class='toolbar_button'
+            href="{% url 'list_groundstations' %}" >
+                        {% trans 'Ground Stations' %}
+    </a></div>
+
+{% endif %}            
 {% endblock %}
 

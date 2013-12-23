@@ -1,0 +1,42 @@
+table.rr-table
+{
+    font-family: Ubuntu, "Bitstream Vera Sans", "DejaVu Sans", Tahoma;
+    text-align: center;
+    vertical-align: middle;
+}
+
+td.rr-e-t
+{
+    background-color: white;
+    opacity: 0.6;
+    border-radius: 5px;
+    color: #0F3E62;
+    font-weight: bold;
+    padding: 5px;
+}
+
+td.rr-e
+{
+    padding-top: 15px;
+    padding-bottom: 15px;
+    padding-right: 2px;
+    padding-left: 2px;
+}
+
+td.row-separator 
+    { padding: 0.5px; background-color: #0F3E62; }
+
+td.col-separator
+    { background-color: #0F3E62; opacity: 0.6; border-radius: 5px; }
+
+/* User details table */
+table.table-user-details
+{
+    font-family: Ubuntu, "Bitstream Vera Sans", "DejaVu Sans", Tahoma;
+    font-size: 90%;
+    text-align: center;
+    vertical-align: middle;
+    background-color: #E8E8E8;
+    opacity: 0.6;
+}
+

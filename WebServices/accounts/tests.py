@@ -6,7 +6,7 @@ Django tests for the <accounts> application.
 from django.test import TestCase
 from django.test.client import Client
 
-from accounts import helpers
+from accounts.utils import get_user_operations
 
 class HelpersTest(TestCase):
     
@@ -29,6 +29,6 @@ class HelpersTest(TestCase):
         """
         
         # response = self.client.post('/accounts/registrations/')
-        result = helpers.get_user_operations(self.inp_guo)
+        result = get_user_operations(self.inp_guo)
         self.assertItemsEqual(result, self.out_guo, "Wrong result!")
         

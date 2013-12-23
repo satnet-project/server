@@ -1,0 +1,42 @@
+{% extends "registered.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block content %}
+
+{% include "staff/staff_home_index.html" %}
+
+{% endblock %}
+
+{% block content_footer %}
+{% endblock %}
+
+{% block toolbar_content %}
+
+{% if request.user.is_authenticated %}
+{% if request.user.is_staff %}
+
+    <hr />
+    
+    <div><a id='button_pending' class='toolbar_button'
+            href="{% url 'pending' %}">
+        Pending
+    </a></div>
+    <div><a id='button_inactive' class='toolbar_button'
+            href="{% url 'inactive' %}">
+        Inactive
+    </a></div>
+    <div><a id='button_verified' class='toolbar_button'
+            href="{% url 'verified' %}">
+        Verified
+    </a></div>
+    <div><a id='button_blocked' class='toolbar_button'
+            href="{% url 'blocked' %}">
+        Blocked
+    </a></div>
+               
+{% endif %}
+{% endif %}
+            
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% extends "users/users_home.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link href="{% static 'css/user-profile.css'%}" rel="stylesheet" />
+{% endblock %}
+
+{% block content %}
+
+<h1>Edit User Profile</h1>
+<br/>
+
+<form class="user-profile" action="." method="post">{% csrf_token %}
+  {{ form.as_p }}
+
+    <br/>
+    <input type="submit" value="{% trans 'Update Profile' %}" />
+</form>
+
+{% endblock %}
+

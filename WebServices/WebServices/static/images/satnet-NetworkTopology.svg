@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/PR-SVG-20010719/DTD/svg10.dtd">
+<svg width="17cm" height="11cm" viewBox="-2 -2 331 216" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <g>
+    <ellipse style="fill: #ffffff" cx="28" cy="108" rx="10" ry="10"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2.5; stroke: #000000" cx="28" cy="108" rx="10" ry="10"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:middle;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="24" y="89.69">
+    <tspan x="24" y="89.69">Client A(2)</tspan>
+  </text>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:middle;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="28" y="21.69">
+    <tspan x="28" y="21.69">Client A(1)</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #ffffff" cx="30" cy="38" rx="10" ry="10"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2.5; stroke: #000000" cx="30" cy="38" rx="10" ry="10"/>
+  </g>
+  <g>
+    <rect style="fill: #0f3e62" x="88" y="84" width="28" height="28" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2.4; stroke-linejoin: round; stroke: #000000" x="88" y="84" width="28" height="28" rx="1" ry="1"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:start;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="88" y="123.35">
+    <tspan x="88" y="123.35">Server A</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 37.071 45.071 C 81.071,67.071 48.0001,76.0001 84.994,83.6139"/>
+    <polygon style="fill: #000000" points="87.1978,84.0675 83.957,84.932 84.994,83.6139 84.5618,81.9935 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="87.1978,84.0675 83.957,84.932 84.994,83.6139 84.5618,81.9935 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 38 108 C 58.9896,108 52.0001,120 85.0095,112.457"/>
+    <polygon style="fill: #000000" points="87.203,111.956 84.6125,114.087 85.0095,112.457 83.9442,111.162 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="87.203,111.956 84.6125,114.087 85.0095,112.457 83.9442,111.162 "/>
+  </g>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1.6; stroke-dasharray: 4; stroke: #000000" d="M 0 120 C 40,136 92,152 116,144 C 140,136 160,36 140,0"/>
+  <text font-size="9.03111" style="fill: #000000;text-anchor:end;font-family:DejaVu Sans;font-style:normal;font-weight:700" x="135" y="11.0336">
+    <tspan x="135" y="11.0336">Subnetwork A</tspan>
+    <tspan x="135" y="22.3225">(public)</tspan>
+  </text>
+  <g>
+    <rect style="fill: #0f3e62" x="208" y="104" width="28" height="28" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2.4; stroke-linejoin: round; stroke: #000000" x="208" y="104" width="28" height="28" rx="1" ry="1"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:start;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="208" y="143.35">
+    <tspan x="208" y="143.35">Server B</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1.5; stroke: #000000" d="M 120.674 97.8442 C 176,96 167.707,105.707 203.527,116.635"/>
+    <polygon style="fill: #000000" points="117.676,97.9441 121.607,95.812 120.674,97.8442 121.741,99.8098 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1.5; stroke: #000000" points="117.676,97.9441 121.607,95.812 120.674,97.8442 121.741,99.8098 "/>
+    <polygon style="fill: #000000" points="206.396,117.511 201.986,118.256 203.527,116.635 203.154,114.43 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1.5; stroke: #000000" points="206.396,117.511 201.986,118.256 203.527,116.635 203.154,114.43 "/>
+  </g>
+  <text font-size="9.03111" style="fill: #000000;text-anchor:start;font-family:DejaVu Sans;font-style:normal;font-weight:700" x="200" y="11.0336">
+    <tspan x="200" y="11.0336">Subnetwork B</tspan>
+    <tspan x="200" y="22.3225">(public)</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1.6; stroke-dasharray: 4; stroke: #000000" d="M 328 152 C 308,136 176,172 176,120 C 176,68 172,24 196,0"/>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:middle;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="236" y="49.69">
+    <tspan x="236" y="49.69">Client B(1)</tspan>
+  </text>
+  <g>
+    <ellipse style="fill: #ffffff" cx="234" cy="66" rx="10" ry="10"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2.5; stroke: #000000" cx="234" cy="66" rx="10" ry="10"/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 234 76 C 244,100 220,80 221.72,100.644"/>
+    <polygon style="fill: #000000" points="221.907,102.886 220.163,100.021 221.72,100.644 223.153,99.7716 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="221.907,102.886 220.163,100.021 221.72,100.644 223.153,99.7716 "/>
+  </g>
+  <g>
+    <ellipse style="fill: #ffffff" cx="298" cy="102" rx="10" ry="10"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2.5; stroke: #000000" cx="298" cy="102" rx="10" ry="10"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:middle;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="304" y="85.69">
+    <tspan x="304" y="85.69">Client B(2)</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 298 112 C 288,140 280,116 239.365,117.847"/>
+    <polygon style="fill: #000000" points="237.117,117.949 240.046,116.315 239.365,117.847 240.182,119.311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="237.117,117.949 240.046,116.315 239.365,117.847 240.182,119.311 "/>
+  </g>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 224 66 C 200,72 133.707,40.2929 116.982,81.1756"/>
+    <polygon style="fill: #000000" points="116.13,83.2581 115.878,79.9135 116.982,81.1756 118.655,81.0494 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="116.13,83.2581 115.878,79.9135 116.982,81.1756 118.655,81.0494 "/>
+  </g>
+  <g>
+    <rect style="fill: #0f3e62" x="132" y="160" width="28" height="28" rx="1" ry="1"/>
+    <rect style="fill: none; fill-opacity:0; stroke-width: 2.4; stroke-linejoin: round; stroke: #000000" x="132" y="160" width="28" height="28" rx="1" ry="1"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:start;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="132" y="199.35">
+    <tspan x="132" y="199.35">Server C</tspan>
+  </text>
+  <path style="fill: none; fill-opacity:0; stroke-width: 1.6; stroke: #000000" d="M 244 212 C 248,184 240,160 168,152 C 96,144 12,160 12,212"/>
+  <g>
+    <ellipse style="fill: #ffffff" cx="206" cy="190" rx="10" ry="10"/>
+    <ellipse style="fill: none; fill-opacity:0; stroke-width: 2.5; stroke: #000000" cx="206" cy="190" rx="10" ry="10"/>
+  </g>
+  <text font-size="7.90222" style="fill: #000000;text-anchor:middle;font-family:DejaVu Sans;font-style:normal;font-weight:normal" x="204" y="211.58">
+    <tspan x="204" y="211.58">Client C(1)</tspan>
+  </text>
+  <g>
+    <path style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" d="M 196 190 C 148,192 204,172 163.365,173.847"/>
+    <polygon style="fill: #000000" points="161.117,173.949 164.046,172.315 163.365,173.847 164.182,175.311 "/>
+    <polygon style="fill: none; fill-opacity:0; stroke-width: 1; stroke: #000000" points="161.117,173.949 164.046,172.315 163.365,173.847 164.182,175.311 "/>
+  </g>
+  <text font-size="9.03111" style="fill: #000000;text-anchor:end;font-family:DejaVu Sans;font-style:normal;font-weight:700" x="112" y="190.034">
+    <tspan x="112" y="190.034">Subnetwork C</tspan>
+    <tspan x="112" y="201.322">(private)</tspan>
+  </text>
+</svg>

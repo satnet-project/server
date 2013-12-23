@@ -1,11 +1,20 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link href="{% static 'css/user-profile.css'%}" rel="stylesheet" />
+{% endblock %}
 
 {% block content %}
-<form class="registration" action="." method="post">{% csrf_token %}
-  {{ form.as_p }}
 
-  <input type="submit" value="{% trans 'Submit' %}" />
+<h1>User Registration</h1>
+
+<form class="user-profile" action="." method="post">{% csrf_token %}
+    {{ form.as_p }}
+
+    <br/>
+    <input type="submit" value="{% trans 'Submit' %}" />
 </form>
 {% endblock %}
 

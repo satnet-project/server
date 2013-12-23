@@ -1,0 +1,5 @@
+1) Isolate non-logged and logged websites.
+2) Check correct execution of periodic tasks, paying special attention to the
+    execution within the virtual environment.
+3) urls path correction, reference to names rather than to paths themselves.
+
