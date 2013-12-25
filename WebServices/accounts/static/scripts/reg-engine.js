@@ -166,17 +166,17 @@
 
 
     function do_verify(user_list)
-        { do_operation("verify", "to-verify", user_list); }
+        { do_operation("verify", "green-action", user_list); }
     function do_block(user_list)
-        { do_operation("block", "to-block", user_list); }
+        { do_operation("block", "action", user_list); }
     function do_unblock(user_list)
-        { do_operation("unblock", "to-verify", user_list); }
+        { do_operation("unblock", "green-action", user_list); }
     function do_delete(user_list)
-        { do_operation("delete", "to-delete", user_list); }
+        { do_operation("delete", "red-action", user_list); }
     function do_activate(user_list)
-        { do_operation("activate", "to-verify", user_list); }
+        { do_operation("activate", "green-action", user_list); }
     function do_deactivate(user_list)
-        { do_operation("deactivate", "to-block", user_list); }
+        { do_operation("deactivate", "action", user_list); }
         
     function do_operation(operation, css_class, user_list)
     {

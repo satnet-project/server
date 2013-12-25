@@ -1,5 +1,6 @@
 a.link
 {
+    cursor: pointer;
     color: #0F3E62;
     font-weight: bold;
     border-radius: 5px;
@@ -27,7 +28,7 @@ a.blue-action
     opacity: 0.6;
 }
 
-a.action
+.action
 {
     font-weight: bold;
     color: black;
@@ -39,7 +40,7 @@ a.action
     opacity: 0.6;
 }
 
-a.green-action
+.green-action
 {
     font-weight: bold;
     color: green;
@@ -51,7 +52,7 @@ a.green-action
     opacity: 0.6;
 }
 
-a.red-action
+.red-action
 {
     font-weight: bold;
     color: #8F0000;

@@ -3,6 +3,10 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/lists.css'%}"   />
+{% endblock %}
+
 {% block content %}
 
 <div>
@@ -11,38 +15,40 @@
         style='font-size:175%;padding:15px;'>
         (+) Add Ground Station
     </a>
-    <br/><br/><br/>
+    <br/><br/>
     <hr class='spacer'/>
     <br/>
-    <h1>Owned Ground Stations</h1>
+    
+    <h1>List of Ground Stations</h1>
+        <br/>
     
     <div id='groundstations_list'>
     
 {% if groundstations_list|length == 0 %}
 
         <p><b><i>(empty list)</i></b></p>
-        
+
 {% else %}
 
 {% for g in groundstations_list %}
 
-        <ul>
-            <li class='results-list'>
-                <div class='gs-identifier'>
-                    <span style='vertical-align:middle;'>
-                        {{ g.identifier }}
-                    </span>
-                </div>
-                <div class='gs-information'>
-                    <ul class='results-list'>
-                        <li>{{ g.callsign }}</li>
-                        <li>{{ g.contact_elevation }}</li>
-                        <li>{{ g.latitude }}</li>
-                        <li>{{ g.longitude }}</li>
-                    </ul>
-                </div>
-            </li>
+    <div class='list-row'>
+    <div class="list-cell list-cell-link" >
+        <a class='link' href="{% url 'configure_groundstation' pk=g.pk%}">
+            {{ g.identifier }}
+        </a>
+    </div>
+    <div class="list-cell list-cell-info" >
+        <ul class='results-list'>
+            <li><b>Radio Callsign</b>: {{ g.callsign }}</li>
+            <li><b>Contact elevation (deg)</b>: 
+                    {{ g.contact_elevation|floatformat:2 }}</li>
+            <li><b>Coordinates</b>:
+                    ({{ g.latitude|floatformat:4 }}, 
+                        {{ g.longitude|floatformat:4 }})</li>
         </ul>
+    </div>
+    </div>
 
 {% endfor %}
 

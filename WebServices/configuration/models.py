@@ -20,11 +20,30 @@ TODO :: incompatibilities in between modulation fields.
     Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
 """
 
+class GroundStationConfigurationManager(models.Manager):
+    """
+    Manager for the Ground Station Configuration objects.
+    """
+    
+    def get_groundstation_channels(self, groundstation_pk):
+        
+        gs_ch = GroundStationChannels\
+                    .objects.get(groundstation=groundstation_pk)
+        ch_list = []
+        
+        for gs_ch_i in gs_ch:
+            
+            gs_i = gs_ch_i.groundstation
+            ch_i = gs_ch_i.channel
+            ch_list.append(GroundStationChannel.objects.get(pk=ch_i))
+        
+        return ch_list
+
 class AvailableModulations(models.Model):
     """
-    This class permits the storage in the database of the modulation options
+    This class permits the storage in the database of the modulation options 
     for creating communication channels. This way, the modulation field of a 
-    Channel object must be filled only with data from this model.    
+    Channel object must be filled only with data from this model.
     
     MODULATION_CHOICES = (
         ('AFSK', 'Audio Frequency-Shift Keying (AFSK)'),

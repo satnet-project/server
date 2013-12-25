@@ -62,8 +62,11 @@ STATIC_URL = '/static/'
 import os
 main_static = os.path.join(os.path.dirname(__file__),\
                             'static')
+primeui_static = os.path.join(os.path.dirname(__file__),\
+                                'static', 'prime-ui')
 STATICFILES_DIRS = (
     main_static,
+    primeui_static,
 )
 
 # List of finder classes that know how to find static files in

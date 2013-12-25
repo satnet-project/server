@@ -3,7 +3,19 @@
 {% load staticfiles %}
 
 {% block head %}
-    <link href="{% static 'css/user-profile.css'%}" rel="stylesheet" />
+    
+    <script type="text/javascript" >
+        $(document).ready(function(){
+            $( "#id_username" ).puiinputtext();
+            $( "#id_first_name" ).puiinputtext();
+            $( "#id_last_name" ).puiinputtext();
+            $( "#id_email" ).puiinputtext();
+            $( "#id_countries" ).puidropdown();
+            $( "#id_organization" ).puiinputtext();
+            $( "#id_password" ).puipassword();
+        });
+    </script>
+    
 {% endblock %}
 
 {% block content %}
@@ -16,5 +28,6 @@
     <br/>
     <input type="submit" value="{% trans 'Submit' %}" />
 </form>
+
 {% endblock %}
 

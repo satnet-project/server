@@ -1,6 +1,15 @@
 {% extends "registered.html" %}
 {% load i18n %}
 
+{% block content %}
+
+    {% include "users/users_index.html" %}
+
+{% endblock %}
+
+{% block content_footer %}
+{% endblock %}
+
 {% block toolbar_content %}
 
 {% if request.user.is_authenticated %}

@@ -1,0 +1,36 @@
+.list-cell
+{
+    display: table-cell;
+    vertical-align: middle;
+    line-height: 150%;
+    background-color: #d1d1d1;
+    border-radius: 4px;
+    opacity: 0.6;
+}
+
+.list-cell-link { width: 150px; text-align: center; }
+.list-cell-link:hover { opacity: 1.0; }
+.list-cell-info { width: 325px; font-size: 75%; }
+
+.results-list { list-style-type: none; }
+
+.dialog
+{
+    display: none;
+    position: fixed; top: 0px; left: 550px; width: 450px; z-index: 300;
+    background-color: #d1d1d1; opacity: 0.95;
+    border-radius: 4px; padding: 10px;
+}
+
+.dialog-name { width: 150px; }
+
+.dialog-title { text-align: center; font-weight: bold; }
+.dialog-label { display: table-cell; width: 150px; }
+.dialog-content { padding:15px; line-height:200%; }
+
+.dialog-name { width: 150px; }
+
+.dialog-button { display: table-cell; width: 125px; opacity: 0.6; }
+.dialog-button:link { text-decoration: none; }
+.dialog-button:hover { text-decoration: none; opacity: 1.0; }
+

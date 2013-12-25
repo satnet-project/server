@@ -1,0 +1,160 @@
+{% extends "users/users_home.html" %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/lists.css'%}" />
+    <script type='text/javascript' >
+    
+        // Array with the users selected for batch operation
+        var __DEBUG__ = true;
+
+        // Event binding to handlers
+        $(document).ready(function(){
+
+            add_channel_dialog_decorate();
+
+            $( "#add_channel_button" )
+                .on("click", __addChannel);
+            $( "#add_channel_dialog_cancel" )
+                .on("click", add_channel_dialog_hide);
+
+
+        });
+        
+        function __addChannel()
+        {
+            $( "#add_channel_dialog" ).show();
+            retrieve_channel_dialog();
+        }
+        
+        function add_channel_dialog_decorate()
+        {
+            $( "#id_ch_name" ).puiinputtext();
+            $( "#id_ch_mod" ).puidropdown();
+            $( "#id_ch_bps_min" ).puidropdown();
+            $( "#id_ch_bps_max" ).puidropdown();
+            $( "#id_ch_bw" ).puidropdown();
+            $( "#id_ch_pol" ).puidropdown();
+        }
+        
+        function add_channel_dialog_data()
+        {
+            var data = { user_id: user_id };
+            $.getJSON('/configuration/ajax/get_channel_data/', data)
+                .done( user_details_cb )
+                .fail( console.log('get_channel_data GET failed!') );
+        }
+        
+        function add_channel_dialog_hide()
+        {
+            $( "#add_channel_dialog" ).hide();
+            // TODO Clear up dialog elements?
+        }
+        
+    </script>
+{% endblock %}
+
+{% block content %}
+
+    <h2>Configuration</h2>
+        <br/>
+    
+    <div class='list-row'>
+        <div class="list-cell list-cell-link" ><a>{{ g.identifier }}</a></div>
+        <div class="list-cell list-cell-info" >
+            <ul class='results-list'>
+                <li><b>Radio Callsign</b>: {{ g.callsign }}</li>
+                <li><b>Contact elevation (deg)</b>: 
+                        {{ g.contact_elevation|floatformat:2 }}</li>
+                <li><b>Coordinates</b>:
+                        ({{ g.latitude|floatformat:4 }}, 
+                            {{ g.longitude|floatformat:4 }})</li>
+            </ul>
+        </div>
+    </div>
+    
+    <br/>
+    <div class='list-row'>
+        <div class="list-cell list-cell-link" ><a>Channels</a></div>
+        <div class="list-cell list-cell-info" >
+            
+{% if channels|length == 0 %}
+            <div><center><p><b><i>(no channels)</i></b></p></center></div>
+{% else %}
+
+    {% for c in channels_list %}
+
+            <div class='list-row'>
+                <div class='list-cell' ></div>
+                <div class='list-cell' ></div>
+            </div>
+
+    {% endfor %}
+
+{% endif %}
+            
+            <div><center>
+                <a id='add_channel_button' class="link dialog-button">
+                    Add channel (+)</a>
+            </center></div>
+
+        </div>
+    </div>
+    
+<div id='add_channel_dialog' class='dialog'> 
+    <div class="dialog-title" >Add Channel</div>
+    
+    <div class="dialog-content" >
+    
+    <form id='add_channel_form' class='dialog-form' >
+    
+        <p>
+            <label for='id_ch_name' >Name:</label>
+            <input type='text' id='id_ch_name' name='ch_name' />
+        </p>
+        <p>
+            <label for='id_ch_mod' >Modulation:</label>
+            <input type='select' id='id_ch_mod' name='ch_mod' />
+        </p>    
+        <p>
+            <label for='id_ch_bps_min' >Bitrate (min):</label>
+            <input type='select' id='id_ch_bps_min' name='ch_bps_min' />
+        </p>
+        <p>
+            <label for='id_ch_bps_max' >Bitrate (max):</label>
+            <input type='select' id='id_ch_bps_max' name='ch_bps_max' />
+        </p>
+        <p>
+            <label for='id_ch_bw' >Bandwidth:</label>
+            <input type='select' id='id_ch_bw' name='ch_bw' />
+        </p>
+        <p>
+            <label for='id_ch_pol' >Polarization:</label>
+            <input type='select' id='id_ch_pol' name='ch_pol' />
+        </p>
+         
+    </form>
+    
+    </div>
+    
+    <div class='mark-div'>
+        <center>
+            <div class="mark-div dialog-button" >
+                <a class="link">(add)</a></div>
+            <div class="mark-div dialog-button" ></div>
+            <div class="mark-div dialog-button" >
+                <a id='add_channel_dialog_cancel' class="link">(cancel)</a>
+            </div>
+        </center>
+    </div>
+    
+</div>
+
+        <br/>
+    <h2>Operation Slots</h2>
+        <br/>
+
+{% endblock %}
+

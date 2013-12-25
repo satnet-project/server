@@ -7,9 +7,11 @@ from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.views.generic.edit import CreateView
 from django.views.generic.list import ListView
+from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
-from configuration.models import GroundStationConfiguration
+from configuration.models import GroundStationConfiguration, \
+                                    AvailableModulations
 from configuration.utils import get_remote_user_location
 
 class AddGroundStationView(CreateView):
@@ -48,4 +50,23 @@ class ListGroundStationsView(ListView):
     
         user = User.objects.get(username=self.request.user.username)
         return GroundStationConfiguration.objects.filter(user=user.id)
+
+class ConfigureGroundStationView(DetailView):
+
+    model = GroundStationConfiguration
+    template_name = 'configure_groundstation.html'
+    gs_object_name = 'g'
+    ch_list_object_name = 'channels'
+    am_object_name = 'modulations'
+    
+    def get_context_data(self, **kwargs):
+
+        context = super(ConfigureGroundStationView, self)\
+                            .get_context_data(**kwargs)
+        
+        context[self.gs_object_name] = self.object
+        context[self.am_object_name] = AvailableModulations.objects.all()
+        context[self.ch_list_object_name] = []
+        
+        return context
 
