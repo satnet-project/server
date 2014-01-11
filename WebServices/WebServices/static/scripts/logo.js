@@ -1,3 +1,16 @@
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
 
     var GRID_SIZE = Math.floor((Math.random() * 40) + 3); // Size of the grid.
     var GRID_INDEX = GRID_SIZE - 1; // Max index for the grid.
@@ -75,8 +88,8 @@
                 var s = Math.floor((Math.random() * 8) + 1);
                 if ( s == 0 ) { continue; }
                 
-                ii = pi - 2 + ( s % 3 );
-                jj = pj - 2 + ( Math.ceil( s / 3 ) );
+                var ii = pi - 2 + ( s % 3 );
+                var jj = pj - 2 + ( Math.ceil( s / 3 ) );
                 
                 if ( ( ii < 0 ) || ( ii > GRID_INDEX ) ) { continue; }
                 if ( ( jj < 0 ) || ( jj > GRID_INDEX ) ) { continue; }
@@ -95,10 +108,10 @@
                
     function drawLine(pi, pj, ii, jj, w)
     {
-        x1 =  Math.floor(pi * GX_SIZE) + X0;
-        y1 =  Math.floor(pj * GX_SIZE) + Y0;
-        x2 =  Math.floor(ii * GX_SIZE) + X0;
-        y2 =  Math.floor(jj * GX_SIZE) + Y0;
+        var x1 =  Math.floor(pi * GX_SIZE) + X0;
+        var y1 =  Math.floor(pj * GX_SIZE) + Y0;
+        var x2 =  Math.floor(ii * GX_SIZE) + X0;
+        var y2 =  Math.floor(jj * GX_SIZE) + Y0;
         addLine(x1, y1, x2, y2, w);
     }
     
@@ -118,9 +131,9 @@
 
     function drawNode(i, j)
     {
-        r = Math.floor((Math.random() * MAX_R) + 1);
-        x = Math.floor(i * GX_SIZE) + X0;
-        y = Math.floor(j * GX_SIZE) + Y0;
+        var r = Math.floor((Math.random() * MAX_R) + 1);
+        var x = Math.floor(i * GX_SIZE) + X0;
+        var y = Math.floor(j * GX_SIZE) + Y0;
         addNode(x, y, r);
     }
            

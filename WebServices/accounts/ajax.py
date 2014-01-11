@@ -1,9 +1,24 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import logging
 logger = logging.getLogger(__name__)
 
 import json
 
-from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import RequestSite
 from django.contrib.sites.models import Site
@@ -13,28 +28,15 @@ from django.shortcuts import get_object_or_404
 from accounts.models import UserProfile
 from registration.models import RegistrationProfile
 
-# ### FIXME Problem while raising BadRequest exception
-# meanwhile, it is encouraged to utilize the less-supported django-jsonresponse
-# library, with '@to_json('api')' decorator and simple 'Exception' raising
-# ### jsonview / jsonresponse libraries compatibility:
-# @to_json('plain') = @json_view
-# @to_json('api') involves a response structure with data and error fields.
-#    (*) data field is the json representation of the response
-#    (*) error field is the error identifier
-# ###
 from jsonview.decorators import json_view
 from jsonview.exceptions import BadRequest
-#from jsonresponse import to_json
 
-#@to_json('api')
 @json_view
 @login_required
 def user_details(request):
     """
-    jQuery GET method for retrieving user details. Syntax:
-    
-    >>> user_details(user_id)
-    
+    jQuery GET method for retrieving user details. Parameters:
+
     * user_id = identifier of the user within the database
     
     """
@@ -59,9 +61,7 @@ def user_details(request):
 @login_required
 def user_verification(request):
     """
-    jQuery POST method for updating the set of users to be verified. Syntax:
-    
-    >>> user_verification(user_list)
+    jQuery POST method for updating the set of users to be verified. Parameters:
     
     * list = list with the identifiers of the verified users.
     

@@ -1,11 +1,23 @@
 """
-Main tests for the configuration Django application.
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 """
 
 from django.test import TestCase
-from django.test.client import Client
 
 from configuration.utils import get_remote_user_location
+
 
 class UtilsTest(TestCase):
     
@@ -25,10 +37,13 @@ class UtilsTest(TestCase):
         
         latitude, longitude = get_remote_user_location(ip=self.inp_grul)
         
-        self.assertAlmostEqual(float(latitude), \
-                                self.out_grul_latitude, places=4, \
-                                msg="Wrong latitude!")
-        self.assertAlmostEqual(float(longitude), \
-                                self.out_grul_longitude, places=4, \
-                                msg="Wrong longitude!")
-        
+        self.assertAlmostEqual(float(latitude),
+                               self.out_grul_latitude, places=4,
+                               msg="Wrong latitude!")
+        self.assertAlmostEqual(float(longitude),
+                               self.out_grul_longitude, places=4,
+                               msg="Wrong longitude!")
+
+
+class ModelsTest(TestCase):
+    pass

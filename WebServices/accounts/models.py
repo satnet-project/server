@@ -1,3 +1,19 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import logging
 logger = logging.getLogger(__name__)
 
@@ -5,7 +21,8 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
 
-from django_countries import CountryField
+from django_countries.fields import CountryField
+
 
 class UserProfileManager(models.Manager):
     """
@@ -29,8 +46,6 @@ class UserProfileManager(models.Manager):
             None
         
         """
-     
-        logger.debug(__name__ + '### verify_user, user_id = ' + user_id)
         
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_verified = True
@@ -104,7 +119,8 @@ class UserProfileManager(models.Manager):
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_active = False
         user.save()
-        
+
+
 class UserProfile(User):
     """
     This class holds additional data required from each user. It is used in 
@@ -133,4 +149,3 @@ class UserProfile(User):
     
     """
     is_blocked = models.BooleanField()
-

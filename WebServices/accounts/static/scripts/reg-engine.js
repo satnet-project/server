@@ -1,6 +1,21 @@
+/*
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
     // Array with the users selected for batch operation
-    var user_list = new Array();
+    var user_list = []; //new Array();
     var __USERNAME_DEFAULT_CLASS__ = "rr-e";
     var __DEBUG__ = true;
 
@@ -198,12 +213,11 @@
             $( "#" + h ).attr("value", operation);
             
             // change CSS decoration
-            $( "#" + n ).removeClass(__USERNAME_DEFAULT_CLASS__);
-            $( "#" + n ).addClass(css_class);
+            $( "#" + n ).removeClass(__USERNAME_DEFAULT_CLASS__)
+                        .addClass(css_class);
             
             // hide checkbox and show undo button
-            $( "#" + c ).hide();
-            $( "#" + c ).prop("checked", false);
+            $( "#" + c ).hide().prop("checked", false);
             $( "#" + b ).show();
             
         }
@@ -225,29 +239,13 @@
                                 ", n = " + n + ", c = " + c + ", b = " + b );
             
         // set operation and change CSS class
-        $( "#" + n ).attr("op", "");
-        $( "#" + n ).attr("class", "");
-        $( "#" + n ).addClass(__USERNAME_DEFAULT_CLASS__);
+        $( "#" + n ).attr("op", "").attr("class", "")
+            .addClass(__USERNAME_DEFAULT_CLASS__);
 
         // show checkbox and hide undo button
         $( "#" + c ).show();
         $( "#" + b ).hide();
     
-    }
-    
-    function position_user_details(user_id)
-    {
-
-        hanger_id = "hanger_" + user_id;
-        console.log(">>>> hanger_id = " + hanger_id);
-        
-        $( "#details" ).position({
-            my:        "left bottom",
-            at:        "right top",
-            of:        $( "#hanger_43" ),
-            collision: "none"
-        });
-
     }
 
     function show_error(msg)
@@ -271,18 +269,3 @@
 
     }
 
-    function user_verification_cb(response)
-    {
-    
-        console.log("user_verification_cb");
-        print_response(response);
-    
-    }
-    
-    function print_response(response)
-    {
-        $.each(response, function(k, v){
-            console.log("response[" + k + "] = " + v);
-        });
-    }
-    

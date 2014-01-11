@@ -28,10 +28,6 @@ from django.utils import six
 from django.utils.six.moves import xrange
 
 
-_trans_5c = bytearray([(x ^ 0x5C) for x in xrange(256)])
-_trans_36 = bytearray([(x ^ 0x36) for x in xrange(256)])
-
-
 def salted_hmac(key_salt, value, secret=None):
     """
     Returns the HMAC-SHA1 of 'value', using a key generated from key_salt and a
@@ -85,6 +81,11 @@ def constant_time_compare(val1, val2):
     Returns True if the two strings are equal, False otherwise.
 
     The time taken is independent of the number of characters that match.
+
+    For the sake of simplicity, this function executes in constant time only
+    when the two strings have the same length. It short-circuits when they
+    have different lengths. Since Django only uses it to compare hashes of
+    known expected length, this is acceptable.
     """
     if len(val1) != len(val2):
         return False
@@ -115,34 +116,18 @@ def _long_to_bin(x, hex_format_string):
     return binascii.unhexlify((hex_format_string % x).encode('ascii'))
 
 
-def _fast_hmac(key, msg, digest):
-    """
-    A trimmed down version of Python's HMAC implementation.
-
-    This function operates on bytes.
-    """
-    dig1, dig2 = digest(), digest()
-    if len(key) > dig1.block_size:
-        key = digest(key).digest()
-    key += b'\x00' * (dig1.block_size - len(key))
-    dig1.update(key.translate(_trans_36))
-    dig1.update(msg)
-    dig2.update(key.translate(_trans_5c))
-    dig2.update(dig1.digest())
-    return dig2
-
-
 def pbkdf2(password, salt, iterations, dklen=0, digest=None):
     """
     Implements PBKDF2 as defined in RFC 2898, section 5.2
 
     HMAC+SHA256 is used as the default pseudo random function.
 
-    Right now 10,000 iterations is the recommended default which takes
-    100ms on a 2.2Ghz Core 2 Duo.  This is probably the bare minimum
-    for security given 1000 iterations was recommended in 2001. This
-    code is very well optimized for CPython and is only four times
-    slower than openssl's implementation.
+    As of 2011, 10,000 iterations was the recommended default which
+    took 100ms on a 2.2Ghz Core 2 Duo. This is probably the bare
+    minimum for security given 1000 iterations was recommended in
+    2001. This code is very well optimized for CPython and is only
+    four times slower than openssl's implementation. Look in
+    django.contrib.auth.hashers for the present default.
     """
     assert iterations > 0
     if not digest:
@@ -159,11 +144,21 @@ def pbkdf2(password, salt, iterations, dklen=0, digest=None):
 
     hex_format_string = "%%0%ix" % (hlen * 2)
 
+    inner, outer = digest(), digest()
+    if len(password) > inner.block_size:
+        password = digest(password).digest()
+    password += b'\x00' * (inner.block_size - len(password))
+    inner.update(password.translate(hmac.trans_36))
+    outer.update(password.translate(hmac.trans_5C))
+
     def F(i):
         def U():
             u = salt + struct.pack(b'>I', i)
             for j in xrange(int(iterations)):
-                u = _fast_hmac(password, u, digest).digest()
+                dig1, dig2 = inner.copy(), outer.copy()
+                dig1.update(u)
+                dig2.update(dig1.digest())
+                u = dig2.digest()
                 yield _bin_to_long(u)
         return _long_to_bin(reduce(operator.xor, U()), hex_format_string)
 

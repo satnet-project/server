@@ -2,4 +2,10 @@
 2) Check correct execution of periodic tasks, paying special attention to the
     execution within the virtual environment.
 3) urls path correction, reference to names rather than to paths themselves.
-
+4) Set up GeoDjango Spatial Database and transform Ground Station coordinates
+    into country and associated IARU region.
+    *) Use a Web Service initially for transforming the coordinates.
+    *) Enable a GeoJSON accessible service through JSON-RPC/HTTPS.
+5) Set up a database with band allocation reservation in accordance with IARU
+    regulations.
+    *) Connect that database with the previous one.

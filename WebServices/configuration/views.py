@@ -1,8 +1,23 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import logging
 logger = logging.getLogger(__name__)
 
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.template.response import TemplateResponse
 from django.views.generic.edit import CreateView
@@ -10,9 +25,9 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
-from configuration.models import GroundStationConfiguration, \
-                                    AvailableModulations
+from configuration.models import GroundStationConfiguration
 from configuration.utils import get_remote_user_location
+
 
 class AddGroundStationView(CreateView):
 
@@ -33,40 +48,42 @@ class AddGroundStationView(CreateView):
         
         # 2) initialize form and context for requests
         user = User.objects.get(username=request.user.username)
-        form = self.form_class(initial={ 'user' : user.id, \
-                                            'latitude' : latitude, \
-                                            'longitude' : longitude })        
-        context = RequestContext(request, { 'form' : form })
+        form = self.form_class(initial={'user': user.id,
+                                        'latitude': latitude,
+                                        'longitude': longitude,
+                                        'country': 'US',
+                                        'IARU_region': '1'})
+        context = RequestContext(request, {'form': form})
         
-        return(TemplateResponse(request, self.template_name, context))
+        return TemplateResponse(request, self.template_name, context)
+
 
 class ListGroundStationsView(ListView):
 
     model = GroundStationConfiguration
     template_name = 'list_groundstations.html'
-    context_object_name = "groundstations_list"     # list for the template
+    context_object_name = "groundstations_list"
 
     def get_queryset(self):
     
         user = User.objects.get(username=self.request.user.username)
         return GroundStationConfiguration.objects.filter(user=user.id)
 
+
 class ConfigureGroundStationView(DetailView):
 
     model = GroundStationConfiguration
     template_name = 'configure_groundstation.html'
     gs_object_name = 'g'
-    ch_list_object_name = 'channels'
-    am_object_name = 'modulations'
+    channels_object_name = 'channels'
     
     def get_context_data(self, **kwargs):
 
-        context = super(ConfigureGroundStationView, self)\
-                            .get_context_data(**kwargs)
+        context = super(ConfigureGroundStationView, self).\
+            get_context_data(**kwargs)
         
         context[self.gs_object_name] = self.object
-        context[self.am_object_name] = AvailableModulations.objects.all()
-        context[self.ch_list_object_name] = []
+        context[self.channels_object_name] = self.object.channels.all()
         
-        return context
 
+        return context

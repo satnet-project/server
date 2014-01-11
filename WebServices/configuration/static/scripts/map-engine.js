@@ -1,3 +1,18 @@
+/*
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
 
     var __DEBUG__ = true;
     var __ZOOM__ = 10;
@@ -13,7 +28,7 @@
         text: 'Locate',
         bounds: null,
         email: null,
-        callback: __geocoder_result,
+        callback: __geocoder_result
     };
     var osmGeocoder = new L.Control.OSMGeocoder(options_osmGeocoder);
     var options_coordinates =
@@ -25,7 +40,7 @@
         labelTemplateLng: "Longitude: {x}",
         enableUserInput: false,
         useDMS: false,
-        useLatLngOrder: true,
+        useLatLngOrder: true
     };
     var coordinates = L.control.coordinates(options_coordinates);
     
@@ -56,8 +71,8 @@
         map.addControl(osmGeocoder);
         map.addControl(coordinates);
         
-        lat = $( '#id_latitude' ).prop('value');
-        lng = $( '#id_longitude' ).prop('value');
+        var lat = $( '#id_latitude' ).prop('value');
+        var lng = $( '#id_longitude' ).prop('value');
     
         if ( __DEBUG__ )
             console.log('lat = ' + lat + ', lng = ' + lng);
@@ -77,8 +92,8 @@
     
         __my_map = map;     // save reference to main map
         
-        lat = $( '#id_latitude' ).prop('value');
-        lng = $( '#id_longitude' ).prop('value');
+        var lat = $( '#id_latitude' ).prop('value');
+        var lng = $( '#id_longitude' ).prop('value');
     
         if ( __DEBUG__ )
             console.log('lat = ' + lat + ', lng = ' + lng);

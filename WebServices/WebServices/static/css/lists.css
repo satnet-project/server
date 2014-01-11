@@ -1,36 +1,25 @@
-.list-cell
-{
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.list-cell {
     display: table-cell;
-    vertical-align: middle;
-    line-height: 150%;
-    background-color: #d1d1d1;
-    border-radius: 4px;
-    opacity: 0.6;
+    vertical-align: middle; line-height: 150%; border-radius: 4px;
+    background-color: #d1d1d1; opacity: 0.6;
 }
 
 .list-cell-link { width: 150px; text-align: center; }
-.list-cell-link:hover { opacity: 1.0; }
+.list-cell-link:hover { opacity: 1.0; font-weight: bolder; }
 .list-cell-info { width: 325px; font-size: 75%; }
-
 .results-list { list-style-type: none; }
 
-.dialog
-{
-    display: none;
-    position: fixed; top: 0px; left: 550px; width: 450px; z-index: 300;
-    background-color: #d1d1d1; opacity: 0.95;
-    border-radius: 4px; padding: 10px;
-}
-
-.dialog-name { width: 150px; }
-
-.dialog-title { text-align: center; font-weight: bold; }
-.dialog-label { display: table-cell; width: 150px; }
-.dialog-content { padding:15px; line-height:200%; }
-
-.dialog-name { width: 150px; }
-
-.dialog-button { display: table-cell; width: 125px; opacity: 0.6; }
-.dialog-button:link { text-decoration: none; }
-.dialog-button:hover { text-decoration: none; opacity: 1.0; }
-
+.blank-list-cell { display: table-cell; width: 150px; }

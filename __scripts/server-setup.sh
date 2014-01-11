@@ -29,11 +29,9 @@ install_packages()
     apt-get update
     apt-get dist-upgrade
     
-    apt-get install mysql-server python apache2 phpmyadmin
-    apt-get install python-django python-mysqldb python-virtualenv
-    apt-get install python-pip python-virtualenv python-django-countries
-    apt-get install python-django-registration
-    apt-get install python-dev libmysqlclient-dev
+    apt-get install apache2 phpmyadmin
+    apt-get install mysql-server libmysqlclient-dev
+    apt-get install python python-virtualenv python-pip python-dev python-mysqldb 
     apt-get install binutils libproj-dev gdal-bin
 
     apt-get clean
@@ -86,16 +84,25 @@ create_virtualenv()
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
     
-    pip install django==1.5.2
-    pip install eventlog==0.6.2
-    pip install django-jsonfield==0.8.12
-    pip install django-registration==1.0
-    pip install mysql-python==1.2.3
+    #pip install django==1.5.2
+    #pip install eventlog==0.6.2
+    #pip install django-jsonfield==0.8.12
+    #pip install django-registration==1.0
+    #pip install mysql-python==1.2.3
+    
+    pip install distribute --upgrade
+    
+    pip install django
+    pip install eventlog
+    pip install django-jsonfield
+    pip install django-registration
+    pip install mysql-python
     pip install django_countries
     pip install django-passwords
     pip install django-jquery
     pip install django-session-security
     pip install django-jsonview
+    pip install django-leaflet
     # ### testing packages
     pip install django-selenium
     pip install selenium
@@ -188,7 +195,7 @@ venv_activate="$project_path/__v_env/bin/activate"
 # some configuration commands can be executed without root permissions
 [[ $# -gt 0 ]] && \
 {
-    [[ $1 == "--create-virtualenv" ]] && \
+    [[ $1 == "--create-venv" ]] && \
         create_virtualenv $*
 }
 

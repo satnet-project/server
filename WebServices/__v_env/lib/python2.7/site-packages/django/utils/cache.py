@@ -168,7 +168,7 @@ def _i18n_cache_key_suffix(request, cache_key):
         cache_key += '.%s' % getattr(request, 'LANGUAGE_CODE', get_language())
     if settings.USE_TZ:
         # The datetime module doesn't restrict the output of tzname().
-        # Windows is known to use non-standard, locale-dependant names.
+        # Windows is known to use non-standard, locale-dependent names.
         # User-defined tzinfo classes may return absolutely anything.
         # Hence this paranoid conversion to create a valid cache key.
         tz_name = force_text(get_current_timezone_name(), errors='ignore')
@@ -236,8 +236,18 @@ def learn_cache_key(request, response, cache_timeout=None, key_prefix=None, cach
     if cache is None:
         cache = get_cache(settings.CACHE_MIDDLEWARE_ALIAS)
     if response.has_header('Vary'):
-        headerlist = ['HTTP_'+header.upper().replace('-', '_')
-                      for header in cc_delim_re.split(response['Vary'])]
+        is_accept_language_redundant = settings.USE_I18N or settings.USE_L10N
+        # If i18n or l10n are used, the generated cache key will be suffixed
+        # with the current locale. Adding the raw value of Accept-Language is
+        # redundant in that case and would result in storing the same content
+        # under multiple keys in the cache. See #18191 for details.
+        headerlist = []
+        for header in cc_delim_re.split(response['Vary']):
+            header = header.upper().replace('-', '_')
+            if header == 'ACCEPT_LANGUAGE' and is_accept_language_redundant:
+                continue
+            headerlist.append('HTTP_' + header)
+        headerlist.sort()
         cache.set(cache_key, headerlist, cache_timeout)
         return _generate_cache_key(request, request.method, headerlist, key_prefix)
     else:

@@ -1,12 +1,27 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 import logging
 logger = logging.getLogger(__name__)
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site
-from django.shortcuts import render_to_response, get_object_or_404
-from django.template import RequestContext
+from django.contrib.sites.models import Site, RequestSite
+from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
@@ -17,9 +32,10 @@ from registration.backends.default.views import RegistrationView
 
 from accounts.forms import RegistrationForm, EditProfileForm
 from accounts.helpers import get_user_operations
-from accounts.models import UserProfile, UserProfileManager
+from accounts.models import UserProfile
 
 from smtplib import SMTPSenderRefused
+
 
 class UserProfileView(UpdateView):
     """
@@ -28,8 +44,7 @@ class UserProfileView(UpdateView):
     :Author:
         Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
     """
-    
-    """HTML template to be used"""
+
     model = UserProfile
     form_class = EditProfileForm
     template_name = 'users/user_profile_form.html'
@@ -38,13 +53,13 @@ class UserProfileView(UpdateView):
     def get_object(self, queryset=None):
         return UserProfile.objects.get(pk=self.request.user.id)
 
+
 class RegisterView(RegistrationView):
     """
     This is a form that contains all the required fields from the UserProfile 
     and User tables, as selected by the constructor of the form_class class.
     """
 
-    """HTML template to be used"""
     template_name = 'registration/registration_form.html'
     success_url = '/'
     form_class = RegistrationForm 
@@ -58,25 +73,25 @@ class RegisterView(RegistrationView):
         administrator first accepts the registration request.
         """
         
-        username, email, password = cleaned_data['username'], \
-                                    cleaned_data['email'], \
-                                    cleaned_data['password']
+        username, email, password = cleaned_data['username'],\
+            cleaned_data['email'], cleaned_data['password']
 
-        first_name, last_name = cleaned_data['first_name'], \
-                                cleaned_data['last_name']
+        first_name, last_name = cleaned_data['first_name'],\
+            cleaned_data['last_name']
 
-        organization, country = cleaned_data['organization'], \
-                                cleaned_data['country']
+        organization, country = cleaned_data['organization'],\
+            cleaned_data['country']
 
         user_profile = UserProfile.objects\
-                            .create(username=username,\
-                                    first_name=first_name,\
-                                    last_name=last_name,\
-                                    email=email,\
-                                    organization=organization,\
-                                    country=country,\
-                                    is_active=False,\
-                                    is_verified=False)
+            .create(username=username,
+                    first_name=first_name,
+                    last_name=last_name,
+                    email=email,
+                    organization=organization,
+                    country=country,
+                    is_active=False,
+                    is_verified=False,
+                    is_blocked=False)
         
         user_id = user_profile.user_ptr_id
         new_user = User.objects.get(id=user_id)
@@ -84,15 +99,15 @@ class RegisterView(RegistrationView):
         new_user.save()
         
         registration_profile = RegistrationProfile.objects\
-                                                    .create_profile(new_user)
+            .create_profile(new_user)
         
-        signals.user_registered.send(sender=self.__class__, \
-                                     user=new_user, \
-                                     request=request, \
-                                     cleaned_data=cleaned_data, \
+        signals.user_registered.send(sender=self.__class__,
+                                     user=new_user, request=request,
+                                     cleaned_data=cleaned_data,
                                      registration_profile=registration_profile)
                                      
         return user_profile
+
 
 class PendingRegView(ListView):
     """
@@ -104,8 +119,9 @@ class PendingRegView(ListView):
     
     model = UserProfile
     template_name = 'staff/registration_requests.html'
-    queryset = UserProfile.objects.filter(is_verified=False)\
-                                    .filter(is_blocked=False)
+    queryset = UserProfile.objects.\
+        filter(is_verified=False).\
+        filter(is_blocked=False)
     context_object_name = "user_list"
 
     def post(self, request, *args, **kwargs):
@@ -170,7 +186,7 @@ class PendingRegView(ListView):
         if Site._meta.installed:
             site = Site.objects.get_current()
         else:
-            site = RequestSite(request)
+            site = RequestSite(None)
 
         # 1) first, the confirmation email is sent
         r_profile = get_object_or_404(RegistrationProfile, user_id=user_id)
@@ -222,8 +238,8 @@ class PendingRegView(ListView):
             return
         
         except ObjectDoesNotExist:
-            logger.exception(__name__ + ', deleting UserProfile(' \
-                                        + user_id + ')')
+            logger.exception(__name__
+                             + ", deleting UserProfile(" + user_id + ")")
         
         try:
             
@@ -232,14 +248,15 @@ class PendingRegView(ListView):
             return
         
         except ObjectDoesNotExist:
-            logger.exception(__name__ + ', deleting RegistrationProfile(' \
-                                        + user_id + ')')
+            logger.exception(__name__ +
+                             ', deleting RegistrationProfile(' +
+                             user_id + ')')
 
     # Operations dictionary
     operations = {
-        'verify' : activate_user,
-        'block'  : block_user,
-        'delete' : delete_user,
+        'verify': activate_user,
+        'block': block_user,
+        'delete': delete_user,
     }
         
 class BlockedRegView(PendingRegView):
@@ -272,8 +289,8 @@ class BlockedRegView(PendingRegView):
         UserProfile.objects.unblock_user(user_id)
     
     operations = {
-        'unblock' : unblock_user,
-        'delete'  : PendingRegView.delete_user,
+        'unblock': unblock_user,
+        'delete': PendingRegView.delete_user,
     }
 
 class VerifiedView(PendingRegView):
@@ -286,9 +303,10 @@ class VerifiedView(PendingRegView):
     """
 
     template_name = 'staff/verified_requests.html'
-    queryset = UserProfile.objects.filter(is_active=True) \
-                                    .filter(is_verified=True) \
-                                    .filter(is_blocked=False)
+    queryset = UserProfile.objects.\
+        filter(is_active=True).\
+        filter(is_verified=True).\
+        filter(is_blocked=False)
 
     def deactivate_user(self, user_id):
         """
@@ -307,10 +325,11 @@ class VerifiedView(PendingRegView):
         UserProfile.objects.deactivate_user(user_id)
 
     operations = {
-        'deactivate' : deactivate_user,
-        'delete'     : PendingRegView.delete_user,
+        'deactivate': deactivate_user,
+        'delete': PendingRegView.delete_user,
     }
-    
+
+
 class InactiveView(PendingRegView):
     """
     View of the inactive users within the network.
@@ -321,9 +340,10 @@ class InactiveView(PendingRegView):
     """
 
     template_name = 'staff/inactive_users.html'
-    queryset = UserProfile.objects.filter(is_active=False) \
-                                    .filter(is_verified=True) \
-                                    .filter(is_blocked=False)
+    queryset = UserProfile.objects.\
+        filter(is_active=False).\
+        filter(is_verified=True).\
+        filter(is_blocked=False)
     
     def activate_user(self, user_id):
         """
@@ -342,13 +362,14 @@ class InactiveView(PendingRegView):
         UserProfile.objects.activate_user(user_id)
         
     operations = {
-        'activate' : activate_user,
-        'delete'   : PendingRegView.delete_user,
+        'activate': activate_user,
+        'delete': PendingRegView.delete_user,
     }
     
 ################################################################################
 # ### Standalone view handlers
 ################################################################################
+
 
 def csrf_failure_handler(request, reason=""):
     """
@@ -359,6 +380,7 @@ def csrf_failure_handler(request, reason=""):
 
     return TemplateResponse(request, "registration/csrf_failure.html")
 
+
 def redirect_home(request):
     """
     Redirects user access to 'home', so in case a user is already logged in,
@@ -366,13 +388,11 @@ def redirect_home(request):
     
     """
 
-    logger.info('>>>>>> redirect_home, is_staff? ' \
-                                    + str(request.user.is_staff))
-    
     if request.user.is_authenticated():
         return redirect_login(request)
     else:
         return TemplateResponse(request, 'index.html')
+
 
 @login_required
 def redirect_login(request):
@@ -380,12 +400,8 @@ def redirect_login(request):
     Redirects users based on their priviledges.
     
     """
-    
-    logger.info('>>>>>> redirect_login, is_staff? ' \
-                                    + str(request.user.is_staff))
-    
+
     if request.user.is_staff:
         return TemplateResponse(request, "staff/staff_home.html")
     else:
         return TemplateResponse(request, "users/users_home.html")
-

@@ -1,3 +1,19 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+
 # Django settings for WebServices project.
 
 DEBUG = True
@@ -60,10 +76,8 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 import os
-main_static = os.path.join(os.path.dirname(__file__),\
-                            'static')
-primeui_static = os.path.join(os.path.dirname(__file__),\
-                                'static', 'prime-ui')
+main_static = os.path.join(os.path.dirname(__file__), 'static')
+primeui_static = os.path.join(os.path.dirname(__file__), 'static', 'prime-ui')
 STATICFILES_DIRS = (
     main_static,
     primeui_static,
@@ -113,12 +127,9 @@ ROOT_URLCONF = 'WebServices.urls'
 WSGI_APPLICATION = 'WebServices.wsgi.application'
 
 # ### templates directories loading, relative to project's structure
-main_templates = os.path.join(os.path.dirname(__file__),\
-                            'templates')
-accounts_templates = os.path.join(os.path.dirname(__file__),\
-                            '..', 'accounts', 'templates')
-configuration_templates = os.path.join(os.path.dirname(__file__),\
-                            '..', 'configuration', 'templates')
+main_templates = os.path.join(os.path.dirname(__file__), 'templates')
+accounts_templates = os.path.join(os.path.dirname(__file__), '..', 'accounts', 'templates')
+configuration_templates = os.path.join(os.path.dirname(__file__), '..', 'configuration', 'templates')
 
 TEMPLATE_DIRS = (
     main_templates,
@@ -127,6 +138,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+    # ### default applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -142,13 +154,15 @@ INSTALLED_APPS = (
     'leaflet',
     # ### periodical task scheduling
     'periodically',
+    # ### django-admin
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+    # ### rpc4django (must appear before RPC implementors)
+    'rpc4django',
     
     # ### developed applications
     'accounts',
     'configuration',
-    
-    'django.contrib.admin',
-    'django.contrib.admindocs',
 
 )
 
@@ -195,6 +209,11 @@ LOGGING = {
             'propagate': True,
         },
         'configuration': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'rpc4django': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
