@@ -147,6 +147,7 @@ class GroundStationChannelManager(models.Manager):
         This method creates a new communications channel and associates it to
         the GroundStation whose identifier is given as a parameter.
         """
+        gs = GroundStationConfiguration.objects.get(identifier=gs_identifier)
 
         gsc = GroundStationChannel(band=band)
         gsc.identifier = identifier
@@ -174,7 +175,6 @@ class GroundStationChannelManager(models.Manager):
         gsc.polarization.add(*pol_l)
         gsc.save()
 
-        gs = GroundStationConfiguration.objects.get(identifier=gs_identifier)
         gs.channels.add(gsc)
         gs.save()
 
@@ -252,7 +252,7 @@ class GroundStationConfiguration(models.Model):
     callsign = models.CharField('Callsign', max_length=10,
                                 validators=[RegexValidator(
                                     regex='^[a-zA-Z0-9.\-_]*$',
-                                      message="Alphanumeric or '.-_' required",
+                                    message="Alphanumeric or '.-_' required",
                                     code='invalid_callsign')])
 
     contact_elevation \
