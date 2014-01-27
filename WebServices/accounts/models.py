@@ -131,21 +131,14 @@ class UserProfile(User):
     
     objects = UserProfileManager()
 
-    """Name of the organization that the user belongs to."""
+    # Name of the organization that the user belongs to.
     organization = models.CharField(max_length=100)
-    """Country of origin of the organization that the user belongs to."""
+    # Country of origin of the organization that the user belongs to.
     country = CountryField()
-    
-    """
-    Initially set to false, indicates whether administrator has accepted 
-    this user or not.
-    
-    """
+    # Initially set to false, indicates whether administrator has accepted
+    # this user or not.
     is_verified = models.BooleanField()
     
-    """
-    Initially set to false, indicates whether network administrator has
-    decided to block the requests from this user.
-    
-    """
+    # Initially set to false, indicates whether network administrator has
+    # decided to block the requests from this user.
     is_blocked = models.BooleanField()

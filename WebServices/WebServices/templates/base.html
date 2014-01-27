@@ -64,22 +64,22 @@
 
 {% block content_footer %}
     <br/>
-    <p><i>( back <a class='link' href="{% url 'index' %}">Home</a>? )</i></p>
+    <p><span style="font-style: italic;">( back <a class='link' href="{% url 'index' %}">Home</a>? )</span></p>
 {% endblock %}
 
 {% block license_footer %}
 
 <div class='license-footer'>
-<center>
+<div style="text-align: center;">
 <br/>
 <hr/>
 <a rel="license"
     href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">
     <embed style='opacity:0.8;' width='75px'
-        src="{% static 'images/cc-3.0-by-sa-ICON.svg' %}" />
+        src="{% static 'images/cc-3.0-by-sa-ICON.svg' %}" ></embed>
     <br/>
 </a>
-</center>
+</div>
 </div>
 
 {% endblock %}
@@ -90,7 +90,7 @@
     
         <div id='toolbar_header'>
             <embed name='svg_logo' id='svg_logo'
-                    src="{% static 'images/logo.svg' %}" />
+                    src="{% static 'images/logo.svg' %}" ></embed>
             <br/><br/>
         </div>
         

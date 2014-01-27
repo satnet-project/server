@@ -12,7 +12,7 @@
    See the License for the specific language governing permissions and
    limitations under the License. */
 a.link
-{cursor:hand;color: #0F3E62;font-weight:
+{cursor:pointer;color: #0F3E62;font-weight:
     bold;border-radius: 5px;padding: 0.75em;}
 a.link:link,a.link:visited{text-decoration:none;}
 a.blue-action
@@ -55,7 +55,7 @@ a.blue-action
     border-radius: 5px;
     opacity: 0.6;
 }
-a.action,a.green-action,a.red-action{cursor:hand;}
+a.action,a.green-action,a.red-action{cursor:pointer;}
 a.undo
 {
     font-weight: bold;

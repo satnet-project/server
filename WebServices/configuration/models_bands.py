@@ -23,7 +23,7 @@ logger = logging.getLogger(__name__)
 from django.db import models
 
 
-class BandsManager(models.Manager):
+class AvailableBandsManager(models.Manager):
     """
     Manager for carrying out Bands database specific tasks.
     """
@@ -39,12 +39,12 @@ class BandsManager(models.Manager):
         """
 
         if not band_name:
-            return super(BandsManager, self).get(args, kwargs)
+            return super(AvailableBandsManager, self).get(args, kwargs)
 
-        s = re.split(BandsManager.__band_name_separator, band_name)
-        if len(s) != BandsManager.__band_name_splits:
+        s = re.split(AvailableBandsManager.__band_name_separator, band_name)
+        if len(s) != AvailableBandsManager.__band_name_splits:
             raise Exception('<band_name> incorrect, should have '
-                            + str(BandsManager.__band_name_splits)
+                            + str(AvailableBandsManager.__band_name_splits)
                             + 'parts, but has ' + str(len(s)))
 
         qs = self \
@@ -62,8 +62,8 @@ class BandsManager(models.Manager):
 class AvailableBands(models.Model):
     """
     This class permits the definition of the available bands for operating
-    spacecraft. Ground Stations will define the bands available for their channels
-    and the network will match the
+    spacecraft. Ground Stations will define the bands available for their
+    channels and the network will match the
     """
 
     IARU_range = models.CharField('IARU Range', max_length=4)
@@ -71,16 +71,16 @@ class AvailableBands(models.Model):
     AMSAT_letter = models.CharField('AMSAT Letter', max_length=4)
     IARU_allocation_minimum_frequency =\
         models.DecimalField('Minimum frequency (MHz)',
-                            max_digits='24', decimal_places='6')
+                            max_digits=24, decimal_places=6)
     IARU_allocation_maximum_frequency =\
         models.DecimalField('Maximum frequency (MHz)',
-                            max_digits='24', decimal_places='6')
+                            max_digits=24, decimal_places=6)
 
     uplink = models.BooleanField('Uplink permitted')
     downlink = models.BooleanField('Downlink permitted')
 
     # Custom model manager
-    objects = BandsManager()
+    objects = AvailableBandsManager()
 
     band_name = ''
     __band_name_separator = ' / '
@@ -100,11 +100,11 @@ class AvailableBands(models.Model):
         Method that defines a unique band name that is also human readable.
         """
 
-        band_name = str(self.IARU_range) \
+        band_name = str(self.IARU_range)\
                + AvailableBands.__band_name_separator
-        band_name += str(self.AMSAT_letter) \
+        band_name += str(self.AMSAT_letter)\
                + AvailableBands.__band_name_separator
-        band_name += str(self.IARU_allocation_minimum_frequency) \
+        band_name += str(self.IARU_allocation_minimum_frequency)\
                + AvailableBands.__band_name_separator
         band_name += str(self.IARU_allocation_maximum_frequency)
 

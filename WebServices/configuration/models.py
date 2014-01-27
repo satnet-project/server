@@ -133,50 +133,73 @@ class SpacecraftChannel(models.Model):
 
 class GroundStationChannelManager(models.Manager):
     """
-    Manager class for Ground Staiton Channels. It helps
+    Manager class for Ground Staiton Channels. It helps in managing channel
+    objects.
     """
 
     def create(self,
-               gs_identifier=None, identifier=None, band=None,
+               gs_identifier=None, identifier=None, band_name=None,
                modulations_list=None,
                bitrates_list=None,
                bandwidths_list=None,
-               polarizations_list=None,
-               **kwargs):
+               polarizations_list=None):
         """
         This method creates a new communications channel and associates it to
         the GroundStation whose identifier is given as a parameter.
         """
+
         gs = GroundStationConfiguration.objects.get(identifier=gs_identifier)
 
+        band = AvailableBands.objects.get(band_name=band_name)
         gsc = GroundStationChannel(band=band)
         gsc.identifier = identifier
         gsc.band = band
-        # by default, channels are saved enabled
+        # by default, channels are saved with the 'enabled' flag set to 'True'
         gsc.enabled = True
         gsc.save()
 
-        mod_l = []
-        for e_i in modulations_list:
-            mod_l.append(AvailableModulations.objects.get(modulation=e_i))
-        bps_l = []
-        for e_i in bitrates_list:
-            bps_l.append(AvailableBitrates.objects.get(bitrate=e_i))
-        bws_l = []
-        for e_i in bandwidths_list:
-            bws_l.append(AvailableBandwidths.objects.get(bandwidth=e_i))
-        pol_l = []
-        for e_i in polarizations_list:
-            pol_l.append(AvailablePolarizations.objects.get(polarization=e_i))
-
-        gsc.modulation.add(*mod_l)
-        gsc.bitrate.add(*bps_l)
-        gsc.bandwidth.add(*bws_l)
-        gsc.polarization.add(*pol_l)
+        gsc.modulation.add(*modulations_list)
+        gsc.bitrate.add(*bitrates_list)
+        gsc.bandwidth.add(*bandwidths_list)
+        gsc.polarization.add(*polarizations_list)
         gsc.save()
 
         gs.channels.add(gsc)
         gs.save()
+
+        return gsc
+
+    def update(self,
+               current_identifier=None,
+               identifier=None, band=None,
+               modulations_list=None,
+               bitrates_list=None,
+               bandwidths_list=None,
+               polarizations_list=None):
+        """
+        Updates the configuration for the given channel.
+        """
+
+        ch = GroundStationChannel.objects.get(identifier=current_identifier)
+        if identifier:
+            ch.identifier = identifier
+        if band:
+            ch.band = band
+        if modulations_list and len(modulations_list) > 0:
+            ch.modulation.clear()
+            ch.modulation.add(*modulations_list)
+        if bitrates_list and len(bitrates_list) > 0:
+            ch.bitrate.clear()
+            ch.bitrate.add(*bitrates_list)
+        if bandwidths_list and len(bandwidths_list) > 0:
+            ch.bandwidth.clear()
+            ch.bandwidth.add(*bandwidths_list)
+        if polarizations_list and len(polarizations_list) > 0:
+            ch.polarization.clear()
+            ch.polarization.add(*polarizations_list)
+        ch.save()
+
+        return ch
 
 
 class GroundStationChannel(models.Model):
@@ -200,8 +223,19 @@ class GroundStationChannel(models.Model):
     bitrate = models.ManyToManyField(AvailableBitrates)
     bandwidth = models.ManyToManyField(AvailableBandwidths)
     polarization = models.ManyToManyField(AvailablePolarizations)
-    
+
     enabled = models.BooleanField('Enabled')
+
+    def get_string_definition(self):
+        """
+        This method returns a string containing all the parameters that define
+        this communication channel.
+        """
+        return self.band.get_band_name() + ', ' +\
+            str(self.modulation) + ', ' +\
+            str(self.bitrate) + ', ' +\
+            str(self.bandwidth) + ', ' +\
+            str(self.polarization)
 
     def __unicode__(self):
         return 'GroundStationChannel, ' \
@@ -226,7 +260,7 @@ class SpacecraftConfiguration(models.Model):
     callsign = models.CharField('Callsign', max_length=10,
                                 validators=[RegexValidator(
                                     regex='^[a-zA-Z0-9.\-_]*$',
-                                      message="Alphanumeric or '.-_' required",
+                                    message="Alphanumeric or '.-_' required",
                                     code='invalid_callsign')])
     
     celestrak_id = models.CharField('Celestrak identifier', max_length=100)
@@ -235,11 +269,48 @@ class SpacecraftConfiguration(models.Model):
     channels = models.ManyToManyField(SpacecraftChannel)
 
 
+class GroundStationConfigurationManager(models.Manager):
+    """
+    Manager that contains all the methods required for accessing to the
+    contents of the GroundStationConfiguration database models.
+    """
+
+    def delete_channel(self, ground_station_id, channel_id):
+        """
+        Deletes a channel that is owned by this ground station and all its
+        associated resources.
+        """
+
+        # 1) First, we obtain the objects for the deletion. If they do not
+        #       exist, an exception will be raised automatically. This is
+        #       also a way for verifying that the given channel is owned by
+        #       that ground station.
+        gs, ch = self.get_channel(ground_station_id,channel_id)
+        # 2) We unlink this channel from the ground station that owned it.
+        gs.channels.remove(ch)
+        # 3) Last, but not least, we remove the channel from the database.
+        ch.delete()
+
+    def get_channel(self, ground_station_id, channel_id):
+        """
+        This method returns both the ground station and its associated channel
+        as a tuple. It obtains the channel object by accessing to the list of
+        channels associated with the given ground station. Therefore, in case
+        either the ground station does not exist or the requested channel is
+        not associated with that ground station, an exception will be raised.
+        """
+        gs = self.all().get(identifier=ground_station_id)
+        ch = gs.channels.all().get(identifier=channel_id)
+        return gs, ch
+
+
 class GroundStationConfiguration(models.Model):
     """
     This class models the configuration required for managing a generic ground
     station, in terms of communication channels and pass simulations.
     """
+
+    objects = GroundStationConfigurationManager()
 
     user = models.ForeignKey(UserProfile)
     

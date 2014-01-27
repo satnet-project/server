@@ -17,9 +17,10 @@
     background-color: #d1d1d1; opacity: 0.6;
 }
 
-.list-cell-link { width: 150px; text-align: center; }
-.list-cell-link:hover { opacity: 1.0; font-weight: bolder; }
-.list-cell-info { width: 325px; font-size: 75%; }
+.list-cell-link { width: 150px;text-align:center;padding:5px }
+.list-cell-link:hover { opacity:1.0;font-weight:bolder }
+.list-cell-info { font-size:75%;padding:5px }
+.list-cell-info-clear { font-size:75%;background-color:transparent;padding:5px }
 .results-list { list-style-type: none; }
 
 .blank-list-cell { display: table-cell; width: 150px; }

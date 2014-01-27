@@ -1,38 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="BookmarkManager">
-    <bookmark url="file://$PROJECT_DIR$/WebServices/templates/components/add_channel_dialog.html" line="32" />
+    <bookmark url="file://$PROJECT_DIR$/configuration/templates/components/add_channel_dialog.html" line="32" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be383d21-eb06-4b8b-90dc-e9c72cca20cb" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/activate.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/activate.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/activation_complete.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/activation_complete.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/templates/add_groundstation.html" afterPath="$PROJECT_DIR$/configuration/templates/add_groundstation.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/blocked_requests.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/blocked_requests.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" afterPath="$PROJECT_DIR$/.idea/codeStyleSettings.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/templates/components/edit_channel_dialog.html" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/configuration/tests.py" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/WebServices/static/scripts/add_channel_dialog.js" afterPath="$PROJECT_DIR$/configuration/static/scripts/gs-configuration.js" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/WebServices/templates/components/add_channel_dialog.html" afterPath="$PROJECT_DIR$/configuration/templates/components/add_channel_dialog.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/base.html" afterPath="$PROJECT_DIR$/WebServices/templates/base.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/static/css/buttons.css" afterPath="$PROJECT_DIR$/WebServices/static/css/buttons.css" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/templates/configure_groundstation.html" afterPath="$PROJECT_DIR$/configuration/templates/configure_groundstation.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/inactive_users.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/inactive_users.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/index.html" afterPath="$PROJECT_DIR$/WebServices/templates/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc_channels.py" afterPath="$PROJECT_DIR$/configuration/jrpc_channels.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/templates/list_groundstations.html" afterPath="$PROJECT_DIR$/configuration/templates/list_groundstations.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/login.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/login.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/logout.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/logout.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/static/css/lists.css" afterPath="$PROJECT_DIR$/WebServices/static/css/lists.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/models.py" afterPath="$PROJECT_DIR$/accounts/models.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models.py" afterPath="$PROJECT_DIR$/configuration/models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_change_done.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_change_done.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_change_form.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_change_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_reset_complete.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_reset_complete.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_reset_confirm.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_reset_confirm.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_reset_done.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_reset_done.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/password_reset_form.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/password_reset_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/registered.html" afterPath="$PROJECT_DIR$/WebServices/templates/registered.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/registered.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/registered.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/registration_complete.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/registration_complete.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models_bands.py" afterPath="$PROJECT_DIR$/configuration/models_bands.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/templates/registration/registration_form.html" afterPath="$PROJECT_DIR$/accounts/templates/registration/registration_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/registration_requests.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/registration_requests.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/staff_home.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/staff_home.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/user_profile_form.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/user_profile_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/users/user_profile_form.html" afterPath="$PROJECT_DIR$/WebServices/templates/users/user_profile_form.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/users/users_home.html" afterPath="$PROJECT_DIR$/WebServices/templates/users/users_home.html" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/templates/staff/verified_requests.html" afterPath="$PROJECT_DIR$/WebServices/templates/staff/verified_requests.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/views.py" afterPath="$PROJECT_DIR$/configuration/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="WebServices.iws" />
@@ -60,13 +47,22 @@
     <favorites_list name="WebServices" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.49548194">
+    <splitter split-orientation="horizontal" split-proportion="0.4988831">
       <split-first>
         <leaf>
-          <file leaf-file-name="add_groundstation.html" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/configuration/templates/add_groundstation.html">
+          <file leaf-file-name="jrpc_channels.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/configuration/jrpc_channels.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="18" column="15" selection-start="686" selection-end="686" vertical-scroll-proportion="0.28907922" vertical-offset="0" max-vertical-offset="1485">
+                <state line="18" column="14" selection-start="680" selection-end="680" vertical-scroll-proportion="0.0" vertical-offset="1321" max-vertical-offset="4245">
+                  <folding />
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="models.py" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/configuration/models.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state line="189" column="48" selection-start="6421" selection-end="6421" vertical-scroll-proportion="0.5635179" vertical-offset="2489" max-vertical-offset="5355">
                   <folding />
                 </state>
               </provider>
@@ -76,11 +72,13 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="models.py" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/configuration/models.py">
+          <file leaf-file-name="test_models.py" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="20" column="1" selection-start="738" selection-end="738" vertical-scroll-proportion="0.3131524" vertical-offset="0" max-vertical-offset="4290">
-                  <folding />
+                <state line="111" column="0" selection-start="4302" selection-end="4302" vertical-scroll-proportion="0.95114005" vertical-offset="1081" max-vertical-offset="1755">
+                  <folding>
+                    <element signature="e#119#151#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -105,28 +103,30 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/WebServices/templates/staff/blocked_requests.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/registration_form.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/registration_complete.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_reset_form.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_reset_done.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_reset_confirm.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_reset_complete.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_change_form.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/password_change_done.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/logout.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/login.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/activation_complete.html" />
-        <option value="$PROJECT_DIR$/accounts/templates/registration/activate.html" />
-        <option value="$PROJECT_DIR$/configuration/templates/add_groundstation.html" />
-        <option value="$PROJECT_DIR$/configuration/templates/configure_groundstation.html" />
+        <option value="$PROJECT_DIR$/configuration/views.py" />
         <option value="$PROJECT_DIR$/configuration/templates/list_groundstations.html" />
+        <option value="$PROJECT_DIR$/WebServices/templates/base.html" />
+        <option value="$PROJECT_DIR$/WebServices/templates/components/edit_channel_dialog.html" />
+        <option value="$PROJECT_DIR$/accounts/templates/registration/registration_form.html" />
+        <option value="$PROJECT_DIR$/WebServices/static/css/lists.css" />
+        <option value="$PROJECT_DIR$/WebServices/static/scripts/add_channel_dialog.js" />
+        <option value="$PROJECT_DIR$/configuration/templates/configure_groundstation.html" />
+        <option value="$PROJECT_DIR$/configuration/static/scripts/gs-configuration.js" />
+        <option value="$PROJECT_DIR$/configuration/jrpc_channels.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/channel_models_test.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/models.py" />
+        <option value="$PROJECT_DIR$/configuration/models_bands.py" />
+        <option value="$PROJECT_DIR$/accounts/models.py" />
+        <option value="$PROJECT_DIR$/configuration/models.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/test_models.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="width" value="1324" />
-    <option name="height" value="1076" />
+    <option name="x" value="-1" />
+    <option name="y" value="27" />
+    <option name="width" value="1368" />
+    <option name="height" value="742" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -219,21 +219,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="templates" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="accounts" />
+              <option name="myItemId" value="static" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -260,10 +246,10 @@
     <property name="Database.TableEditor.Splitter" value="0.9080997" />
     <property name="options.splitter.main.proportions" value="0.3" />
     <property name="WebServerToolWindowFactoryState" value="false" />
-    <property name="options.lastSelected" value="preferences.sourceCode.General" />
+    <property name="options.lastSelected" value="usage.statistics" />
     <property name="recentsLimit" value="5" />
     <property name="restartRequiresConfirmation" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/configuration/__init__.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/configuration/static/scripts" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
     <property name="dynamic.classpath" value="false" />
@@ -274,6 +260,15 @@
     <option name="myPythonConsoleState">
       <console-settings />
     </option>
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/WebServices/templates/components" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/configuration/static/scripts" />
+      <recent name="$PROJECT_DIR$/configuration/templates" />
+    </key>
   </component>
   <component name="RunManager" selected="Django server.WebServices">
     <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
@@ -529,15 +524,16 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1324" height="1076" extended-state="0" />
+    <frame x="-1" y="27" width="1368" height="742" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25018615" sideWeight="0.4646195" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32866043" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3596426" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.18167822" sideWeight="0.6827068" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3149665" sideWeight="0.6713396" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25099075" sideWeight="0.5007825" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25018615" sideWeight="0.42323098" order="3" side_tool="true" content_ui="tabs" />
@@ -546,7 +542,6 @@
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32866043" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
@@ -566,115 +561,169 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_reset_email.html">
+    <entry file="file://$PROJECT_DIR$/configuration/templates/components/edit_channel_dialog.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="953">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_reset_complete.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="-0.625" vertical-offset="0" max-vertical-offset="510">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_change_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="-0.625" vertical-offset="0" max-vertical-offset="495">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/activate.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.017921148" vertical-offset="0" max-vertical-offset="837">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/activation_complete.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.017441861" vertical-offset="0" max-vertical-offset="860">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/csrf_failure.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="907">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/login.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.016146393" vertical-offset="0" max-vertical-offset="929">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/logout.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.016146393" vertical-offset="0" max-vertical-offset="929">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_change_done.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.016146393" vertical-offset="0" max-vertical-offset="929">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_reset_confirm.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.015756303" vertical-offset="0" max-vertical-offset="952">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/registration_form.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="22" selection-start="697" selection-end="697" vertical-scroll-proportion="0.30678147" vertical-offset="0" max-vertical-offset="929">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/templates/registration/password_reset_done.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="1" column="0" selection-start="26" selection-end="26" vertical-scroll-proportion="0.016146393" vertical-offset="0" max-vertical-offset="929">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/list_groundstations.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="24" selection-start="1028" selection-end="1028" vertical-scroll-proportion="0.53571427" vertical-offset="0" max-vertical-offset="1260">
+        <state line="106" column="0" selection-start="3268" selection-end="3268" vertical-scroll-proportion="-35.791668" vertical-offset="731" max-vertical-offset="1680">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configuration/templates/configure_groundstation.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="670" selection-end="670" vertical-scroll-proportion="0.2715655" vertical-offset="0" max-vertical-offset="1335">
+        <state line="152" column="0" selection-start="5124" selection-end="5124" vertical-scroll-proportion="-21.25" vertical-offset="1770" max-vertical-offset="2370">
+          <folding>
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="{...}" />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="true" signature="-1:-1" placeholder="..." />
+            <marker date="1390508788293" expanded="false" signature="-1:-1" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/rpc4django/rpcdispatcher.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="19" column="55" selection-start="577" selection-end="577" vertical-scroll-proportion="0.34941763" vertical-offset="0" max-vertical-offset="6645">
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/add_groundstation.html">
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/manager.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="18" column="15" selection-start="686" selection-end="686" vertical-scroll-proportion="0.28907922" vertical-offset="0" max-vertical-offset="1485">
+        <state line="155" column="8" selection-start="5804" selection-end="5804" vertical-scroll-proportion="0.3327787" vertical-offset="2035" max-vertical-offset="4245">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1485">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/templates/components/add_channel_dialog.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="92" column="37" selection-start="2863" selection-end="2863" vertical-scroll-proportion="-13.75" vertical-offset="1050" max-vertical-offset="1650">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/gs-configuration.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="288" column="0" selection-start="10491" selection-end="10491" vertical-scroll-proportion="4.883249" vertical-offset="1434" max-vertical-offset="6555">
+          <folding>
+            <element signature="n#!!doc" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models_bands.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="31" column="26" selection-start="922" selection-end="922" vertical-scroll-proportion="-1.174267" vertical-offset="1171" max-vertical-offset="1785">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django_countries/fields.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="88" column="6" selection-start="2374" selection-end="2374" vertical-scroll-proportion="2.149837" vertical-offset="0" max-vertical-offset="2115">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django_countries/data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4455">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django_countries/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="21" column="32" selection-start="625" selection-end="625" vertical-scroll-proportion="0.4218241" vertical-offset="56" max-vertical-offset="990">
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/contrib/auth/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="197" column="6" selection-start="7099" selection-end="7099" vertical-scroll-proportion="0.0" vertical-offset="2478" max-vertical-offset="7695">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="132" column="0" selection-start="3481" selection-end="3481" vertical-scroll-proportion="0.0" vertical-offset="1659" max-vertical-offset="2250">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc_channels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="14" selection-start="680" selection-end="680" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="4245">
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configuration/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="20" column="1" selection-start="738" selection-end="738" vertical-scroll-proportion="0.3131524" vertical-offset="0" max-vertical-offset="4290">
+        <state line="189" column="48" selection-start="6421" selection-end="6421" vertical-scroll-proportion="0.5635179" vertical-offset="2489" max-vertical-offset="5355">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="111" column="0" selection-start="4302" selection-end="4302" vertical-scroll-proportion="0.95114005" vertical-offset="1081" max-vertical-offset="1755">
+          <folding>
+            <element signature="e#119#151#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

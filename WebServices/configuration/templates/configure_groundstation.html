@@ -23,16 +23,34 @@
 
     <link rel="stylesheet" href="{% static 'css/lists.css' %}" />
 
+    <script type="text/javascript">
+        $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
+    </script>
+    <script type='text/javascript'
+            src="{% static 'prime-ui/scripts/jquery.json.min.js' %}" >
+    </script>
+    <script type='text/javascript'
+            src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
+    </script>
+
+    <script type="text/javascript" >
+
+        $(document).ready(function() {
+
+        });
+
+    </script>
+
 {% endblock %}
 
 {% block content %}
 
     <h2>Configuration</h2>
         <br/>
-    
+
     <div class='list-row'>
         <div class="list-cell list-cell-link" ><a>{{ g.identifier }}</a></div>
-        <div class="list-cell list-cell-info" >
+        <div class="list-cell list-cell-info-clear" style="width:300px;" >
             <ul class='results-list'>
                 <li><b>Radio Callsign</b>: {{ g.callsign }}</li>
                 <li><b>Contact elevation (deg)</b>: 
@@ -42,42 +60,93 @@
                             {{ g.longitude|floatformat:4 }})</li>
             </ul>
         </div>
+        <div class="list-cell list-cell-info-clear" style="font-size:50%">
+            <div style='padding:5px'>
+                <button id="edit-gs-button"
+                    class="edit-gs" style='width:75px'
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">Edit</button></div>
+            <div style='padding:5px'>
+                <button id="delete-gs-button"
+                    class="delete-gs" style='width:75px'
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">Delete</button></div>
+            <div style='padding:5px'>
+                <button id="add-ch-button"
+                    class="add-ch" style='width:75px'
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">+Ch</button></div>
+        </div>
     </div>
     
     <br/>
-    <div class='list-row'>
-        <div class="blank-list-cell" ></div>
-        <div class="list-cell list-cell-info" >
-            
-{% if channels|length == 0 %}
-            <div><p style='text-align: center;'><b><i>(no channels)</i></b></p></div>
+
+{% if chs|length == 0 %}
+   <div><p style='text-align: center;'><b><i>(no channels)</i></b></p></div>
 {% else %}
 
-    {% for c in channels %}
+{% for c in chs %}
 
-            <div class='list-row'>
-                <div class='list-cell' ></div>
-                <div class='list-cell' ></div>
-            </div>
+    <div class='list-row'>
+        <div class="list-cell list-cell-link"><a>{{ c.identifier }}</a></div>
+        <div class='list-cell list-cell-info-clear'
+             style="text-align:center;width:200px;" >
+            <p><b>IARU band:</b> {{ c.band.IARU_band }}</p>
+            <p><b>AMSAT letter:</b> {{ c.band.AMSAT_letter }}</p>
+            <p>({{ c.band.IARU_allocation_minimum_frequency }},
+                        {{ c.band.IARU_allocation_maximum_frequency }})</p>
+        </div>
+        <div class="list-cell list-cell-info-clear" style="width:250px;" >
+         <table>
+            <tr><td><b>Modulation(s):</b></td>
+{% for e_i in c.modulation.all %}
+                <td>{{ e_i.modulation }}</td>
+{% endfor %}
+            </tr>
+            <tr><td><b>Bitrate(s):</b></td>
+{% for e_i in c.bitrate.all %}
+                <td>{{ e_i.bitrate }}</td>
+{% endfor %}
+            </tr>
+            <tr><td><b>Bandwidth(s):</b></td>
+{% for e_i in c.bandwidth.all %}
+                <td>{{ e_i.bandwidth }}</td>
+{% endfor %}
+            </tr>
+            <tr><td><b>Polarization(s):</b></td>
+{% for e_i in c.polarization.all %}
+                <td>{{ e_i.polarization }}</td>
+{% endfor %}
+            </tr>
+        </table>
+        </div>
 
-    {% endfor %}
+        <div class="list-cell list-cell-info-clear" style="font-size:50%">
+            <div style='padding:5px'>
+                <button id="edit-ch-{{ c.identifier }}"
+                    class="edit-ch" style='width:75px'
+                    data-ch-id="{{ c.identifier }}"
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">Edit</button></div>
+
+            <div style='padding:5px'>
+                <button id="delete-ch-{{ c.identifier }}"
+                    class="delete-ch" style='width:75px'
+                    data-ch-id="{{ c.identifier }}"
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">Delete</button></div>
+        </div>
+
+    </div>
+
+{% endfor %}
 
 {% endif %}
-            
-            <div><a id='add_channel_button' class="link dialog-button"
-                    value="{{ g.identifier }}"
-                    style='text-align: center;'>
-                    Add channel (+)
-            </a></div>
-
-        </div>
-    </div>
 
         <br/>
     <h2>Operation Slots</h2>
         <br/>
 
-
-{% include 'components/add_channel_dialog.html' with dialog_id='add_channel' dialog_title='Configure Channel' %}
+{% include 'components/add_channel_dialog.html' with dialog_id='add_channel' dialog_title='Channel Configuration' %}
 
 {% endblock %}

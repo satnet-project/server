@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="{% static 'css/dialog.css' %}" />
 
 <script type="text/javascript">
-$.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
+    $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
 </script>
 <script type='text/javascript'
         src="{% static 'prime-ui/scripts/jquery.json.min.js' %}" >
@@ -31,7 +31,7 @@ $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
         src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
 </script>
 <script type='text/javascript'
-        src="{% static 'scripts/add_channel_dialog.js' %}" >
+        src="{% static 'scripts/gs-configuration.js' %}" >
 </script>
 
 {% endblock head %}
@@ -53,7 +53,8 @@ $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
         <div class="dialog-div" >
         <p>
             <label for='id_ch_name' >
-                Name <span style="font-size:75%;">([a-zA-Z0-9-.]{6,9})</span></label>
+                Name <span style="font-size:75%;">([a-zA-Z0-9-.]{6,9})</span>
+            </label>
             <input type='text' id='id_ch_name' name='ch_name'
                    onclick="erase_textarea('id_ch_name')"
                    onkeyup="clean_textarea('id_ch_name')" />
@@ -95,7 +96,8 @@ $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
             <a id="add_channel_dialog_add_button" class="link">(add)</a></div>
         <div class="dialog-button" style="width:250px" ></div>
         <div class="dialog-button" >
-            <a id='add_channel_dialog_cancel_button' class="link red-action">(X)</a>
+            <a id='add_channel_dialog_cancel_button'
+               class="link red-action">(X)</a>
         </div>
     </div>
 {% endblock dialog_buttons %}

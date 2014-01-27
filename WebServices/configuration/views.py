@@ -75,7 +75,7 @@ class ConfigureGroundStationView(DetailView):
     model = GroundStationConfiguration
     template_name = 'configure_groundstation.html'
     gs_object_name = 'g'
-    channels_object_name = 'channels'
+    channels_object_name = 'chs'
     
     def get_context_data(self, **kwargs):
 
@@ -83,7 +83,11 @@ class ConfigureGroundStationView(DetailView):
             get_context_data(**kwargs)
         
         context[self.gs_object_name] = self.object
+
+        logger.debug('>>>>>>> c.l = ' + str(len(self.object.channels.all())))
+        for c in self.object.channels.all():
+            logger.debug('>>>>>>> chs = ' + str(c.identifier))
+
         context[self.channels_object_name] = self.object.channels.all()
-        
 
         return context
