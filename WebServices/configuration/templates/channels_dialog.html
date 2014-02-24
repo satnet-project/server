@@ -22,7 +22,7 @@
 <link rel="stylesheet" href="{% static 'css/dialog.css' %}" />
 
 <script type="text/javascript">
-    $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
+$.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
 </script>
 <script type='text/javascript'
         src="{% static 'prime-ui/scripts/jquery.json.min.js' %}" >
@@ -31,7 +31,13 @@
         src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
 </script>
 <script type='text/javascript'
-        src="{% static 'scripts/gs-configuration.js' %}" >
+        src="{% static 'scripts/common.js' %}" >
+</script>
+<script type='text/javascript'
+        src="{% static 'scripts/jrpc-interface.js' %}" >
+</script>
+<script type='text/javascript'
+        src="{% static 'scripts/configure-channels.js' %}" >
 </script>
 
 {% endblock head %}
@@ -45,7 +51,7 @@
 {% endblock %}
     </div>
 
-    <div class="dialog-content" >
+    <div class="dialog-content" style="display: table-cell;" >
 {% block dialog_content %}
 
     <form id="{{ dialog_id }}_form" class='dialog-form' >
@@ -53,11 +59,11 @@
         <div class="dialog-div" >
         <p>
             <label for='id_ch_name' >
-                Name <span style="font-size:75%;">([a-zA-Z0-9-.]{6,9})</span>
-            </label>
+                Name <span style="font-size:75%;">([a-zA-Z0-9-.]{6,9})</span></label>
             <input type='text' id='id_ch_name' name='ch_name'
                    onclick="erase_textarea('id_ch_name')"
-                   onkeyup="clean_textarea('id_ch_name')" />
+                   onkeyup="validate_textarea('id_ch_name',
+                            '^[a-zA-Z0-9-\.]{6,9}$')" />
         </p>
         <p>
             <label for='id_ch_band' >Operation band:</label>
@@ -91,13 +97,18 @@
         </div>
 
 {% block dialog_buttons %}
-    <div style="text-align: center;">
-        <div class="dialog-button" >
-            <a id="add_channel_dialog_add_button" class="link">(add)</a></div>
-        <div class="dialog-button" style="width:250px" ></div>
-        <div class="dialog-button" >
-            <a id='add_channel_dialog_cancel_button'
-               class="link red-action">(X)</a>
+    <div style='text-align: center;'>
+        <div style='display: table-cell; padding:5px'>
+            <button id='channel_dialog_add_button'
+                    style='width:125px;font-size:75%;' type='button'>
+                Submit
+            </button>
+        </div>
+        <div style='display: table-cell; padding:5px'>
+            <button id='channel_dialog_cancel_button'
+                    style='width:125px;font-size:75%;' type='button'>
+                Cancel
+            </button>
         </div>
     </div>
 {% endblock dialog_buttons %}

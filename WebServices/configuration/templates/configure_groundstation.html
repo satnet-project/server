@@ -33,21 +33,11 @@
             src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
     </script>
 
-    <script type="text/javascript" >
-
-        $(document).ready(function() {
-
-        });
-
-    </script>
-
 {% endblock %}
 
 {% block content %}
 
     <h2>Configuration</h2>
-        <br/>
-
     <div class='list-row'>
         <div class="list-cell list-cell-link" ><a>{{ g.identifier }}</a></div>
         <div class="list-cell list-cell-info-clear" style="width:300px;" >
@@ -62,28 +52,26 @@
         </div>
         <div class="list-cell list-cell-info-clear" style="font-size:50%">
             <div style='padding:5px'>
-                <button id="edit-gs-button"
-                    class="edit-gs" style='width:75px'
-                    data-gs-id="{{ g.identifier }}"
+                <button id="edit-gs-button" class="edit-gs"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
                     type="button">Edit</button></div>
             <div style='padding:5px'>
-                <button id="delete-gs-button"
-                    class="delete-gs" style='width:75px'
-                    data-gs-id="{{ g.identifier }}"
+                <button id="delete-gs-button" class="delete-gs"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
                     type="button">Delete</button></div>
             <div style='padding:5px'>
-                <button id="add-ch-button"
-                    class="add-ch" style='width:75px'
-                    data-gs-id="{{ g.identifier }}"
+                <button id="add-ch-button" class="add-ch"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
                     type="button">+Ch</button></div>
+            <div style='padding:5px'>
+                <button id="create-ch-rule"
+                    class="rule-ch" style='width:75px'
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">+Rule</button></div>
         </div>
     </div>
-    
-    <br/>
 
-{% if chs|length == 0 %}
-   <div><p style='text-align: center;'><b><i>(no channels)</i></b></p></div>
-{% else %}
+<h2>Communication Channels</h2>
 
 {% for c in chs %}
 
@@ -128,7 +116,6 @@
                     data-ch-id="{{ c.identifier }}"
                     data-gs-id="{{ g.identifier }}"
                     type="button">Edit</button></div>
-
             <div style='padding:5px'>
                 <button id="delete-ch-{{ c.identifier }}"
                     class="delete-ch" style='width:75px'
@@ -141,12 +128,35 @@
 
 {% endfor %}
 
-{% endif %}
+<h2>Availability Rules</h2>
 
-        <br/>
-    <h2>Operation Slots</h2>
-        <br/>
+{% for c in chs %}
+{% for r_i in c.rules.all %}
+    <div class="list-cell list-cell-info">
+        <p>{{ r_i }}</p>
+    </div>
+    <div class="list-cell list-cell-info" style='padding:5px'>
+        <button id="remove-rule-{{ r_i.pk }}"
+                class="delete-ch" style='width:75px'
+                data-rule-id="{{ r_i.pk }}" type="button">Delete</button></div>
+{% empty %}
+   <div><p style='text-align: center;'><b><i>
+       (no rules for {{ c.identifier }})</i></b></p></div>
+{% endfor %}
+{% endfor %}
 
-{% include 'components/add_channel_dialog.html' with dialog_id='add_channel' dialog_title='Channel Configuration' %}
+<h2>Operational Slots</h2>
+{% for c in chs %}
+{% for s_i in c.slots.all %}
+    <div class="list-cell list-cell-info"></div>
+{% empty %}
+    <div><p style='text-align: center;'><b><i>
+       (no slots for {{ c.identifier }})</i></b></p></div>
+{% endfor %}
+{% endfor %}
 
-{% endblock %}
+{% include 'channels_dialog.html' with dialog_id='add_channel' dialog_title='Channel Configuration' %}
+{% include 'groundstation_dialog.html' with dialog_id='gs' dialog_title='Ground Station Configuration' %}
+{% include 'rules_dialog.html' with dialog_id='rules' dialog_title='Add new rule' %}
+
+{% endblock content %}

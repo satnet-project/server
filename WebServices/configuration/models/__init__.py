@@ -14,10 +14,4 @@
    limitations under the License.
 """
 
-__author__ = 'rtubiopa@calpoly.edu'
-
-# It is necessary to import this module here for rpc4django to detect the RPC
-# methods.
-from configuration.jrpc import segments
-from configuration.jrpc import channels
-from configuration.jrpc import rules
+__author__ = 'rtubio'

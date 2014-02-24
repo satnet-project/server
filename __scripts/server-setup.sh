@@ -103,6 +103,7 @@ create_virtualenv()
     pip install django-session-security
     pip install django-jsonview
     pip install django-leaflet
+    pip install python-dateutil
     # ### testing packages
     pip install django-selenium
     pip install selenium

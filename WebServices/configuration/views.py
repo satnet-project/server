@@ -25,7 +25,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
-from configuration.models import GroundStationConfiguration
+from configuration.models.segments import GroundStationConfiguration
 from configuration.utils import get_remote_user_location
 
 
@@ -62,7 +62,7 @@ class ListGroundStationsView(ListView):
 
     model = GroundStationConfiguration
     template_name = 'list_groundstations.html'
-    context_object_name = "groundstations_list"
+    context_object_name = 'groundstations_list'
 
     def get_queryset(self):
     
@@ -76,18 +76,17 @@ class ConfigureGroundStationView(DetailView):
     template_name = 'configure_groundstation.html'
     gs_object_name = 'g'
     channels_object_name = 'chs'
-    
+    weekdays_object_name = 'weekdays'
+    weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
+                'saturday', 'sunday']
+
     def get_context_data(self, **kwargs):
 
         context = super(ConfigureGroundStationView, self).\
             get_context_data(**kwargs)
         
         context[self.gs_object_name] = self.object
-
-        logger.debug('>>>>>>> c.l = ' + str(len(self.object.channels.all())))
-        for c in self.object.channels.all():
-            logger.debug('>>>>>>> chs = ' + str(c.identifier))
-
         context[self.channels_object_name] = self.object.channels.all()
+        context[self.weekdays_object_name] = self.weekdays
 
         return context

@@ -1,18 +1,27 @@
 """
-Tests for the verification of the channel models access to the database.
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
 """
 
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
-
-from accounts.models import UserProfile
-from configuration.models import AvailableModulations, AvailablePolarizations,\
-    AvailableBitrates, AvailableBandwidths, GroundStationChannel, \
-    GroundStationConfiguration
-from configuration.models_bands import AvailableBands
-
-from django.contrib.auth.models import User
+from configuration.models.channels import GroundStationChannel, \
+    AvailablePolarizations
+from configuration.models.segments import GroundStationConfiguration
+from configuration.tests.utils import testdb_create_user_profile,  \
+    testdb_create_gs
 
 
 class ChannelsTest(TestCase):
@@ -30,70 +39,18 @@ class ChannelsTest(TestCase):
         Populates the initial database with a set of objects required to run
         the following tests.
         """
-        #[12:20:53.968] ({name:"chan-u-2", bandwidths:["12.500", "25.000"],
-        # polarizations:["RHCP"], band:"UHF / U / 435.000000 / 438.000000",
-        # bitrates:[300, 600, 900], modulations:["FM"]})
+        self.__gs_identifier = 'gs-castrelos'
+        self.__ch_identifier = 'chan-cas'
 
-        user = User.objects.create(username='rtubio',
-                                   email='rtubiopa@calpoly.edu',
-                                   password='password',
-                                   is_staff=False,
-                                   is_superuser=False)
-        user.save()
+        self.__test_user_profile =\
+            testdb_create_user_profile()
+        self.__test_ground_station =\
+            testdb_create_gs(user_profile=self.__test_user_profile,
+                             identifier=self.__gs_identifier,
+                             ch_identifier=self.__ch_identifier)
 
-        user_profile = UserProfile.objects\
-            .create(organization='Testing',country='ES',
-                    is_verified='true',is_blocked='false')
-        user_profile.save()
-
-        gs_identifier = 'gs-castrelos'
-        gs = GroundStationConfiguration.objects\
-            .create(user=user_profile,
-                    identifier=gs_identifier,
-                    callsign='KAKA00',
-                    contact_elevation=10.3,
-                    longitude=43.42,
-                    latitude=45.45,
-                    country=None,
-                    IARU_region=1)
-                    #channels=None)
-        gs.save()
-
-        o = AvailableModulations.objects.create(modulation='FM')
-        o.save()
-        o = AvailableModulations.objects.create(modulation='AFSK')
-        o.save()
-        o = AvailableBands.objects\
-            .create(IARU_range='UHF', IARU_band='70 cm', AMSAT_letter='U',
-                    IARU_allocation_minimum_frequency=435.000000,
-                    IARU_allocation_maximum_frequency=438.000000,
-                    uplink=True, downlink=True)
-        band_name = o.get_band_name()
-        o.save()
-        o = AvailableBitrates.objects.create(bitrate=300)
-        o.save()
-        o = AvailableBitrates.objects.create(bitrate=600)
-        o.save()
-        o = AvailableBitrates.objects.create(bitrate=900)
-        o.save()
-        o = AvailableBandwidths.objects.create(bandwidth=12.500)
-        o.save()
-        o = AvailableBandwidths.objects.create(bandwidth=25.000)
-        o.save()
-        o = AvailablePolarizations.objects.create(polarization="Any")
-        o.save()
-
-        o = GroundStationChannel.objects\
-            .create(gs_identifier=gs_identifier,
-                    identifier='chan-u-0',
-                    band_name="UHF / U / 435.000000 / 438.000000",
-                    modulations_list=AvailableModulations.objects.all(),
-                    bitrates_list=AvailableBitrates.objects.all(),
-                    bandwidths_list=AvailableBandwidths.objects.all(),
-                    polarizations_list=AvailablePolarizations.objects.all())
-        o.save()
-        gs.channels.add(o)
-        gs.save()
+        self.__ch_pols_1 =\
+            [AvailablePolarizations.objects.get(polarization='Any')]
 
     def test_channel_update(self):
         """
@@ -101,11 +58,28 @@ class ChannelsTest(TestCase):
         consideration the fact that it must support a partial definition of
         all the properties of a channel object.
         """
-        print '>>> TEST (test_channel_update):'
+        print '>>> TEST (test_channel_update): identifier change'
+        ch = GroundStationChannel.objects.get(identifier=self.__ch_identifier)
+        ch.update(polarizations_list=self.__ch_pols_1)
+        print '>>>> ch.identifier = ' + ch.identifier
+        ch2 = GroundStationConfiguration.objects.get_channel(
+            ground_station_id=self.__gs_identifier,
+            channel_id=self.__ch_identifier)
+        self.assertItemsEqual(
+            [str(p.polarization) for p in ch2.polarization.all()],
+            [str(p.polarization) for p in self.__ch_pols_1],
+            'Wrong Polarizations')
+        print '>>>> polarizations = ' +\
+              str([str(p.polarization) for p in ch2.polarization.all()])
 
-        ch = GroundStationChannel.objects.update(
-            current_identifier='chan-u-0', identifier='chan-u-X')
+    def test_gs_delete(self):
+        """
+        This test validates the functioning of the delete method for removing
+        a ground station from the database, together with all its associated
+        resources like channels.
+        """
+        print '>>> TEST (test_gs_delete): ground station deletion'
 
-        gs, ch2 = GroundStationConfiguration.objects.get_channel(
-            ground_station_id='gs-castrelos', channel_id='chan-u-X')
-        self.assertEquals(ch.identifier, ch2.identifier)
+        gs = GroundStationConfiguration.objects.get(identifier='gs-castrelos')
+        gs.delete()
+        self.assertEquals(GroundStationChannel.objects.all().count(), 0)

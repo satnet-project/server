@@ -44,9 +44,7 @@ class UserProfileManager(models.Manager):
             int
         :returns:
             None
-        
         """
-        
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_verified = True
         user.save()
@@ -61,9 +59,7 @@ class UserProfileManager(models.Manager):
             int
         :returns:
             None
-        
         """
-        
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_blocked = True
         user.save()
@@ -78,13 +74,10 @@ class UserProfileManager(models.Manager):
             int
         :returns:
             None
-        
         """
-        
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_blocked = False
         user.save()
-        
 
     def activate_user(self, user_id):
         """
@@ -96,9 +89,7 @@ class UserProfileManager(models.Manager):
             int
         :returns:
             None
-        
         """
-        
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_active = True
         user.save()
@@ -113,9 +104,7 @@ class UserProfileManager(models.Manager):
             int
         :returns:
             None
-        
         """
-        
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_active = False
         user.save()
@@ -126,9 +115,7 @@ class UserProfile(User):
     This class holds additional data required from each user. It is used in 
     accordance with the process for extending the User model from 
     django.contrib.auth, in accordance with Django's website.
-
     """
-    
     objects = UserProfileManager()
 
     # Name of the organization that the user belongs to.

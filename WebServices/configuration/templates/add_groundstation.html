@@ -23,32 +23,29 @@
 <!-- ############################################################ SCRIPTING -->
 {% block head %}
 <style>
-    div#map_set_gs_location .leaflet-container {
-        width:  600px;
-        height: 400px;
-    }
+    div#map_set_gs_location .leaflet-container {width:600px;height:400px;}
 </style>
 
 {% leaflet_js %}
 {% leaflet_css %}
 
-<link rel="stylesheet" href="{% static 'css/Control.OSMGeocoder.css' %}" />
-<link rel="stylesheet" href="{% static 'css/Leaflet.Coordinates-0.1.4.css' %}" />
+<link rel="stylesheet"
+      href="{% static 'css/Control.OSMGeocoder.css' %}" />
+<link rel="stylesheet"
+      href="{% static 'css/Leaflet.Coordinates-0.1.4.css' %}" />
 
-<script type="text/javascript" src="{% static 'scripts/Control.OSMGeocoder.js' %}">
+<script type="text/javascript"
+        src="{% static 'scripts/Control.OSMGeocoder.js' %}">
     </script>
-<script type="text/javascript" src="{% static 'scripts/Leaflet.Coordinates-0.1.4.min.js' %}">
+<script type="text/javascript"
+        src="{% static 'scripts/Leaflet.Coordinates-0.1.4.min.js' %}">
     </script>
-<script type="text/javascript" src="{% static 'scripts/map-engine.js' %}">
+<script type="text/javascript"
+        src="{% static 'scripts/map-engine.js' %}">
     </script>
 
 <script type="text/javascript">
-
-    function __map_set_gs(map, options)
-    {
-        __init_map(map, options);
-    }
-
+    function __map_set_gs(map, options) { __startup_map(map, options); }
 </script>
 {% endblock %}
 
@@ -67,7 +64,7 @@
     <hr class='spacer'/>
     <h2>STEP 1: Set location </h2>
     <br/>
-    <div id='map_set_gs_location' onKeyPress="var key = event.keyCode || event.which; if (key == 13) return false;">
+    <div id='map_set_gs_location' onKeyPress="supressEnterKey()">
         {% leaflet_map "set_gs_location" callback="window.__map_set_gs" %}
     </div>
     <br/>

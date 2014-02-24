@@ -15,8 +15,9 @@
 """
 
 from django.test import TestCase
-
 from configuration.utils import get_remote_user_location
+from configuration.utils import print_dictionary
+from configuration.tests.utils import testdb_create_jrpc_once_rule
 
 
 class UtilsTest(TestCase):
@@ -44,6 +45,11 @@ class UtilsTest(TestCase):
                                self.out_grul_longitude, places=4,
                                msg="Wrong longitude!")
 
-
-class ModelsTest(TestCase):
-    pass
+    def test_print_dictionary(self):
+        """
+        This function tests the function from the utils module that
+        recursively prints out the contents of a dictionary object that may
+        or may not have additional dictionary objects nested.
+        """
+        jrpc_dict = testdb_create_jrpc_once_rule()
+        print_dictionary(jrpc_dict)

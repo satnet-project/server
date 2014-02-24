@@ -15,35 +15,28 @@
 """
 
 from django.conf.urls import patterns, include, url
-
 import accounts.views
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
 admin.autodiscover()
 
-urlpatterns = patterns('',
-
-    url(r'^$', accounts.views.redirect_home, name='index'),
-
-    # ### for overriding default 'accounts' urls from django-registration
-    url(r'^accounts/', include('accounts.urls')),
-    
-    # ### sc/gs configuration service application
-    url(r'^configuration/', include('configuration.urls')),
-
-    # ### JSON-Rpc API
-    url(r'^jrpc/$', 'rpc4django.views.serve_rpc_request'),
-
-    # Uncomment the admin/doc line below to enable admin documentation:
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    # Uncomment the next line to enable the admin:
-    url(r'^admin/', include(admin.site.urls)),
-    
-    # ### django-registration
-    url(r'^accounts/', include('registration.backends.default.urls')),
-    
-    # ### django-session-security
-    url(r'session_security/', include('session_security.urls')),
-
-)
+urlpatterns =\
+    patterns('',
+             url(r'^$', accounts.views.redirect_home, name='index'),
+             # ### for overriding default 'accounts' urls from
+             # django-registration
+             url(r'^accounts/', include('accounts.urls')),
+             # ### sc/gs configuration service application
+             url(r'^configuration/', include('configuration.urls')),
+             # ### JSON-Rpc API
+             url(r'^jrpc/$', 'rpc4django.views.serve_rpc_request'),
+             # Uncomment the admin/doc line below to enable admin docs:
+             url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+             # Uncomment the next line to enable the admin:
+             url(r'^admin/', include(admin.site.urls)),
+             # ### django-registration
+             url(r'^accounts/', include('registration.backends.default.urls')),
+             # ### django-session-security
+             url(r'session_security/', include('session_security.urls')),
+             )

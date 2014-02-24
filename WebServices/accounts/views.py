@@ -211,7 +211,6 @@ class PendingRegView(ListView):
             None
             
         """
-        
         UserProfile.objects.block_user(user_id)
 
     def delete_user(self, user_id):
@@ -258,7 +257,8 @@ class PendingRegView(ListView):
         'block': block_user,
         'delete': delete_user,
     }
-        
+
+
 class BlockedRegView(PendingRegView):
     """
     This class helps in showing a list of blocked users to the network 
@@ -292,6 +292,7 @@ class BlockedRegView(PendingRegView):
         'unblock': unblock_user,
         'delete': PendingRegView.delete_user,
     }
+
 
 class VerifiedView(PendingRegView):
     """

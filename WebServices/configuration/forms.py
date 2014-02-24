@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 from django.forms import ModelForm, HiddenInput, CharField
 from django.utils.translation import ugettext_lazy as _
 
-from configuration.models import GroundStationConfiguration
+from configuration.models.segments import GroundStationConfiguration
 
 
 class AddGroundStationForm(ModelForm):

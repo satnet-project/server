@@ -36,23 +36,20 @@ class AvailableBandsManager(models.Manager):
         Returns the object whose name band is the one provided. If no band_name
         is provided, it simply returns the result of the overriden get
         method.
+        :rtype : AvailableBands object
         """
-
         if not band_name:
             return super(AvailableBandsManager, self).get(args, kwargs)
-
         s = re.split(AvailableBandsManager.__band_name_separator, band_name)
         if len(s) != AvailableBandsManager.__band_name_splits:
             raise Exception('<band_name> incorrect, should have '
                             + str(AvailableBandsManager.__band_name_splits)
                             + 'parts, but has ' + str(len(s)))
-
         qs = self \
             .filter(IARU_range=s[0]) \
             .filter(AMSAT_letter=s[1]) \
             .filter(IARU_allocation_minimum_frequency=s[2]) \
             .get(IARU_allocation_maximum_frequency=s[3])
-
         if qs is None:
             raise Exception('<band_name> does not exist.')
 
@@ -65,6 +62,9 @@ class AvailableBands(models.Model):
     spacecraft. Ground Stations will define the bands available for their
     channels and the network will match the
     """
+
+    class Meta:
+        app_label = 'configuration'
 
     IARU_range = models.CharField('IARU Range', max_length=4)
     IARU_band = models.CharField('IARU Band', max_length=6)
@@ -101,11 +101,11 @@ class AvailableBands(models.Model):
         """
 
         band_name = str(self.IARU_range)\
-               + AvailableBands.__band_name_separator
+            + AvailableBands.__band_name_separator
         band_name += str(self.AMSAT_letter)\
-               + AvailableBands.__band_name_separator
+            + AvailableBands.__band_name_separator
         band_name += str(self.IARU_allocation_minimum_frequency)\
-               + AvailableBands.__band_name_separator
+            + AvailableBands.__band_name_separator
         band_name += str(self.IARU_allocation_maximum_frequency)
 
         return band_name

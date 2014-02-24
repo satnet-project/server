@@ -20,3 +20,4 @@ h2{font-family:Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;colo
 h3{font-family:Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;color:#0F3E62;}
 form p label{display: inline-block;width:175px;}
 form p input,form p select,form p span{width:200px;}
+.v-line {border-left: thick solid #ff0000;}
