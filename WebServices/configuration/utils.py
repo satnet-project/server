@@ -17,6 +17,8 @@
 import urllib2
 import sys
 import logging
+from dateutil import tz
+from datetime import datetime, timedelta
 logger = logging.getLogger(__name__)
 
 # noinspection PyDeprecation
@@ -79,3 +81,20 @@ def print_dictionary(obj, nested_level=0, output=sys.stdout, spacing='   '):
         print >> output, '%s]' % (nested_level * spacing)
     else:
         print >> output, '%s%s' % (nested_level * spacing, obj)
+
+
+def define_interval(days=7):
+    """
+    Defines a tuple with the starting and ending dates for the interval
+    of time that has to be used for the calculations of the available
+    slots.
+    :param days: Length of the interval for the calculations.
+    :return: A tuple with the initial datetime and the final datetime for
+    this interval.
+    """
+    utc_today = datetime.utcnow().date()
+    begin_interval\
+        = datetime(utc_today.year, utc_today.month, utc_today.day,
+                   tzinfo=tz.tzutc())
+    end_interval = begin_interval + timedelta(days=days)
+    return begin_interval, end_interval

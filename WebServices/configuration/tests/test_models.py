@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from configuration.models.rules import AvailabilityRule
 
 __author__ = 'rtubiopa@calpoly.edu'
 
@@ -21,7 +22,10 @@ from configuration.models.channels import GroundStationChannel, \
     AvailablePolarizations
 from configuration.models.segments import GroundStationConfiguration
 from configuration.tests.utils import testdb_create_user_profile,  \
-    testdb_create_gs
+    testdb_create_gs, testdb_create_jrpc_once_rule, \
+    testdb_create_jrpc_daily_rule
+from configuration.jrpc import rules as jrpc_rules
+from configuration.utils import define_interval
 
 
 class ChannelsTest(TestCase):
@@ -80,6 +84,95 @@ class ChannelsTest(TestCase):
         """
         print '>>> TEST (test_gs_delete): ground station deletion'
 
-        gs = GroundStationConfiguration.objects.get(identifier='gs-castrelos')
+        gs = GroundStationConfiguration.objects.get(
+            identifier=self.__gs_identifier)
         gs.delete()
         self.assertEquals(GroundStationChannel.objects.all().count(), 0)
+
+    def test_get_applicable_rules(self):
+        """
+        This test verifies whether the method that search all the rules
+        contained within a given interval works.
+        """
+        print '>>> TEST (test_get_applicable_rules): get applicable rules'
+
+        rule_1 = testdb_create_jrpc_once_rule()
+        rule_2 = testdb_create_jrpc_daily_rule()
+        rule_3 = testdb_create_jrpc_once_rule(
+            date_text='Thu, 27 Feb 2014 12:14:05 +0000'
+        )
+        rule_4 = testdb_create_jrpc_once_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE)
+        rule_5 = testdb_create_jrpc_daily_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE)
+        rule_6 = testdb_create_jrpc_once_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE,
+            date_text='Thu, 27 Feb 2014 12:14:05 +0000'
+        )
+        rule_1_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_1)
+        rule_2_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_2)
+        rule_3_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_3)
+        rule_4_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_4)
+        rule_5_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_5)
+        rule_6_id = jrpc_rules.add_rule(self.__gs_identifier,
+                                        self.__ch_identifier, rule_6)
+        self.assertEquals(len(AvailabilityRule.objects.all()), 6,
+                          'Incorrect number of rules in the database')
+        add_rules, remove_rules = AvailabilityRule.objects\
+            .get_applicable_rules()
+        print '>>>> add_rules = ' + str(len(add_rules))
+        self.assertEquals(len(add_rules), 2,
+                          'Wrong number of rules returned as applicable, '
+                          'returned = ' + str(len(add_rules)))
+        print '>>>> remove_rules = ' + str(len(remove_rules))
+        self.assertEquals(len(remove_rules), 2,
+                          'Wrong number of rules returned as applicable.')
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_1_id)
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_2_id)
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_3_id)
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_4_id)
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_5_id)
+        jrpc_rules.remove_rule(self.__gs_identifier, self.__ch_identifier,
+                               rule_6_id)
+        self.assertEquals(len(AvailabilityRule.objects.all()), 0,
+                          'Incorrect number of rules in the database')
+
+    def test_get_availability_slots(self):
+        """
+        This test validates the generation of slots by the different rules
+        supported by the configuration service.
+        """
+        rule_1 = testdb_create_jrpc_once_rule()
+        rule_2 = testdb_create_jrpc_daily_rule()
+        rule_3 = testdb_create_jrpc_once_rule(
+            date_text='Thu, 27 Feb 2014 12:14:05 +0000'
+        )
+        rule_4 = testdb_create_jrpc_once_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE)
+        rule_5 = testdb_create_jrpc_daily_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE)
+        rule_6 = testdb_create_jrpc_once_rule(
+            operation=jrpc_rules.RULE_OP_REMOVE,
+            date_text='Thu, 27 Feb 2014 12:14:05 +0000'
+        )
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_1)
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_2)
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_3)
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_4)
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_5)
+        jrpc_rules.add_rule(self.__gs_identifier, self.__ch_identifier, rule_6)
+        self.assertEquals(len(AvailabilityRule.objects.all()), 6,
+                          'Incorrect number of rules in the database')
+        available_slots = AvailabilityRule.objects.get_availability_slots(
+            interval=define_interval(days=14))
+        self.assertEquals(len(available_slots), 6, 'Incorrect number of slots')

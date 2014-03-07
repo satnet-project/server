@@ -76,84 +76,81 @@
 {% for c in chs %}
 
     <div class='list-row'>
-        <div class="list-cell list-cell-link"><a>{{ c.identifier }}</a></div>
-        <div class='list-cell list-cell-info-clear'
-             style="text-align:center;width:200px;" >
-            <p><b>IARU band:</b> {{ c.band.IARU_band }}</p>
-            <p><b>AMSAT letter:</b> {{ c.band.AMSAT_letter }}</p>
-            <p>({{ c.band.IARU_allocation_minimum_frequency }},
+        <div class='list-cell list-cell-link'><a>{{ c.identifier }}</a></div>
+        <div class='list-cell list-cell-info-clear' style='opacity:1.0'>
+            <div style='padding:5px'>
+            <div class='list-cell list-cell-info-clear'
+                    style='text-align:center;width:200px;font-size:100%' >
+                <p><b>IARU band:</b> {{ c.band.IARU_band }}</p>
+                <p><b>AMSAT letter:</b> {{ c.band.AMSAT_letter }}</p>
+                <p>({{ c.band.IARU_allocation_minimum_frequency }},
                         {{ c.band.IARU_allocation_maximum_frequency }})</p>
-        </div>
-        <div class="list-cell list-cell-info-clear" style="width:250px;" >
-         <table>
-            <tr><td><b>Modulation(s):</b></td>
+            </div>
+            <div class='list-cell list-cell-info-clear'
+                 style='width:250px;font-size:100%' >
+                <table>
+                    <tr><td><b>Modulation(s):</b></td>
 {% for e_i in c.modulation.all %}
-                <td>{{ e_i.modulation }}</td>
+                    <td>{{ e_i.modulation }}</td>
 {% endfor %}
-            </tr>
-            <tr><td><b>Bitrate(s):</b></td>
+                    </tr>
+                    <tr><td><b>Bitrate(s):</b></td>
 {% for e_i in c.bitrate.all %}
-                <td>{{ e_i.bitrate }}</td>
+                    <td>{{ e_i.bitrate }}</td>
 {% endfor %}
-            </tr>
-            <tr><td><b>Bandwidth(s):</b></td>
+                    </tr>
+                    <tr><td><b>Bandwidth(s):</b></td>
 {% for e_i in c.bandwidth.all %}
-                <td>{{ e_i.bandwidth }}</td>
+                    <td>{{ e_i.bandwidth }}</td>
 {% endfor %}
-            </tr>
-            <tr><td><b>Polarization(s):</b></td>
+                    </tr>
+                    <tr><td><b>Polarization(s):</b></td>
 {% for e_i in c.polarization.all %}
-                <td>{{ e_i.polarization }}</td>
+                    <td>{{ e_i.polarization }}</td>
 {% endfor %}
-            </tr>
-        </table>
-        </div>
-
-        <div class="list-cell list-cell-info-clear" style="font-size:50%">
-            <div style='padding:5px'>
+                    </tr>
+                </table>
+            </div>
+            <div class="list-cell list-cell-info-clear"
+                 style="font-size:50%"><div style='padding:5px'>
                 <button id="edit-ch-{{ c.identifier }}"
-                    class="edit-ch" style='width:75px'
-                    data-ch-id="{{ c.identifier }}"
-                    data-gs-id="{{ g.identifier }}"
-                    type="button">Edit</button></div>
-            <div style='padding:5px'>
+                        class="edit-ch" style='width:75px'
+                        data-ch-id="{{ c.identifier }}"
+                        data-gs-id="{{ g.identifier }}"
+                        type="button">Edit</button></div>
+                <div style='padding:5px'>
                 <button id="delete-ch-{{ c.identifier }}"
-                    class="delete-ch" style='width:75px'
-                    data-ch-id="{{ c.identifier }}"
-                    data-gs-id="{{ g.identifier }}"
-                    type="button">Delete</button></div>
-        </div>
-
-    </div>
-
-{% endfor %}
-
-<h2>Availability Rules</h2>
-
-{% for c in chs %}
+                        class="delete-ch" style='width:75px'
+                        data-ch-id="{{ c.identifier }}"
+                        data-gs-id="{{ g.identifier }}"
+                        type="button">Delete</button></div>
+            </div></div>
+            <div>
 {% for r_i in c.rules.all %}
-    <div class="list-cell list-cell-info">
-        <p>{{ r_i }}</p>
-    </div>
-    <div class="list-cell list-cell-info" style='padding:5px'>
-        <button id="remove-rule-{{ r_i.pk }}"
-                class="delete-ch" style='width:75px'
-                data-rule-id="{{ r_i.pk }}" type="button">Delete</button></div>
+                <div style='padding:5px'>
+                    <div class="list-cell list-cell-info-clear"
+                         style='padding:5px'>
+                        <button id="remove-rule-{{ r_i.pk }}"
+                                class="delete-rule" style='width:25px'
+                                data-ch-id="{{ c.identifier }}"
+                                data-gs-id="{{ g.identifier }}"
+                                data-rule-id="{{ r_i.pk }}"
+                                type="button"></button></div>
+                    <div class="list-cell list-cell-info"
+                         style="font-size:65%">
+                        <p>{{ r_i }}</p></div>
+                </div>
 {% empty %}
-   <div><p style='text-align: center;'><b><i>
-       (no rules for {{ c.identifier }})</i></b></p></div>
+                <div><p style='text-align: center;'>
+                    <b><i>(no rules for {{ c.identifier }})</i></b></p></div>
 {% endfor %}
+            </div>
+        </div>
+    </div>
+
 {% endfor %}
 
-<h2>Operational Slots</h2>
-{% for c in chs %}
-{% for s_i in c.slots.all %}
-    <div class="list-cell list-cell-info"></div>
-{% empty %}
-    <div><p style='text-align: center;'><b><i>
-       (no slots for {{ c.identifier }})</i></b></p></div>
-{% endfor %}
-{% endfor %}
+    <h2>Channels Schedule</h2>
 
 {% include 'channels_dialog.html' with dialog_id='add_channel' dialog_title='Channel Configuration' %}
 {% include 'groundstation_dialog.html' with dialog_id='gs' dialog_title='Ground Station Configuration' %}

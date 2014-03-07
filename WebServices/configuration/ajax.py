@@ -21,7 +21,7 @@ from django.contrib.auth.decorators import login_required
 
 from jsonview.decorators import json_view
 
-from configuration.models import GroundStationChannel
+from configuration.models.channels import GroundStationChannel
 
 @login_required
 @json_view

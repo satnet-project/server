@@ -31,11 +31,26 @@ releases.
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
-logger = logging.getLogger(__name__)
 from django.db import models
+from datetime import datetime
+logger = logging.getLogger(__name__)
 
 
-class OperationalSlots(models.Model):
+class TemporarySlot(object):
+    """
+    Class for making temporary calculations with the slots.
+    """
+    # noinspection PyArgumentList
+    begin = datetime.now()
+    # noinspection PyArgumentList
+    end = datetime.now()
+
+    def __init__(self, begin, end):
+        self.begin = begin
+        self.end = end
+
+
+class OperationalSlot(models.Model):
     """
     This model describes the start and ending of a given slot.
     """

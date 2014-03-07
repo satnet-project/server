@@ -303,4 +303,18 @@ function ConfigurationService_JRPC() {
                             [gs_id, ch_id, rule_cfg], __cb, ''
     );};
 
+    /**
+     * Removes the given rule from the channel of the given ground station.
+     *
+     * @param __cb Callback function to be called back with the result provided
+     *              by a correct execution of the remote procedure.
+     * @param gs_id Ground Station that owns this channel.
+     * @param ch_id The identifier for the new channel.
+     * @param rule_id Identifier of the rule to be removed.
+     */
+    this.removeAvailabilityRule = function(__cb, gs_id, ch_id, rule_id) {
+        this._makeJRPCCall('configuration.gs.channel.removeRule',
+                            [gs_id, ch_id, rule_id], __cb, ''
+    );};
+
 }

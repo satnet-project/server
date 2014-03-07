@@ -42,6 +42,15 @@ function adapt_rules_dialog() {
     $('.input_w_time').timepicker
         ({ step: 15, forceRoundTime: true, timeFormat: __TIME_FORMAT })
         .prop('disabled', true);
+    $('.delete-rule').puibutton({ icon: 'ui-icon-close', text: 'Delete Rule',
+        click: function() {
+            var gs_id = $(this).attr('data-gs-id');
+            var ch_id = $(this).attr('data-ch-id');
+            var rule_id = $(this).attr('data-rule-id');
+            console.log('Delete availability rule, gs_id = ' + gs_id
+                            + ', ch_id = ' + ch_id + ', rule_id = ' + rule_id);
+            __jrpc.removeAvailabilityRule
+                    (__cb_remove_rule, gs_id, ch_id, rule_id);}});
 }
 
 function rules_period_change(select) {
@@ -258,4 +267,10 @@ function __cb_gs_channels(result) {
 function __cb_create_rule(result) {
     __log_cb('__cb_create_rule', result);
     hide_rules_dialog();
+    window.location.reload(true);
+}
+
+function __cb_remove_rule(result) {
+    __log_cb('__cb_remove_rule', result);
+    window.location.reload(true);
 }

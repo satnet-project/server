@@ -16,6 +16,7 @@
 
 __author__ = 'rtubiopa@calpoly.edu'
 
+from dateutil import parser
 from django.contrib.auth.models import User
 from django.test.client import RequestFactory
 from accounts.models import UserProfile
@@ -156,16 +157,46 @@ def testdb_create_gs(user_profile=None, identifier='gs-castrelos',
     return gs
 
 
-def testdb_create_jrpc_once_rule():
-
-    rule = {
-        rules.__RULE_OP: rules.__RULE_OP_ADD,
-        rules.__RULE_PERIODICITY: rules.__RULE_PERIODICITY_ONCE,
-        rules.__RULE_DATES: {
-            rules.__RULE_ONCE_DATE: '',
-            rules.__RULE_ONCE_S_TIME: '11:00',
-            rules.__RULE_ONCE_E_TIME: '12:00',
+def testdb_create_jrpc_once_rule(operation=rules.RULE_OP_ADD,
+                                 date_text='Sun, 16 Feb 2014 12:14:05 +0000'):
+    return {
+        rules.RULE_OP: operation,
+        rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_ONCE,
+        rules.RULE_DATES: {
+            rules.RULE_ONCE_DATE: parser.parse(date_text).isoformat(),
+            rules.RULE_ONCE_S_TIME: '11:00',
+            rules.RULE_ONCE_E_TIME: '12:00',
         },
     }
 
-    return rule
+
+def testdb_create_jrpc_daily_rule(
+        operation=rules.RULE_OP_ADD,
+        date_text_i='Sun, 16 Feb 2014 12:14:05 +0000',
+        date_text_f='Thu, 16 Dec 2016 12:14:05 +0000'):
+    return {
+        rules.RULE_OP: operation,
+        rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_DAILY,
+        rules.RULE_DATES: {
+            rules.RULE_DAILY_I_DATE: parser.parse(date_text_i).isoformat(),
+            rules.RULE_DAILY_F_DATE: parser.parse(date_text_f).isoformat(),
+            rules.RULE_S_TIME: '11:00',
+            rules.RULE_E_TIME: '12:00',
+        },
+    }
+
+comment = """
+def testdb_create_jrpc_weekly_rule(
+        date_text_i='Thu, 16 Feb 2014 12:14:05 +0000',
+        date_text_f='Thu, 16 Dec 2016 12:14:05 +0000'):
+    return {
+        rules.__RULE_OP: rules.__RULE_OP_ADD,
+        rules.__RULE_PERIODICITY: rules.__RULE_PERIODICITY_WEEKLY,
+        rules.__RULE_DATES: {
+            rules.__RULE_WEEKLY_I_DATE: parser.parse(date_text_i).isoformat(),
+            rules.__RULE_WEEKLY_F_DATE: parser.parse(date_text_f).isoformat(),
+            rules.__RULE_S_TIME: '11:00',
+            rules.__RULE_E_TIME: '12:00',
+        },
+    }
+"""

@@ -20,8 +20,9 @@ from django.test import TestCase
 from configuration.jrpc import segments, rules
 from configuration.models import rules as rules_models
 from configuration.models.rules import AvailabilityRule
-from configuration.tests.utils import testdb_create_user_profile, \
-    testdb_create_request, testdb_create_gs, testdb_create_jrpc_once_rule
+from configuration.tests.utils import testdb_create_user_profile,\
+    testdb_create_request, testdb_create_gs, testdb_create_jrpc_once_rule,\
+    testdb_create_jrpc_daily_rule
 from configuration.utils import print_dictionary
 
 
@@ -85,7 +86,7 @@ class SegmentsTest(TestCase):
         cfg = segments.deserialize_gs_configuration(self.__test_gs_identifier)
         print_dictionary(cfg)
 
-    def test_add_rule(self):
+    def test_add_once_rule(self):
         """
         This test validates that the system correctly adds a new rule to the
         set of rules for a given channel of a ground station.
@@ -99,6 +100,22 @@ class SegmentsTest(TestCase):
         self.assertEquals(rule.operation, rules_models.ADD_SLOTS,
                           'Wrong operation')
         self.assertEquals(rule.periodicity, rules_models.ONCE_PERIODICITY,
+                          'Wrong periodicity')
+
+    def test_add_daily_rule(self):
+        """
+        This test validates that the system correctly adds a new rule to the
+        set of rules for a given channel of a ground station.
+        """
+        print '>>> TEST (test_gs_channel_add_rule): ground station ' \
+              'configuration'
+        rule_cfg = testdb_create_jrpc_daily_rule()
+        rule_id = rules.add_rule(self.__test_gs_identifier, 'chan-test',
+                                 rule_cfg)
+        rule = AvailabilityRule.objects.get(id=rule_id)
+        self.assertEquals(rule.operation, rules_models.ADD_SLOTS,
+                          'Wrong operation')
+        self.assertEquals(rule.periodicity, rules_models.DAILY_PERIODICITY,
                           'Wrong periodicity')
 
     def test_remove_rule(self):

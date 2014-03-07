@@ -35,7 +35,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 from configuration.models.bands import AvailableBands
 from configuration.models.rules import AvailabilityRule
-from configuration.models.slots import OperationalSlots
+from configuration.models.slots import OperationalSlot
 
 
 class AvailableModulations(models.Model):
@@ -204,7 +204,7 @@ class GroundStationChannel(models.Model):
     # Rules that define the time availability of a given Ground Station.
     rules = models.ManyToManyField(AvailabilityRule)
     # Slots available in accordance with the given availability rules.
-    slots = models.ManyToManyField(OperationalSlots)
+    slots = models.ManyToManyField(OperationalSlot)
 
     def get_string_definition(self):
         """

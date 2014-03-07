@@ -15,8 +15,8 @@
 """
 
 from django.test import TestCase
-from configuration.utils import get_remote_user_location
-from configuration.utils import print_dictionary
+from configuration.utils import get_remote_user_location, print_dictionary,\
+    define_interval
 from configuration.tests.utils import testdb_create_jrpc_once_rule
 
 
@@ -32,10 +32,8 @@ class UtilsTest(TestCase):
 
         This test checks whether the "testing" function is capable of getting
         the location information for a given user by using the WebService from
-        GeoPlugin's website.        
-        
+        GeoPlugin's website.
         """
-        
         latitude, longitude = get_remote_user_location(ip=self.inp_grul)
         
         self.assertAlmostEqual(float(latitude),
@@ -53,3 +51,13 @@ class UtilsTest(TestCase):
         """
         jrpc_dict = testdb_create_jrpc_once_rule()
         print_dictionary(jrpc_dict)
+
+    def test_define_interval(self):
+        """
+        This function tests the method for the definition of the interval of
+        time that spans from today at 00:00am for D days, until today+D days
+        00:00am.
+        """
+        begin_interval, end_interval = define_interval(days=7)
+        print str(begin_interval)
+        print str(end_interval)
