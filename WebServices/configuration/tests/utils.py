@@ -158,14 +158,14 @@ def testdb_create_gs(user_profile=None, identifier='gs-castrelos',
 
 
 def testdb_create_jrpc_once_rule(operation=rules.RULE_OP_ADD,
-                                 date_text='Sun, 16 Feb 2014 12:14:05 +0000'):
+                                 date_text='Sun, 10 May 2014 12:14:05 +0000'):
     return {
         rules.RULE_OP: operation,
         rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_ONCE,
         rules.RULE_DATES: {
             rules.RULE_ONCE_DATE: parser.parse(date_text).isoformat(),
-            rules.RULE_ONCE_S_TIME: '11:00',
-            rules.RULE_ONCE_E_TIME: '12:00',
+            rules.RULE_ONCE_S_TIME: '11:15',
+            rules.RULE_ONCE_E_TIME: '11:45',
         },
     }
 

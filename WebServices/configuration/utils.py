@@ -17,8 +17,8 @@
 import urllib2
 import sys
 import logging
-from dateutil import tz
 from datetime import datetime, timedelta
+from pytz import utc as pytz_utc
 logger = logging.getLogger(__name__)
 
 # noinspection PyDeprecation
@@ -48,6 +48,16 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     longitude = r['geoplugin_longitude']
 
     return latitude, longitude
+
+
+def print_list(l, list_name='List'):
+    """
+    Function that prints the elements of a given list, one per line.
+    :param l: The list to be printed out.
+    """
+    print '>>>>>>> PRINTING ' + list_name + ', len = ' + str(len(l))
+    for l_i in l:
+        print l_i
 
 
 def print_dictionary(obj, nested_level=0, output=sys.stdout, spacing='   '):
@@ -94,7 +104,147 @@ def define_interval(days=7):
     """
     utc_today = datetime.utcnow().date()
     begin_interval\
-        = datetime(utc_today.year, utc_today.month, utc_today.day,
-                   tzinfo=tz.tzutc())
+        = pytz_utc.localize(datetime(utc_today.year, utc_today.month,
+                                     utc_today.day))
     end_interval = begin_interval + timedelta(days=days)
     return begin_interval, end_interval
+
+
+def normalize_slots(slots):
+    """
+    This function "normalizes" a list of slots by merging all consecutive or
+    overlapping slots into non-overlapping ones. IMPORTANT: the input slots
+    array has to be sorted by initial datetime of the slot, this is, for a
+    given slot at position 'i', it is always met the following condition:
+    slots[i]['starting_date'] <= slots[i+1]['starting_date'].
+    :param slots: The list of slots to be normalized.
+    :return: The normalized list of slots.
+    """
+
+    if slots is None:
+        return []
+
+    n_slots = len(slots)
+    if n_slots < 2:
+        return n_slots
+
+    n_list = []
+    s = slots[0]
+    t = slots[1]
+    i = 0
+
+    while i < n_slots:
+
+#        print '### i = ' + str(i)\
+#              + ', s = (' + s[0].isoformat() + ', ' + s[1].isoformat() + ')'\
+#              + ', t = (' + t[0].isoformat() + ', ' + t[1].isoformat() + ')'
+#        print '### n_list = ' + str(n_list)
+
+        # CASE A: s < t, push(s) and next...
+        if s[1] < t[0]:
+
+#            print '>>> A'
+            if s not in n_list:
+                n_list.append(s)
+            s = t
+
+        # CASE B: s overlaps just a fraction of t.
+        if (s[1] > t[0]) and (s[1] < t[1]):
+#            print '>>> B, s[0] = ' + s[0].isoformat()\
+#                  + ', t[1]' + t[1].isoformat()
+            s = (s[0], t[1])
+            if s not in n_list:
+                n_list.append(s)
+
+        # prepare next iteration
+        if i > (n_slots - 2):
+            if s not in n_list:
+                n_list.append(s)
+            break
+        t = slots[i+1]
+        i += 1
+
+    return n_list
+
+
+def merge_slots(p_slots, m_slots):
+    """
+    This function  merges the slots that define the availability of the
+    ground station with the slots that define the non-availability of a
+    ground station. The result are the actual availability slots.
+    IMPORTANT: input lists of slots must be order by starting datetime.
+    :param p_slots: The list of (+) slots.
+    :param m_slots: The list of (-) slots.
+    :return: Resulting list with the actual available slots.
+    """
+
+    if p_slots is None or m_slots is None:
+        return []
+    if len(p_slots) < 1:
+        return []
+
+    # Algorithm initialization
+    slots = []
+    p_next = True  # ### indicates whether the 'p' vector has to be updated
+    p_n = len(p_slots)
+    p_i = 0
+    m_i = 0
+    m_n = len(m_slots)
+    if m_n > 0:
+        m = m_slots[0]
+        m_i = 1
+    else:
+        # All slots will be generated from today on, so this will be the
+        # "oldest" slot independently of the rest...
+        m = (datetime.today().replace(microsecond=0) - timedelta(days=1),
+             datetime.today().replace(microsecond=0) - timedelta(days=1))
+
+    # The algorithm is executed for all the add slots, since negative slots
+    # do not generate actual slots at all, they only limit the range of the
+    # add slots.
+    while True:
+
+        if p_next:
+            if p_i == p_n:
+                break
+            p = p_slots[p_i]
+            p_i += 1
+        else:
+            p_next = True
+
+        if p[1] <= m[0]:
+            # ### CASE A:
+            slots.append(p)
+            continue
+
+        if p[0] >= m[1]:
+            # ### CASE F:
+            if m_i < m_n:
+                m = m_slots[m_i]
+                m_i += 1
+            else:
+                slots.append(p)
+            continue
+
+        if p[0] < m[0]:
+
+            if (p[1] > m[0]) and (p[1] <= m[1]):
+                # ### CASE B:
+                slots.append((p[0], m[0]))
+            if p[1] > m[1]:
+                # ### CASE C:
+                slots.append((p[0], m[0]))
+                p = (m[1], p[1])
+                p_next = False
+
+        else:
+
+            # ### CASE D:
+            if p[1] > m[1]:
+                p = (m[1], p[1])
+                p_next = False
+                if m_i < m_n:
+                    m = m_slots[m_i]
+                    m_i += 1
+
+    return slots

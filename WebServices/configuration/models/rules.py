@@ -17,9 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 from datetime import datetime, timedelta
-from dateutil import parser, tz
+import pytz
+from dateutil import parser
 from configuration.utils import define_interval
-from configuration.models.slots import TemporarySlot
 
 # Definition of the availability operation through rules over existing
 # operational slots.
@@ -47,6 +47,7 @@ class AvailabilityRuleManager(models.Manager):
         """
         This method creates a new rule with the given parameters.
         :param operation: The type of operation for the rule to be added.
+
         :param periodicity: The periodicity for the rule.
         :param dates: The dates for the definition of the time intervales in
         accordance with the periodicity of the rule (ISO8601).
@@ -80,7 +81,8 @@ class AvailabilityRuleManager(models.Manager):
                     raise Exception('Cannot find rule with id = '
                                     + str(rule_id))
 
-    def get_applicable_rules(self, interval=define_interval()):
+    @staticmethod
+    def get_applicable_rule_values(interval=define_interval()):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
@@ -92,24 +94,188 @@ class AvailabilityRuleManager(models.Manager):
         read from the database directly, the first list contains the rules
         that add slots and the second one contains those that remove slots.
         """
-        return self.filter(operation=ADD_SLOTS)\
-            .filter(starting_date__lt=interval[1])\
-            .filter(ending_date__gt=interval[0]),\
-            self.filter(operation=REMOVE_SLOTS)\
-            .filter(starting_date__lt=interval[1])\
-            .filter(ending_date__gt=interval[0])
+        add_slots = []
+        remove_slots = []
 
-    def get_availability_slots(self, interval=define_interval()):
+        for c in AvailabilityRule.__subclasses__():
+            r_list = c.objects\
+                .filter(availabilityrule_ptr__operation=ADD_SLOTS)\
+                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
+                .filter(availabilityrule_ptr__ending_date__gt=interval[0])\
+                .values()
+            if r_list:
+                add_slots += r_list
+            r_list = c.objects\
+                .filter(availabilityrule_ptr__operation=REMOVE_SLOTS)\
+                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
+                .filter(availabilityrule_ptr__ending_date__gt=interval[0])\
+                .values()
+            if r_list:
+                remove_slots += r_list
+
+        return add_slots, remove_slots
+
+    @staticmethod
+    def merge_slots(raw_add_slots, raw_remove_slots,
+                    purge_small_slots=True,
+                    small_slot_duration=timedelta(minutes=1)):
+        """
+        This method merges the slots of type ADD with the slots of type REMOVE,
+        creating the list of availability slots for a given Ground Station. In
+        case one REMOVE-type slot partially "colides" with an ADD-type slot,
+        the result will be one or more availability slots with the remaining
+        time after computing the effects of the colision.
+
+        :param raw_add_slots: List with the slots of type ADD.
+        :param raw_remove_slots: List with the slots of type REMOVE.
+        :param purge_small_slots=true: Flag that provokes this algorithm to
+                purge any of the resulting slots whose duration is inferior to
+                the value of the parameter 'small_slot_duration'.
+        :param small_slot_duration=timedelta(minutes=1): All slots whose
+                duration is below the value of this parameter will be purged
+                if the flag 'purge_small_slots' is activated.
+        :return: List with the resulting availability slots for a given Ground
+                Station.
+        """
+        final_slots = []
+        a = raw_add_slots[0]
+        r = raw_remove_slots[0]
+        #for a in raw_add_slots:
+        #    if
+        return final_slots
+
+    @staticmethod
+    def get_availability_slots(interval):
         """
         This method generates the availability slots for this set of rules.
+        :param interval:
         """
-        add_rules, remove_rules = self.get_applicable_rules(interval=interval)
-        raw_slots = []
+        add_rules, remove_rules = AvailabilityRuleManager\
+            .get_applicable_rule_values(interval=interval)
+
+        raw_add_slots = []
+        raw_remove_slots = []
+
         for r in add_rules:
-            raw_slots.append(r.generate_available_slots(interval=interval))
+            raw_add_slots = AvailabilityRuleManager\
+                .generate_available_slots(r, interval=interval)
         for r in remove_rules:
-            pass
+            raw_remove_slots += AvailabilityRuleManager\
+                .generate_available_slots(r, interval=interval)
+
+        raw_add_slots = sorted(raw_add_slots, key=lambda s: s[1])
+        raw_remove_slots = sorted(raw_remove_slots, key=lambda s: s[0])
+
+        raw_slots = AvailabilityRuleManager\
+            .merge_slots(raw_add_slots, raw_remove_slots)
+
         return raw_slots
+
+    @staticmethod
+    def is_applicable(rule_values, interval=define_interval(days=14)):
+        """
+        This method checks whether this rule can generate slots for the given
+        interval.
+        :param interval: The interval for the check.
+        :returns: In case the interval is applicable, it returns a tuple with
+        the initial and final datetime objects.
+        """
+
+        i_date = pytz.utc\
+            .localize(datetime
+                      .combine(rule_values['starting_date'],
+                               rule_values['starting_time']))
+        f_date = pytz.utc\
+            .localize(datetime
+                      .combine(rule_values['ending_date'],
+                               rule_values['ending_time']))
+
+        print 'interval = ' + str(interval)
+        print 'i_date = ' + str(i_date)
+        print 'f_date = ' + str(f_date)
+
+        if i_date > interval[1]:
+            raise Exception('Not applicable to this interval [FUTURE].')
+        if f_date < interval[0]:
+            raise Exception('Not applicable to this interval [PAST].')
+
+        return i_date, f_date
+
+    @staticmethod
+    def generate_available_slots_once(date, rule_values, interval):
+        """
+        This method generates the available slots for a only-once rule that
+        starts and ends in the given dates, during the specified interval.
+        """
+        r = AvailabilityRuleOnce.objects\
+            .get(availabilityrule_ptr=rule_values['availabilityrule_ptr_id'])
+
+        return [(pytz.utc.localize(datetime
+                 .combine(rule_values['starting_date'], r.starting_time)),
+                pytz.utc.localize(datetime
+                 .combine(rule_values['ending_date'], r.ending_time)))]
+
+    @staticmethod
+    def generate_available_slots_daily(i_date, f_date, rule_values, interval):
+        """
+        This method generates the available slots for a daily rule that
+        starts and ends in the given dates, during the specified interval.
+        """
+        r = AvailabilityRuleDaily.objects\
+            .get(availabilityrule_ptr=rule_values['availabilityrule_ptr_id'])
+        days = (interval[1] - interval[0]).days
+        slots = []
+        i = 0
+
+        while i < days:
+            i_day = interval[0] + timedelta(days=i)
+            i += 1
+            ii_date = pytz.utc.localize(datetime
+                                        .combine(i_day, r.starting_time))
+            ff_date = pytz.utc.localize(datetime
+                                        .combine(i_day, r.ending_time))
+            slots.append((ii_date, ff_date))
+
+        return slots
+
+    @staticmethod
+    def generate_available_slots_weekly(i_date, f_date, rule_values, interval):
+        """
+        This method generates the available slots for a weekly rule that
+        starts and ends in the given dates, during the specified interval.
+        TODO :: implement this weekly method for convenience.
+        """
+        pass
+
+    @staticmethod
+    def generate_available_slots(rule_values, interval):
+        """
+        This method generates the available slots defined by this rule.
+        :param interval: The interval for the slots generation.
+        :return: Initial slots array, initial datetime and final datetime.
+        """
+        print 'a'
+        i_date, f_date = AvailabilityRuleManager\
+            .is_applicable(rule_values, interval)
+        print 'rule_values = ' + str(rule_values)
+
+        op = rule_values['operation']
+        periodicity = rule_values['periodicity']
+
+        if periodicity == ONCE_PERIODICITY:
+            return AvailabilityRuleManager\
+                .generate_available_slots_once(i_date, rule_values, interval)
+        if periodicity == DAILY_PERIODICITY:
+            return AvailabilityRuleManager\
+                .generate_available_slots_daily(i_date, f_date, rule_values,
+                                                interval)
+        if periodicity == WEEKLY_PERIODICITY:
+            return AvailabilityRuleManager\
+                .generate_available_slots_weekly(i_date, f_date, rule_values,
+                                                 interval)
+
+        raise Exception('Rule periodicity = <' + periodicity + '> is not '
+                                                               'supported')
 
 
 class AvailabilityRule(models.Model):
@@ -168,35 +334,6 @@ class AvailabilityRule(models.Model):
         WEEKLY_PERIODICITY: '(W)'
     }
 
-    def generate_available_slots(self, interval):
-        """
-        This method generates the available slots defined by this rule.
-        :param interval: The interval for the slots generation.
-        :return: Initial slots array, initial datetime and final datetime.
-        """
-        i_date, f_date = self.is_applicable(interval)
-        return [], i_date, f_date
-
-    def is_applicable(self, interval):
-        """
-        This method checks whether this rule can generate slots for the given
-        interval.
-        :param interval: The interval for the check.
-        :returns: In case the interval is applicable, it returns a tuple with
-        the initial and final datetime objects.
-        """
-        i_date = datetime(year=self.starting_date.year,
-                          month=self.starting_date.month,
-                          day=self.starting_date.day,
-                          tzinfo=tz.tzutc())
-        f_date = datetime(year=self.ending_date.year,
-                          month=self.ending_date.month,
-                          day=self.ending_date.day,
-                          tzinfo=tz.tzutc())
-        if i_date >= interval[1]:
-            raise Exception('Rule is not applicable to this interval.')
-        return i_date, f_date
-
     def __unicode__(self):
         """
         Unicode string representation of the contents of this object.
@@ -245,34 +382,6 @@ class AvailabilityRuleOnce(AvailabilityRule):
     ending_time = models.TimeField('Time at which this availability period '
                                    'ends.')
 
-    def generate_available_slots(self, interval):
-        """
-        This method checks whether this rule can generate slots for the given
-        interval.
-        :param interval: The interval for the check.
-        :returns: In case the interval is applicable, it returns a tuple with
-        the initial and final datetime objects.
-        """
-        slots, i_date, f_date = super(AvailabilityRuleOnce, self)\
-            .generate_available_slots(interval=interval)
-
-        i_date.hour = self.starting_time.hour
-        i_date.minute = self.starting_time.minute
-        f_date.hour = self.ending_time.hour
-        f_date.minute = self.ending_time.minute
-
-        if i_date <= interval[0]:
-            slot_i_date = interval[0]
-        else:
-            slot_i_date = i_date
-        if f_date > interval[1]:
-            slot_f_date = interval[1]
-        else:
-            slot_f_date = f_date
-
-        slots.append(TemporarySlot(begin=slot_i_date, end=slot_f_date))
-        return slots
-
     def __unicode__(self):
         """
         Unicode string representation of the contents of this object.
@@ -315,31 +424,6 @@ class AvailabilityRuleDaily(AvailabilityRule):
                                      'period')
     ending_time = models.TimeField('Ending time for a daily availability '
                                    'period')
-
-    def generate_available_slots(self, interval):
-        """
-        This method checks whether this rule can generate slots for the given
-        interval.
-        :param interval: The interval for the check.
-        :returns: In case the interval is applicable, it returns a tuple with
-        the initial and final datetime objects.
-        """
-        slots, i_date, f_date = super(AvailabilityRuleDaily, self)\
-            .generate_availabile_slots(interval=interval)
-        day = interval[0]
-        day_timedelta = timedelta(1)
-        while day <= interval[1]:
-            slot_i_date = datetime(
-                year=day.year, month=day.month, day=day.day,
-                hour=self.starting_time.hour, minute=self.starting_time.minute
-            )
-            slot_f_date = datetime(
-                year=day.year, month=day.month, day=day.day,
-                hour=self.ending_time.hour, minute=self.ending_time.minute
-            )
-            slots.append(TemporarySlot(begin=slot_i_date, end=slot_f_date))
-            day = day + day_timedelta
-        return slots
 
     def __unicode__(self):
         """
@@ -408,18 +492,6 @@ class AvailabilityRuleWeekly(AvailabilityRule):
     saturday_ending_time = models.TimeField('Ending time on this Saturday.')
     sunday_starting_time = models.TimeField('Starting time on Sunday.')
     sunday_ending_time = models.TimeField('Ending time on this Sunday.')
-
-    def generate_available_slots(self, interval):
-        """
-        This method checks whether this rule can generate slots for the given
-        interval.
-        :param interval: The interval for the check.
-        :returns: In case the interval is applicable, it returns a tuple with
-        the initial and final datetime objects.
-        """
-        slots, i_date, f_date = super(AvailabilityRuleWeekly, self)\
-            .generate_available_slots(interval=interval)
-        return slots
 
     def __unicode__(self):
         """
