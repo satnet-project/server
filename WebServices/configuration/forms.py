@@ -28,12 +28,11 @@ class AddGroundStationForm(ModelForm):
     contact_elevation = CharField(label=_("Elevation (deg)")) 
     
     class Meta:
-    
         model = GroundStationConfiguration
-
-        fields = ('user', 'identifier', 'callsign', 'contact_elevation',
-                  'latitude', 'longitude',
-                  'country', 'IARU_region')
+        fields = (
+            'user', 'identifier', 'callsign', 'contact_elevation',
+            'latitude', 'longitude', 'country', 'IARU_region'
+        )
 
         widgets = {
             'user': HiddenInput(),

@@ -87,8 +87,7 @@ STATICFILES_DIRS = (
 # various locations.
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
-    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder'
 )
 
 # Make this unique, and don't share it with anybody.
@@ -98,7 +97,6 @@ SECRET_KEY = 'y!b^rbe7rjefa828rqf7*k6-v7lmtene#pl9e3n7anhc-$ag#p'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -128,8 +126,10 @@ WSGI_APPLICATION = 'WebServices.wsgi.application'
 
 # ### templates directories loading, relative to project's structure
 main_templates = os.path.join(os.path.dirname(__file__), 'templates')
-accounts_templates = os.path.join(os.path.dirname(__file__), '..', 'accounts', 'templates')
-configuration_templates = os.path.join(os.path.dirname(__file__), '..', 'configuration', 'templates')
+accounts_templates = os.path.join(os.path.dirname(__file__), '..', 'accounts',
+                                  'templates')
+configuration_templates = os.path.join(os.path.dirname(__file__), '..',
+                                       'configuration', 'templates')
 
 TEMPLATE_DIRS = (
     main_templates,
@@ -138,6 +138,7 @@ TEMPLATE_DIRS = (
 )
 
 INSTALLED_APPS = (
+
     # ### default applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -159,10 +160,14 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
     # ### rpc4django (must appear before RPC implementors)
     'rpc4django',
-    
+
+    # ### django extensions
+    'django_extensions',
+
     # ### developed applications
     'accounts',
     'configuration',
+    'booking',
 
 )
 
@@ -181,7 +186,7 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console':{
+        'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
@@ -243,11 +248,10 @@ SESSION_SECURITY_EXPIRE_AFTER = 540
 
 # ### e-mail settings
 EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
-EMAIL_HOST='mail.calpoly.edu'
-EMAIL_PORT=25
+EMAIL_HOST = 'mail.calpoly.edu'
+EMAIL_PORT = 25
 
 # ### TODO Real non-personal account
-EMAIL_HOST_USER='rtubiopa@calpoly.edu'
-# ### EMAIL_HOST_PASSWORD=''
-EMAIL_USE_TLS='True'
-
+EMAIL_HOST_USER = 'rtubiopa@calpoly.edu'
+# ### EMAIL_HOST_PASSWORD = ''
+EMAIL_USE_TLS = 'True'

@@ -3,18 +3,58 @@
   <component name="BookmarkManager">
     <bookmark url="file://$PROJECT_DIR$/configuration/templates/channels_dialog.html" line="38" />
     <bookmark url="file://$PROJECT_DIR$/configuration/templates/rules_dialog.html" line="125" />
-    <bookmark url="file://$PROJECT_DIR$/configuration/jrpc/rules.py" line="28" />
-    <bookmark url="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py" line="96" />
-    <bookmark url="file://$PROJECT_DIR$/configuration/models/rules.py" line="84" />
-    <bookmark url="file://$PROJECT_DIR$/configuration/tests/test_utils.py" line="71" />
+    <bookmark url="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py" line="123" />
+    <bookmark url="file://$PROJECT_DIR$/configuration/models/rules.py" line="119" />
+    <bookmark url="file://$PROJECT_DIR$/common/testing.py" line="163" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be383d21-eb06-4b8b-90dc-e9c72cca20cb" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/jrpc/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/models/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/tests/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/models/availability.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/models/compatibility.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/misc.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/jrpc/serialization.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/signals.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/jrpc/slots.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/models/slots.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/tests/test_merge_slots.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/tests/test_misc.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/tests/test_models_availability.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/tests/test_normalize_slots.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/testing.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/configuration/models/slots.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/configuration/tests/test_utils.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/configuration/tests/utils.py" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/utils.py" afterPath="$PROJECT_DIR$/common/slots.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/TODO" afterPath="$PROJECT_DIR$/WebServices/TODO" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/WebServices.iml" afterPath="$PROJECT_DIR$/.idea/WebServices.iml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/__init__.py" afterPath="$PROJECT_DIR$/accounts/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/__init__.py" afterPath="$PROJECT_DIR$/configuration/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/__init__.py" afterPath="$PROJECT_DIR$/configuration/tests/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/ajax.py" afterPath="$PROJECT_DIR$/accounts/ajax.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/bands.py" afterPath="$PROJECT_DIR$/configuration/models/bands.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/channels.py" afterPath="$PROJECT_DIR$/configuration/jrpc/channels.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/channels.py" afterPath="$PROJECT_DIR$/configuration/models/channels.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/forms.py" afterPath="$PROJECT_DIR$/accounts/forms.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/forms.py" afterPath="$PROJECT_DIR$/configuration/forms.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/helpers.py" afterPath="$PROJECT_DIR$/accounts/helpers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/models.py" afterPath="$PROJECT_DIR$/accounts/models.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/periodictasks.py" afterPath="$PROJECT_DIR$/accounts/periodictasks.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/rules.py" afterPath="$PROJECT_DIR$/configuration/jrpc/rules.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/rules.py" afterPath="$PROJECT_DIR$/configuration/models/rules.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/segments.py" afterPath="$PROJECT_DIR$/configuration/jrpc/segments.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/segments.py" afterPath="$PROJECT_DIR$/configuration/models/segments.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../scripts/server-setup.sh" afterPath="$PROJECT_DIR$/../scripts/server-setup.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/settings.py" afterPath="$PROJECT_DIR$/WebServices/settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_jrpc.py" afterPath="$PROJECT_DIR$/configuration/tests/test_jrpc.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_models.py" afterPath="$PROJECT_DIR$/configuration/tests/test_models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_utils.py" afterPath="$PROJECT_DIR$/configuration/tests/test_utils.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/utils.py" afterPath="$PROJECT_DIR$/configuration/utils.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/utils.py" afterPath="$PROJECT_DIR$/configuration/tests/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/utils.py" afterPath="$PROJECT_DIR$/accounts/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/views.py" afterPath="$PROJECT_DIR$/accounts/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/views.py" afterPath="$PROJECT_DIR$/configuration/views.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="WebServices.iws" />
@@ -28,7 +68,7 @@
   <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
   <component name="CoverageDataManager">
     <SUITE FILE_PATH="coverage/WebServices$Test__configuration_tests_test_models_ChannelsTest_test_get_availability_slots.coverage" NAME="Test: configuration.tests.test_models.ChannelsTest.test_get_availability_slots Coverage Results" MODIFIED="1394733740099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
-    <SUITE FILE_PATH="coverage/WebServices$Test__configuration_tests_test_models.coverage" NAME="Test: configuration.tests.test_models Coverage Results" MODIFIED="1398784856983" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
+    <SUITE FILE_PATH="coverage/WebServices$Test__configuration_tests_test_models.coverage" NAME="Test: configuration.tests.test_models Coverage Results" MODIFIED="1403044206203" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
     <SUITE FILE_PATH="coverage/WebServices$Test__configuration_tests_test_models_ChannelsTest_test_get_applicable_rules.coverage" NAME="Test: configuration.tests.test_models.ChannelsTest.test_get_applicable_rules Coverage Results" MODIFIED="1394734189040" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="" />
   </component>
   <component name="CreatePatchCommitExecutor">
@@ -42,32 +82,67 @@
     <favorites_list name="WebServices" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.49768162">
+    <splitter split-orientation="horizontal" split-proportion="0.49402392">
       <split-first>
         <leaf>
-          <file leaf-file-name="rules.py" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/configuration/models/rules.py">
+          <file leaf-file-name="availability.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/configuration/models/availability.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="48" column="56" selection-start="1615" selection-end="1615" vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="7590">
-                  <folding />
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1920">
+                  <caret line="9" column="52" selection-start-line="9" selection-start-column="52" selection-end-line="9" selection-end-column="52" />
+                  <folding>
+                    <element signature="e#706#734#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="utils.py" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/configuration/utils.py">
+          <file leaf-file-name="compatibility.py" pinned="false" current="true" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/configuration/models/compatibility.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="165" column="0" selection-start="5476" selection-end="5476" vertical-scroll-proportion="0.015690377" vertical-offset="2400" max-vertical-offset="3780">
-                  <folding />
+                <state vertical-scroll-proportion="0.33441558" vertical-offset="96" max-vertical-offset="1020">
+                  <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#706#734#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="channels.py" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/configuration/models/channels.py">
+          <file leaf-file-name="test_models.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="288" column="0" selection-start="10234" selection-end="10234" vertical-scroll-proportion="0.0" vertical-offset="3691" max-vertical-offset="4410">
-                  <folding />
+                <state vertical-scroll-proportion="0.0" vertical-offset="3231" max-vertical-offset="4155">
+                  <caret line="271" column="9" selection-start-line="271" selection-start-column="9" selection-end-line="271" selection-end-column="9" />
+                  <folding>
+                    <element signature="e#645#675#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="segments.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="82" max-vertical-offset="6735">
+                  <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+                  <folding>
+                    <element signature="e#706#759#0" expanded="true" />
+                  </folding>
+                </state>
+              </provider>
+            </entry>
+          </file>
+          <file leaf-file-name="test_misc.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/common/tests/test_misc.py">
+              <provider selected="true" editor-type-id="text-editor">
+                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="870">
+                  <caret line="34" column="32" selection-start-line="34" selection-start-column="32" selection-end-line="34" selection-end-column="32" />
+                  <folding>
+                    <element signature="e#645#685#0" expanded="true" />
+                    <marker date="1403073793290" expanded="true" signature="822:1993" placeholder="..." />
+                    <marker date="1403073793290" expanded="true" signature="1251:1993" placeholder="..." />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -76,22 +151,22 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="test_models.py" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
+          <file leaf-file-name="test_models_availability.py" pinned="false" current="false" current-in-tab="false">
+            <entry file="file://$PROJECT_DIR$/configuration/tests/test_models_availability.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="170" column="0" selection-start="8010" selection-end="8010" vertical-scroll-proportion="0.0" vertical-offset="1504" max-vertical-offset="2640">
+                <state vertical-scroll-proportion="-157.5" vertical-offset="0" max-vertical-offset="3750">
+                  <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
                   <folding />
                 </state>
               </provider>
             </entry>
           </file>
-          <file leaf-file-name="test_utils.py" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/configuration/tests/test_utils.py">
+          <file leaf-file-name="misc.py" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/common/misc.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state line="421" column="61" selection-start="18252" selection-end="18252" vertical-scroll-proportion="0.82740587" vertical-offset="5524" max-vertical-offset="6540">
-                  <folding>
-                    <element signature="e#609#649#0" expanded="true" />
-                  </folding>
+                <state vertical-scroll-proportion="0.42977825" vertical-offset="1003" max-vertical-offset="2850">
+                  <caret line="94" column="5" selection-start-line="94" selection-start-column="5" selection-end-line="94" selection-end-column="5" />
+                  <folding />
                 </state>
               </provider>
             </entry>
@@ -116,46 +191,65 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
+        <option value="$PROJECT_DIR$/tools/tests/test_merge_slots.py" />
+        <option value="$PROJECT_DIR$/tools/slots.py" />
+        <option value="$PROJECT_DIR$/tools/tests/test_normalize_slots.py" />
+        <option value="$PROJECT_DIR$/tools/tools.py" />
+        <option value="$PROJECT_DIR$/booking/jrpc/slots.py" />
+        <option value="$PROJECT_DIR$/configuration/__init__.py" />
+        <option value="$PROJECT_DIR$/booking/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/models/compatible.py" />
+        <option value="$PROJECT_DIR$/booking/models/slots.py" />
+        <option value="$PROJECT_DIR$/configuration/receivers.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/models.py" />
+        <option value="$PROJECT_DIR$/WebServices/settings.py" />
+        <option value="$PROJECT_DIR$/configuration/jrpc/rules.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/jrpc.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/jrpc_rules.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/jrpc_channels.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/tools.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/signals.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/models_availability.py" />
+        <option value="$PROJECT_DIR$/common/tests/test_normalize_slots.py" />
+        <option value="$PROJECT_DIR$/common/tests/test_merge_slots.py" />
+        <option value="$PROJECT_DIR$/common/slots.py" />
+        <option value="$PROJECT_DIR$/communications/__init__.py" />
+        <option value="$PROJECT_DIR$/communications/tests/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/test_jrpc.py" />
+        <option value="$PROJECT_DIR$/configuration/models/rules.py" />
+        <option value="$PROJECT_DIR$/configuration/signals.py" />
+        <option value="$PROJECT_DIR$/configuration/models/availability.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/test_models_availability.py" />
         <option value="$PROJECT_DIR$/configuration/models/bands.py" />
         <option value="$PROJECT_DIR$/configuration/jrpc/channels.py" />
-        <option value="$PROJECT_DIR$/configuration/static/scripts/configure-channels.js" />
-        <option value="$PROJECT_DIR$/configuration/templates/channels_dialog.html" />
-        <option value="$PROJECT_DIR$/WebServices/static/css/dialog.css" />
-        <option value="$PROJECT_DIR$/configuration/templates/add_groundstation.html" />
-        <option value="$PROJECT_DIR$/configuration/templates/groundstation_dialog.html" />
-        <option value="$PROJECT_DIR$/configuration/static/scripts/configure-groundstation.js" />
-        <option value="$PROJECT_DIR$/configuration/__init__.py" />
-        <option value="$PROJECT_DIR$/configuration/templates/rules.html" />
-        <option value="$PROJECT_DIR$/configuration/models/segments.py" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/segments.py" />
-        <option value="$PROJECT_DIR$/configuration/static/css/dialog.css" />
-        <option value="$PROJECT_DIR$/configuration/static/scripts/map-engine.js" />
-        <option value="$PROJECT_DIR$/configuration/views.py" />
-        <option value="$PROJECT_DIR$/configuration/templates/rules_dialog.html" />
-        <option value="$PROJECT_DIR$/WebServices/static/scripts/common.js" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/slots.py" />
-        <option value="$PROJECT_DIR$/../__scripts/server-setup.sh" />
-        <option value="$PROJECT_DIR$/accounts/models.py" />
-        <option value="$PROJECT_DIR$/configuration/tests/test_jrpc.py" />
-        <option value="$PROJECT_DIR$/configuration/static/scripts/jrpc-interface.js" />
-        <option value="$PROJECT_DIR$/configuration/templates/configure_groundstation.html" />
-        <option value="$PROJECT_DIR$/configuration/ajax.py" />
-        <option value="$PROJECT_DIR$/configuration/models/slots.py" />
-        <option value="$PROJECT_DIR$/configuration/models/channels.py" />
-        <option value="$PROJECT_DIR$/configuration/static/scripts/configure-rules.js" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/rules.py" />
         <option value="$PROJECT_DIR$/configuration/tests/test_models.py" />
-        <option value="$PROJECT_DIR$/configuration/tests/utils.py" />
-        <option value="$PROJECT_DIR$/configuration/models/rules.py" />
-        <option value="$PROJECT_DIR$/configuration/tests/test_utils.py" />
-        <option value="$PROJECT_DIR$/configuration/utils.py" />
+        <option value="$PROJECT_DIR$/accounts/__init__.py" />
+        <option value="$PROJECT_DIR$/accounts/ajax.py" />
+        <option value="$PROJECT_DIR$/accounts/forms.py" />
+        <option value="$PROJECT_DIR$/accounts/helpers.py" />
+        <option value="$PROJECT_DIR$/accounts/models.py" />
+        <option value="$PROJECT_DIR$/accounts/periodictasks.py" />
+        <option value="$PROJECT_DIR$/accounts/utils.py" />
+        <option value="$PROJECT_DIR$/accounts/views.py" />
+        <option value="$PROJECT_DIR$/WebServices/TODO" />
+        <option value="$PROJECT_DIR$/configuration/models/compatibility.py" />
+        <option value="$PROJECT_DIR$/common/testing.py" />
+        <option value="$PROJECT_DIR$/configuration/models/channels.py" />
+        <option value="$PROJECT_DIR$/configuration/jrpc/segments.py" />
+        <option value="$PROJECT_DIR$/common/misc.py" />
+        <option value="$PROJECT_DIR$/configuration/views.py" />
+        <option value="$PROJECT_DIR$/configuration/forms.py" />
+        <option value="$PROJECT_DIR$/common/tests/test_misc.py" />
+        <option value="$PROJECT_DIR$/configuration/models/segments.py" />
+        <option value="$PROJECT_DIR$/configuration/jrpc/serialization.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="1969" />
-    <option name="width" value="1317" />
-    <option name="height" value="1076" />
+    <option name="x" value="-1" />
+    <option name="y" value="27" />
+    <option name="width" value="1922" />
+    <option name="height" value="1054" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -190,7 +284,7 @@
     <option name="STATE" value="0" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1" splitterProportion="0.5">
+    <navigator currentView="ProjectPane" proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -235,6 +329,38 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WebServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WebServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="common" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WebServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="WebServices" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="common" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="tests" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
@@ -245,7 +371,7 @@
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="recentsLimit" value="5" />
     <property name="options.lastSelected" value="usage.statistics" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/accounts/models.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/common" />
     <property name="restartRequiresConfirmation" value="true" />
     <property name="FullScreen" value="false" />
     <property name="DefaultHtmlFileTemplate" value="Html5" />
@@ -253,6 +379,7 @@
     <property name="options.searchVisible" value="true" />
     <property name="dynamic.classpath" value="false" />
     <property name="SearchEverywhereHistory" value="" />
+    <property name="full.screen.before.presentation.mode" value="false" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -266,11 +393,11 @@
       <recent name="$PROJECT_DIR$/WebServices/templates/components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/common" />
+      <recent name="$PROJECT_DIR$/utils" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/configuration/static/css" />
       <recent name="$PROJECT_DIR$/configuration/templates" />
-      <recent name="$PROJECT_DIR$/WebServices/static/css" />
-      <recent name="$PROJECT_DIR$/WebServices/static/images" />
-      <recent name="$PROJECT_DIR$/WebServices/static/scripts" />
     </key>
   </component>
   <component name="RunManager" selected="Django tests.Test: configuration.tests.test_models">
@@ -424,7 +551,7 @@
       <option name="PARAMETERS" value="" />
       <method />
     </configuration>
-    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug" singleton="true">
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
       <method />
     </configuration>
     <configuration default="true" type="tests" factoryName="Unittests">
@@ -557,22 +684,8 @@
     </recent_temporary>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
-  <component name="SvnConfiguration" maxAnnotateRevisions="500" myUseAcceleration="nothing" myAutoUpdateAfterCommit="false" cleanupOnStartRun="false" SSL_PROTOCOLS="all">
-    <option name="USER" value="" />
-    <option name="PASSWORD" value="" />
-    <option name="mySSHConnectionTimeout" value="30000" />
-    <option name="mySSHReadTimeout" value="30000" />
-    <option name="LAST_MERGED_REVISION" />
-    <option name="MERGE_DRY_RUN" value="false" />
-    <option name="MERGE_DIFF_USE_ANCESTRY" value="true" />
-    <option name="UPDATE_LOCK_ON_DEMAND" value="false" />
-    <option name="IGNORE_SPACES_IN_MERGE" value="false" />
-    <option name="CHECK_NESTED_FOR_QUICK_MERGE" value="false" />
-    <option name="IGNORE_SPACES_IN_ANNOTATE" value="true" />
-    <option name="SHOW_MERGE_SOURCES_IN_ANNOTATE" value="true" />
-    <option name="FORCE_UPDATE" value="false" />
-    <option name="IGNORE_EXTERNALS" value="false" />
-    <myIsUseDefaultProxy>false</myIsUseDefaultProxy>
+  <component name="SvnConfiguration" myUseAcceleration="nothing">
+    <configuration />
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -603,31 +716,54 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="1969" y="0" width="1317" height="1076" extended-state="0" />
+    <frame x="-1" y="27" width="1922" height="1054" extended-state="7" />
     <editor active="true" />
     <layout>
       <window_info id="Changes" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298585" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25018615" sideWeight="0.4646195" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23696682" sideWeight="0.4481038" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5229068" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3583643" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.27434945" sideWeight="0.57250756" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.20695102" sideWeight="0.5518962" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25099075" sideWeight="0.5007825" order="8" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25018615" sideWeight="0.42323098" order="3" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.26061058" sideWeight="0.42598188" order="6" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2498096" sideWeight="0.42323098" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25986078" sideWeight="0.42598188" order="6" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.52639407" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
     </layout>
+    <layout-to-restore>
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Changes" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298585" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="4" side_tool="true" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5234201" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3583643" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25099075" sideWeight="0.5007825" order="8" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.2498096" sideWeight="0.42323098" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.23696682" sideWeight="0.4481038" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.25645077" sideWeight="0.5518962" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25986078" sideWeight="0.42598188" order="6" side_tool="true" content_ui="tabs" />
+    </layout-to-restore>
   </component>
   <component name="Vcs.Log.UiProperties">
     <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
       <collection />
     </option>
   </component>
@@ -641,285 +777,427 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="7" />
+      <option name="time" value="16" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/configuration/models/rules.py">
+    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/jrpc-interface.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="27" column="39" selection-start="959" selection-end="959" vertical-scroll-proportion="0.0" vertical-offset="160" max-vertical-offset="900" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="0" selection-start="7270" selection-end="7270" vertical-scroll-proportion="0.0" vertical-offset="1634" max-vertical-offset="2640" />
+        <state vertical-scroll-proportion="0.34313726" vertical-offset="1755" max-vertical-offset="4680">
+          <caret line="145" column="22" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/WebServices/static/scripts/common.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="149" column="0" selection-start="4965" selection-end="4965" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2325" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3600">
+          <caret line="76" column="1" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/configure_groundstation.html">
+    <entry file="file://$PROJECT_DIR$/configuration/models/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="15" column="33" selection-start="652" selection-end="652" vertical-scroll-proportion="0.0" vertical-offset="225" max-vertical-offset="2250" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="345">
+          <caret line="17" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/jrpc-interface.js">
+    <entry file="file://$PROJECT_DIR$/configuration/ajax.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="210" column="0" selection-start="8567" selection-end="8567" vertical-scroll-proportion="0.0" vertical-offset="3150" max-vertical-offset="3645" />
+        <state vertical-scroll-proportion="0.3858521" vertical-offset="0" max-vertical-offset="933">
+          <caret line="24" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/configure-channels.js">
+    <entry file="file://$PROJECT_DIR$/common/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="237" column="67" selection-start="8416" selection-end="8416" vertical-scroll-proportion="0.0" vertical-offset="3555" max-vertical-offset="3885" />
+        <state vertical-scroll-proportion="0.24767801" vertical-offset="0" max-vertical-offset="969">
+          <caret line="16" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/channels.py">
+    <entry file="file://$PROJECT_DIR$/common/tests/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="229" column="14" selection-start="8871" selection-end="8871" vertical-scroll-proportion="0.0" vertical-offset="2787" max-vertical-offset="3735" />
+        <state vertical-scroll-proportion="0.24767801" vertical-offset="0" max-vertical-offset="969">
+          <caret line="16" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/forms.py">
+    <entry file="file://$PROJECT_DIR$/WebServices/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="-0.2750865" vertical-offset="159" max-vertical-offset="750" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="598">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/list_groundstations.html">
+    <entry file="file://$PROJECT_DIR$/configuration/tests/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="0" selection-start="831" selection-end="831" vertical-scroll-proportion="-1.3333334" vertical-offset="358" max-vertical-offset="1260" />
+        <state vertical-scroll-proportion="0.44347826" vertical-offset="0" max-vertical-offset="575">
+          <caret line="17" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/bands.py">
+    <entry file="file://$PROJECT_DIR$/booking/jrpc/slots.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="36" column="26" selection-start="1094" selection-end="1094" vertical-scroll-proportion="-0.065005414" vertical-offset="585" max-vertical-offset="1785" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="69" max-vertical-offset="945">
+          <caret line="25" column="36" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/__init__.py">
+    <entry file="file://$PROJECT_DIR$/booking/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="17" column="0" selection-start="631" selection-end="631" vertical-scroll-proportion="0.41666666" vertical-offset="0" max-vertical-offset="612" />
+        <state vertical-scroll-proportion="0.43103448" vertical-offset="0" max-vertical-offset="696">
+          <caret line="20" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/fields/related.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.47746244" vertical-offset="20416" max-vertical-offset="22995">
+          <caret line="1358" column="8" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebServices/wsgi.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="576">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/datetime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="5.378965" vertical-offset="33" max-vertical-offset="9495">
+          <caret line="217" column="8" selection-start-line="217" selection-start-column="8" selection-end-line="217" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/manage.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="599">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebServices/settings.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35924006" vertical-offset="632" max-vertical-offset="3945">
+          <caret line="56" column="0" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.53255427" vertical-offset="10376" max-vertical-offset="21075">
+          <caret line="738" column="32" selection-start-line="738" selection-start-column="32" selection-end-line="738" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/pytz/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.6740236" vertical-offset="4613" max-vertical-offset="22740">
+          <caret line="124" column="4" selection-start-line="124" selection-start-column="4" selection-end-line="124" selection-end-column="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/models/slots.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.85026735" vertical-offset="0" max-vertical-offset="935">
+          <caret line="54" column="0" selection-start-line="54" selection-start-column="0" selection-end-line="54" selection-end-column="0" />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configuration/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="23" column="0" selection-start="852" selection-end="852" vertical-scroll-proportion="0.5759599" vertical-offset="0" max-vertical-offset="599" />
+        <state vertical-scroll-proportion="0.34846884" vertical-offset="0" max-vertical-offset="947">
+          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding>
+            <element signature="e#734#773#0" expanded="false" />
+          </folding>
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/rules.html">
+    <entry file="file://$PROJECT_DIR$/configuration/models/bands.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="612" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/add_groundstation.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="6" column="48" selection-start="217" selection-end="217" vertical-scroll-proportion="0.15306123" vertical-offset="0" max-vertical-offset="1440" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/groundstation_dialog.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="37" selection-start="2402" selection-end="2402" vertical-scroll-proportion="0.0" vertical-offset="957" max-vertical-offset="1860" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/channels_dialog.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="58" column="26" selection-start="1800" selection-end="1800" vertical-scroll-proportion="0.0" vertical-offset="749" max-vertical-offset="1845">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2895">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="jar://$APPLICATION_HOME_DIR$/lib/pycharm.jar!/resources/html5-schema/web-forms.rnc">
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/channels.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="19" column="18" selection-start="563" selection-end="563" vertical-scroll-proportion="0.33286119" vertical-offset="50" max-vertical-offset="8940" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3330">
+          <caret line="26" column="27" selection-start-line="26" selection-start-column="27" selection-end-line="26" selection-end-column="27" />
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/css/dialog.css">
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/rules.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="25" column="23" selection-start="917" selection-end="917" vertical-scroll-proportion="0.5387931" vertical-offset="0" max-vertical-offset="696" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1260">
+          <caret line="29" column="30" selection-start-line="29" selection-start-column="30" selection-end-line="29" selection-end-column="30" />
+          <folding>
+            <element signature="e#644#676#0" expanded="false" />
+          </folding>
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/map-engine.js">
+    <entry file="file://$PROJECT_DIR$/configuration/models/rules.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="2070" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="1" max-vertical-offset="7845">
+          <caret line="24" column="0" selection-start-line="24" selection-start-column="0" selection-end-line="24" selection-end-column="0" />
+          <folding>
+            <element signature="e#645#685#0" expanded="true" />
+          </folding>
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/configure-groundstation.js">
+    <entry file="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="64" column="42" selection-start="2471" selection-end="2471" vertical-scroll-proportion="0.5991379" vertical-offset="333" max-vertical-offset="1800" />
+        <state vertical-scroll-proportion="0.0" vertical-offset="2" max-vertical-offset="3420">
+          <caret line="191" column="59" selection-start-line="191" selection-start-column="59" selection-end-line="191" selection-end-column="59" />
+          <folding>
+            <element signature="e#645#681#0" expanded="true" />
+          </folding>
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/rules_dialog.html">
+    <entry file="file://$PROJECT_DIR$/configuration/urls.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="100" column="34" selection-start="4059" selection-end="4059" vertical-scroll-proportion="-12.583333" vertical-offset="1198" max-vertical-offset="2205">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="947">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/test_merge_slots.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.32519424" vertical-offset="22" max-vertical-offset="5595">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
+          <folding>
+            <element signature="e#645#675#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/test_normalize_slots.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.6599789" vertical-offset="1" max-vertical-offset="2760">
+          <caret line="168" column="38" selection-start-line="168" selection-start-column="38" selection-end-line="168" selection-end-column="38" />
+          <folding>
+            <element signature="e#645#675#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/slots.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.36325237" vertical-offset="1" max-vertical-offset="2610">
+          <caret line="23" column="7" selection-start-line="23" selection-start-column="7" selection-end-line="23" selection-end-column="7" />
+          <folding>
+            <element signature="e#645#685#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/ajax.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30095038" vertical-offset="0" max-vertical-offset="1755">
+          <caret line="19" column="0" selection-start-line="19" selection-start-column="0" selection-end-line="19" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2851109" vertical-offset="0" max-vertical-offset="947">
+          <caret line="18" column="35" selection-start-line="18" selection-start-column="35" selection-end-line="18" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2851109" vertical-offset="0" max-vertical-offset="2085">
+          <caret line="18" column="35" selection-start-line="18" selection-start-column="35" selection-end-line="18" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/helpers.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2851109" vertical-offset="0" max-vertical-offset="1080">
+          <caret line="18" column="35" selection-start-line="18" selection-start-column="35" selection-end-line="18" selection-end-column="35" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/accounts/models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="131" column="0" selection-start="3894" selection-end="3894" vertical-scroll-proportion="0.9489796" vertical-offset="1407" max-vertical-offset="2055" />
+        <state vertical-scroll-proportion="0.33262935" vertical-offset="0" max-vertical-offset="2115">
+          <caret line="21" column="36" selection-start-line="21" selection-start-column="36" selection-end-line="21" selection-end-column="36" />
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/query.py">
+    <entry file="file://$PROJECT_DIR$/accounts/periodictasks.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="34" column="13" selection-start="1032" selection-end="1032" vertical-scroll-proportion="0.3321739" vertical-offset="79" max-vertical-offset="25815" />
+        <state vertical-scroll-proportion="0.2534319" vertical-offset="0" max-vertical-offset="947">
+          <caret line="16" column="50" selection-start-line="16" selection-start-column="50" selection-end-line="16" selection-end-column="50" />
+          <folding />
+        </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/manager.py">
+    <entry file="file://$PROJECT_DIR$/accounts/utils.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="150" column="38" selection-start="5678" selection-end="5678" vertical-scroll-proportion="0.35826087" vertical-offset="1954" max-vertical-offset="4245" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/segments.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="153" column="0" selection-start="5196" selection-end="5196" vertical-scroll-proportion="4.0088496" vertical-offset="0" max-vertical-offset="2355" />
+        <state vertical-scroll-proportion="0.31678987" vertical-offset="0" max-vertical-offset="1080">
+          <caret line="20" column="14" selection-start-line="20" selection-start-column="14" selection-end-line="20" selection-end-column="14" />
+          <folding />
+        </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/accounts/views.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="83" column="0" selection-start="2974" selection-end="2974" vertical-scroll-proportion="0.0" vertical-offset="1065" max-vertical-offset="6210" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/channels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="124" column="50" selection-start="4954" selection-end="4954" vertical-scroll-proportion="0.0" vertical-offset="1410" max-vertical-offset="3735" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="92" column="0" selection-start="3382" selection-end="3382" vertical-scroll-proportion="0.0" vertical-offset="858" max-vertical-offset="1470" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebServices/static/css/lists.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="26" column="0" selection-start="1101" selection-end="1101" vertical-scroll-proportion="0.63829786" vertical-offset="0" max-vertical-offset="611" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/configure-channels.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="228" column="36" selection-start="8012" selection-end="8012" vertical-scroll-proportion="0.0" vertical-offset="2792" max-vertical-offset="3675" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/templates/configure_groundstation.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="153" column="0" selection-start="6203" selection-end="6203" vertical-scroll-proportion="-17.666666" vertical-offset="1871" max-vertical-offset="2475" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="588" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/ajax.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="24" column="0" selection-start="827" selection-end="827" vertical-scroll-proportion="0.62608695" vertical-offset="0" max-vertical-offset="600" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="121" column="11" selection-start="5092" selection-end="5092" vertical-scroll-proportion="0.46859902" vertical-offset="1419" max-vertical-offset="2040">
+        <state vertical-scroll-proportion="0.36430833" vertical-offset="2610" max-vertical-offset="6180">
+          <caret line="197" column="3" selection-start-line="197" selection-start-column="3" selection-end-line="197" selection-end-column="3" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
+    <entry file="file://$PROJECT_DIR$/WebServices/TODO">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="95" column="0" selection-start="3863" selection-end="3863" vertical-scroll-proportion="0.9656301" vertical-offset="835" max-vertical-offset="2595" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="704" column="59" selection-start="27061" selection-end="27061" vertical-scroll-proportion="0.65217394" vertical-offset="9795" max-vertical-offset="21075" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/slots.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="38" column="19" selection-start="1359" selection-end="1359" vertical-scroll-proportion="0.0" vertical-offset="347" max-vertical-offset="1020" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/configure-rules.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="269" column="33" selection-start="9960" selection-end="9960" vertical-scroll-proportion="0.705401" vertical-offset="3394" max-vertical-offset="4020" />
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python2.7/inspect.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="12" column="9" selection-start="552" selection-end="557" vertical-scroll-proportion="0.30612245" vertical-offset="0" max-vertical-offset="15810" />
-      </provider>
-    </entry>
-    <entry file="dbDummy://dbtable:/34792006/b7df9a41-ac88-4555-b9dc-19181f506b20/satnet_db..configuration_slotsavailable">
-      <provider editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="90" />
-      </provider>
-      <provider selected="true" editor-type-id="com.intellij.persistence.database.editor.DatabaseTableFileEditorProvider">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/datetime.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="450" column="6" selection-start="15387" selection-end="15387" vertical-scroll-proportion="-1.8535872" vertical-offset="8016" max-vertical-offset="9495" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebServices/static/scripts/toolbar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1080" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/static/scripts/jrpc-interface.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="145" column="22" selection-start="6450" selection-end="6450" vertical-scroll-proportion="0.34313726" vertical-offset="1755" max-vertical-offset="4680" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebServices/static/scripts/common.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="76" column="1" selection-start="2682" selection-end="2682" vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3600" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/channels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="288" column="0" selection-start="10234" selection-end="10234" vertical-scroll-proportion="0.0" vertical-offset="3631" max-vertical-offset="4410">
+        <state vertical-scroll-proportion="0.2851109" vertical-offset="0" max-vertical-offset="947">
+          <caret line="18" column="68" selection-start-line="18" selection-start-column="68" selection-end-line="18" selection-end-column="68" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/utils.py">
+    <entry file="file://$PROJECT_DIR$/configuration/signals.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="168" column="10" selection-start="6374" selection-end="6374" vertical-scroll-proportion="3.2787402" vertical-offset="303" max-vertical-offset="2985" />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/rules.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="281" column="31" selection-start="10320" selection-end="10320" vertical-scroll-proportion="0.48031497" vertical-offset="3850" max-vertical-offset="4485">
+        <state vertical-scroll-proportion="0.4276663" vertical-offset="0" max-vertical-offset="947">
+          <caret line="31" column="7" selection-start-line="31" selection-start-column="7" selection-end-line="31" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/rules.py">
+    <entry file="file://$PROJECT_DIR$/common/testing.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="48" column="56" selection-start="1615" selection-end="1615" vertical-scroll-proportion="0.0" vertical-offset="32" max-vertical-offset="7590">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2287" max-vertical-offset="4500">
+          <caret line="194" column="50" selection-start-line="194" selection-start-column="50" selection-end-line="194" selection-end-column="50" />
+          <folding>
+            <element signature="e#645#698#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/test_models_availability.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-157.5" vertical-offset="0" max-vertical-offset="3750">
+          <caret line="21" column="0" selection-start-line="21" selection-start-column="0" selection-end-line="21" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="170" column="0" selection-start="8010" selection-end="8010" vertical-scroll-proportion="0.0" vertical-offset="1684" max-vertical-offset="2640">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="421" column="61" selection-start="18252" selection-end="18252" vertical-scroll-proportion="0.82740587" vertical-offset="5524" max-vertical-offset="6540">
+        <state vertical-scroll-proportion="0.0" vertical-offset="3231" max-vertical-offset="4155">
+          <caret line="271" column="9" selection-start-line="271" selection-start-column="9" selection-end-line="271" selection-end-column="9" />
           <folding>
-            <element signature="e#609#649#0" expanded="true" />
+            <element signature="e#645#675#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/utils.py">
+    <entry file="file://$PROJECT_DIR$/common/misc.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="165" column="0" selection-start="5476" selection-end="5476" vertical-scroll-proportion="0.015690377" vertical-offset="2400" max-vertical-offset="3780">
+        <state vertical-scroll-proportion="0.42977825" vertical-offset="1003" max-vertical-offset="2850">
+          <caret line="94" column="5" selection-start-line="94" selection-start-column="5" selection-end-line="94" selection-end-column="5" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.7158713" vertical-offset="0" max-vertical-offset="901">
+          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/views.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.23917995" vertical-offset="0" max-vertical-offset="1545">
+          <caret line="14" column="3" selection-start-line="14" selection-start-column="3" selection-end-line="14" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/test_misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="870">
+          <caret line="34" column="32" selection-start-line="34" selection-start-column="32" selection-end-line="34" selection-end-column="32" />
+          <folding>
+            <element signature="e#645#685#0" expanded="true" />
+            <marker date="1403073793290" expanded="true" signature="822:1993" placeholder="..." />
+            <marker date="1403073793290" expanded="true" signature="1251:1993" placeholder="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/availability.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="1920">
+          <caret line="9" column="52" selection-start-line="9" selection-start-column="52" selection-end-line="9" selection-end-column="52" />
+          <folding>
+            <element signature="e#706#734#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/channels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3360">
+          <caret line="36" column="0" selection-start-line="36" selection-start-column="0" selection-end-line="36" selection-end-column="0" />
+          <folding>
+            <element signature="e#1230#1279#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="82" max-vertical-offset="6735">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+          <folding>
+            <element signature="e#706#759#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/serialization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.501139" vertical-offset="1" max-vertical-offset="6495">
+          <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/segments.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.52922076" vertical-offset="411" max-vertical-offset="1830">
+          <caret line="64" column="0" selection-start-line="64" selection-start-column="0" selection-end-line="64" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/compatibility.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33441558" vertical-offset="96" max-vertical-offset="1020">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="e#706#734#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

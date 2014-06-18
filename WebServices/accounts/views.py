@@ -12,7 +12,11 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+:Author:
+    Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
 """
+__author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -159,13 +163,13 @@ class PendingRegView(ListView):
             None
             
         """
-    
         for user_id, op in operations.iteritems():
 
             logger.debug(__name__ + ', op = ' + op + ', on user = ' + user_id)
 
             try:
-                self.operations[str(op)](self, user_id)
+                op_function = self.operations[str(op)]
+                op_function(self, user_id)
             except KeyError:
                 logger.exception(__name__ + ', op = ' + op + ' not found.')
 
@@ -173,14 +177,8 @@ class PendingRegView(ListView):
         """
         Activates a given user in the database and triggers the automatic
         sending of the account verification email.
-        
-        :parameter user_id:
-            Identifier of the user
-        :type user_id:
-            int
-        :returns:
-            None
-            
+        :parameter user_id: Identifier of the user
+        :type user_id: int
         """
     
         if Site._meta.installed:

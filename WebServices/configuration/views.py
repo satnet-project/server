@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 import logging
 logger = logging.getLogger(__name__)
 
@@ -26,7 +25,7 @@ from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
 from configuration.models.segments import GroundStationConfiguration
-from configuration.utils import get_remote_user_location
+from common.misc import get_remote_user_location
 
 
 class AddGroundStationView(CreateView):
@@ -48,11 +47,14 @@ class AddGroundStationView(CreateView):
         
         # 2) initialize form and context for requests
         user = User.objects.get(username=request.user.username)
-        form = self.form_class(initial={'user': user.id,
-                                        'latitude': latitude,
-                                        'longitude': longitude,
-                                        'country': 'US',
-                                        'IARU_region': '1'})
+        form = self.form_class(
+            initial={
+                'user': user.id, 'latitude': latitude,
+                'longitude': longitude,
+                'country': 'US',
+                'IARU_region': '1'
+            }
+        )
         context = RequestContext(request, {'form': form})
         
         return TemplateResponse(request, self.template_name, context)
@@ -77,14 +79,17 @@ class ConfigureGroundStationView(DetailView):
     gs_object_name = 'g'
     channels_object_name = 'chs'
     weekdays_object_name = 'weekdays'
-    weekdays = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday',
-                'saturday', 'sunday']
+    weekdays = [
+        'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday',
+        'sunday'
+    ]
 
     def get_context_data(self, **kwargs):
 
-        context = super(ConfigureGroundStationView, self).\
-            get_context_data(**kwargs)
-        
+        context = super(ConfigureGroundStationView, self).get_context_data(
+            **kwargs
+        )
+
         context[self.gs_object_name] = self.object
         context[self.channels_object_name] = self.object.channels.all()
         context[self.weekdays_object_name] = self.weekdays

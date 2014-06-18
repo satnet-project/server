@@ -12,7 +12,11 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+:Author:
+    Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
 """
+__author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 logger = logging.getLogger(__name__)
@@ -29,4 +33,3 @@ def accounts_delete_expired_users():
 
     logger.debug("DeleteExpiredUsers, daily task execution!")
     RegistrationProfile.objects.delete_expired_users()
-

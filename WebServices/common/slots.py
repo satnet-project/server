@@ -13,84 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+__author__ = 'rtubiopa@calpoly.edu'
 
-import urllib2
-import sys
-import logging
 from datetime import datetime, timedelta
 from pytz import utc as pytz_utc
-logger = logging.getLogger(__name__)
-
-# noinspection PyDeprecation
-from django.utils import simplejson
-
-__SLO_LAT__ = 35.347099
-__SLO_LON__ = -120.455299
-__GEOIP_URL__ = 'http://www.geoplugin.net/json.gp?ip='
-
-
-def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
-    """
-    This method returns the current geolocation of a given IP address by using
-    the WebService provided by GeoPlugin. In case no ip address is given, it
-    returns None.
-    """
-
-    if not ip:
-        return None
-    if ip == "127.0.0.1":
-        return __SLO_LAT__, __SLO_LON__
-
-    json_r = urllib2.urlopen(geoplugin_ip + ip).read()
-    # noinspection PyDeprecation
-    r = simplejson.loads(json_r)
-    latitude = r['geoplugin_latitude']
-    longitude = r['geoplugin_longitude']
-
-    return latitude, longitude
-
-
-def print_list(l, list_name='List'):
-    """
-    Function that prints the elements of a given list, one per line.
-    :param l: The list to be printed out.
-    """
-    print '>>>>>>> PRINTING ' + list_name + ', len = ' + str(len(l))
-    for l_i in l:
-        print l_i
-
-
-def print_dictionary(obj, nested_level=0, output=sys.stdout, spacing='   '):
-    """
-    Function that recursively prints a dict and all its nested dictionaries.
-    :param obj: the dictionary to be printed.
-    :param nested_level: used to increase the spacing for items in between
-    nested dictionaries.
-    :param output: the output where the function prints the data from the
-    dictionaries.
-    :param spacing: the string used as a base for spacing items in between
-    dictionaries.
-    """
-    if type(obj) == dict:
-        print >> output, '%s{' % (nested_level * spacing)
-        for k, v in obj.items():
-            if hasattr(v, '__iter__'):
-                print >> output, '%s%s:' % ((nested_level + 1) * spacing, k)
-                print_dictionary(v, nested_level + 1, output)
-            else:
-                print >> output, '%s%s: %s' % ((nested_level + 1) * spacing,
-                                               k, v)
-        print >> output, '%s}' % (nested_level * spacing)
-    elif type(obj) == list:
-        print >> output, '%s[' % (nested_level * spacing)
-        for v in obj:
-            if hasattr(v, '__iter__'):
-                print_dictionary(v, nested_level + 1, output)
-            else:
-                print >> output, '%s%s' % ((nested_level + 1) * spacing, v)
-        print >> output, '%s]' % (nested_level * spacing)
-    else:
-        print >> output, '%s%s' % (nested_level * spacing, obj)
+from misc import get_today_utc
 
 
 def define_interval(days=7):
@@ -103,9 +30,9 @@ def define_interval(days=7):
     this interval.
     """
     utc_today = datetime.utcnow().date()
-    begin_interval\
-        = pytz_utc.localize(datetime(utc_today.year, utc_today.month,
-                                     utc_today.day))
+    begin_interval = pytz_utc.localize(
+        datetime(utc_today.year, utc_today.month, utc_today.day)
+    )
     end_interval = begin_interval + timedelta(days=days)
     return begin_interval, end_interval
 
@@ -120,51 +47,40 @@ def normalize_slots(slots):
     :param slots: The list of slots to be normalized.
     :return: The normalized list of slots.
     """
-
     if slots is None:
         return []
+    slots_n = len(slots)
+    if slots_n < 2:
+        return slots
 
-    n_slots = len(slots)
-    if n_slots < 2:
-        return n_slots
-
-    n_list = []
+    normalized_s = []
     s = slots[0]
     t = slots[1]
-    i = 0
+    s_i = 0
+    t_i = 1
 
-    while i < n_slots:
+    while s_i < slots_n:
 
-#        print '### i = ' + str(i)\
-#              + ', s = (' + s[0].isoformat() + ', ' + s[1].isoformat() + ')'\
-#              + ', t = (' + t[0].isoformat() + ', ' + t[1].isoformat() + ')'
-#        print '### n_list = ' + str(n_list)
-
-        # CASE A: s < t, push(s) and next...
         if s[1] < t[0]:
-
-#            print '>>> A'
-            if s not in n_list:
-                n_list.append(s)
+            # ### CASE A
+            normalized_s.append(s)
             s = t
 
-        # CASE B: s overlaps just a fraction of t.
-        if (s[1] > t[0]) and (s[1] < t[1]):
-#            print '>>> B, s[0] = ' + s[0].isoformat()\
-#                  + ', t[1]' + t[1].isoformat()
+        if (s[0] <= t[0]) and (s[1] <= t[1]):
+            # ### CASE B
             s = (s[0], t[1])
-            if s not in n_list:
-                n_list.append(s)
 
-        # prepare next iteration
-        if i > (n_slots - 2):
-            if s not in n_list:
-                n_list.append(s)
+        # ### CASE C and next iteration
+        if t_i < (slots_n - 1):
+            t_i += 1
+            t = slots[t_i]
+            continue
+        else:
+            # ### last vectors
+            normalized_s.append(s)
             break
-        t = slots[i+1]
-        i += 1
 
-    return n_list
+    return normalized_s
 
 
 def merge_slots(p_slots, m_slots):
@@ -177,7 +93,6 @@ def merge_slots(p_slots, m_slots):
     :param m_slots: The list of (-) slots.
     :return: Resulting list with the actual available slots.
     """
-
     if p_slots is None or m_slots is None:
         return []
     if len(p_slots) < 1:
@@ -196,8 +111,10 @@ def merge_slots(p_slots, m_slots):
     else:
         # All slots will be generated from today on, so this will be the
         # "oldest" slot independently of the rest...
-        m = (datetime.today().replace(microsecond=0) - timedelta(days=1),
-             datetime.today().replace(microsecond=0) - timedelta(days=1))
+        m = (
+            get_today_utc() - timedelta(days=1),
+            get_today_utc() - timedelta(days=1)
+        )
 
     # The algorithm is executed for all the add slots, since negative slots
     # do not generate actual slots at all, they only limit the range of the
@@ -205,6 +122,7 @@ def merge_slots(p_slots, m_slots):
     while True:
 
         if p_next:
+            # ### stop condition
             if p_i == p_n:
                 break
             p = p_slots[p_i]

@@ -23,6 +23,81 @@ logger = logging.getLogger(__name__)
 from django.db import models
 
 
+class AvailableModulations(models.Model):
+    """
+    This class permits the storage in the database of the modulation options
+    for creating communication channels. This way, the modulation field of a
+    Channel object must be filled only with data from this model.
+
+    MODULATION_CHOICES = (
+        ('AFSK', 'Audio Frequency-Shift Keying (AFSK)'),
+        ('FSK', 'Frequency-Shift Keying (FSK)'),
+        ('GMSK', 'Gaussian Minimum Shift Keying (GMSK)'),
+    )
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    modulation = models.CharField('Modulation', max_length=9)
+
+
+class AvailableBitrates(models.Model):
+    """
+    This class permits the storage in the database of the bitrate options
+    for creating communication channels. This way, the bitrate field of a
+    Channel object must be filled only with data from this model.
+
+    BITRATE_CHOICES = (
+        (300, '300 bps'),
+        (600, '600 bps'),
+        (900, '900 bps'),
+    )
+
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    bitrate = models.IntegerField('Bitrate (bps)')
+
+
+class AvailableBandwidths(models.Model):
+    """
+    This class permits the storage in the database of the bandwidth options
+    for creating communication channels. This way, the bandwidth field of a
+    Channel object must be filled only with data from this model.
+
+    BANDWIDTH_CHOICES = (
+        (12.5, '12.500 kHz'),
+        (25.0, '25.000 kHz'),
+    )
+
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    bandwidth = models.DecimalField('Bandwidth (kHz)',
+                                    max_digits=24, decimal_places=9)
+
+
+class AvailablePolarizations(models.Model):
+    """
+    This class permits the storage in the database of the bandwidth options
+    for creating communication channels. This way, the bandwidth field of a
+    Channel object must be filled only with data from this model.
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    POLARIZATION_CHOICES = (
+        ('Any', 'Any polarization type'),
+        ('RHCP', 'RHCP polarization'),
+        ('LHCP', 'LHCP polarization'),
+    )
+
+    polarization = models.CharField('Polarization modes',
+                                    max_length=10, choices=POLARIZATION_CHOICES)
+
+
 class AvailableBandsManager(models.Manager):
     """
     Manager for carrying out Bands database specific tasks.
@@ -99,7 +174,6 @@ class AvailableBands(models.Model):
         """
         Method that defines a unique band name that is also human readable.
         """
-
         band_name = str(self.IARU_range)\
             + AvailableBands.__band_name_separator
         band_name += str(self.AMSAT_letter)\
