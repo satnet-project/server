@@ -21,7 +21,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from rpc4django import rpcmethod
 
 from configuration.jrpc.serialization import serialize_gs_configuration,\
-    deserialize_gs_configuration, __GS_CHANNELS
+    deserialize_gs_configuration, CHANNEL_LIST_K
 from configuration.models.segments import GroundStationConfiguration
 
 
@@ -30,7 +30,7 @@ from configuration.models.segments import GroundStationConfiguration
     signature=[],
     login_required=True
 )
-def gs_list(**kwargs):
+def list_groundstations(**kwargs):
     """
     JRPC method.
 
@@ -52,7 +52,7 @@ def gs_list(**kwargs):
     signature=['String'],
     login_required=True
 )
-def gs_get_configuration(ground_station_id):
+def get_configuration(ground_station_id):
     """
     JRPC method.
 
@@ -68,7 +68,7 @@ def gs_get_configuration(ground_station_id):
     signature=['String', 'Object'],
     login_required=True
 )
-def gs_set_configuration(ground_station_id, configuration):
+def set_configuration(ground_station_id, configuration):
     """
     JRPC method.
 
@@ -89,7 +89,7 @@ def gs_set_configuration(ground_station_id, configuration):
     signature=['String'],
     login_required=True
 )
-def gs_get_channels(ground_station_id):
+def list_channels(ground_station_id):
     """
     JRPC method.
 
@@ -99,7 +99,7 @@ def gs_get_channels(ground_station_id):
         .get(identifier=ground_station_id)\
         .channels.all()
     return {
-        __GS_CHANNELS: [str(c.identifier) for c in ch_objects]
+        CHANNEL_LIST_K: [str(c.identifier) for c in ch_objects]
     }
 
 
@@ -108,7 +108,7 @@ def gs_get_channels(ground_station_id):
     signature=['String'],
     login_required=True
 )
-def gs_delete(ground_station_id):
+def delete(ground_station_id):
     """
     JRPC method.
 

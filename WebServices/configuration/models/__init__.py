@@ -13,5 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 __author__ = 'rtubio'
+
+from configuration.signals import connect_rules_2_availability,\
+    connect_segments_2_compatibility
+
+# ### Simple signal connection
+connect_rules_2_availability()
+connect_segments_2_compatibility()

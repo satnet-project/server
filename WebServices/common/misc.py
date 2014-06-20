@@ -106,6 +106,26 @@ def print_list(l, list_name='List'):
         print l_i
 
 
+def list_2_string(l, list_name='List'):
+    """
+    Function that prints the elements of the given list, one per line,
+    in a string.
+    :param l: The list to be print out.
+    :param list_name: The name for the list.
+    :return: String with the contents of the list with no \n trailing
+                character.
+    """
+    if not l:
+        return '(empty list)'
+
+    o_string = '[\n'
+    for l_i in l:
+        o_string += '\t' + str(l_i) + '\n'
+    o_string += ']'
+
+    return o_string
+
+
 def print_dictionary(obj, nested_level=0, output=sys.stdout, spacing='   '):
     """
     Function that recursively prints a dict and all its nested dictionaries.

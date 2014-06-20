@@ -92,7 +92,11 @@ def create_request(url='/test', user_profile=None):
     return request
 
 
-def create_sc(user_profile=None, identifier='sc-uvigo'):
+def create_sc(
+    user_profile=None, identifier='sc-uvigo',
+    callsign='BABA00',
+    tle_id='humd'
+):
 
     username = 'testuser'
 
@@ -106,8 +110,8 @@ def create_sc(user_profile=None, identifier='sc-uvigo'):
     sc = SpacecraftConfiguration.objects.create(
         user=user_profile,
         identifier=identifier,
-        callsign='BABA00',
-        tle_id='humd'
+        callsign=callsign,
+        tle_id=tle_id
     )
     sc.save()
 
@@ -201,8 +205,6 @@ def sc_add_channel(
         bandwidth=bandwidth,
         polarization=polarization,
     )
-
-    sc_ch.save()
     sc.channels.add(sc_ch)
     sc.save()
 
@@ -212,6 +214,7 @@ def sc_add_channel(
 def remove_sc_channel(sc_ch_id):
 
     sc_ch = SpacecraftChannel.objects.get(identifier=sc_ch_id)
+    sc_ch.spacecraftconfiguration_set.all()[0].channels.remove(sc_ch)
     sc_ch.delete()
 
 
@@ -238,10 +241,6 @@ def gs_add_channel(
         bandwidths=bandwidths,
         polarizations=polarizations
     )
-
-    gs_ch.save()
-    gs.channels.add(gs_ch)
-    gs.save()
 
     return gs_ch
 

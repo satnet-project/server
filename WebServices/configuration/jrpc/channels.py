@@ -27,8 +27,8 @@ from configuration.models.segments import GroundStationConfiguration,\
     SpacecraftConfiguration
 from configuration.jrpc.serialization import get_gs_channel_configuration, \
     get_sc_channel_parameters, get_gs_channel_parameters,\
-    __CH_ID_K, __MODULATIONS_K, __BAND_K, __POLARIZATIONS_K,\
-    __BITRATES_K, __BANDWIDTHS_K
+    CH_ID_K, MODULATIONS_K, BAND_K, POLARIZATIONS_K,\
+    BITRATES_K, BANDWIDTHS_K
 
 
 @rpcmethod(name='configuration.gs.channel.getOptions',
@@ -41,15 +41,15 @@ def gs_channel_get_options():
     options for adding a new communications channel to a Ground Station.
     """
     results = {
-        __BAND_K: [obj.get_band_name()
+        BAND_K: [obj.get_band_name()
                    for obj in AvailableBands.objects.all()],
-        __MODULATIONS_K: [obj.modulation
+        MODULATIONS_K: [obj.modulation
                           for obj in AvailableModulations.objects.all()],
-        __POLARIZATIONS_K: [obj.polarization
+        POLARIZATIONS_K: [obj.polarization
                             for obj in AvailablePolarizations.objects.all()],
-        __BITRATES_K: [obj.bitrate
+        BITRATES_K: [obj.bitrate
                        for obj in AvailableBitrates.objects.all()],
-        __BANDWIDTHS_K: [obj.bandwidth
+        BANDWIDTHS_K: [obj.bandwidth
                          for obj in AvailableBandwidths.objects.all()]
     }
     return results
@@ -83,7 +83,7 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
         get_gs_channel_parameters(configuration)
     if GroundStationChannel.objects.filter(identifier=channel_id).count() > 0:
         raise Exception("Channel identifier already exists, { "
-                        + str(__CH_ID_K) + ": " + channel_id + "}")
+                        + str(CH_ID_K) + ": " + channel_id + "}")
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the
     # given objects does not exist, an exception will be raised.
@@ -159,13 +159,13 @@ def sc_channel_get_options():
     options for adding a new communications channel to a Spacecraft.
     """
     return {
-        __MODULATIONS_K: [obj.modulation
+        MODULATIONS_K: [obj.modulation
                           for obj in AvailableModulations.objects.all()],
-        __POLARIZATIONS_K: [obj.polarization
+        POLARIZATIONS_K: [obj.polarization
                             for obj in AvailablePolarizations.objects.all()],
-        __BITRATES_K: [obj.bitrate
+        BITRATES_K: [obj.bitrate
                        for obj in AvailableBitrates.objects.all()],
-        __BANDWIDTHS_K: [obj.bandwidth
+        BANDWIDTHS_K: [obj.bandwidth
                          for obj in AvailableBandwidths.objects.all()]
     }
 
@@ -199,7 +199,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     if SpacecraftChannel.objects.filter(identifier=channel_id).count() > 0:
         raise Exception(
             "Channel identifier already exists, { "
-            + str(__CH_ID_K) + ": " + channel_id + "}"
+            + str(CH_ID_K) + ": " + channel_id + "}"
         )
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the

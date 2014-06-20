@@ -22,7 +22,6 @@ from django.test import TestCase
 
 import common.testing as db_tools
 
-from configuration import signals
 from configuration.jrpc import rules as jrpc_rules_if,\
     serialization as jrpc_serial
 from configuration.models.availability import AvailabilitySlots
@@ -48,21 +47,14 @@ class TestAvailability(TestCase):
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
 
-        # ### signal registration
-        # This is part of the test: if the test is succesful, then the
-        # signals are correctly set.
-        signals.connect_rules_2_slots()
-
-    def add_slots_no_rules(self):
+    def test_add_slots_no_rules(self):
         """
         This method tests the addition of new availability slots to the
         AvailabilitySlots table in the database, when no rule has still been
         defined. Therefore, no slot should be generated or added.
         """
-        self.__verbose_testing = True
-
         if self.__verbose_testing:
-            print '>>> test_add_slots: no rules'
+            print '##### test_add_slots: no rules'
 
         a_slots = AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
@@ -75,14 +67,14 @@ class TestAvailability(TestCase):
             'No AvailabilitySlots expected.'
         )
 
-    def add_slots_once_rule(self):
+    def test_add_slots_once_rule(self):
         """
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
         """
         if self.__verbose_testing:
-            print '>>> test_add_slots: single once rule'
+            print '##### test_add_slots: single once rule'
 
         jrpc_rules_if.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id,
@@ -106,7 +98,7 @@ class TestAvailability(TestCase):
         are several availability rules in the database.
         """
         if self.__verbose_testing:
-            print '>>> test_add_slots: several rules (1)'
+            print '##### test_add_slots: several rules (1)'
 
         # R1) ADD+ONCE (+1 slot)
         rule_1_id = jrpc_rules_if.add_rule(
@@ -243,3 +235,5 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(av_slots), 0, '0 slots expected, got = ' + str(len(av_slots))
         )
+
+

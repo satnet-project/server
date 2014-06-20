@@ -18,23 +18,136 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
+from common.misc import list_2_string
 from configuration.models.channels import SpacecraftChannel,\
     GroundStationChannel
-from configuration.models.segments import SpacecraftConfiguration,\
-    GroundStationConfiguration
 
 
-class SegmentsCompatibilityManager(models.Manager):
+class ChannelCompatibilityManager(models.Manager):
     """
-    Manager that handles the basic operations over the SegmentsCompatibility
-    table.
+    Manager for the SegmentCompatibility table.
     """
-    pass
+
+    @staticmethod
+    def sc_channel_saved(sender, instance, **kwargs):
+        """
+        Updates the compatible channels table with this new channel.
+
+        ### FILTERING RULES:
+        1) enabled = True
+        2) gs_min_frequency < sc_frequency < gs_max_frequency
+        3) sc_modulation in [gs_modulation_1, ..., gs_modulation_n]
+        4) sc_bitrate in [gs_bitrate_1, ..., gs_bitrate_n]
+        5) sc_polarization in [gs_polarization_1, ..., gs_polarization_n] or
+              ( gs_polarization == ANY ) or ( sc_polarization == ANY )
+
+        ### (3) filter objects taking into account modulations, exact match
+        required from the list of available modulations
+        ### (4) filter objects taking into account bitrates, exact match
+        required from the list of available bitrates
+        ### filter objects taking into account the polarizations implemented by
+        the GS (RHPC, LHPC or ANY) and the one required by the spacecraft. In
+        this case, the ANY polarization indicates that either the spacecraft
+        or the ground station implement/require any value.
+        """
+        try:
+            ChannelCompatibility.objects.get(spacecraft_channel=instance)
+            return
+        except ObjectDoesNotExist:
+            pass
+
+        # 1) first, we get the list of compatible channels with the given one.
+        compatible_chs = GroundStationChannel.objects\
+            .find_compatible_channels(instance)
+        if not compatible_chs:
+            return
+
+        # 2) secondly, we include this new "matching" group in the list of
+        #       compatible channels
+        s = ChannelCompatibility.objects.create(spacecraft_channel=instance)
+        s.groundstation_channels.add(*compatible_chs)
+        s.save()
+
+    @staticmethod
+    def sc_channel_deleted(sender, instance, **kwargs):
+        """
+        Updates the compatible channels table by removing the entries for
+        this spacecraft channel that has just been removed from the database.
+        :param sc_ch_id: Identifier of the Spacecraft channel to be removed.
+        """
+        try:
+            s = ChannelCompatibility.objects.get(spacecraft_channel=instance)
+            s.delete()
+        except ObjectDoesNotExist:
+            pass
+
+    @staticmethod
+    def gs_channel_saved(sender, instance, created, **kwargs):
+        """
+        Updates the compatible channels table with this new GS channel. This
+        means that this function must:
+
+        (1) Get the list of compatible SC channels.
+        (2) For each of the compatible SC channels, add itself as a new
+            compatible GS channel to the table.
+            (*) If this GS channel is already added for one SC channel,
+            then just skip to the next row of the table.
+
+        The filtering rules for checking the compatibility of this new GS
+        channel with the existing SC channels,
+        """
+
+        # ### We wait for the object to be updated after creation with all
+        # the information in the ManyToMany fields.
+        if created:
+            return
+
+        # 1) first we get the list of the compatible SC channels
+        compatible_chs = SpacecraftChannel.objects\
+            .find_compatible_channels(instance)
+        if not compatible_chs:
+            return
+
+        # 2) for each of them, we add the new GS channel to its list if it
+        # has not been added yet
+        for ch in compatible_chs:
+
+            c = None
+
+            try:
+                c = ChannelCompatibility.objects.get(spacecraft_channel=ch)
+            except ObjectDoesNotExist:
+                c = ChannelCompatibility.objects.create(spacecraft_channel=ch)
+
+            if not instance in c.groundstation_channels.all():
+
+                c.groundstation_channels.add(instance)
+                c.save()
+
+    @staticmethod
+    def gs_channel_deleted(sender, instance, **kwargs):
+        """
+        Updates the compatible channels table by removing the entries for
+        this GroundStation channel that has just been removed from the database.
+        :param gs_ch_id: Identifier of the GroundStation channel to be removed.
+        """
+        chs = ChannelCompatibility.objects.filter(
+            groundstation_channels=instance
+        )
+
+        for c_ch in chs:
+
+            c_ch.groundstation_channels.remove(instance)
+
+            if not c_ch.groundstation_channels.all():
+
+                c_ch.delete()
 
 
-class SegmentsCompatibility(models.Model):
+class ChannelCompatibility(models.Model):
     """
     This model permits handle a table where the information about the
     compatibility in between SpacecraftConfiguration, SpacecraftChannel,
@@ -43,21 +156,25 @@ class SegmentsCompatibility(models.Model):
     class Meta:
         app_label = 'configuration'
 
-    objects = SegmentsCompatibilityManager()
+    objects = ChannelCompatibilityManager()
 
-    spacecraft = models.ForeignKey(
-        SpacecraftConfiguration,
-        verbose_name='Reference to the compatible Spacecraft.'
-    )
-    groundstation = models.ForeignKey(
-        GroundStationConfiguration,
-        verbose_name='Refernce to the compatible Ground Station.'
-    )
     spacecraft_channel = models.ForeignKey(
         SpacecraftChannel,
         verbose_name='Reference to the compatible Spacecraft channel.'
     )
-    groundstation_channel = models.ManyToManyField(
+    groundstation_channels = models.ManyToManyField(
         GroundStationChannel,
         verbose_name='Reference to all the compatible GroundStation channels.'
     )
+
+    def __unicode__(self):
+        """
+        Transforms the contents of this object into a human readable string.
+        """
+        return str(self.__class__.__name__)\
+            + ', sc_ch = '\
+            + str(self.spacecraft_channel) + ', gs_chs = '\
+            + list_2_string(
+                self.groundstation_channels.all(),
+                list_name='gs_chs'
+            )

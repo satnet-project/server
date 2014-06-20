@@ -18,14 +18,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db.models.signals import post_save, post_delete
+from django.db.models.signals import post_save, post_delete, pre_delete
 
 from configuration.models.availability import AvailabilitySlotsManager
+from configuration.models.channels import GroundStationChannel,\
+    SpacecraftChannel
+from configuration.models.compatibility import ChannelCompatibilityManager
 from configuration.models.rules import AvailabilityRuleOnce,\
     AvailabilityRuleDaily, AvailabilityRuleWeekly
 
 
-def connect_rules_2_slots():
+def connect_rules_2_availability():
     """
     This function connects all the signals triggered during the creation/save
     of a rule with the callbacks for updating the AvailabilitySlots table.
@@ -56,5 +59,27 @@ def connect_rules_2_slots():
         sender=AvailabilityRuleWeekly
     )
 
-# ### Simple signal connection
-connect_rules_2_slots()
+
+def connect_segments_2_compatibility():
+    """
+    This function connects all the signals triggered during the
+    creation/save/removal of a segment (either a GroundStaiton or a
+    Spacecraft), with some callback functions at the SegmentCompatibility
+    table that are responsible for updating the contents of the latter.
+    """
+    post_save.connect(
+        ChannelCompatibilityManager.gs_channel_saved,
+        sender=GroundStationChannel
+    )
+    post_save.connect(
+        ChannelCompatibilityManager.sc_channel_saved,
+        sender=SpacecraftChannel
+    )
+    pre_delete.connect(
+        ChannelCompatibilityManager.gs_channel_deleted,
+        sender=GroundStationChannel
+    )
+    pre_delete.connect(
+        ChannelCompatibilityManager.sc_channel_deleted,
+        sender=SpacecraftChannel
+    )

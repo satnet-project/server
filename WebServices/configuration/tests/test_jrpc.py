@@ -19,9 +19,11 @@ from datetime import time, timedelta
 
 from django.test import TestCase
 from common.misc import get_today_utc, localize_time_utc, print_dictionary
-from configuration.jrpc import segments as jrpc_segments,\
-    rules as jrpc_rules, serialization as jrpc_serial
+from configuration.jrpc import groundstations as jrpc_gs,\
+    spacecraft as jrpc_sc, rules as jrpc_rules, serialization as jrpc_serial
 from configuration.models.rules import AvailabilityRule
+from configuration.models.segments import GroundStationConfiguration,\
+    SpacecraftConfiguration
 import common.testing as db_tools
 
 
@@ -49,6 +51,19 @@ class JRPCRulesTest(TestCase):
         self.__gs_1_ch_1_id = 'fm-1'
         self.__gs_1_ch_2_id = 'afsk-2'
 
+        self.__sc_1_id = 'sc-xatcobeo'
+        self.__sc_1_callsign = 'BABA00'
+        self.__sc_1_tle_id = 'XaTcobeo'
+        self.__sc_1_ch_1_id = 'xatcobeo-qpsk-1'
+        self.__sc_1_ch_2_id = 'xatcobeo-gmsk-2'
+        self.__sc_1_ch_1_f = 437000000
+        self.__sc_1_configuration = (
+            unicode(self.__sc_1_callsign, 'unicode-escape'),
+            unicode(self.__sc_1_tle_id, 'unicode-escape')
+        )
+
+        self.__sc_2_id = 'sc-humsat'
+
         db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -62,7 +77,6 @@ class JRPCRulesTest(TestCase):
             contact_elevation=self.__gs_1_contact_elevation,
             latitude=self.__gs_1_latitude,
             longitude=self.__gs_1_longitude,
-            # ### TODO ::  include "altitude" as a configuration parameter
         )
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs_1, self.__band, self.__gs_1_ch_1_id,
@@ -72,6 +86,19 @@ class JRPCRulesTest(TestCase):
             identifier=self.__gs_2_id
         )
 
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user_profile,
+            identifier=self.__sc_1_id,
+            callsign=self.__sc_1_callsign,
+            tle_id=self.__sc_1_tle_id
+        )
+        self.__sc_1_ch_1 = db_tools.sc_add_channel(
+            self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
+        )
+        self.__sc_2 = db_tools.create_sc(
+            user_profile=self.__user_profile, identifier=self.__sc_2_id,
+        )
+
     def test_gs_list(self):
         """
         This test validates the list of configuration objects returned through
@@ -79,9 +106,21 @@ class JRPCRulesTest(TestCase):
         """
         if self.__verbose_testing:
             print '>>> TEST (test_gs_list)'
-        gs_list = jrpc_segments.gs_list(request=self.__http_request)
+        gs_list = jrpc_gs.list_groundstations(request=self.__http_request)
         self.assertItemsEqual(
-            gs_list, ['gs-castrelos', 'gs-calpoly'], 'Wrong gs identifiers.'
+            gs_list, [self.__gs_1_id, self.__gs_2_id], 'Wrong GS identifiers'
+        )
+
+    def test_sc_list(self):
+        """
+        This test validates the list of SpacecraftConfiguration objects
+        returned through the JRPC method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_sc_list)'
+        sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
+        self.assertItemsEqual(
+            sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
         )
 
     def test_gs_channels(self):
@@ -91,10 +130,23 @@ class JRPCRulesTest(TestCase):
         """
         if self.__verbose_testing:
             print '>>> TEST (test_gs_channels)'
-        ch_list = jrpc_segments.gs_get_channels(self.__gs_1_id)
+        ch_list = jrpc_gs.list_channels(self.__gs_1_id)
         self.assertItemsEqual(
-            ch_list['groundstation_channels'], [self.__gs_1_ch_1_id],
-            'Wrong channel identifiers, ch = ' + str(ch_list)
+            ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__gs_1_ch_1_id],
+            'Wrong channel identifiers, actual = ' + str(ch_list)
+        )
+
+    def test_sc_channels(self):
+        """
+        This test validates the list of channels returned throught the JRPC
+        method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_sc_channels)'
+        ch_list = jrpc_sc.list_channels(self.__sc_1_id)
+        self.assertItemsEqual(
+            ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__sc_1_ch_1_id],
+            'Wrong channel identifiers, actual = ' + str(ch_list)
         )
 
     def test_gs_get_configuration(self):
@@ -104,11 +156,100 @@ class JRPCRulesTest(TestCase):
         """
         if self.__verbose_testing:
             print '>>> TEST (test_gs_get_configuration):'
-        cfg = jrpc_segments.deserialize_gs_configuration(
-            jrpc_segments.gs_get_configuration(self.__gs_1_id)
+        cfg = jrpc_serial.deserialize_gs_configuration(
+            jrpc_gs.get_configuration(self.__gs_1_id)
         )
         self.assertEquals(
-            cfg, self.__gs_1_configuration, 'Wrong configuration returned.'
+            cfg, self.__gs_1_configuration, 'Wrong configuration returned'
+        )
+
+    def test_gs_set_configuration(self):
+        """
+        This test validates how to set the configuration with the JRPC method,
+        by comparing the one sent with the one obtained through the
+        get_configuration JRPC method of the same interface.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_gs_get_configuration):'
+
+        cfg = jrpc_serial.serialize_gs_configuration(
+            GroundStationConfiguration.objects.get(identifier=self.__gs_1_id)
+        )
+
+        old_callsign = cfg[jrpc_serial.GS_CALLSIGN_K]
+        old_contact_e = cfg[jrpc_serial.GS_ELEVATION_K]
+        old_latlon = cfg[jrpc_serial.GS_LATLON_K]
+
+        cfg[jrpc_serial.GS_CALLSIGN_K] = unicode('CHANGED')
+        cfg[jrpc_serial.GS_ELEVATION_K] = '0.00'
+        cfg[jrpc_serial.GS_LATLON_K] = [
+            str(39.73915360), str(-104.98470340)
+        ]
+        cfg[jrpc_serial.GS_ALTITUDE_K] = str(1608.637939453125)
+
+        self.assertEquals(
+            jrpc_gs.set_configuration(self.__gs_1_id, cfg),
+            True,
+            'The <set_configuration> JPRC method should have returned <True>'
+        )
+        actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
+        self.assertEquals(
+            actual_cfg, cfg, 'Configuration objects differ, e = ' + str(cfg)
+            + ', a = ' + str(actual_cfg)
+        )
+
+    def test_sc_get_configuration(self):
+        """
+        This test validates the returned configuration by the proper JRPC
+        method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_sc_get_configuration):'
+        cfg = jrpc_serial.deserialize_sc_configuration(
+            jrpc_sc.get_configuration(self.__sc_1_id)
+        )
+        self.assertEquals(
+            cfg, self.__sc_1_configuration, 'Wrong configuration returned'
+        )
+
+    def test_sc_set_configuration(self):
+        """
+        This test validates how to set the configuration with the JRPC method,
+        by comparing the one sent with the one obtained through the
+        get_configuration JRPC method of the same interface.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_sc_get_configuration):'
+        cfg = jrpc_serial.serialize_sc_configuration(
+            SpacecraftConfiguration.objects.get(identifier=self.__sc_1_id)
+        )
+        old_callsign = cfg[jrpc_serial.SC_CALLSIGN_K]
+        old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
+        cfg[jrpc_serial.SC_CALLSIGN_K] = 'CHANGED'
+        cfg[jrpc_serial.SC_TLE_ID_K] = 'BLUR'
+        self.assertEquals(
+            jrpc_sc.set_configuration(self.__sc_1_id, cfg),
+            True,
+            'The <set_configuration> JPRC method should have returned <True>'
+        )
+        actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
+        self.assertEquals(
+            actual_cfg, cfg, 'Configurations differ'
+            + ', e = ' + str(cfg)
+            + ', a = ' + str(actual_cfg)
+        )
+        cfg[jrpc_serial.SC_CALLSIGN_K] = old_callsign
+        cfg[jrpc_serial.SC_TLE_ID_K] = old_tle_id
+        self.assertEquals(
+            jrpc_sc.set_configuration(self.__sc_1_id, cfg),
+            True,
+            'The <set_configuration> JPRC method should have returned <True>'
+        )
+        actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
+        self.assertEquals(
+            actual_cfg, cfg, 'Configurations differ'
+            + ', e = ' + str(cfg)
+            + ', a = ' + str(actual_cfg)
         )
 
     def test_add_once_rule(self):

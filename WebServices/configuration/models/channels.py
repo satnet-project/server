@@ -36,6 +36,32 @@ from configuration.models.bands import AvailableBands, AvailableModulations, \
     AvailableBitrates, AvailableBandwidths, AvailablePolarizations
 
 
+class SpacecraftChannelManager(models.Manager):
+    """
+    Manager for the objects within the SpacecraftChannel table in the database.
+    """
+
+    def find_compatible_channels(self, gs_channel):
+        """
+        Static method that finds all the compatible Spacecraft channels with
+        the given GroundStation channel.
+        :param gs_channel: A GroundStation channel object.
+        :return: A query list with the results of the search throughout the
+        database.
+        """
+        return self.filter(enabled=True)\
+            .filter(
+                frequency__gt=gs_channel.band.IARU_allocation_minimum_frequency
+            )\
+            .filter(
+                frequency__lt=gs_channel.band.IARU_allocation_maximum_frequency
+            )\
+            .filter(modulation__in=gs_channel.modulations.all())\
+            .filter(bitrate__in=gs_channel.bitrates.all())\
+            .filter(bandwidth__in=gs_channel.bandwidths.all())\
+            .filter(polarization__in=gs_channel.polarizations.all())
+
+
 class SpacecraftChannel(models.Model):
     """
     This class models the database model for a spacecraft communications 
@@ -44,17 +70,21 @@ class SpacecraftChannel(models.Model):
     class Meta:
         app_label = 'configuration'
 
+    objects = SpacecraftChannelManager()
+
     # ### Channel management parameters
     enabled = models.BooleanField('Enables the usage of this channel.')
     identifier = models.CharField(
         'Unique identifier',
         max_length=30,
         unique=True,
-        validators=[RegexValidator(
-            regex='^[a-zA-Z0-9.-_]*$',
-            message="Alphanumeric or '.-_' required",
-            code='invalid_channel_identifier'
-        )]
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z0-9.-_]*$',
+                message="Alphanumeric or '.-_' required",
+                code='invalid_channel_identifier'
+            )
+        ]
     )
 
     # ### Radio characteristics of the channel (common)
@@ -64,8 +94,9 @@ class SpacecraftChannel(models.Model):
     polarization = models.ForeignKey(AvailablePolarizations)
     
     # In Hz, mili-Hz resolution, up to 1 EHz, central frequency
-    frequency = models.DecimalField('Central frequency (Hz)',
-                                    max_digits=15, decimal_places=3)
+    frequency = models.DecimalField(
+        'Central frequency (Hz)', max_digits=15, decimal_places=3
+    )
 
     def get_string_definition(self):
         """
@@ -102,9 +133,9 @@ class SpacecraftChannel(models.Model):
         Unicode representation of the object.
         :returns Unicode string.
         """
-        return 'GroundStationChannel' \
-               ', identifier = ' + self.identifier +\
-               ', frequency = ' + str(self.frequency)
+        return str(self.__class__.__name__)\
+               + ', identifier = ' + str(self.identifier)\
+               + ', frequency = ' + str(self.frequency)
 
 
 class GroundStationChannelManager(models.Manager):
@@ -139,6 +170,26 @@ class GroundStationChannelManager(models.Manager):
         gsc.save()
         return gsc
 
+    def find_compatible_channels(self, sc_channel):
+        """
+        Static method that finds all the compatible GroundStation channels
+        with the given Spacecraft channel.
+        :param sc_channel: A SpacecraftChannel object.
+        :return: A query list with the results of the search throughout the
+        database.
+        """
+        return self.filter(enabled=True)\
+            .filter(
+                band__IARU_allocation_minimum_frequency__lt=sc_channel.frequency
+            )\
+            .filter(
+                band__IARU_allocation_maximum_frequency__gt=sc_channel.frequency
+            )\
+            .filter(modulations=sc_channel.modulation)\
+            .filter(bitrates=sc_channel.bitrate)\
+            .filter(bandwidths=sc_channel.bandwidth)\
+            .filter(polarizations=sc_channel.polarization)
+
 
 class GroundStationChannel(models.Model):
     """
@@ -153,12 +204,15 @@ class GroundStationChannel(models.Model):
     enabled = models.BooleanField('Enables the usage of this channel.')
     identifier = models.CharField(
         'Unique identifier',
-        max_length=30, unique=True,
-        validators=[RegexValidator(
-            regex='^[a-zA-Z0-9.-_]*$',
-            message="Alphanumeric or '.-_' required",
-            code='invalid_channel_identifier'
-        )]
+        max_length=30,
+        unique=True,
+        validators=[
+            RegexValidator(
+                regex='^[a-zA-Z0-9.-_]*$',
+                message="Alphanumeric or '.-_' required",
+                code='invalid_channel_identifier'
+            )
+        ]
     )
 
     band = models.ForeignKey(AvailableBands)
@@ -174,11 +228,11 @@ class GroundStationChannel(models.Model):
         This method returns a string containing all the parameters that define
         this communication channel.
         """
-        return self.band.get_band_name() + ', ' +\
-            str(self.modulations) + ', ' +\
-            str(self.bitrates) + ', ' +\
-            str(self.bandwidths) + ', ' +\
-            str(self.polarizations)
+        return self.band.get_band_name() + ', '\
+            + str(self.modulations) + ', '\
+            + str(self.bitrates) + ', '\
+            + str(self.bandwidths) + ', '\
+            + str(self.polarizations)
 
     def update(
             self, band=None,
@@ -214,6 +268,6 @@ class GroundStationChannel(models.Model):
         Unicode representation of the object.
         :returns Unicode string.
         """
-        return 'GroundStationChannel' \
-               ', identifier = ' + self.identifier +\
-               ', band.pk = ' + str(self.band.pk)
+        return str(self.__class__.__name__)\
+               + ', identifier = ' + str(self.identifier)\
+               + ', band.pk = ' + str(self.band.pk)

@@ -95,7 +95,7 @@ class AvailabilitySlotsManager(models.Manager):
             # Create signal for notifying the change in the table of
             # AvailableSlots to all the other tables that depend on its
             # contents.
-            print '>>> (UPDATED_RULE_SIGNAL), removed = ' + str(len(r_slots))
+            pass
 
 
 class AvailabilitySlots(models.Model):
