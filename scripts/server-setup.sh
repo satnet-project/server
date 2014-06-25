@@ -43,7 +43,7 @@ install_packages()
 configure_mysql()
 {
 
-    echo "GRANT USAGE ON *.* TO '#django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
+    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
         > $__mysql_batch
     #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
     #    > $__mysql_batch
@@ -53,6 +53,8 @@ configure_mysql()
         >> $__mysql_batch
 
     mysql -h localhost -u root -p < $__mysql_batch
+
+    python $manage_py syncdb
 
 }
 
@@ -68,8 +70,6 @@ delete_mysql_db()
 
 }
 
-#venv_activate="$project_path/$venv/bin/activate"
-
 # ### Method that configures a Python virtual environment 
 
 create_virtualenv()
@@ -83,7 +83,7 @@ create_virtualenv()
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
     
-    pip install django==1.5.2
+    pip install django==1.5.4
     pip install eventlog==0.6.2
     pip install django-jsonfield==0.8.12
     pip install django-registration==1.0
@@ -190,7 +190,7 @@ django_db='satnet_db'
 
 project_path="$( cd "$( dirname "$0" )" && pwd )"
 project_path=$project_path"/.."
-manage_py="$project_path/manage.py"
+manage_py="$project_path/WebServices/manage.py"
 venv='__v_env'
 venv_activate="$project_path/$venv/bin/activate"
 
