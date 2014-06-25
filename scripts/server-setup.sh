@@ -68,15 +68,14 @@ delete_mysql_db()
 
 }
 
-venv='__v_env'
-venv_activate="$venv/bin/activate"
+#venv_activate="$project_path/$venv/bin/activate"
 
 # ### Method that configures a Python virtual environment 
 
 create_virtualenv()
 {
 
-    virtualenv $venv
+    virtualenv "$project_path/$venv"
 
     # ### starts virtual environment
     # the virtual environment must be activated before installing the required
@@ -84,12 +83,14 @@ create_virtualenv()
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
     
-    #pip install django==1.5.2
-    #pip install eventlog==0.6.2
-    #pip install django-jsonfield==0.8.12
-    #pip install django-registration==1.0
-    #pip install mysql-python==1.2.3
-    
+    pip install django==1.5.2
+    pip install eventlog==0.6.2
+    pip install django-jsonfield==0.8.12
+    pip install django-registration==1.0
+    pip install mysql-python==1.2.3
+    pip install rpc4django
+    pip install pytz
+
     pip install distribute --upgrade
     
     pip install django
@@ -187,9 +188,11 @@ django_user='satnet_django'
 django_user_password='_805Django'
 django_db='satnet_db'
 
-project_path="/home/rtubio/repositories/satnet-release-1/WebServices"
+project_path="$( cd "$( dirname "$0" )" && pwd )"
+project_path=$project_path"/.."
 manage_py="$project_path/manage.py"
-venv_activate="$project_path/__v_env/bin/activate"
+venv='__v_env'
+venv_activate="$project_path/$venv/bin/activate"
 
 ################################################################################
 # ### Main execution loop
@@ -211,11 +214,11 @@ read
 echo 'Before going ahead, check if project path is correctly configured.'
 read
 
-# install_packages
-# configure_mysql
-# add_crontab_django_periodically
-# ### just in case the database needs to be restored:
-# delete_mysql_db
+ install_packages
+ configure_mysql
+ add_crontab_django_periodically
+ ### just in case the database needs to be restored:
+ #delete_mysql_db
 
 exit 1
 
