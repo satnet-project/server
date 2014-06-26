@@ -43,7 +43,7 @@ install_packages()
 configure_mysql()
 {
 
-    echo "GRANT USAGE ON *.* TO '#django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
+    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
         > $__mysql_batch
     #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
     #    > $__mysql_batch
@@ -53,6 +53,8 @@ configure_mysql()
         >> $__mysql_batch
 
     mysql -h localhost -u root -p < $__mysql_batch
+
+    python $manage_py syncdb
 
 }
 
@@ -68,27 +70,35 @@ delete_mysql_db()
 
 }
 
-venv='__v_env'
-venv_activate="$venv/bin/activate"
-
 # ### Method that configures a Python virtual environment 
 
 create_virtualenv()
 {
 
-    virtualenv $venv
+    virtualenv "$project_path/$venv"
 
     # ### starts virtual environment
     # the virtual environment must be activated before installing the required
     # packages since these should now be installed in the local directories
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
+<<<<<<< HEAD
 
     #pip install django==1.5.2
     #pip install eventlog==0.6.2
     #pip install django-jsonfield==0.8.12
     #pip install django-registration==1.0
     #pip install mysql-python==1.2.3
+=======
+    
+    pip install django==1.5.4
+    pip install eventlog==0.6.2
+    pip install django-jsonfield==0.8.12
+    pip install django-registration==1.0
+    pip install mysql-python==1.2.3
+    pip install rpc4django
+    pip install pytz
+>>>>>>> 5b56ffdd66ac2f98f14c1a4054204ff219a915c8
 
     pip install distribute --upgrade
 
@@ -189,9 +199,11 @@ django_user='satnet_django'
 django_user_password='_805Django'
 django_db='satnet_db'
 
-project_path="/home/rtubio/repositories/satnet-release-1/WebServices"
-manage_py="$project_path/manage.py"
-venv_activate="$project_path/__v_env/bin/activate"
+project_path="$( cd "$( dirname "$0" )" && pwd )"
+project_path=$project_path"/.."
+manage_py="$project_path/WebServices/manage.py"
+venv='__v_env'
+venv_activate="$project_path/$venv/bin/activate"
 
 ################################################################################
 # ### Main execution loop
@@ -213,11 +225,11 @@ read
 echo 'Before going ahead, check if project path is correctly configured.'
 read
 
-# install_packages
-# configure_mysql
-# add_crontab_django_periodically
-# ### just in case the database needs to be restored:
-# delete_mysql_db
+ install_packages
+ configure_mysql
+ add_crontab_django_periodically
+ ### just in case the database needs to be restored:
+ #delete_mysql_db
 
 exit 1
 
