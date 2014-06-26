@@ -21,13 +21,14 @@ from django.db import transaction, IntegrityError
 from django.test.client import RequestFactory
 
 from accounts.models import UserProfile
-from common.misc import get_today_utc, localize_time_utc
+from booking.models.tle import TwoLineElementsManager
+from common import gis, misc
 from configuration.jrpc import serialization
 from configuration.models.bands import AvailableModulations, AvailableBands,\
     AvailableBandwidths, AvailablePolarizations, AvailableBitrates
 from configuration.models.channels import SpacecraftChannel
-from configuration.models.segments import GroundStationConfiguration, \
-    SpacecraftConfiguration
+from configuration.models.segments import GroundStation, \
+    Spacecraft
 from registration.models import RegistrationProfile
 
 
@@ -107,15 +108,12 @@ def create_sc(
         print 'User already exists, getting a reference to it...'
         user_profile = UserProfile.objects.get(username=username)
 
-    sc = SpacecraftConfiguration.objects.create(
+    return Spacecraft.objects.create(
         user=user_profile,
         identifier=identifier,
         callsign=callsign,
         tle_id=tle_id
     )
-    sc.save()
-
-    return sc
 
 
 def init_available():
@@ -140,25 +138,32 @@ def init_available():
     o.save()
 
 
+def init_tles_database():
+
+    TwoLineElementsManager.load_tles()
+
+
 def create_band(minimum_frequency=435000000, maximum_frequency=438000000):
 
-    b = AvailableBands.objects\
-        .create(IARU_range='UHF', IARU_band='70 cm', AMSAT_letter='U',
-                IARU_allocation_minimum_frequency=minimum_frequency,
-                IARU_allocation_maximum_frequency=maximum_frequency,
-                uplink=True, downlink=True)
-    b.save()
-    return b
+    return AvailableBands.objects.create(
+        IARU_range='UHF',
+        IARU_band='70 cm',
+        AMSAT_letter='U',
+        IARU_allocation_minimum_frequency=minimum_frequency,
+        IARU_allocation_maximum_frequency=maximum_frequency,
+        uplink=True,
+        downlink=True
+    )
 
 
 def create_gs(
         user_profile=None,
         identifier='gs-castrelos',
         callsign='KAKA00',
-        contact_elevation=10.3,
-        longitude=43.42,
-        latitude=45.45,
-        altitude=0,
+        contact_elevation=10,
+        latitude=33.9333,
+        longitude=-118.3880,
+        altitude=20,
         country=None,
         iaru_region=1
 ):
@@ -166,7 +171,10 @@ def create_gs(
     if not user_profile:
         user_profile = create_user_profile()
 
-    gs = GroundStationConfiguration.objects.create(
+    if altitude is None:
+        altitude = gis.get_altitude(latitude, longitude)
+
+    return GroundStation.objects.create(
         user=user_profile,
         identifier=identifier,
         callsign=callsign,
@@ -177,14 +185,16 @@ def create_gs(
         country=country,
         IARU_region=iaru_region
     )
-    gs.save()
-
-    return gs
 
 
 def sc_add_channel(
-        sc, frequency, channel_id,
-        modulation=None, bitrate=None, bandwidth=None, polarization=None
+    sc,
+    frequency,
+    channel_id,
+    modulation=None,
+    bitrate=None,
+    bandwidth=None,
+    polarization=None
 ):
 
     if not modulation:
@@ -196,7 +206,7 @@ def sc_add_channel(
     if not polarization:
         polarization = AvailablePolarizations.objects.get(polarization='RHCP')
 
-    sc_ch = SpacecraftConfiguration.objects.add_channel(
+    return Spacecraft.objects.add_channel(
         sc_identifier=sc.identifier,
         identifier=channel_id,
         frequency=frequency,
@@ -205,16 +215,17 @@ def sc_add_channel(
         bandwidth=bandwidth,
         polarization=polarization,
     )
-    sc.channels.add(sc_ch)
-    sc.save()
 
-    return sc_ch
+
+def remove_sc(spacecraft_id):
+
+    Spacecraft.objects.get(identifier=spacecraft_id).delete()
 
 
 def remove_sc_channel(sc_ch_id):
 
     sc_ch = SpacecraftChannel.objects.get(identifier=sc_ch_id)
-    sc_ch.spacecraftconfiguration_set.all()[0].channels.remove(sc_ch)
+    sc_ch.spacecraft_set.all()[0].channels.remove(sc_ch)
     sc_ch.delete()
 
 
@@ -232,7 +243,7 @@ def gs_add_channel(
     if polarizations is None:
         polarizations = AvailablePolarizations.objects.all()
 
-    gs_ch = GroundStationConfiguration.objects.add_channel(
+    gs_ch = GroundStation.objects.add_channel(
         gs_identifier=gs.identifier,
         identifier=gs_ch_id,
         band=band,
@@ -247,16 +258,16 @@ def gs_add_channel(
 
 def remove_gs_channel(gs_id, gs_ch_id):
 
-    GroundStationConfiguration.objects.delete_channel(gs_id, gs_ch_id)
+    GroundStation.objects.delete_channel(gs_id, gs_ch_id)
 
 
 def create_jrpc_once_rule(
         operation=serialization.RULE_OP_ADD,
-        date=get_today_utc()+timedelta(days=1),
-        starting_time=localize_time_utc(datetime_time(
+        date=misc.get_today_utc()+timedelta(days=1),
+        starting_time=misc.localize_time_utc(datetime_time(
             hour=11, minute=15, second=0
         )),
-        ending_time=localize_time_utc(datetime_time(
+        ending_time=misc.localize_time_utc(datetime_time(
             hour=11, minute=45, second=0
         )),
 ):
@@ -273,12 +284,12 @@ def create_jrpc_once_rule(
 
 def create_jrpc_daily_rule(
         operation=serialization.RULE_OP_ADD,
-        date_i=get_today_utc() + timedelta(days=1),
-        date_f=get_today_utc() + timedelta(days=366),
-        starting_time=localize_time_utc(datetime_time(
+        date_i=misc.get_today_utc() + timedelta(days=1),
+        date_f=misc.get_today_utc() + timedelta(days=366),
+        starting_time=misc.localize_time_utc(datetime_time(
             hour=11, minute=15, second=0
         )),
-        ending_time=localize_time_utc(datetime_time(
+        ending_time=misc.localize_time_utc(datetime_time(
             hour=11, minute=45, second=0
         )),
 ):

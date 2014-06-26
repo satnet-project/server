@@ -15,16 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from datadiff import diff
 from datetime import time, timedelta
+import logging
 
 from django.test import TestCase
-from common.misc import get_today_utc, localize_time_utc, print_dictionary
+
+from common import misc, testing as db_tools
 from configuration.jrpc import groundstations as jrpc_gs,\
     spacecraft as jrpc_sc, rules as jrpc_rules, serialization as jrpc_serial
 from configuration.models.rules import AvailabilityRule
-from configuration.models.segments import GroundStationConfiguration,\
-    SpacecraftConfiguration
-import common.testing as db_tools
+from configuration.models.segments import GroundStation, Spacecraft
 
 
 class JRPCRulesTest(TestCase):
@@ -36,16 +37,19 @@ class JRPCRulesTest(TestCase):
         """
         self.__verbose_testing = False
 
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_callsign = 'GS1GSGS'
         self.__gs_1_contact_elevation = 10.30
         self.__gs_1_longitude = 25.0
         self.__gs_1_latitude = 40.0
         self.__gs_1_configuration = (
-            unicode(self.__gs_1_callsign, 'unicode-escape'),
-            '10.30',
-            str(self.__gs_1_latitude),
-            str(self.__gs_1_longitude)
+            self.__gs_1_callsign,
+            10.3,
+            self.__gs_1_latitude,
+            self.__gs_1_longitude
         )
         self.__gs_2_id = 'gs-calpoly'
         self.__gs_1_ch_1_id = 'fm-1'
@@ -58,8 +62,8 @@ class JRPCRulesTest(TestCase):
         self.__sc_1_ch_2_id = 'xatcobeo-gmsk-2'
         self.__sc_1_ch_1_f = 437000000
         self.__sc_1_configuration = (
-            unicode(self.__sc_1_callsign, 'unicode-escape'),
-            unicode(self.__sc_1_tle_id, 'unicode-escape')
+            self.__sc_1_callsign,
+            self.__sc_1_tle_id
         )
 
         self.__sc_2_id = 'sc-humsat'
@@ -123,7 +127,7 @@ class JRPCRulesTest(TestCase):
             sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
         )
 
-    def test_gs_channels(self):
+    def test_gs_list_channels(self):
         """
         This test validates the list of channels returned throught the JRPC
         method.
@@ -136,7 +140,7 @@ class JRPCRulesTest(TestCase):
             'Wrong channel identifiers, actual = ' + str(ch_list)
         )
 
-    def test_sc_channels(self):
+    def test_sc_list_channels(self):
         """
         This test validates the list of channels returned throught the JRPC
         method.
@@ -159,8 +163,13 @@ class JRPCRulesTest(TestCase):
         cfg = jrpc_serial.deserialize_gs_configuration(
             jrpc_gs.get_configuration(self.__gs_1_id)
         )
+        if self.__verbose_testing:
+            misc.print_dictionary(cfg)
+            misc.print_dictionary(self.__gs_1_configuration)
         self.assertEquals(
-            cfg, self.__gs_1_configuration, 'Wrong configuration returned'
+            cfg, self.__gs_1_configuration,
+            'Wrong configuration returned, diff = \n'
+            + str(diff(cfg, self.__gs_1_configuration))
         )
 
     def test_gs_set_configuration(self):
@@ -173,19 +182,15 @@ class JRPCRulesTest(TestCase):
             print '>>> TEST (test_gs_get_configuration):'
 
         cfg = jrpc_serial.serialize_gs_configuration(
-            GroundStationConfiguration.objects.get(identifier=self.__gs_1_id)
+            GroundStation.objects.get(identifier=self.__gs_1_id)
         )
 
-        old_callsign = cfg[jrpc_serial.GS_CALLSIGN_K]
-        old_contact_e = cfg[jrpc_serial.GS_ELEVATION_K]
-        old_latlon = cfg[jrpc_serial.GS_LATLON_K]
-
-        cfg[jrpc_serial.GS_CALLSIGN_K] = unicode('CHANGED')
-        cfg[jrpc_serial.GS_ELEVATION_K] = '0.00'
+        cfg[jrpc_serial.GS_CALLSIGN_K] = 'CHANGED'
+        cfg[jrpc_serial.GS_ELEVATION_K] = 0.00
         cfg[jrpc_serial.GS_LATLON_K] = [
-            str(39.73915360), str(-104.98470340)
+            39.73915360, -104.98470340
         ]
-        cfg[jrpc_serial.GS_ALTITUDE_K] = str(1608.637939453125)
+        cfg[jrpc_serial.GS_ALTITUDE_K] = 1608.63793945312
 
         self.assertEquals(
             jrpc_gs.set_configuration(self.__gs_1_id, cfg),
@@ -194,8 +199,9 @@ class JRPCRulesTest(TestCase):
         )
         actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
         self.assertEquals(
-            actual_cfg, cfg, 'Configuration objects differ, e = ' + str(cfg)
-            + ', a = ' + str(actual_cfg)
+            actual_cfg, cfg,
+            'Wrong configuration returned, diff = \n'
+            + str(diff(actual_cfg, cfg))
         )
 
     def test_sc_get_configuration(self):
@@ -221,7 +227,7 @@ class JRPCRulesTest(TestCase):
         if self.__verbose_testing:
             print '>>> TEST (test_sc_get_configuration):'
         cfg = jrpc_serial.serialize_sc_configuration(
-            SpacecraftConfiguration.objects.get(identifier=self.__sc_1_id)
+            Spacecraft.objects.get(identifier=self.__sc_1_id)
         )
         old_callsign = cfg[jrpc_serial.SC_CALLSIGN_K]
         old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
@@ -273,13 +279,13 @@ class JRPCRulesTest(TestCase):
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_ONCE_DATE: get_today_utc().replace(
-                    hour=0, minute=0, second=0
-                ) + timedelta(days=1),
-                jrpc_serial.RULE_ONCE_S_TIME: localize_time_utc(
+                jrpc_serial.RULE_ONCE_DATE: misc.get_midnight() + timedelta(
+                    days=1
+                ),
+                jrpc_serial.RULE_ONCE_S_TIME: misc.localize_time_utc(
                     time(hour=11, minute=15)
                 ),
-                jrpc_serial.RULE_ONCE_E_TIME: localize_time_utc(
+                jrpc_serial.RULE_ONCE_E_TIME: misc.localize_time_utc(
                     time(hour=11, minute=45)
                 )
             }
@@ -293,7 +299,9 @@ class JRPCRulesTest(TestCase):
             print str(expected_r)
 
         self.assertEquals(
-            expected_r, rules_g1c1[0], 'Wrong ONCE rule!'
+            expected_r, rules_g1c1[0], 'Wrong ONCE rule!, diff = ' + str(
+                diff(expected_r, rules_g1c1[0])
+            )
         )
 
     def test_add_daily_rule(self):
@@ -314,16 +322,16 @@ class JRPCRulesTest(TestCase):
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_DAILY_I_DATE: get_today_utc().replace(
-                    hour=0, minute=0, second=0
-                ) + timedelta(days=1),
-                jrpc_serial.RULE_DAILY_F_DATE: get_today_utc().replace(
-                    hour=0, minute=0, second=0
-                ) + timedelta(days=366),
-                jrpc_serial.RULE_S_TIME: localize_time_utc(
+                jrpc_serial.RULE_DAILY_I_DATE: misc.get_midnight() + timedelta(
+                    days=1
+                ),
+                jrpc_serial.RULE_DAILY_F_DATE: misc.get_midnight() + timedelta(
+                    days=366
+                ),
+                jrpc_serial.RULE_S_TIME: misc.localize_time_utc(
                     time(hour=11, minute=15)
                 ),
-                jrpc_serial.RULE_E_TIME: localize_time_utc(
+                jrpc_serial.RULE_E_TIME: misc.localize_time_utc(
                     time(hour=11, minute=45)
                 )
             }
@@ -332,12 +340,14 @@ class JRPCRulesTest(TestCase):
         if self.__verbose_testing:
             print '>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:'
             for r in rules_g1c1:
-                print_dictionary(r)
+                misc.print_dictionary(r)
             print '>>> expected_r:'
-            print_dictionary(expected_r)
+            misc.print_dictionary(expected_r)
 
         self.assertEquals(
-            expected_r, rules_g1c1[0], 'Wrong DAILY rule!'
+            expected_r, rules_g1c1[0], 'Wrong DAILY rule!, diff = ' + str(
+                diff(expected_r, rules_g1c1[0])
+            )
         )
 
     def test_remove_rule(self):
@@ -360,5 +370,6 @@ class JRPCRulesTest(TestCase):
                 'Object should not have been found, rule_id = ' + str(rule.pk)
             )
         except AvailabilityRule.DoesNotExist as e:
+
             if self.__verbose_testing:
                 print e.message

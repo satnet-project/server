@@ -19,6 +19,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
+import logging
 
 import common.testing as db_tools
 
@@ -32,6 +33,10 @@ class SegmentCompatibilityTest(TestCase):
     def setUp(self):
 
         self.__verbose_testing = False
+
+        if not self.__verbose_testing:
+            logging.getLogger('booking').setLevel(level=logging.CRITICAL)
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -58,6 +63,7 @@ class SegmentCompatibilityTest(TestCase):
         )
 
         signals.connect_segments_2_compatibility()
+        signals.connect_segments_2_booking_tle()
 
     def test_compatibility_case_1(self):
         """

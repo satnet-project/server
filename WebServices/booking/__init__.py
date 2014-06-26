@@ -17,4 +17,3 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 # It is necessary to import this module here for rpc4django to detect the RPC
 # methods.
-from booking.jrpc import slots

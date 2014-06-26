@@ -115,6 +115,7 @@ class AvailableBandsManager(models.Manager):
         """
         if not band_name:
             return super(AvailableBandsManager, self).get(args, kwargs)
+
         s = re.split(AvailableBandsManager.__band_name_separator, band_name)
         if len(s) != AvailableBandsManager.__band_name_splits:
             raise Exception('<band_name> incorrect, should have '

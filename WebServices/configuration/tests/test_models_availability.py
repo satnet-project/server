@@ -18,13 +18,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from pytz import utc as pytz_utc
+from datetime import date, time, datetime, timedelta
 from django.test import TestCase
+import logging
 
-import common.testing as db_tools
-
+from common import misc
+from common import testing as db_tools
 from configuration.jrpc import rules as jrpc_rules_if,\
     serialization as jrpc_serial
-from configuration.models.availability import AvailabilitySlots
+from configuration.models.availability import AvailabilitySlot,\
+    AvailabilitySlotsManager
 from configuration.models.rules import AvailabilityRule
 
 
@@ -34,14 +38,17 @@ class TestAvailability(TestCase):
 
         self.__verbose_testing = False
 
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
 
         db_tools.init_available()
         self.__band = db_tools.create_band()
-        self.__test_user_profile = db_tools.create_user_profile()
+        self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
-            user_profile=self.__test_user_profile, identifier=self.__gs_1_id,
+            user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id
@@ -63,7 +70,7 @@ class TestAvailability(TestCase):
             len(a_slots), 0, 'No new available slots should\'ve been generated.'
         )
         self.assertEquals(
-            len(AvailabilitySlots.objects.all()), 0,
+            len(AvailabilitySlot.objects.all()), 0,
             'No AvailabilitySlots expected.'
         )
 
@@ -88,7 +95,7 @@ class TestAvailability(TestCase):
             len(a_slots), 1, '1 slot expected, got = ' + str(len(a_slots))
         )
         self.assertEquals(
-            len(AvailabilitySlots.objects.all()), 1,
+            len(AvailabilitySlot.objects.all()), 1,
             '1 AvailabilitySlot was expected.'
         )
 
@@ -111,7 +118,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 1, '1 slot expected, got = ' + str(len(av_slots))
         )
@@ -127,7 +134,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 7, '7 slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 7, '7 slots expected, got = ' + str(len(av_slots))
         )
@@ -145,7 +152,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 6, '6 slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 6, '6 slots expected, got = ' + str(len(av_slots))
         )
@@ -163,7 +170,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 0, '0 slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 0, '0 slots expected, got = ' + str(len(av_slots))
         )
@@ -180,7 +187,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 6, '6 slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 6, '6 slots expected, got = ' + str(len(av_slots))
         )
@@ -197,7 +204,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 7, '7 slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 7, '7 slots expected, got = ' + str(len(av_slots))
         )
@@ -214,7 +221,7 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 1, '1 slots expected, got = ' + str(len(av_slots))
         )
@@ -231,9 +238,164 @@ class TestAvailability(TestCase):
         self.assertEquals(
             len(a_slots), 0, 'None slots expected, got = ' + str(len(a_slots))
         )
-        av_slots = AvailabilitySlots.objects.all()
+        av_slots = AvailabilitySlot.objects.all()
         self.assertEquals(
             len(av_slots), 0, '0 slots expected, got = ' + str(len(av_slots))
         )
 
+    def test_get_availability_slots(self):
+        """
+        Validates the method that gathers the AvailabilitySlots that are
+        applicable within a defined interval.
+        """
+        if self.__verbose_testing:
+            print '##### test_get_availability_slots:'
 
+        # 0) Stability with None...
+        self.assertEquals(
+            AvailabilitySlotsManager.get_availability_slots(None), [],
+            '[] should be the result!'
+        )
+
+        # 1) Stability with []...
+        self.assertEquals(
+            AvailabilitySlotsManager.get_availability_slots(
+                groundstation_channel=self.__gs_1_ch_1,
+            ), [],
+            '[] should be the result!'
+        )
+
+        # 2) Single daily rule, adds +7 availability slots...
+        rule_1_id = jrpc_rules_if.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id,
+            db_tools.create_jrpc_daily_rule()
+        )
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1),
+        )
+        x_slots = [(
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=15)
+                )
+            ),
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=45)
+                )
+            )
+        )]
+        self.assertEquals(
+            a_slots, x_slots,
+            'Wrong slots! expected = ' + misc.list_2_string(x_slots)
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 3) Period ending in the middle of an AvailabilitySlot, should
+        # return the applicable half of that slot...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1),
+            duration=timedelta(hours=11, minutes=30)
+        )
+        x_slots = [(
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=15)
+                )
+            ),
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=30)
+                )
+            )
+        )]
+        self.assertEquals(
+            a_slots, x_slots,
+            'Wrong slots! expected = ' + misc.list_2_string(x_slots)
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 4) Period starting in the middle of an AvailabilitySlot, should
+        # return the applicable half of that slot...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1, hours=11, minutes=30),
+            duration=timedelta(hours=4)
+        )
+        x_slots = [(
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=30)
+                )
+            ),
+            pytz_utc.localize(
+                datetime.combine(
+                    date.today() + timedelta(days=1),
+                    time(hour=11, minute=45)
+                )
+            )
+        )]
+        self.assertEquals(
+            a_slots, x_slots,
+            'Wrong slots! expected = ' + misc.list_2_string(x_slots)
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 5) Period starting after an AvailabilitySlot, should not return any
+        #  slot at all...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1, hours=11, minutes=46),
+            duration=timedelta(hours=3)
+        )
+        self.assertEquals(
+            a_slots, [],
+            'Wrong slots! expected = ' + misc.list_2_string([])
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 6) Period starting JUST after an AvailabilitySlot, should not return
+        #  any slot at all...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1, hours=11, minutes=45),
+            duration=timedelta(hours=3)
+        )
+        self.assertEquals(
+            a_slots, [],
+            'Wrong slots! expected = ' + misc.list_2_string([])
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 7) Period ending after an AvailabilitySlot, should not return any
+        #  slot at all...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1, hours=7, minutes=00),
+            duration=timedelta(hours=3)
+        )
+        self.assertEquals(
+            a_slots, [],
+            'Wrong slots! expected = ' + misc.list_2_string([])
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )
+
+        # 8) Period starting JUST before an AvailabilitySlot, should not return
+        #  any slot at all...
+        a_slots = AvailabilitySlotsManager.get_availability_slots(
+            groundstation_channel=self.__gs_1_ch_1,
+            start=misc.get_midnight()+timedelta(days=1, hours=8, minutes=15),
+            duration=timedelta(hours=3)
+        )
+        self.assertEquals(
+            a_slots, [],
+            'Wrong slots! expected = ' + misc.list_2_string([])
+            + '\n, actual = ' + misc.list_2_string(a_slots)
+        )

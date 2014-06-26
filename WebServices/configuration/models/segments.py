@@ -23,12 +23,12 @@ from django.db import models
 from django_countries.fields import CountryField
 
 from accounts.models import UserProfile
-from common.misc import get_altitude
+from common.gis import get_altitude
 from configuration.models.channels import SpacecraftChannel, \
     GroundStationChannel
 
 
-class SpacecraftConfigurationManager(models.Manager):
+class SpacecraftManager(models.Manager):
     """
     Manager that contains all the methods required for accessing to the
     contents of the SpacecraftConfiguration database models.
@@ -84,7 +84,7 @@ class SpacecraftConfigurationManager(models.Manager):
         return gs.channels.all().get(identifier=channel_id)
 
 
-class SpacecraftConfiguration(models.Model):
+class Spacecraft(models.Model):
     """
     This class models the configuration required for managing any type of
     spacecraft in terms of communications and pass simulations.
@@ -92,7 +92,7 @@ class SpacecraftConfiguration(models.Model):
     class Meta:
         app_label = 'configuration'
 
-    objects = SpacecraftConfigurationManager()
+    objects = SpacecraftManager()
 
     user = models.ForeignKey(UserProfile)
     identifier = models.CharField(
@@ -138,13 +138,13 @@ class SpacecraftConfiguration(models.Model):
             self.save()
 
 
-class GroundStationConfigurationManager(models.Manager):
+class GroundStationsManager(models.Manager):
     """
     Manager that contains all the methods required for accessing to the
     contents of the GroundStationConfiguration database models.
     """
 
-    def create(self, latitude, longitude, altitude, **kwargs):
+    def create(self, latitude, longitude, altitude=None, **kwargs):
         """
         Method for creating a new GroundStation. This method has to be
         overwritten for incorporating some automatic calculations to be
@@ -152,8 +152,9 @@ class GroundStationConfigurationManager(models.Manager):
         from the user.
         :return The just-created object.
         """
-        altitude = get_altitude(latitude, longitude)[0]
-        return super(GroundStationConfigurationManager, self).create(
+        if altitude is None:
+            altitude = get_altitude(latitude, longitude)[0]
+        return super(GroundStationsManager, self).create(
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
@@ -214,7 +215,7 @@ class GroundStationConfigurationManager(models.Manager):
         return gs.channels.all().get(identifier=channel_id)
 
 
-class GroundStationConfiguration(models.Model):
+class GroundStation(models.Model):
     """
     This class models the configuration required for managing a generic ground
     station, in terms of communication channels and pass simulations.
@@ -222,7 +223,7 @@ class GroundStationConfiguration(models.Model):
     class Meta:
         app_label = 'configuration'
 
-    objects = GroundStationConfigurationManager()
+    objects = GroundStationsManager()
 
     user = models.ForeignKey(
         UserProfile,
@@ -253,11 +254,9 @@ class GroundStationConfiguration(models.Model):
         ]
     )
 
-    contact_elevation = models.DecimalField(
-        'Contact elevation (degrees)',
-        max_digits=4, decimal_places=2
+    contact_elevation = models.FloatField(
+        'Minimum elevation for contact(degrees)'
     )
-
     latitude = models.FloatField('Latitude of the Ground Station')
     longitude = models.FloatField('Longitude of the Ground Station')
     altitude = models.FloatField('Altitude of the Ground Station')
@@ -278,7 +277,7 @@ class GroundStationConfiguration(models.Model):
         all its associated resources.
         """
         self.channels.all().delete()
-        super(GroundStationConfiguration, self).delete()
+        super(GroundStation, self).delete()
 
     def update(
         self, callsign=None,

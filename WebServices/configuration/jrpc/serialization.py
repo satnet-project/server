@@ -1,5 +1,6 @@
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -145,7 +146,7 @@ def check_sc_channel_configuration(configuration):
         raise Exception("Parameter not provided, key = " + BANDWIDTH_K)
 
 
-def get_gs_channel_configuration(channel):
+def serialize_gs_channel_configuration(channel):
     """
     This method returns a dictionary with the key, value pairs containing
     the current configuration for the given channel object. The keys used are
@@ -153,39 +154,39 @@ def get_gs_channel_configuration(channel):
     """
     return {
         CH_ID_K: channel.identifier,
-        BAND_K: str(channel.band.get_band_name()),
+        BAND_K: channel.band.get_band_name(),
         MODULATIONS_K: [
-            obj.modulation for obj in channel.modulation.all()
+            obj.modulation for obj in channel.modulations.all()
         ],
         POLARIZATIONS_K: [
-            obj.polarization for obj in channel.polarization.all()
+            obj.polarization for obj in channel.polarizations.all()
         ],
         BITRATES_K: [
-            obj.bitrate for obj in channel.bitrate.all()
+            obj.bitrate for obj in channel.bitrates.all()
         ],
         BANDWIDTHS_K: [
-            obj.bandwidth for obj in channel.bandwidth.all()
+            obj.bandwidth for obj in channel.bandwidths.all()
         ]
     }
 
 
-def get_sc_channel_configuration(channel):
+def serialize_sc_channel_configuration(channel):
     """
     This method returns a dictionary with the key, value pairs containing
     the current configuration for the given channel object. The keys used are
     the ones required by the JRPC protocol.
     """
     return {
-        CH_ID_K: str(channel.identifier),
-        FREQUENCY_K: str(channel.frequency),
-        MODULATION_K: str(channel.modulation),
-        POLARIZATION_K: str(channel.polarization),
-        BITRATE_K: str(channel.bitrate),
-        BANDWIDTH_K: str(channel.bandwidth)
+        CH_ID_K: channel.identifier,
+        FREQUENCY_K: channel.frequency,
+        MODULATION_K: channel.modulation.modulation,
+        POLARIZATION_K: channel.polarization.polarization,
+        BITRATE_K: channel.bitrate.bitrate,
+        BANDWIDTH_K: channel.bandwidth.bandwidth
     }
 
 
-def get_sc_channel_parameters(configuration):
+def deserialize_sc_channel_parameters(configuration):
     """
     Spacecraft channel parameters are returned from within the configuration
     structure passed as first parameter.
@@ -193,14 +194,23 @@ def get_sc_channel_parameters(configuration):
     :return: Tuple containing all parameters as separate variables.
     """
     check_sc_channel_configuration(configuration)
+
     return configuration[FREQUENCY_K],\
-        configuration[MODULATION_K], \
-        configuration[BITRATE_K],\
-        configuration[BANDWIDTH_K], \
-        configuration[POLARIZATION_K]
+        AvailableModulations.objects.get(
+            modulation=configuration[MODULATION_K]
+        ),\
+        AvailableBitrates.objects.get(
+            bitrate=configuration[BITRATE_K]
+        ),\
+        AvailableBandwidths.objects.get(
+            bandwidth=configuration[BANDWIDTH_K]
+        ),\
+        AvailablePolarizations.objects.get(
+            polarization=configuration[POLARIZATION_K]
+        )
 
 
-def get_gs_channel_parameters(configuration):
+def deserialize_gs_channel_parameters(configuration):
     """
     This method gets a list of the objects of the database based on the list
     of identifiers provided.
@@ -405,7 +415,7 @@ def serialize_channels(channel_list):
     :return: JSON-like array with the identifiers of the channels.
     """
     return {
-        CHANNEL_LIST_K: [str(c.identifier) for c in channel_list]
+        CHANNEL_LIST_K: [c.identifier for c in channel_list]
     }
 
 
@@ -451,9 +461,9 @@ def serialize_gs_configuration(gs):
     """
     return {
         GS_CALLSIGN_K: gs.callsign,
-        GS_ELEVATION_K: str(gs.contact_elevation),
-        GS_LATLON_K: [str(gs.latitude), str(gs.longitude)],
-        GS_ALTITUDE_K: str(gs.altitude)
+        GS_ELEVATION_K: gs.contact_elevation,
+        GS_LATLON_K: [gs.latitude, gs.longitude],
+        GS_ALTITUDE_K: gs.altitude
     }
 
 

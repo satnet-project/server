@@ -24,7 +24,7 @@ from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
-from configuration.models.segments import GroundStationConfiguration
+from configuration.models.segments import GroundStation
 from common.misc import get_remote_user_location
 
 
@@ -62,19 +62,19 @@ class AddGroundStationView(CreateView):
 
 class ListGroundStationsView(ListView):
 
-    model = GroundStationConfiguration
+    model = GroundStation
     template_name = 'list_groundstations.html'
     context_object_name = 'groundstations_list'
 
     def get_queryset(self):
     
         user = User.objects.get(username=self.request.user.username)
-        return GroundStationConfiguration.objects.filter(user=user.id)
+        return GroundStation.objects.filter(user=user.id)
 
 
 class ConfigureGroundStationView(DetailView):
 
-    model = GroundStationConfiguration
+    model = GroundStation
     template_name = 'configure_groundstation.html'
     gs_object_name = 'g'
     channels_object_name = 'chs'

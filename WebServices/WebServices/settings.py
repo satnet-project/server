@@ -166,9 +166,8 @@ INSTALLED_APPS = (
 
     # ### developed applications
     'accounts',
-    'configuration',
     'booking',
-
+    'configuration',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -218,6 +217,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'booking': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'rpc4django': {
             'handlers': ['console'],
             'level': 'DEBUG',
@@ -247,7 +251,7 @@ SESSION_SECURITY_EXPIRE_AFTER = 540
 # SESSION_SECURITY_PASSIVE_URLS = 
 
 # ### e-mail settings
-EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'mail.calpoly.edu'
 EMAIL_PORT = 25
 

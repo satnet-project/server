@@ -28,7 +28,7 @@ install_packages()
 
     apt-get update
     apt-get dist-upgrade
-    
+
     apt-get install apache2 phpmyadmin
     apt-get install mysql-server libmysqlclient-dev
     apt-get install python python-virtualenv python-pip python-dev python-mysqldb 
@@ -37,7 +37,7 @@ install_packages()
     apt-get clean
 
     pip install virtualenvwrapper
-    
+
 }
 
 configure_mysql()
@@ -83,15 +83,15 @@ create_virtualenv()
     # packages since these should now be installed in the local directories
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
-    
+
     #pip install django==1.5.2
     #pip install eventlog==0.6.2
     #pip install django-jsonfield==0.8.12
     #pip install django-registration==1.0
     #pip install mysql-python==1.2.3
-    
+
     pip install distribute --upgrade
-    
+
     pip install django
     pip install eventlog
     pip install django-jsonfield
@@ -105,14 +105,16 @@ create_virtualenv()
     pip install django-leaflet
     pip install python-dateutil
     pip install django-extensions
+    pip install pyephem
     # ### testing packages
     pip install django-selenium
     pip install selenium
     pip install six
     pip install unittest-data-provider
-    
+    pip install datadiff
+
     pip install git+https://github.com/hzdg/django-periodically.git#egg=django-periodically
-    
+
     # ### TODO make it relocatable...
     # ### rellocatable virtual environment: --relocatable
     # virtualenv --relocatable $venv

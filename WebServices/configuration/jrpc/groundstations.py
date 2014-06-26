@@ -22,7 +22,7 @@ from rpc4django import rpcmethod
 
 from configuration.jrpc.serialization import serialize_gs_configuration,\
     deserialize_gs_configuration, CHANNEL_LIST_K
-from configuration.models.segments import GroundStationConfiguration
+from configuration.models.segments import GroundStation
 
 
 @rpcmethod(
@@ -41,7 +41,7 @@ def list_groundstations(**kwargs):
     # 1) user must be obtained from the request, since this has already been
     #       validated by the authentication backend
     http_request = kwargs.get('request', None)
-    gs_objects = GroundStationConfiguration.objects.filter(
+    gs_objects = GroundStation.objects.filter(
         user=http_request.user
     ).all()
     return [str(g.identifier) for g in gs_objects]
@@ -59,7 +59,7 @@ def get_configuration(ground_station_id):
     Returns the configuration for the given ground station.
     """
     return serialize_gs_configuration(
-        GroundStationConfiguration.objects.get(identifier=ground_station_id)
+        GroundStation.objects.get(identifier=ground_station_id)
     )
 
 
@@ -76,7 +76,7 @@ def set_configuration(ground_station_id, configuration):
     """
     callsign, contact_elevation, latitude, longitude =\
         deserialize_gs_configuration(configuration)
-    gs = GroundStationConfiguration.objects.get(identifier=ground_station_id)
+    gs = GroundStation.objects.get(identifier=ground_station_id)
     gs.update(
         callsign=callsign, contact_elevation=contact_elevation,
         latitude=latitude, longitude=longitude
@@ -95,7 +95,7 @@ def list_channels(ground_station_id):
 
     Returns the channels for the given ground station.
     """
-    ch_objects = GroundStationConfiguration.objects\
+    ch_objects = GroundStation.objects\
         .get(identifier=ground_station_id)\
         .channels.all()
     return {
@@ -115,7 +115,7 @@ def delete(ground_station_id):
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
     """
-    GroundStationConfiguration.objects\
+    GroundStation.objects\
         .get(identifier=ground_station_id)\
         .delete()
     return True

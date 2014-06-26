@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 from django.forms import ModelForm, HiddenInput, CharField
 from django.utils.translation import ugettext_lazy as _
 
-from configuration.models.segments import GroundStationConfiguration
+from configuration.models.segments import GroundStation
 
 
 class AddGroundStationForm(ModelForm):
@@ -28,7 +28,7 @@ class AddGroundStationForm(ModelForm):
     contact_elevation = CharField(label=_("Elevation (deg)")) 
     
     class Meta:
-        model = GroundStationConfiguration
+        model = GroundStation
         fields = (
             'user', 'identifier', 'callsign', 'contact_elevation',
             'latitude', 'longitude', 'country', 'IARU_region'

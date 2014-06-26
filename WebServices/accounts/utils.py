@@ -42,14 +42,9 @@ def get_user_operations(request):
     
     :Author:
         Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
-        
     """
-
     operations = {}
 
-    for i, j in request.iteritems():
-        logger.debug(__name__ + '#### i = ' + i + ', j = ' + j)
-    
     for k, operation in request.iteritems():
         
         if not p.match(k):

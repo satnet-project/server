@@ -21,7 +21,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from rpc4django import rpcmethod
 
 from configuration.jrpc import serialization as jrpc_serial
-from configuration.models.segments import SpacecraftConfiguration
+from configuration.models.segments import Spacecraft
 
 
 @rpcmethod(
@@ -40,7 +40,7 @@ def list_spacecraft(**kwargs):
     # 1) user must be obtained from the request, since this has already been
     #       validated by the authentication backend
     http_request = kwargs.get('request', None)
-    spacecraft = SpacecraftConfiguration.objects.filter(
+    spacecraft = Spacecraft.objects.filter(
         user=http_request.user
     ).all()
     return [str(g.identifier) for g in spacecraft]
@@ -58,7 +58,7 @@ def get_configuration(spacecraft_id):
     Returns the configuration for the given Spacecraft.
     """
     return jrpc_serial.serialize_sc_configuration(
-        SpacecraftConfiguration.objects.get(identifier=spacecraft_id)
+        Spacecraft.objects.get(identifier=spacecraft_id)
     )
 
 
@@ -74,7 +74,7 @@ def set_configuration(spacecraft_id, configuration):
     Returns the configuration for the given Spacecraft.
     """
     callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
-    sc = SpacecraftConfiguration.objects.get(identifier=spacecraft_id)
+    sc = Spacecraft.objects.get(identifier=spacecraft_id)
     sc.update(callsign=callsign, tle_id=tle_id)
     return True
 
@@ -91,7 +91,7 @@ def list_channels(spacecraft_id):
     Returns the channels for the given Spacecraft.
     """
     return jrpc_serial.serialize_channels(
-        SpacecraftConfiguration.objects.get(
+        Spacecraft.objects.get(
             identifier=spacecraft_id
         ).channels.all()
     )
@@ -109,7 +109,7 @@ def delete(spacecraft_id):
     Deletes the ground station identified by the given Spacecraft. It
     also deletes all channels associated to this ground station.
     """
-    SpacecraftConfiguration.objects\
+    Spacecraft.objects\
         .get(identifier=spacecraft_id)\
         .delete()
     return True

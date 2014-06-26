@@ -17,15 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import timedelta
 from django.test import TestCase
+import logging
 
-import common.testing as db_tools
 from common.misc import get_today_utc, print_list
+import common.testing as db_tools
 import configuration.jrpc.rules as jrpc_rules
 import configuration.jrpc.serialization as jrpc_keys
-from configuration.models.channels import GroundStationChannel
-from configuration.models.segments import GroundStationConfiguration
-from configuration.models.rules import AvailabilityRule,\
-    AvailabilityRuleManager
+from configuration.models.rules import AvailabilityRule
 
 
 class TestModels(TestCase):
@@ -44,6 +42,9 @@ class TestModels(TestCase):
         the following tests.
         """
         self.__verbose_testing = False
+
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -64,7 +65,7 @@ class TestModels(TestCase):
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
 
-    def get_availability_slots(self):
+    def test_get_availability_slots(self):
         """
         This test validates the generation of slots by the different rules
         supported by the configuration service.
@@ -72,13 +73,8 @@ class TestModels(TestCase):
         if self.__verbose_testing:
             print '>>>>> get_availability_slots'
 
-        gs = db_tools.create_gs(
-            user_profile=self.__test_user_profile,
-            identifier=self.__gs_1_id,
-        )
-        db_tools.gs_add_channel(
-            gs, self.__band,
-            self.__gs_1_id, self.__gs_1_ch_1_id
+        self.__gs_1_ch_1 = db_tools.gs_add_channel(
+            self.__gs, self.__band, self.__gs_1_ch_1_id
         )
 
         rule_1 = db_tools.create_jrpc_once_rule(
@@ -86,34 +82,63 @@ class TestModels(TestCase):
             date=get_today_utc() + timedelta(days=2)
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_1)
+        if self.__verbose_testing:
+            print 'slots = ' + str(len(
+                AvailabilityRule.objects.get_availability_slots(
+                    self.__gs_1_ch_1
+                )
+            ))
 
         rule_2 = db_tools.create_jrpc_daily_rule()
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_2)
+        if self.__verbose_testing:
+            print 'slots = ' + str(len(
+                AvailabilityRule.objects.get_availability_slots(
+                    self.__gs_1_ch_1
+                )
+            ))
 
         rule_3 = db_tools.create_jrpc_once_rule(
             operation=jrpc_keys.RULE_OP_REMOVE,
             date=get_today_utc() + timedelta(days=3)
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_3)
+        if self.__verbose_testing:
+            print 'slots = ' + str(len(
+                AvailabilityRule.objects.get_availability_slots(
+                    self.__gs_1_ch_1
+                )
+            ))
 
         rule_4 = db_tools.create_jrpc_once_rule(
             operation=jrpc_keys.RULE_OP_REMOVE,
             date=get_today_utc() + timedelta(days=3)
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_4)
+        if self.__verbose_testing:
+            print 'slots = ' + str(len(
+                AvailabilityRule.objects.get_availability_slots(
+                    self.__gs_1_ch_1
+                )
+            ))
 
-        ch_1_pk = GroundStationChannel\
-            .objects.get(identifier=self.__gs_1_ch_1_id).pk
-        rules_ch_1_n = len(AvailabilityRule.objects
-                           .filter(gs_channel_id=ch_1_pk).all())
-        self.assertEquals(rules_ch_1_n, 3, 'Incorrect number of rules.')
-
-        ch = GroundStationConfiguration.objects.get_channel(
-            ground_station_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id
+        rules_n = len(AvailabilityRule.objects.filter(
+            gs_channel=self.__gs_1_ch_1).all()
         )
-        actual_s = AvailabilityRuleManager.get_availability_slots(ch)
+        self.assertEquals(
+            rules_n, 4,
+            'Incorrect number of rules, expected = 4, actual = ' + str(rules_n)
+        )
+
+        actual_s = AvailabilityRule.objects.get_availability_slots(
+            self.__gs_1_ch_1
+        )
         if self.__verbose_testing:
             print_list(actual_s, 'AVAILABLE SLOTS')
 
-        self.assertEquals(len(actual_s), 8, 'Wrong number of available slots.')
+        self.assertEquals(
+            len(actual_s), 5,
+            'Wrong number of available slots, e = 5, actual = ' + str(len(
+                actual_s
+            ))
+        )

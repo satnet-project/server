@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from rpc4django import rpcmethod
 
 from configuration.models import rules
-from configuration.models.segments import GroundStationConfiguration
+from configuration.models.segments import GroundStation
 from configuration.jrpc.serialization import deserialize_rule_cfg, \
     serialize_rules
 
@@ -34,7 +34,7 @@ def add_rule(ground_station_id, channel_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added.
     :return: Identifier of the rule that has just been added.
     """
-    ch = GroundStationConfiguration.objects.get_channel(
+    ch = GroundStation.objects.get_channel(
         ground_station_id, channel_id
     )
     op, periodicity, dates = deserialize_rule_cfg(rule_cfg)
@@ -53,7 +53,7 @@ def remove_rule(ground_station_id, channel_id, rule_id):
     :param rule_id: Identifier of the rule to be removed.
     :return: 'True' in case the rule could be removed.
     """
-    GroundStationConfiguration.objects.get_channel(
+    GroundStation.objects.get_channel(
         ground_station_id, channel_id
     )
     rule = rules.AvailabilityRule.objects.get(pk=rule_id)
@@ -72,7 +72,7 @@ def get_rules(ground_station_id, channel_id):
     :return: Array with JSON objects that contain the configuration for each
     of the rules of this pair Ground Station, Channel.
     """
-    gs_ch = GroundStationConfiguration.objects.get_channel(
+    gs_ch = GroundStation.objects.get_channel(
         ground_station_id, channel_id
     )
     ch_rules = rules.AvailabilityRule.objects.filter(gs_channel=gs_ch)

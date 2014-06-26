@@ -21,7 +21,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 
-from common.misc import list_2_string
+from common import misc
 from configuration.models.channels import SpacecraftChannel,\
     GroundStationChannel
 
@@ -71,6 +71,8 @@ class ChannelCompatibilityManager(models.Manager):
         s.groundstation_channels.add(*compatible_chs)
         s.save()
 
+        # ### TODO :: update OperationalSlots
+
     @staticmethod
     def sc_channel_deleted(sender, instance, **kwargs):
         """
@@ -83,6 +85,8 @@ class ChannelCompatibilityManager(models.Manager):
             s.delete()
         except ObjectDoesNotExist:
             pass
+
+        # ### TODO :: update OperationalSlots
 
     @staticmethod
     def gs_channel_saved(sender, instance, created, **kwargs):
@@ -127,6 +131,8 @@ class ChannelCompatibilityManager(models.Manager):
                 c.groundstation_channels.add(instance)
                 c.save()
 
+        # ### TODO :: update OperationalSlots
+
     @staticmethod
     def gs_channel_deleted(sender, instance, **kwargs):
         """
@@ -134,17 +140,21 @@ class ChannelCompatibilityManager(models.Manager):
         this GroundStation channel that has just been removed from the database.
         :param gs_ch_id: Identifier of the GroundStation channel to be removed.
         """
-        chs = ChannelCompatibility.objects.filter(
+        compatible_chs = ChannelCompatibility.objects.filter(
             groundstation_channels=instance
         )
+        if not compatible_chs:
+            return
 
-        for c_ch in chs:
+        for c_ch in compatible_chs:
 
             c_ch.groundstation_channels.remove(instance)
 
             if not c_ch.groundstation_channels.all():
 
                 c_ch.delete()
+
+        # ### TODO :: update OperationalSlots
 
 
 class ChannelCompatibility(models.Model):
@@ -172,9 +182,9 @@ class ChannelCompatibility(models.Model):
         Transforms the contents of this object into a human readable string.
         """
         return str(self.__class__.__name__)\
-            + ', sc_ch = '\
-            + str(self.spacecraft_channel) + ', gs_chs = '\
-            + list_2_string(
+            + ', sc_ch = ' + str(self.spacecraft_channel)\
+            + ', gs_chs = '\
+            + misc.list_2_string(
                 self.groundstation_channels.all(),
                 list_name='gs_chs'
             )
