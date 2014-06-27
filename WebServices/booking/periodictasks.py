@@ -43,7 +43,7 @@ def update_pass_slots():
     following ones (3 days in advance).
     """
     logger.info("Updating pass slots, daily task execution!")
-    OperationalSlotsManager.update_slots(
+    OperationalSlotsManager.populate_slots(
         start=misc.get_midnight()+timedelta(days=3),
         duration=timedelta(days=1)
     )

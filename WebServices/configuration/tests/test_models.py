@@ -56,6 +56,7 @@ class TestModels(TestCase):
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
         db_tools.init_available()
+        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(

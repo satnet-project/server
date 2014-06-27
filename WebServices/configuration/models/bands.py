@@ -75,8 +75,10 @@ class AvailableBandwidths(models.Model):
     class Meta:
         app_label = 'configuration'
 
-    bandwidth = models.DecimalField('Bandwidth (kHz)',
-                                    max_digits=24, decimal_places=9)
+    bandwidth = models.DecimalField(
+        'Bandwidth (kHz)',
+        max_digits=24, decimal_places=9
+    )
 
 
 class AvailablePolarizations(models.Model):
@@ -94,8 +96,11 @@ class AvailablePolarizations(models.Model):
         ('LHCP', 'LHCP polarization'),
     )
 
-    polarization = models.CharField('Polarization modes',
-                                    max_length=10, choices=POLARIZATION_CHOICES)
+    polarization = models.CharField(
+        'Polarization modes',
+        max_length=10,
+        choices=POLARIZATION_CHOICES
+    )
 
 
 class AvailableBandsManager(models.Manager):

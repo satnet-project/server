@@ -18,12 +18,28 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core.exceptions import ObjectDoesNotExist
+from django import dispatch
+from django.core import exceptions
 from django.db import models
+import logging
+logger = logging.getLogger(__name__)
 
 from common import misc
-from configuration.models.channels import SpacecraftChannel,\
-    GroundStationChannel
+from configuration.models import channels
+
+
+compatibility_add_gs_ch_signal = dispatch.Signal(
+    providing_args=['instance', 'compatible_channels']
+)
+compatibility_delete_gs_ch_signal = dispatch.Signal(
+    providing_args=['instance', 'compatible_channels']
+)
+compatibility_add_sc_ch_signal = dispatch.Signal(
+    providing_args=['instance', 'compatible_channels']
+)
+compatibility_delete_sc_ch_signal = dispatch.Signal(
+    providing_args=['instance', 'compatible_channels']
+)
 
 
 class ChannelCompatibilityManager(models.Manager):
@@ -32,7 +48,7 @@ class ChannelCompatibilityManager(models.Manager):
     """
 
     @staticmethod
-    def sc_channel_saved(sender, instance, **kwargs):
+    def sc_channel_saved(sender, instance, created, raw, **kwargs):
         """
         Updates the compatible channels table with this new channel.
 
@@ -53,14 +69,17 @@ class ChannelCompatibilityManager(models.Manager):
         this case, the ANY polarization indicates that either the spacecraft
         or the ground station implement/require any value.
         """
+        if created or raw:
+            return
+
         try:
             ChannelCompatibility.objects.get(spacecraft_channel=instance)
             return
-        except ObjectDoesNotExist:
+        except exceptions.ObjectDoesNotExist:
             pass
 
         # 1) first, we get the list of compatible channels with the given one.
-        compatible_chs = GroundStationChannel.objects\
+        compatible_chs = channels.GroundStationChannel.objects\
             .find_compatible_channels(instance)
         if not compatible_chs:
             return
@@ -71,7 +90,12 @@ class ChannelCompatibilityManager(models.Manager):
         s.groundstation_channels.add(*compatible_chs)
         s.save()
 
-        # ### TODO :: update OperationalSlots
+        # 3) notify other tables with a custom signal
+        compatibility_add_sc_ch_signal.send(
+            sender=ChannelCompatibility,
+            instance=instance,
+            compatible_channels=compatible_chs
+        )
 
     @staticmethod
     def sc_channel_deleted(sender, instance, **kwargs):
@@ -80,16 +104,30 @@ class ChannelCompatibilityManager(models.Manager):
         this spacecraft channel that has just been removed from the database.
         :param sc_ch_id: Identifier of the Spacecraft channel to be removed.
         """
+        compatible_chs = []
         try:
             s = ChannelCompatibility.objects.get(spacecraft_channel=instance)
+            compatible_chs = [
+                channels.GroundStationChannel.objects.get(identifier=id_gs_ch_i)
+                for id_gs_ch_i in s.groundstation_channels.all()
+            ]
             s.delete()
-        except ObjectDoesNotExist:
-            pass
+        except exceptions.ObjectDoesNotExist:
+            logger.info(
+                'Deleted SpacecraftChannel <' + str(instance.identifier)
+                + '> does not exist in the Compatibility table.'
+            )
+            return
 
-        # ### TODO :: update OperationalSlots
+        # 3) table change notification through a custom signal
+        compatibility_delete_sc_ch_signal.send(
+            sender=ChannelCompatibility,
+            instance=instance,
+            compatible_channels=compatible_chs
+        )
 
     @staticmethod
-    def gs_channel_saved(sender, instance, created, **kwargs):
+    def gs_channel_saved(sender, instance, created, raw, **kwargs):
         """
         Updates the compatible channels table with this new GS channel. This
         means that this function must:
@@ -103,14 +141,13 @@ class ChannelCompatibilityManager(models.Manager):
         The filtering rules for checking the compatibility of this new GS
         channel with the existing SC channels,
         """
-
         # ### We wait for the object to be updated after creation with all
         # the information in the ManyToMany fields.
-        if created:
+        if created or raw:
             return
 
         # 1) first we get the list of the compatible SC channels
-        compatible_chs = SpacecraftChannel.objects\
+        compatible_chs = channels.SpacecraftChannel.objects\
             .find_compatible_channels(instance)
         if not compatible_chs:
             return
@@ -123,7 +160,7 @@ class ChannelCompatibilityManager(models.Manager):
 
             try:
                 c = ChannelCompatibility.objects.get(spacecraft_channel=ch)
-            except ObjectDoesNotExist:
+            except exceptions.ObjectDoesNotExist:
                 c = ChannelCompatibility.objects.create(spacecraft_channel=ch)
 
             if not instance in c.groundstation_channels.all():
@@ -131,7 +168,12 @@ class ChannelCompatibilityManager(models.Manager):
                 c.groundstation_channels.add(instance)
                 c.save()
 
-        # ### TODO :: update OperationalSlots
+        # 3) notify other tables with a custom signal
+        compatibility_add_gs_ch_signal.send(
+            sender=ChannelCompatibility,
+            instance=instance,
+            compatible_channels=compatible_chs
+        )
 
     @staticmethod
     def gs_channel_deleted(sender, instance, **kwargs):
@@ -144,6 +186,10 @@ class ChannelCompatibilityManager(models.Manager):
             groundstation_channels=instance
         )
         if not compatible_chs:
+            logger.info(
+                'Deleted GroundStationChannel <' + str(instance.identifier)
+                + '> does not exist in the Compatibility table.'
+            )
             return
 
         for c_ch in compatible_chs:
@@ -154,7 +200,12 @@ class ChannelCompatibilityManager(models.Manager):
 
                 c_ch.delete()
 
-        # ### TODO :: update OperationalSlots
+        # 3) table change notification through a custom signal
+        compatibility_delete_gs_ch_signal.send(
+            sender=ChannelCompatibility,
+            instance=instance,
+            compatible_channels=compatible_chs
+        )
 
 
 class ChannelCompatibility(models.Model):
@@ -169,11 +220,11 @@ class ChannelCompatibility(models.Model):
     objects = ChannelCompatibilityManager()
 
     spacecraft_channel = models.ForeignKey(
-        SpacecraftChannel,
+        channels.SpacecraftChannel,
         verbose_name='Reference to the compatible Spacecraft channel.'
     )
     groundstation_channels = models.ManyToManyField(
-        GroundStationChannel,
+        channels.GroundStationChannel,
         verbose_name='Reference to all the compatible GroundStation channels.'
     )
 

@@ -20,16 +20,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
 
-from booking.models.tle import TwoLineElementsManager
-from booking.models.operational import OperationalSlotsManager
-from configuration.models.availability import AvailabilitySlotsManager,\
-    AvailabilitySlot
-from configuration.models.channels import GroundStationChannel,\
-    SpacecraftChannel
-from configuration.models.compatibility import ChannelCompatibilityManager
-from configuration.models.rules import AvailabilityRuleOnce,\
-    AvailabilityRuleDaily, AvailabilityRuleWeekly
-from configuration.models.segments import Spacecraft
+from booking.models import operational, tle
+from configuration.models import availability
+from configuration.models import channels, compatibility, rules, segments
 
 
 def connect_rules_2_availability():
@@ -38,33 +31,33 @@ def connect_rules_2_availability():
     of a rule with the callbacks for updating the AvailabilitySlots table.
     """
     signals.post_save.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleOnce
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleOnce
     )
     signals.post_save.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleDaily
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleDaily
     )
     signals.post_save.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleWeekly
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleWeekly
     )
 
     signals.post_delete.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleOnce
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleOnce
     )
     signals.post_delete.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleDaily
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleDaily
     )
     signals.post_delete.connect(
-        AvailabilitySlotsManager.availability_rule_updated,
-        sender=AvailabilityRuleWeekly
+        availability.AvailabilitySlotsManager.availability_rule_updated,
+        sender=rules.AvailabilityRuleWeekly
     )
 
 
-def connect_segments_2_compatibility():
+def connect_channels_2_compatibility():
     """
     This function connects all the signals triggered during the
     creation/save/removal of a segment (either a GroundStaiton or a
@@ -72,20 +65,20 @@ def connect_segments_2_compatibility():
     table that are responsible for updating the contents of the latter.
     """
     signals.post_save.connect(
-        ChannelCompatibilityManager.gs_channel_saved,
-        sender=GroundStationChannel
+        compatibility.ChannelCompatibilityManager.gs_channel_saved,
+        sender=channels.GroundStationChannel
     )
     signals.post_save.connect(
-        ChannelCompatibilityManager.sc_channel_saved,
-        sender=SpacecraftChannel
+        compatibility.ChannelCompatibilityManager.sc_channel_saved,
+        sender=channels.SpacecraftChannel
     )
     signals.pre_delete.connect(
-        ChannelCompatibilityManager.gs_channel_deleted,
-        sender=GroundStationChannel
+        compatibility.ChannelCompatibilityManager.gs_channel_deleted,
+        sender=channels.GroundStationChannel
     )
     signals.pre_delete.connect(
-        ChannelCompatibilityManager.sc_channel_deleted,
-        sender=SpacecraftChannel
+        compatibility.ChannelCompatibilityManager.sc_channel_deleted,
+        sender=channels.SpacecraftChannel
     )
 
 
@@ -96,12 +89,12 @@ def connect_segments_2_booking_tle():
     Spacecraft), with some callback functions at the NoradTLE models.
     """
     signals.post_save.connect(
-        TwoLineElementsManager.spacecraft_added,
-        sender=Spacecraft
+        tle.TwoLineElementsManager.spacecraft_added,
+        sender=segments.Spacecraft
     )
     signals.pre_delete.connect(
-        TwoLineElementsManager.spacecraft_removed,
-        sender=Spacecraft
+        tle.TwoLineElementsManager.spacecraft_removed,
+        sender=segments.Spacecraft
     )
 
 
@@ -112,18 +105,33 @@ def connect_availability_2_operational():
     table.
     """
     signals.post_save.connect(
-        OperationalSlotsManager.availability_slot_added,
-        sender=AvailabilitySlot
+        operational.OperationalSlotsManager.availability_slot_added,
+        sender=availability.AvailabilitySlot
     )
     signals.pre_delete.connect(
-        OperationalSlotsManager.availability_slot_removed,
-        sender=AvailabilitySlot
+        operational.OperationalSlotsManager.availability_slot_removed,
+        sender=availability.AvailabilitySlot
     )
 
 
 def connect_compatibility_2_operational():
     """
-
-    :return:
+    Connects the events (gs_ch add/remove and sc_ch add/remove) that occur at
+    the Compatibility table with the OperationalSlots table.
     """
-    pass
+    compatibility.compatibility_add_gs_ch_signal.connect(
+        operational.OperationalSlotsManager.compatibility_gs_channel_added,
+        sender=compatibility.ChannelCompatibility
+    )
+    compatibility.compatibility_add_sc_ch_signal.connect(
+        operational.OperationalSlotsManager.compatibility_sc_channel_added,
+        sender=compatibility.ChannelCompatibility
+    )
+    compatibility.compatibility_delete_gs_ch_signal.connect(
+        operational.OperationalSlotsManager.compatibility_gs_channel_deleted,
+        sender=compatibility.ChannelCompatibility
+    )
+    compatibility.compatibility_delete_sc_ch_signal.connect(
+        operational.OperationalSlotsManager.compatibility_sc_channel_deleted,
+        sender=compatibility.ChannelCompatibility
+    )

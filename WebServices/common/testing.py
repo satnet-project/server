@@ -96,7 +96,7 @@ def create_request(url='/test', user_profile=None):
 def create_sc(
     user_profile=None, identifier='sc-uvigo',
     callsign='BABA00',
-    tle_id='humd'
+    tle_id='XATCOBEO'
 ):
 
     username = 'testuser'

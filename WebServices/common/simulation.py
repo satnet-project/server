@@ -59,31 +59,6 @@ def create_groundstation(ground_station):
     return gs_observer
 
 
-def calculate_pass_slots(ground_station, spacecraft, availability_slots):
-    """
-    Calculates the passess for the given spacecraft over the ground_station,
-    for all the availability slots included in the list.
-    :param ground_station: The GroundStation object for PyEphem.
-    :param spacecraft: The Spacecraft object for PyEphem.
-    :param availability_slots: List of tuples with UTC DateTime objects
-    defining the slots of availability.
-    :return: A list with all the pass slots linked with the AvailabilitySlot
-    that generated them.
-    """
-    pass_slots = []
-
-    for a_slot_i in availability_slots:
-
-        pass_slots.append((
-            calculate_pass_slot(
-                ground_station, spacecraft, a_slot_i[0], a_slot_i[1]
-            ),
-            a_slot_i
-        ))
-
-    return pass_slots
-
-
 def ephem_date_2_utc_datetime(e_date):
     """
     Method that converts an Ephem.date object into a Python Datetime object
@@ -107,9 +82,35 @@ def datetime_2_ephem_string(dt):
     return dt.strftime("%Y/%m/%d %I:%M:%S")
 
 
+def calculate_pass_slots(ground_station, spacecraft, availability_slots):
+    """
+    Calculates the passess for the given spacecraft over the ground_station,
+    for all the availability slots included in the list.
+    :param ground_station: The GroundStation object for PyEphem.
+    :param spacecraft: The Spacecraft object for PyEphem.
+    :param availability_slots: List of tuples with UTC DateTime objects
+    defining the slots of availability.
+    :return: A list with all the pass slots linked with the AvailabilitySlot
+    that generated them.
+    """
+    pass_slots = []
+
+    for a_slot_i in availability_slots:
+
+        pass_slots.append((
+            calculate_pass_slot(
+                ground_station, spacecraft, a_slot_i[0], a_slot_i[1]
+            ),
+            a_slot_i[2]
+        ))
+
+    return pass_slots
+
+
 def calculate_pass_slot(
-        observer, body, start, end,
-        minimum_duration=timedelta(minutes=1)
+        observer, body,
+        start, end,
+        minimum_slot_duration=timedelta(minutes=1)
 ):
     """
     Calculates the passes available for the given spacecraft in between the
@@ -146,7 +147,7 @@ def calculate_pass_slot(
         else:
             slot_end = dt_ts
 
-        if (slot_end - dt_tr) > minimum_duration:
+        if (slot_end - dt_tr) > minimum_slot_duration:
             pass_slots.append((dt_tr, slot_end))
 
         observer.date = ts + ephem.minute

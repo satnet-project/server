@@ -29,11 +29,10 @@ releases.
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core.validators import RegexValidator
+from django.core import validators
 from django.db import models
 
-from configuration.models.bands import AvailableBands, AvailableModulations, \
-    AvailableBitrates, AvailableBandwidths, AvailablePolarizations
+from configuration.models import bands
 
 
 class SpacecraftChannelManager(models.Manager):
@@ -79,7 +78,7 @@ class SpacecraftChannel(models.Model):
         max_length=30,
         unique=True,
         validators=[
-            RegexValidator(
+            validators.RegexValidator(
                 regex='^[a-zA-Z0-9.-_]*$',
                 message="Alphanumeric or '.-_' required",
                 code='invalid_channel_identifier'
@@ -88,10 +87,10 @@ class SpacecraftChannel(models.Model):
     )
 
     # ### Radio characteristics of the channel (common)
-    modulation = models.ForeignKey(AvailableModulations)
-    bitrate = models.ForeignKey(AvailableBitrates)
-    bandwidth = models.ForeignKey(AvailableBandwidths)
-    polarization = models.ForeignKey(AvailablePolarizations)
+    modulation = models.ForeignKey(bands.AvailableModulations)
+    bitrate = models.ForeignKey(bands.AvailableBitrates)
+    bandwidth = models.ForeignKey(bands.AvailableBandwidths)
+    polarization = models.ForeignKey(bands.AvailablePolarizations)
     
     # In Hz, mili-Hz resolution, up to 1 EHz, central frequency
     frequency = models.DecimalField(
@@ -134,8 +133,15 @@ class SpacecraftChannel(models.Model):
         :returns Unicode string.
         """
         return str(self.__class__.__name__)\
-               + ', identifier = ' + str(self.identifier)\
-               + ', frequency = ' + str(self.frequency)
+            + ', identifier = ' + str(self.identifier)\
+            + ', frequency = ' + str(self.frequency)
+
+    @staticmethod
+    def get_app_label():
+        """
+        Returns the app_label of the database.
+        """
+        return SpacecraftChannel._meta.app_label
 
 
 class GroundStationChannelManager(models.Manager):
@@ -153,22 +159,22 @@ class GroundStationChannelManager(models.Manager):
         band_name for linking it to an existing band.
         :return: A reference to the just-created channel object.
         """
-        gsc = super(GroundStationChannelManager, self).create(
+        gs_ch = super(GroundStationChannelManager, self).create(
             identifier=identifier, band=band, enabled=True
         )
 
         # not all parameters are mandatory, therefore, the object is created
         # even in the case not all these parameters are set.
         if modulations:
-            gsc.modulations.add(*modulations)
+            gs_ch.modulations.add(*modulations)
         if bitrates:
-            gsc.bitrates.add(*bitrates)
+            gs_ch.bitrates.add(*bitrates)
         if bandwidths:
-            gsc.bandwidths.add(*bandwidths)
+            gs_ch.bandwidths.add(*bandwidths)
         if polarizations:
-            gsc.polarizations.add(*polarizations)
-        gsc.save()
-        return gsc
+            gs_ch.polarizations.add(*polarizations)
+        gs_ch.save()
+        return gs_ch
 
     def find_compatible_channels(self, sc_channel):
         """
@@ -207,7 +213,7 @@ class GroundStationChannel(models.Model):
         max_length=30,
         unique=True,
         validators=[
-            RegexValidator(
+            validators.RegexValidator(
                 regex='^[a-zA-Z0-9.-_]*$',
                 message="Alphanumeric or '.-_' required",
                 code='invalid_channel_identifier'
@@ -215,13 +221,13 @@ class GroundStationChannel(models.Model):
         ]
     )
 
-    band = models.ForeignKey(AvailableBands)
+    band = models.ForeignKey(bands.AvailableBands)
 
     # ### Radio parameters for a channel.
-    modulations = models.ManyToManyField(AvailableModulations)
-    bitrates = models.ManyToManyField(AvailableBitrates)
-    bandwidths = models.ManyToManyField(AvailableBandwidths)
-    polarizations = models.ManyToManyField(AvailablePolarizations)
+    modulations = models.ManyToManyField(bands.AvailableModulations)
+    bitrates = models.ManyToManyField(bands.AvailableBitrates)
+    bandwidths = models.ManyToManyField(bands.AvailableBandwidths)
+    polarizations = models.ManyToManyField(bands.AvailablePolarizations)
 
     def get_string_definition(self):
         """
@@ -271,3 +277,10 @@ class GroundStationChannel(models.Model):
         return str(self.__class__.__name__)\
                + ', identifier = ' + str(self.identifier)\
                + ', band.pk = ' + str(self.band.pk)
+
+    @staticmethod
+    def get_app_label():
+        """
+        Returns the app_label of the database.
+        """
+        return GroundStationChannel._meta.app_label

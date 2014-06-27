@@ -18,12 +18,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import timedelta
+import datetime
 from django.db import models
 
 from common import misc
-from configuration.models.channels import GroundStationChannel
-from configuration.models.rules import AvailabilityRule
+from configuration.models import channels
+from configuration.models import rules
 
 
 class AvailabilitySlotsManager(models.Manager):
@@ -48,6 +48,44 @@ class AvailabilitySlotsManager(models.Manager):
             start=start,
             end=end
         )
+
+    def get_applicable(self, groundstation_channel, start=None, end=None):
+        """
+        This method returns all the availability slots that can be applied
+        within the given interval defined by the start and the duration.
+        :param groundstation_channel: The channel of the GroundStation.
+        :param start: Start of the applicability slot.
+        :param end: End of the applicability slot.
+        :return: The list of the applicable AvailabilitySlots during the
+        defined applicability slot.
+        """
+        if start is None or end is None:
+            start = misc.get_today_utc()
+            end = start + datetime.timedelta(days=1)
+
+        if start >= end:
+            raise TypeError(
+                '<start=' + str(start) + '> '
+                + 'should occurr sooner than <end=' + str(end) + '>'
+            )
+
+        slots = []
+
+        for a_i in self.filter(groundstation_channel=groundstation_channel)\
+                .filter(start__lt=end).filter(end__gt=start):
+
+            if a_i.start < start:
+                s_0 = start
+            else:
+                s_0 = a_i.start
+            if a_i.end > end:
+                s_1 = end
+            else:
+                s_1 = a_i.end
+
+            slots.append((s_0, s_1, a_i.identifier))
+
+        return slots
 
     def update_slots(self, groundstation_channel, new_slots):
         """
@@ -90,43 +128,6 @@ class AvailabilitySlotsManager(models.Manager):
         return added, removed
 
     @staticmethod
-    def get_availability_slots(
-            groundstation_channel, start=None, duration=timedelta(days=1)
-    ):
-        """
-        This method returns all the availability slots that can be applied
-        within the given interval defined by the start and the duration.
-        :param groundstation_channel: The channel of the GroundStation.
-        :param start: Start of the applicability slot.
-        :param duration: The duration of the applicability slot.
-        :return: The list of the applicable AvailabilitySlots during the
-        defined applicability slot.
-        """
-        slots = []
-
-        if start is None:
-            start = misc.get_midnight()
-        end = start + duration
-
-        for a_i in AvailabilitySlot.objects.filter(
-            groundstation_channel=groundstation_channel
-        ).filter(start__lt=end).filter(end__gt=start):
-
-            if a_i.start < start:
-                s_0 = start
-            else:
-                s_0 = a_i.start
-            if a_i.end > end:
-                s_1 = end
-            else:
-                s_1 = a_i.end
-
-            slots.append((s_0, s_1))
-
-        return slots
-
-
-    @staticmethod
     def availability_rule_updated(sender, instance, **kwargs):
         """
         Callback for updating the AvailabilitySlots table whenenver a new
@@ -134,12 +135,43 @@ class AvailabilitySlotsManager(models.Manager):
         :param sender The object that sent the signal.
         :param instance The instance of the object itself.
         """
-        new_slots = AvailabilityRule.objects.get_availability_slots(
+        new_slots = rules.AvailabilityRule.objects.get_availability_slots(
             instance.gs_channel
         )
         AvailabilitySlot.objects.update_slots(
             instance.gs_channel, new_slots
         )
+
+    @staticmethod
+    def truncate(availability_slot, start, end):
+        """
+        Static method that truncates the duration of a given AvailabilitySlot
+        to the restrictions of the (start, end) period. This way,
+        the AvailabilitySlot can be utilized within that period.
+        """
+        if start is None or end is None:
+            start = misc.get_today_utc()
+            end = start + datetime.timedelta(days=1)
+
+        if start >= end:
+            raise TypeError(
+                '<start=' + str(start) + '> '
+                + 'should occurr sooner than <end=' + str(end) + '>'
+            )
+
+        s = None
+        e = None
+
+        if availability_slot.start < start:
+            s = start
+        else:
+            s = availability_slot.start
+        if availability_slot.end > end:
+            e = end
+        else:
+            e = availability_slot.end
+
+        return s, e, availability_slot.identifier
 
 
 class AvailabilitySlot(models.Model):
@@ -160,7 +192,7 @@ class AvailabilitySlot(models.Model):
         unique=True
     )
     groundstation_channel = models.ForeignKey(
-        GroundStationChannel,
+        channels.GroundStationChannel,
         verbose_name='GroundStationChannel that this slot belongs to'
     )
     start = models.DateTimeField('Slot start')

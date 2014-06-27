@@ -17,9 +17,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from common.misc import localize_date_utc, localize_time_utc
-from configuration.models.channels import AvailableModulations, \
-    AvailablePolarizations, AvailableBandwidths, AvailableBitrates
-from configuration.models import rules
+from configuration.models import bands, rules
 
 CHANNEL_LIST_K = 'segment_channels'
 
@@ -196,16 +194,16 @@ def deserialize_sc_channel_parameters(configuration):
     check_sc_channel_configuration(configuration)
 
     return configuration[FREQUENCY_K],\
-        AvailableModulations.objects.get(
+        bands.AvailableModulations.objects.get(
             modulation=configuration[MODULATION_K]
         ),\
-        AvailableBitrates.objects.get(
+        bands.AvailableBitrates.objects.get(
             bitrate=configuration[BITRATE_K]
         ),\
-        AvailableBandwidths.objects.get(
+        bands.AvailableBandwidths.objects.get(
             bandwidth=configuration[BANDWIDTH_K]
         ),\
-        AvailablePolarizations.objects.get(
+        bands.AvailablePolarizations.objects.get(
             polarization=configuration[POLARIZATION_K]
         )
 
@@ -225,13 +223,13 @@ def deserialize_gs_channel_parameters(configuration):
     pol_l = []
 
     for e_i in configuration[MODULATIONS_K]:
-        mod_l.append(AvailableModulations.objects.get(modulation=e_i))
+        mod_l.append(bands.AvailableModulations.objects.get(modulation=e_i))
     for e_i in configuration[BITRATES_K]:
-        bps_l.append(AvailableBitrates.objects.get(bitrate=e_i))
+        bps_l.append(bands.AvailableBitrates.objects.get(bitrate=e_i))
     for e_i in configuration[BANDWIDTHS_K]:
-        bws_l.append(AvailableBandwidths.objects.get(bandwidth=e_i))
+        bws_l.append(bands.AvailableBandwidths.objects.get(bandwidth=e_i))
     for e_i in configuration[POLARIZATIONS_K]:
-        pol_l.append(AvailablePolarizations.objects.get(polarization=e_i))
+        pol_l.append(bands.AvailablePolarizations.objects.get(polarization=e_i))
 
     return configuration[BAND_K], mod_l, bps_l, bws_l, pol_l
 

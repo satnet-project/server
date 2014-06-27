@@ -18,14 +18,14 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core.validators import RegexValidator
+from django.core import validators
 from django.db import models
-from django_countries.fields import CountryField
+from django_countries import fields
+from django.db.models import signals
 
-from accounts.models import UserProfile
-from common.gis import get_altitude
-from configuration.models.channels import SpacecraftChannel, \
-    GroundStationChannel
+from accounts import models as account_models
+from common import gis
+from configuration.models import channels
 
 
 class SpacecraftManager(models.Manager):
@@ -44,7 +44,7 @@ class SpacecraftManager(models.Manager):
         the Spacecraft whose identifier is given as a parameter.
         """
         sc = self.get(identifier=sc_identifier)
-        sc_ch = SpacecraftChannel.objects.create(
+        sc_ch = channels.SpacecraftChannel.objects.create(
             identifier=identifier,
             frequency=frequency,
             modulation=modulation,
@@ -55,6 +55,21 @@ class SpacecraftManager(models.Manager):
         )
         sc.channels.add(sc_ch)
         sc.save()
+
+        # ### IMPORTANT ###
+        # The signal 'post_save' is sent again since the first 'post_save' (as
+        # a result of the invokation of the .create() method) has to be
+        # filtered out by all those methods that require to access to the
+        # related Spacecraft object through: spacecraft_set.all()[0]
+        signals.post_save.send(
+            sender=channels.SpacecraftChannel,
+            instance=sc_ch,
+            raw=False,
+            created=False,
+            using=channels.SpacecraftChannel.get_app_label(),
+            update_fields=None
+        )
+
         return sc_ch
 
     def delete_channel(self, spacecraft_id, channel_id):
@@ -94,12 +109,12 @@ class Spacecraft(models.Model):
 
     objects = SpacecraftManager()
 
-    user = models.ForeignKey(UserProfile)
+    user = models.ForeignKey(account_models.UserProfile)
     identifier = models.CharField(
         'Identifier',
         max_length=30,
         unique=True,
-        validators=[RegexValidator(
+        validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",
             code='invalid_spacecraft_identifier'
@@ -108,7 +123,7 @@ class Spacecraft(models.Model):
     callsign = models.CharField(
         'Radio amateur callsign',
         max_length=10,
-        validators=[RegexValidator(
+        validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",
             code='invalid_callsign'
@@ -117,7 +132,7 @@ class Spacecraft(models.Model):
 
     tle_id = models.CharField('TLE identifier', max_length=100)
     # Spacecraft channels
-    channels = models.ManyToManyField(SpacecraftChannel)
+    channels = models.ManyToManyField(channels.SpacecraftChannel)
 
     def update(self, callsign=None, tle_id=None):
         """
@@ -153,7 +168,7 @@ class GroundStationsManager(models.Manager):
         :return The just-created object.
         """
         if altitude is None:
-            altitude = get_altitude(latitude, longitude)[0]
+            altitude = gis.get_altitude(latitude, longitude)[0]
         return super(GroundStationsManager, self).create(
             latitude=latitude,
             longitude=longitude,
@@ -170,7 +185,7 @@ class GroundStationsManager(models.Manager):
         the GroundStation whose identifier is given as a parameter.
         """
         gs = self.get(identifier=gs_identifier)
-        gs_channel = GroundStationChannel.objects.create(
+        gs_ch = channels.GroundStationChannel.objects.create(
             identifier=identifier,
             band=band,
             modulations=modulations,
@@ -178,9 +193,24 @@ class GroundStationsManager(models.Manager):
             bandwidths=bandwidths,
             polarizations=polarizations
         )
-        gs.channels.add(gs_channel)
+        gs.channels.add(gs_ch)
         gs.save()
-        return gs_channel
+
+        # ### IMPORTANT ###
+        # The signal 'post_save' is sent again since the first 'post_save' (as
+        # a result of the invokation of the .create() method) has to be
+        # filtered out by all those methods that require to access to the
+        # related Spacecraft object through: spacecraft_set.all()[0]
+        signals.post_save.send(
+            sender=channels.GroundStationChannel,
+            instance=gs_ch,
+            raw=False,
+            created=False,
+            using=channels.GroundStationChannel.get_app_label(),
+            update_fields=None
+        )
+
+        return gs_ch
 
     def delete_channel(self, ground_station_id, channel_id):
         """
@@ -226,7 +256,7 @@ class GroundStation(models.Model):
     objects = GroundStationsManager()
 
     user = models.ForeignKey(
-        UserProfile,
+        account_models.UserProfile,
         verbose_name='User to which this GroundStation belongs to'
     )
 
@@ -235,7 +265,7 @@ class GroundStation(models.Model):
         max_length=30,
         unique=True,
         validators=[
-            RegexValidator(
+            validators.RegexValidator(
                 regex='^[a-zA-Z0-9.\-_]*$',
                 message="Alphanumeric or '.-_' required",
                 code='invalid_spacecraft_identifier'
@@ -246,7 +276,7 @@ class GroundStation(models.Model):
         'Radio amateur callsign for this GroundStation',
         max_length=10,
         validators=[
-            RegexValidator(
+            validators.RegexValidator(
                 regex='^[a-zA-Z0-9.\-_]*$',
                 message="Alphanumeric or '.-_' required",
                 code='invalid_callsign'
@@ -263,11 +293,11 @@ class GroundStation(models.Model):
 
     # Necessary for matching this information with the IARU database for band
     # regulations.
-    country = CountryField('Country where the GroundStation is located')
+    country = fields.CountryField('Country where the GroundStation is located')
     IARU_region = models.SmallIntegerField('IARU region identifier')
 
     channels = models.ManyToManyField(
-        GroundStationChannel,
+        channels.GroundStationChannel,
         verbose_name='Communication channels that belong to this GroundStation'
     )
 
@@ -309,6 +339,6 @@ class GroundStation(models.Model):
             change_altitude = True
 
         if change_altitude:
-            self.altitude = get_altitude(self.latitude, self.longitude)[0]
+            self.altitude = gis.get_altitude(self.latitude, self.longitude)[0]
         if changes:
             self.save()

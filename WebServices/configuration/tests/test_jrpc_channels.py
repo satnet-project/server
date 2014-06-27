@@ -53,6 +53,7 @@ class TestJRPCChannels(TestCase):
         self.__sc_1_ch_2_id = 'gmsk-sc-2'
 
         db_tools.init_available()
+        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
 

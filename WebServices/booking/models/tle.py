@@ -18,12 +18,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 logger = logging.getLogger(__name__)
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core import exceptions
 from django.db import models
 from urllib2 import urlopen as urllib2_urlopen
 
 from common import misc
-from configuration.models.segments import Spacecraft
+from configuration.models import segments
 
 
 class TwoLineElementsManager(models.Manager):
@@ -40,8 +40,8 @@ class TwoLineElementsManager(models.Manager):
         spacecraft = None
 
         try:
-            spacecraft = Spacecraft.objects.get(tle_id=l0)
-        except ObjectDoesNotExist:
+            spacecraft = segments.Spacecraft.objects.get(tle_id=l0)
+        except exceptions.ObjectDoesNotExist:
             spacecraft = None
 
         return super(TwoLineElementsManager, self).create(
@@ -65,7 +65,7 @@ class TwoLineElementsManager(models.Manager):
         try:
             tle = self.get(identifier=l0)
             tle.update(l0=l0, l1=l1, l2=l2)
-        except ObjectDoesNotExist:
+        except exceptions.ObjectDoesNotExist:
             self.create(l0, l1, l2)
 
     __NORAD_CUBESAT_TLE_URL = 'http://celestrak.com/NORAD/elements/cubesat.txt'
@@ -100,7 +100,7 @@ class TwoLineElementsManager(models.Manager):
             tle = TwoLineElement.objects.get(identifier=instance.tle_id)
             tle.spacecraft = instance
             tle.save()
-        except ObjectDoesNotExist:
+        except exceptions.ObjectDoesNotExist:
             logger.warning(
                 'Cannot find spacecraft in database, sc = ' + str(instance)
             )
@@ -115,7 +115,7 @@ class TwoLineElementsManager(models.Manager):
             tle = TwoLineElement.objects.get(identifier=instance.tle_id)
             tle.spacecraft = None
             tle.save()
-        except ObjectDoesNotExist:
+        except exceptions.ObjectDoesNotExist:
             logger.warning(
                 'Cannot find spacecraft in database, sc = ' + str(instance)
             )
@@ -149,7 +149,7 @@ class TwoLineElement(models.Model):
     )
 
     spacecraft = models.ForeignKey(
-        Spacecraft,
+        segments.Spacecraft,
         null=True,
         blank=True,
         verbose_name='Spacecraft object that requires this TLE'
@@ -179,12 +179,12 @@ class TwoLineElement(models.Model):
 
         try:
 
-            sc = Spacecraft.objects.get(tle_id=l0)
+            sc = segments.Spacecraft.objects.get(tle_id=l0)
             if self.spacecraft.identifier != sc.identifier:
                 self.spacecraft = sc
                 changed_flag = True
 
-        except ObjectDoesNotExist:
+        except exceptions.ObjectDoesNotExist:
 
             if self.spacecraft is not None:
                 self.spacecraft = None

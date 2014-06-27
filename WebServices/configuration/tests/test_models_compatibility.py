@@ -18,17 +18,16 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.test import TestCase
+from django import test
 import logging
 
-import common.testing as db_tools
-
+from common import testing as db_tools
 from configuration import signals
-from configuration.models.bands import AvailablePolarizations
-from configuration.models.compatibility import ChannelCompatibility
+from configuration.models import bands
+from configuration.models import compatibility
 
 
-class SegmentCompatibilityTest(TestCase):
+class SegmentCompatibilityTest(test.TestCase):
 
     def setUp(self):
 
@@ -51,18 +50,17 @@ class SegmentCompatibilityTest(TestCase):
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
         db_tools.init_available()
+        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
-        self.__test_user_profile = db_tools.create_user_profile()
+        self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
-            user_profile=self.__test_user_profile,
-            identifier=self.__gs_1_id,
+            user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
         self.__sc = db_tools.create_sc(
-            user_profile=self.__test_user_profile,
-            identifier=self.__sc_1_id
+            user_profile=self.__user_profile, identifier=self.__sc_1_id
         )
 
-        signals.connect_segments_2_compatibility()
+        signals.connect_channels_2_compatibility()
         signals.connect_segments_2_booking_tle()
 
     def test_compatibility_case_1(self):
@@ -79,12 +77,12 @@ class SegmentCompatibilityTest(TestCase):
             self.__sc, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
 
@@ -102,7 +100,7 @@ class SegmentCompatibilityTest(TestCase):
             self.__gs, self.__band, self.__gs_1_ch_1_id,
         )
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
@@ -129,19 +127,19 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id,
             polarizations=[
-                AvailablePolarizations.objects.get(polarization='LHCP')
+                bands.AvailablePolarizations.objects.get(polarization='LHCP')
             ]
         )
         # (CHECK-1)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         # (CHANGE-3)
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
         # (CHECK-2)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         # (CHANGE-4)
@@ -152,7 +150,7 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
         # (CHECK-3)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         # Unchecked change, just for cleaning the database.
@@ -183,14 +181,14 @@ class SegmentCompatibilityTest(TestCase):
         )
         # (CHECK-1)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         # (CHANGE-3)
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
         # (CHECK-2)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         # (CHANGE-4)
@@ -199,14 +197,14 @@ class SegmentCompatibilityTest(TestCase):
         )
         # (CHECK-3)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         # (CHANGE-5)
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
         # (CHECK-4)
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must be empty!'
         )
         # Unchecked change, just for cleaning the database.
@@ -265,7 +263,7 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_2_id,
             polarizations=[
-                AvailablePolarizations.objects.get(polarization='LHCP')
+                bands.AvailablePolarizations.objects.get(polarization='LHCP')
             ]
         )
         # (CHANGE-4)
@@ -274,12 +272,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-1) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 2,
@@ -289,12 +287,12 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
         # >>>>> (CHECK-2) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 1,
@@ -304,12 +302,12 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
         # >>>>> (CHECK-3) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 1,
@@ -319,21 +317,21 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_3_id)
         # >>>>> (CHECK-4) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must have 0 entr(ies)!'
         )
         # (CHANGE-8)
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
         # >>>>> (CHECK-5) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must have 0 entr(ies)!'
         )
         # (CHANGE-9)
         db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id,
             polarizations=[
-                AvailablePolarizations.objects.get(polarization='LHCP')
+                bands.AvailablePolarizations.objects.get(polarization='LHCP')
             ]
         )
         # (CHANGE-A)
@@ -346,12 +344,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-6) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 1,
@@ -361,12 +359,12 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
         # >>>>> (CHECK-7) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 1,
@@ -378,12 +376,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-8) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 2,
@@ -393,7 +391,7 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
         # >>>>> (CHECK-9) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must have 0 entr(ies)!'
         )
         # (CHANGE-F)
@@ -402,12 +400,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-A) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 1,
+            len(compatibility.ChannelCompatibility.objects.all()), 1,
             'Table must have 1 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 2,
@@ -449,12 +447,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-1) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 2,
+            len(compatibility.ChannelCompatibility.objects.all()), 2,
             'Table must have 2 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 2,
@@ -462,7 +460,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_2
                 ).groundstation_channels.all()
             ), 2,
@@ -478,12 +476,12 @@ class SegmentCompatibilityTest(TestCase):
         )
         # >>>>> (CHECK-2) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 4,
+            len(compatibility.ChannelCompatibility.objects.all()), 4,
             'Table must have 4 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 2,
@@ -491,7 +489,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_2
                 ).groundstation_channels.all()
             ), 2,
@@ -499,7 +497,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_3
                 ).groundstation_channels.all()
             ), 2,
@@ -507,7 +505,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_4
                 ).groundstation_channels.all()
             ), 2,
@@ -517,12 +515,12 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
         # >>>>> (CHECK-3) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 4,
+            len(compatibility.ChannelCompatibility.objects.all()), 4,
             'Table must have 4 entr(ies)!'
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_1
                 ).groundstation_channels.all()
             ), 1,
@@ -530,7 +528,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_2
                 ).groundstation_channels.all()
             ), 1,
@@ -538,7 +536,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_3
                 ).groundstation_channels.all()
             ), 1,
@@ -546,7 +544,7 @@ class SegmentCompatibilityTest(TestCase):
         )
         self.assertEquals(
             len(
-                ChannelCompatibility.objects.get(
+                compatibility.ChannelCompatibility.objects.get(
                     spacecraft_channel=self.__sc_1_ch_4
                 ).groundstation_channels.all()
             ), 1,
@@ -556,7 +554,7 @@ class SegmentCompatibilityTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
         # >>>>> (CHECK-4) <<<<< #
         self.assertEquals(
-            len(ChannelCompatibility.objects.all()), 0,
+            len(compatibility.ChannelCompatibility.objects.all()), 0,
             'Table must have 0 entr(ies)!'
         )
         # Unchecked change, just for cleaning the database.

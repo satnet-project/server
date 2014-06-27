@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from datadiff import diff
 from datetime import time, timedelta
 import logging
-
 from django.test import TestCase
 
 from common import misc, testing as db_tools
@@ -69,6 +68,7 @@ class JRPCRulesTest(TestCase):
         self.__sc_2_id = 'sc-humsat'
 
         db_tools.init_available()
+        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__http_request = db_tools.create_request(

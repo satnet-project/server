@@ -35,7 +35,7 @@ from configuration.jrpc.serialization import\
 
 @rpcmethod(
     name='configuration.channels.getOptions',
-    signature=['String', 'Object'],
+    signature=[],
     login_required=True
 )
 def get_options():
