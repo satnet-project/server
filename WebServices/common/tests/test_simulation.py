@@ -20,7 +20,6 @@ from datetime import timedelta, datetime
 from django.test import TestCase
 import logging
 
-from booking.models.tle import TwoLineElement
 from common import simulation, testing as db_tools
 
 
@@ -40,14 +39,16 @@ class TestSimulation(TestCase):
         self.__gs_1_id = 'uvigo'
         self.__gs_1_ch_1_id = 'qpsk-gs-1'
         self.__sc_1_id = 'xatcobe-sc'
-        self.__sc_1_tle_id = 'CANX-2'
+        self.__sc_1_tle_id = 'XATCOBEO'
         self.__sc_1_ch_1_id = 'qpsk-sc-1'
         self.__sc_1_ch_1_f = 437000000
 
         db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
-        db_tools.init_tles_database()
+        self.__simulator = simulation.OrbitalSimulator(
+            reload_tle_database=True
+        )
 
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__test_user_profile, identifier=self.__gs_1_id,
@@ -75,40 +76,16 @@ class TestSimulation(TestCase):
         # ### TODO when the minimum contact elevation angle increases.
         # ### TODO What is the influence of body.compute(observer) within the
         # ### TODO simulation loop?
-
         if self.__verbose_testing:
             print '>>> test_calculate_pass_slot:'
 
-        gs_sim = simulation.create_groundstation(self.__gs_1)
-        tle = TwoLineElement.objects.get(identifier=self.__sc_1.tle_id)
-        sc_sim = simulation.create_spacecraft(
-            tle.identifier, tle.first_line, tle.second_line
-        )
+        self.__simulator.set_groundstation(self.__gs_1)
+        self.__simulator.set_spacecraft(self.__sc_1)
 
         if self.__verbose_testing:
+            print self.__simulator.__unicode__()
 
-            print '# ### Body (Spacecraft): ' + str(sc_sim)
-            print '* l0 = ' + tle.identifier
-            print '* l1 = ' + tle.first_line
-            print '* l2 = ' + tle.second_line
-            print '* s0 = ' + str(tle.identifier)
-            print '* s1 = ' + str(tle.first_line)
-            print '* s2 = ' + str(tle.second_line)
-
-            print '# ### Simulation = (' + str(
-                pytz_utc.localize(datetime.today())
-            ) + ', ' + str(
-                pytz_utc.localize(datetime.today())+timedelta(days=3)
-            ) + ')'
-            print '# ### Observer (Ground Station):'
-            print '* (lat, long) = (' + str(gs_sim.lat)\
-                + ', ' + str(gs_sim.lon) + ')'
-            print '* elevation = ' + str(gs_sim.elevation)
-            print '* horizon = ' + str(gs_sim.horizon)
-            print '* date = ' + str(gs_sim.date)
-
-        pass_slots = simulation.calculate_pass_slot(
-            gs_sim, sc_sim,
+        pass_slots = self.__simulator.calculate_pass_slot(
             start=pytz_utc.localize(datetime.today()),
             end=pytz_utc.localize(datetime.today())+timedelta(days=3)
         )

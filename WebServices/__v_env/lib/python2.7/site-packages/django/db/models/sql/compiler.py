@@ -10,6 +10,7 @@ from django.db.models.sql.constants import (SINGLE, MULTI, ORDER_DIR,
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.db.models.sql.expressions import SQLEvaluator
 from django.db.models.sql.query import get_order_dir, Query
+from django.db.transaction import TransactionManagementError
 from django.db.utils import DatabaseError
 from django.utils import six
 from django.utils.six.moves import zip
@@ -142,6 +143,9 @@ class SQLCompiler(object):
                 result.append('OFFSET %d' % self.query.low_mark)
 
         if self.query.select_for_update and self.connection.features.has_select_for_update:
+            if self.connection.get_autocommit():
+                raise TransactionManagementError("select_for_update cannot be used outside of a transaction.")
+
             # If we've been asked for a NOWAIT query but the backend does not support it,
             # raise a DatabaseError otherwise we could get an unexpected deadlock.
             nowait = self.query.select_for_update_nowait
@@ -289,7 +293,7 @@ class SQLCompiler(object):
             if table in only_load and field.column not in only_load[table]:
                 continue
             if as_pairs:
-                result.append((alias, field.column))
+                result.append((alias, field))
                 aliases.add(alias)
                 continue
             if with_aliases and field.column in col_aliases:
@@ -650,10 +654,10 @@ class SQLCompiler(object):
             _, _, _, joins, _ = self.query.setup_joins(
                 [f.name], opts, root_alias, outer_if_first=promote)
             alias = joins[-1]
-            columns, aliases = self.get_default_columns(start_alias=alias,
+            columns, _ = self.get_default_columns(start_alias=alias,
                     opts=f.rel.to._meta, as_pairs=True)
             self.query.related_select_cols.extend(
-                SelectInfo(col, field) for col, field in zip(columns, f.rel.to._meta.concrete_fields))
+                SelectInfo((col[0], col[1].column), col[1]) for col in columns)
             if restricted:
                 next = requested.get(f.name, {})
             else:
@@ -678,11 +682,10 @@ class SQLCompiler(object):
                 alias = joins[-1]
                 from_parent = (opts.model if issubclass(model, opts.model)
                                else None)
-                columns, aliases = self.get_default_columns(start_alias=alias,
+                columns, _ = self.get_default_columns(start_alias=alias,
                     opts=model._meta, as_pairs=True, from_parent=from_parent)
                 self.query.related_select_cols.extend(
-                    SelectInfo(col, field) for col, field
-                    in zip(columns, model._meta.concrete_fields))
+                    SelectInfo((col[0], col[1].column), col[1]) for col in columns)
                 next = requested.get(f.related_query_name(), {})
                 # Use True here because we are looking at the _reverse_ side of
                 # the relation, which is always nullable.
@@ -728,8 +731,10 @@ class SQLCompiler(object):
                         # found in get_columns(). It would be nice to clean this up.
                         if self.query.select:
                             fields = [f.field for f in self.query.select]
-                        else:
+                        elif self.query.default_cols:
                             fields = self.query.get_meta().concrete_fields
+                        else:
+                            fields = []
                         fields = fields + [f.field for f in self.query.related_select_cols]
 
                         # If the field was deferred, exclude it from being passed
@@ -1105,8 +1110,8 @@ class SQLDateTimeCompiler(SQLCompiler):
                 if settings.USE_TZ:
                     if datetime is None:
                         raise ValueError("Database returned an invalid value "
-                                         "in QuerySet.dates(). Are time zone "
-                                         "definitions and pytz installed?")
+                                         "in QuerySet.datetimes(). Are time zone "
+                                         "definitions for your database and pytz installed?")
                     datetime = datetime.replace(tzinfo=None)
                     datetime = timezone.make_aware(datetime, self.query.tzinfo)
                 yield datetime

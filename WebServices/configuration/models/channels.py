@@ -275,8 +275,8 @@ class GroundStationChannel(models.Model):
         :returns Unicode string.
         """
         return str(self.__class__.__name__)\
-               + ', identifier = ' + str(self.identifier)\
-               + ', band.pk = ' + str(self.band.pk)
+            + ', identifier = ' + str(self.identifier)\
+            + ', band.pk = ' + str(self.band.pk)
 
     @staticmethod
     def get_app_label():

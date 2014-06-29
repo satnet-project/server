@@ -91,6 +91,14 @@ def dict_2_string(d):
     return buff.getvalue()
 
 
+def get_now_utc():
+    """
+    This method returns now's datetime object UTC localized.
+    :return: Datetime object with now's date and time (UTC localized).
+    """
+    return pytz_utc.localize(datetime.now())
+
+
 def get_today_utc(no_microseconds=True):
     """
     This method returns today's date localized with the microseconds set to
@@ -142,7 +150,7 @@ def localize_time_utc(non_utc_time):
     """
     return pytz_utc.localize(non_utc_time)
 
-__TIMESTAMP_0 = localize_date_utc(datetime(year=1970, month=1, day=1))
+TIMESTAMP_0 = localize_date_utc(datetime(year=1970, month=1, day=1))
 
 
 def get_utc_timestamp(utc_datetime=None):
@@ -150,9 +158,9 @@ def get_utc_timestamp(utc_datetime=None):
     Returns a timestamp with the number of miliseconds ellapsed since January
     1st of 1970 for the given datetime object, UTC localized.
     :param utc_datetime: The datetime whose timestamp is to be calculated.
-    :return: The number of seconds since 1.1.1970, UTC localized.
+    :return: The number of miliseconds since 1.1.1970, UTC localized (integer)
     """
     if utc_datetime is None:
-        utc_datetime = get_today_utc()
-    diff = utc_datetime - __TIMESTAMP_0
-    return diff.total_seconds() * 10**3
+        utc_datetime = get_now_utc()
+    diff = utc_datetime - TIMESTAMP_0
+    return int(diff.total_seconds() * 10**6)

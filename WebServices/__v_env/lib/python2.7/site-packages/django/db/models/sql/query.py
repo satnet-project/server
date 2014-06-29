@@ -780,6 +780,9 @@ class Query(object):
             if lhs in change_map:
                 data = data._replace(lhs_alias=change_map[lhs])
                 self.alias_map[alias] = data
+        # 4. Update the temporary _lookup_joins list
+        if hasattr(self, '_lookup_joins'):
+            self._lookup_joins = [change_map.get(lj, lj) for lj in self._lookup_joins]
 
     def bump_prefix(self, exceptions=()):
         """
@@ -1100,6 +1103,9 @@ class Query(object):
                     allow_explicit_fk=True)
             if can_reuse is not None:
                 can_reuse.update(join_list)
+            # split_exclude() needs to know which joins were generated for the
+            # lookup parts
+            self._lookup_joins = join_list
         except MultiJoin as e:
             return self.split_exclude(filter_expr, LOOKUP_SEP.join(parts[:e.level]),
                                       can_reuse, e.names_with_path)
@@ -1211,16 +1217,18 @@ class Query(object):
         connector = q_object.connector
         current_negated = current_negated ^ q_object.negated
         branch_negated = branch_negated or q_object.negated
-        # Note that if the connector happens to match what we have already in
-        # the tree, the add will be a no-op.
         target_clause = self.where_class(connector=connector,
                                          negated=q_object.negated)
-
-        if connector == OR:
+        # Treat case NOT (a AND b) like case ((NOT a) OR (NOT b)) for join
+        # promotion. See ticket #21748.
+        effective_connector = connector
+        if current_negated:
+            effective_connector = OR if effective_connector == AND else AND
+        if effective_connector == OR:
             alias_usage_counts = dict()
             aliases_before = set(self.tables)
         for child in q_object.children:
-            if connector == OR:
+            if effective_connector == OR:
                 refcounts_before = self.alias_refcount.copy()
             if isinstance(child, Node):
                 child_clause = self._add_q(
@@ -1231,11 +1239,11 @@ class Query(object):
                     child, can_reuse=used_aliases, branch_negated=branch_negated,
                     current_negated=current_negated)
             target_clause.add(child_clause, connector)
-            if connector == OR:
+            if effective_connector == OR:
                 used = alias_diff(refcounts_before, self.alias_refcount)
                 for alias in used:
                     alias_usage_counts[alias] = alias_usage_counts.get(alias, 0) + 1
-        if connector == OR:
+        if effective_connector == OR:
             self.promote_disjunction(aliases_before, alias_usage_counts,
                                      len(q_object.children))
         return target_clause
@@ -1256,6 +1264,7 @@ class Query(object):
         """
         path, names_with_path = [], []
         for pos, name in enumerate(names):
+            cur_names_with_path = (name, [])
             if name == 'pk':
                 name = opts.pk.name
             try:
@@ -1288,19 +1297,22 @@ class Query(object):
                         targets = (final_field.rel.get_related_field(),)
                         opts = int_model._meta
                         path.append(PathInfo(final_field.model._meta, opts, targets, final_field, False, True))
+                        cur_names_with_path[1].append(PathInfo(final_field.model._meta, opts, targets, final_field, False, True))
             if hasattr(field, 'get_path_info'):
                 pathinfos = field.get_path_info()
                 if not allow_many:
                     for inner_pos, p in enumerate(pathinfos):
                         if p.m2m:
-                            names_with_path.append((name, pathinfos[0:inner_pos + 1]))
+                            cur_names_with_path[1].extend(pathinfos[0:inner_pos + 1])
+                            names_with_path.append(cur_names_with_path)
                             raise MultiJoin(pos + 1, names_with_path)
                 last = pathinfos[-1]
                 path.extend(pathinfos)
                 final_field = last.join_field
                 opts = last.to_opts
                 targets = last.target_fields
-                names_with_path.append((name, pathinfos))
+                cur_names_with_path[1].extend(pathinfos)
+                names_with_path.append(cur_names_with_path)
             else:
                 # Local non-relational field.
                 final_field = field
@@ -1816,17 +1828,21 @@ class Query(object):
         for _, paths in names_with_path:
             all_paths.extend(paths)
         contains_louter = False
-        for pos, path in enumerate(all_paths):
+        # Trim and operate only on tables that were generated for
+        # the lookup part of the query. That is, avoid trimming
+        # joins generated for F() expressions.
+        lookup_tables = [t for t in self.tables if t in self._lookup_joins or t == self.tables[0]]
+        for trimmed_paths, path in enumerate(all_paths):
             if path.m2m:
                 break
-            if self.alias_map[self.tables[pos + 1]].join_type == self.LOUTER:
+            if self.alias_map[lookup_tables[trimmed_paths + 1]].join_type == self.LOUTER:
                 contains_louter = True
-            self.unref_alias(self.tables[pos])
+            self.unref_alias(lookup_tables[trimmed_paths])
         # The path.join_field is a Rel, lets get the other side's field
         join_field = path.join_field.field
         # Build the filter prefix.
+        paths_in_prefix = trimmed_paths
         trimmed_prefix = []
-        paths_in_prefix = pos
         for name, path in names_with_path:
             if paths_in_prefix - len(path) < 0:
                 break
@@ -1838,12 +1854,12 @@ class Query(object):
         # Lets still see if we can trim the first join from the inner query
         # (that is, self). We can't do this for LEFT JOINs because we would
         # miss those rows that have nothing on the outer side.
-        if self.alias_map[self.tables[pos + 1]].join_type != self.LOUTER:
+        if self.alias_map[lookup_tables[trimmed_paths + 1]].join_type != self.LOUTER:
             select_fields = [r[0] for r in join_field.related_fields]
-            select_alias = self.tables[pos + 1]
-            self.unref_alias(self.tables[pos])
+            select_alias = lookup_tables[trimmed_paths + 1]
+            self.unref_alias(lookup_tables[trimmed_paths])
             extra_restriction = join_field.get_extra_restriction(
-                self.where_class, None, self.tables[pos + 1])
+                self.where_class, None, lookup_tables[trimmed_paths + 1])
             if extra_restriction:
                 self.where.add(extra_restriction, AND)
         else:
@@ -1851,7 +1867,7 @@ class Query(object):
             # inner query if it happens to have a longer join chain containing the
             # values in select_fields. Lets punt this one for now.
             select_fields = [r[1] for r in join_field.related_fields]
-            select_alias = self.tables[pos]
+            select_alias = lookup_tables[trimmed_paths]
         self.select = [SelectInfo((select_alias, f.column), f) for f in select_fields]
         return trimmed_prefix, contains_louter
 

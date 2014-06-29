@@ -3,35 +3,213 @@
   <component name="BookmarkManager">
     <bookmark url="file://$PROJECT_DIR$/configuration/templates/channels_dialog.html" line="38" />
     <bookmark url="file://$PROJECT_DIR$/configuration/templates/rules_dialog.html" line="125" />
-    <bookmark url="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py" line="270" />
+    <bookmark url="file://$PROJECT_DIR$/configuration/tests/jrpc/test_segments.py" line="270" />
     <bookmark url="file://$PROJECT_DIR$/configuration/models/rules.py" line="119" />
     <bookmark url="file://$PROJECT_DIR$/common/testing.py" line="172" />
   </component>
   <component name="ChangeListManager">
     <list default="true" id="be383d21-eb06-4b8b-90dc-e9c72cca20cb" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/jrpc/__init__.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/booking/tests/test_models_operational.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/booking/jrpc.py" afterPath="$PROJECT_DIR$/booking/jrpc/operational.py" />
-      <change type="MOVED" beforePath="$PROJECT_DIR$/booking/tests/test_tle.py" afterPath="$PROJECT_DIR$/booking/tests/test_models_tle.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/common/tests/slots/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/tests/jrpc/__init__.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/configuration/tests/models/__init__.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/an.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/catalonia.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/cs.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/england.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/europeanunion.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/fam.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/scotland.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/static/flags/wales.gif" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/PKG-INFO" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/SOURCES.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/dependency_links.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/installed-files.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/not-zip-safe" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_jsonview-0.3.0-py2.7.egg-info/top_level.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/PKG-INFO" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/SOURCES.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/dependency_links.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/installed-files.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/not-zip-safe" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/requires.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_leaflet-0.9.0-py2.7.egg-info/top_level.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_periodically-0.2.0-py2.7.egg-info/PKG-INFO" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_periodically-0.2.0-py2.7.egg-info/SOURCES.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_periodically-0.2.0-py2.7.egg-info/dependency_links.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_periodically-0.2.0-py2.7.egg-info/installed-files.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_periodically-0.2.0-py2.7.egg-info/top_level.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/PKG-INFO" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/SOURCES.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/dependency_links.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/installed-files.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/not-zip-safe" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/requires.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_session_security-2.1.2-py2.7.egg-info/top_level.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/eventlog/templatetags/__init__.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/eventlog/templatetags/eventlog_tags.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six-1.4.1-py2.7.egg-info/PKG-INFO" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six-1.4.1-py2.7.egg-info/SOURCES.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six-1.4.1-py2.7.egg-info/dependency_links.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six-1.4.1-py2.7.egg-info/installed-files.txt" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six-1.4.1-py2.7.egg-info/top_level.txt" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/booking/tests/test_models_operational.py" afterPath="$PROJECT_DIR$/booking/tests/models/test_operational.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/booking/tests/test_models_tle.py" afterPath="$PROJECT_DIR$/booking/tests/models/test_tle.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/common/tests/test_merge_slots.py" afterPath="$PROJECT_DIR$/common/tests/slots/test_merge.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/common/tests/test_normalize_slots.py" afterPath="$PROJECT_DIR$/common/tests/slots/test_normalize.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/tests/test_jrpc.py" afterPath="$PROJECT_DIR$/configuration/tests/jrpc/test_segments.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/tests/test_jrpc_channels.py" afterPath="$PROJECT_DIR$/configuration/tests/jrpc/test_channels.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/tests/test_models.py" afterPath="$PROJECT_DIR$/configuration/tests/models/test_channels.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/tests/test_models_availability.py" afterPath="$PROJECT_DIR$/configuration/tests/models/test_availability.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/configuration/tests/test_models_compatibility.py" afterPath="$PROJECT_DIR$/configuration/tests/models/test_compatibility.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/_mysql.so" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/_mysql.so" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/de/LC_MESSAGES/django.mo" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/de/LC_MESSAGES/django.mo" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/pl/LC_MESSAGES/django.mo" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/pl/LC_MESSAGES/django.mo" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/ru/LC_MESSAGES/django.mo" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/ru/LC_MESSAGES/django.mo" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/locale/fr/LC_MESSAGES/django.mo" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/locale/fr/LC_MESSAGES/django.mo" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/bin/easy_install-2.7" afterPath="$PROJECT_DIR$/__v_env/bin/easy_install-2.7" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/bin/easy_install" afterPath="$PROJECT_DIR$/__v_env/bin/easy_install" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/webdriver.xpi" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/webdriver.xpi" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/__init__.py" afterPath="$PROJECT_DIR$/WebServices/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/fields/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/fields/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/eventlog/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/eventlog/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/exampleapp/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/exampleapp/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/tests/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/tests/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/__init__.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/__init__.py" afterPath="$PROJECT_DIR$/booking/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/jrpc/__init__.py" afterPath="$PROJECT_DIR$/booking/jrpc/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/models/__init__.py" afterPath="$PROJECT_DIR$/booking/models/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/tests/__init__.py" afterPath="$PROJECT_DIR$/booking/tests/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/__init__.py" afterPath="$PROJECT_DIR$/configuration/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/__init__.py" afterPath="$PROJECT_DIR$/configuration/jrpc/__init__.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/__init__.py" afterPath="$PROJECT_DIR$/configuration/models/__init__.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/availability.py" afterPath="$PROJECT_DIR$/configuration/models/availability.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/bands.py" afterPath="$PROJECT_DIR$/configuration/models/bands.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/channels.py" afterPath="$PROJECT_DIR$/configuration/jrpc/channels.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/__init__.py" afterPath="$PROJECT_DIR$/configuration/tests/__init__.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/_leaflet_draw_i18n.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/_leaflet_draw_i18n.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/_leaflet_map.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/_leaflet_map.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/admin.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/admin.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/admin.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/admin.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admin/templatetags/admin_urls.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admin/templatetags/admin_urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/templates/session_security/all.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/templates/session_security/all.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/periodically/backends.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/periodically/backends.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/files/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/files/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/handlers/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/handlers/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/mysql/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/mysql/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/oracle/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/oracle/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/postgresql_psycopg2/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/sqlite3/base.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/sqlite3/base.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/middleware/cache.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/middleware/cache.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/management/commands/changepassword.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/management/commands/changepassword.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/channels.py" afterPath="$PROJECT_DIR$/configuration/models/channels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/compatibility.py" afterPath="$PROJECT_DIR$/configuration/models/compatibility.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/management/commands/collectstatic.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/command.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/command.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/db/models/sql/compiler.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/db/models/sql/compiler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/compiler.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/compiler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/connections.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/connections.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/console.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/console.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/converters.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/converters.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/messages/storage/cookie.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/messages/storage/cookie.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/css.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/css.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/cursors.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/cursors.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/views/generic/dates.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/views/generic/dates.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/decorators.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/decorators.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/common/desired_capabilities.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/common/desired_capabilities.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/views/generic/detail.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/views/generic/detail.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/conf/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/conf/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admin/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admin/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admindocs/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/admindocs/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/auth/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/formtools/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/formtools/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/de/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/de/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/pl/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/pl/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/ru/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/locale/ru/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/locale/fr/LC_MESSAGES/django.po" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/locale/fr/LC_MESSAGES/django.po" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/errorhandler.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/errorhandler.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/support/expected_conditions.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/support/expected_conditions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/expressions.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/expressions.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/extension_connection.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/extension_connection.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/forms/fields.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/forms/fields.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/fields.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django_countries/fields.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/forms/fields.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/forms/fields.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/filebased.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/filebased.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/finders.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/finders.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_profile.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/firefox/firefox_profile.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/forms/forms.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/forms/forms.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/conf/global_settings.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/conf/global_settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/groundstations.py" afterPath="$PROJECT_DIR$/configuration/jrpc/groundstations.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/html.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/html.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/http.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/http.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/management/commands/inspectdb.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/management/commands/inspectdb.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/oracle/introspection.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/backends/oracle/introspection.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/js.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/js.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/common/keys.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/common/keys.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet-src.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet-src.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw-src.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw-src.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw.css" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/draw/leaflet.draw.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.extras.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.extras.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.forms.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.forms.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.js" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/static/leaflet/leaflet.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templatetags/leaflet_tags.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templatetags/leaflet_tags.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/message.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/message.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/middleware.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/middleware.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/tests/middleware.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/tests/middleware.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common/misc.py" afterPath="$PROJECT_DIR$/common/misc.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/jrpc/operational.py" afterPath="$PROJECT_DIR$/booking/jrpc/operational.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/models/operational.py" afterPath="$PROJECT_DIR$/booking/models/operational.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/exampleapp/periodictasks.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/exampleapp/periodictasks.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/accounts/periodictasks.py" afterPath="$PROJECT_DIR$/accounts/periodictasks.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/periodictasks.py" afterPath="$PROJECT_DIR$/booking/periodictasks.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/models/segments.py" afterPath="$PROJECT_DIR$/configuration/models/segments.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/jrpc/serialization.py" afterPath="$PROJECT_DIR$/configuration/jrpc/serialization.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/signals.py" afterPath="$PROJECT_DIR$/configuration/signals.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geos/prepared.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geos/prepared.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geoip/prototypes.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geoip/prototypes.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/query.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/query.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/query.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/sql/query.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/fields/related.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/models/fields/related.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/release.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/release.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/remote_connection.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/remote_connection.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/request.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/request.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/response.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/response.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/safestring.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/safestring.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/../scripts/server-setup.sh" afterPath="$PROJECT_DIR$/../scripts/server-setup.sh" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/ie/service.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/ie/service.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/phantomjs/service.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/phantomjs/service.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebServices/settings.py" afterPath="$PROJECT_DIR$/WebServices/settings.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/periodically/settings.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/periodically/settings.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common/simulation.py" afterPath="$PROJECT_DIR$/common/simulation.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_jrpc.py" afterPath="$PROJECT_DIR$/configuration/tests/test_jrpc.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_jrpc_channels.py" afterPath="$PROJECT_DIR$/configuration/tests/test_jrpc_channels.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_models.py" afterPath="$PROJECT_DIR$/configuration/tests/test_models.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_models_availability.py" afterPath="$PROJECT_DIR$/configuration/tests/test_models_availability.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/configuration/tests/test_models_compatibility.py" afterPath="$PROJECT_DIR$/configuration/tests/test_models_compatibility.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common/testing.py" afterPath="$PROJECT_DIR$/common/testing.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/booking/models/tle.py" afterPath="$PROJECT_DIR$/booking/models/tle.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/six.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/six.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/six.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/smtp.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/mail/backends/smtp.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/storage.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/staticfiles/storage.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geos/tests/test_geos.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geos/tests/test_geos.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common/tests/test_misc.py" afterPath="$PROJECT_DIR$/common/tests/test_misc.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/common/tests/test_simulation.py" afterPath="$PROJECT_DIR$/common/tests/test_simulation.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geoip/tests.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/geoip/tests.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/tests/geoapp/tests.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/gis/tests/geoapp/tests.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/tests.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/jsonview/tests.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/tests/tests.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/tests/tests.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/times.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/MySQLdb/times.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/timezone.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/timezone.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/translation/trans_real.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/utils/translation/trans_real.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/transaction.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/db/transaction.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/urlresolvers.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/core/urlresolvers.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/urls.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/urls.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/utils.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/http/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/utils.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/utils.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/session_security/utils.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/formtools/wizard/views.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/django/contrib/formtools/wizard/views.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/support/wait.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/support/wait.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/phantomjs/webdriver.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/phantomjs/webdriver.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/webdriver.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/webdriver.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/webelement.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/selenium/webdriver/remote/webelement.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/widget.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/widget.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/admin/widget.html" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/templates/leaflet/admin/widget.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/forms/widgets.py" afterPath="$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/leaflet/forms/widgets.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="WebServices.iws" />
@@ -59,25 +237,17 @@
     <favorites_list name="WebServices" />
   </component>
   <component name="FileEditorManager">
-    <splitter split-orientation="horizontal" split-proportion="0.49733028">
+    <splitter split-orientation="horizontal" split-proportion="0.5">
       <split-first>
         <leaf>
-          <file leaf-file-name="operational.py" pinned="false" current="false" current-in-tab="false">
+          <file leaf-file-name="operational.py" pinned="false" current="true" current-in-tab="true">
             <entry file="file://$PROJECT_DIR$/booking/models/operational.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="97" max-vertical-offset="5535">
-                  <caret line="22" column="57" selection-start-line="22" selection-start-column="57" selection-end-line="22" selection-end-column="57" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="operational.py" pinned="false" current="false" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/booking/jrpc/operational.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.9527559" vertical-offset="700" max-vertical-offset="1395">
-                  <caret line="87" column="15" selection-start-line="87" selection-start-column="15" selection-end-line="87" selection-end-column="15" />
-                  <folding />
+                <state vertical-scroll-proportion="0.91519827" vertical-offset="5814" max-vertical-offset="6735">
+                  <caret line="443" column="47" selection-start-line="443" selection-start-column="47" selection-end-line="443" selection-end-column="47" />
+                  <folding>
+                    <element signature="e#645#660#0" expanded="true" />
+                  </folding>
                 </state>
               </provider>
             </entry>
@@ -86,35 +256,13 @@
       </split-first>
       <split-second>
         <leaf>
-          <file leaf-file-name="test_models_operational.py" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/booking/tests/test_models_operational.py">
+          <file leaf-file-name="test_operational.py" pinned="false" current="false" current-in-tab="true">
+            <entry file="file://$PROJECT_DIR$/booking/tests/models/test_operational.py">
               <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="5260" max-vertical-offset="5955">
-                  <caret line="391" column="0" selection-start-line="391" selection-start-column="0" selection-end-line="391" selection-end-column="0" />
+                <state vertical-scroll-proportion="2.2059472" vertical-offset="4027" max-vertical-offset="6210">
+                  <caret line="402" column="26" selection-start-line="402" selection-start-column="26" selection-end-line="402" selection-end-column="26" />
                   <folding>
                     <element signature="e#645#659#0" expanded="true" />
-                  </folding>
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="test_models_availability.py" pinned="false" current="true" current-in-tab="true">
-            <entry file="file://$PROJECT_DIR$/configuration/tests/test_models_availability.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.9527559" vertical-offset="5590" max-vertical-offset="6285">
-                  <caret line="422" column="9" selection-start-line="422" selection-start-column="9" selection-end-line="422" selection-end-column="9" />
-                  <folding />
-                </state>
-              </provider>
-            </entry>
-          </file>
-          <file leaf-file-name="availability.py" pinned="false" current="false" current-in-tab="false">
-            <entry file="file://$PROJECT_DIR$/configuration/models/availability.py">
-              <provider selected="true" editor-type-id="text-editor">
-                <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3330">
-                  <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-                  <folding>
-                    <element signature="e#706#721#0" expanded="true" />
                   </folding>
                 </state>
               </provider>
@@ -140,37 +288,10 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/accounts/ajax.py" />
-        <option value="$PROJECT_DIR$/accounts/forms.py" />
-        <option value="$PROJECT_DIR$/accounts/helpers.py" />
-        <option value="$PROJECT_DIR$/accounts/models.py" />
-        <option value="$PROJECT_DIR$/accounts/periodictasks.py" />
-        <option value="$PROJECT_DIR$/accounts/views.py" />
-        <option value="$PROJECT_DIR$/WebServices/TODO" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/segments.py" />
-        <option value="$PROJECT_DIR$/configuration/views.py" />
-        <option value="$PROJECT_DIR$/configuration/forms.py" />
-        <option value="$PROJECT_DIR$/common/tests/test_models_compatibility.py" />
-        <option value="$PROJECT_DIR$/configuration/models/__init__.py" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/groundstations.py" />
-        <option value="$PROJECT_DIR$/configuration/jrpc/spacecraft.py" />
-        <option value="$PROJECT_DIR$/accounts/tests.py" />
-        <option value="$PROJECT_DIR$/accounts/utils.py" />
-        <option value="$PROJECT_DIR$/booking/__init__.py" />
-        <option value="$PROJECT_DIR$/booking/jrpc.py" />
-        <option value="$PROJECT_DIR$/common/passes.py" />
-        <option value="$PROJECT_DIR$/booking/models.py" />
-        <option value="$PROJECT_DIR$/booking/models/passes.py" />
-        <option value="$PROJECT_DIR$/WebServices/settings.py" />
-        <option value="$PROJECT_DIR$/booking/models/booking.py" />
         <option value="$PROJECT_DIR$/common/orbital.py" />
         <option value="$PROJECT_DIR$/booking/tests/test_tle.py" />
         <option value="$PROJECT_DIR$/common/tests/test_gis.py" />
-        <option value="$PROJECT_DIR$/common/tests/test_misc.py" />
         <option value="$PROJECT_DIR$/common/gis.py" />
-        <option value="$PROJECT_DIR$/common/misc.py" />
-        <option value="$PROJECT_DIR$/booking/periodictasks.py" />
-        <option value="$PROJECT_DIR$/common/tests/test_simulation.py" />
         <option value="$PROJECT_DIR$/booking/models/tle.py" />
         <option value="$PROJECT_DIR$/configuration/tests/test_jrpc.py" />
         <option value="$PROJECT_DIR$/configuration/tests/test_jrpc_channels.py" />
@@ -180,25 +301,52 @@
         <option value="$PROJECT_DIR$/configuration/jrpc/serialization.py" />
         <option value="$PROJECT_DIR$/configuration/models/segments.py" />
         <option value="$PROJECT_DIR$/configuration/models/compatibility.py" />
-        <option value="$PROJECT_DIR$/configuration/models/channels.py" />
         <option value="$PROJECT_DIR$/configuration/signals.py" />
         <option value="$PROJECT_DIR$/booking/tests/test_operational.py" />
-        <option value="$PROJECT_DIR$/common/simulation.py" />
         <option value="$PROJECT_DIR$/configuration/models/bands.py" />
         <option value="$PROJECT_DIR$/configuration/jrpc/channels.py" />
-        <option value="$PROJECT_DIR$/booking/jrpc/operational.py" />
-        <option value="$PROJECT_DIR$/booking/models/operational.py" />
         <option value="$PROJECT_DIR$/configuration/models/availability.py" />
         <option value="$PROJECT_DIR$/booking/tests/test_models_operational.py" />
         <option value="$PROJECT_DIR$/configuration/tests/test_models_availability.py" />
+        <option value="$PROJECT_DIR$/booking/models/reservation.py" />
+        <option value="$PROJECT_DIR$/booking/models/reservations.py" />
+        <option value="$PROJECT_DIR$/booking/signals.py" />
+        <option value="$PROJECT_DIR$/booking/models/changes.py" />
+        <option value="$PROJECT_DIR$/common/misc.py" />
+        <option value="$PROJECT_DIR$/common/tests/test_misc.py" />
+        <option value="$PROJECT_DIR$/booking/jrpc/operational.py" />
+        <option value="$PROJECT_DIR$/booking/tests/models/__init__.py" />
+        <option value="$PROJECT_DIR$/booking/tests/__init__.py" />
+        <option value="$PROJECT_DIR$/booking/__init__.py" />
+        <option value="$PROJECT_DIR$/booking/jrpc/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/jrpc/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/models/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/__init__.py" />
+        <option value="$PROJECT_DIR$/common/tests/slots/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/models/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/tests/jrpc/__init__.py" />
+        <option value="$PROJECT_DIR$/configuration/jrpc/groundstations.py" />
+        <option value="$PROJECT_DIR$/common/tests/test_simulation.py" />
+        <option value="$PROJECT_DIR$/configuration/models/channels.py" />
+        <option value="$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/decorators.py" />
+        <option value="$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/tasks.py" />
+        <option value="$PROJECT_DIR$/booking/models/__init__.py" />
+        <option value="$PROJECT_DIR$/booking/periodictasks.py" />
+        <option value="$PROJECT_DIR$/WebServices/__init__.py" />
+        <option value="$PROJECT_DIR$/WebServices/settings.py" />
+        <option value="$PROJECT_DIR$/booking/models/operational.py" />
+        <option value="$PROJECT_DIR$/accounts/periodictasks.py" />
+        <option value="$PROJECT_DIR$/booking/tests/models/test_operational.py" />
+        <option value="$PROJECT_DIR$/common/simulation.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="-1" />
+    <option name="x" value="607" />
     <option name="y" value="27" />
-    <option name="width" value="1368" />
-    <option name="height" value="742" />
+    <option name="width" value="1313" />
+    <option name="height" value="1049" />
   </component>
   <component name="ProjectInspectionProfilesVisibleTreeState">
     <entry key="Project Default">
@@ -288,43 +436,7 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="configuration" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="booking" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="WebServices" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="booking" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="tests" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -380,11 +492,11 @@
       <recent name="$PROJECT_DIR$/WebServices/templates/components" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="$PROJECT_DIR$/booking/tests" />
+      <recent name="$PROJECT_DIR$/configuration/tests/jrpc" />
+      <recent name="$PROJECT_DIR$/configuration/tests/models" />
+      <recent name="$PROJECT_DIR$/common/tests/slots" />
       <recent name="$PROJECT_DIR$/booking/tests/models" />
-      <recent name="$PROJECT_DIR$/booking/jrpc" />
-      <recent name="$PROJECT_DIR$/booking/models" />
-      <recent name="$PROJECT_DIR$/configuration/tests" />
+      <recent name="$PROJECT_DIR$/booking/tests" />
     </key>
   </component>
   <component name="RunManager" selected="Django tests.Test: configuration.tests.test_models">
@@ -703,21 +815,21 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="-1" y="27" width="1368" height="742" extended-state="7" />
-    <editor active="true" />
+    <frame x="607" y="27" width="1313" height="1049" extended-state="0" />
+    <editor active="false" />
     <layout>
-      <window_info id="Changes" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298585" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="true" content_ui="tabs" />
-      <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.75233644" sideWeight="0.4481038" order="4" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.5176294" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3581749" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944155" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.40966544" sideWeight="0.5518962" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Changes" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3298585" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.75233644" sideWeight="0.4481038" order="0" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.516333" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.3581749" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24944155" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.2612403" sideWeight="0.5518962" order="3" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25099075" sideWeight="0.5007825" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24941725" sideWeight="0.42323098" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25099075" sideWeight="0.5007825" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.24941725" sideWeight="0.42323098" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25986078" sideWeight="0.42598188" order="2" side_tool="true" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="5" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -744,354 +856,14 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="17" />
+      <option name="time" value="18" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/configuration/forms.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7158713" vertical-offset="0" max-vertical-offset="901">
-          <caret line="43" column="0" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/views.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23917995" vertical-offset="0" max-vertical-offset="1545">
-          <caret line="14" column="3" selection-start-line="14" selection-start-column="3" selection-end-line="14" selection-end-column="3" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.36625972" vertical-offset="0" max-vertical-offset="901">
-          <caret line="22" column="18" selection-start-line="22" selection-start-column="18" selection-end-line="22" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/query.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="6.4407744" vertical-offset="0" max-vertical-offset="26055">
-          <caret line="377" column="32" selection-start-line="377" selection-start-column="26" selection-end-line="377" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/manager.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.34906697" vertical-offset="1932" max-vertical-offset="4245">
-          <caret line="156" column="38" selection-start-line="156" selection-start-column="38" selection-end-line="156" selection-end-column="38" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/spacecraft.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33880904" vertical-offset="0" max-vertical-offset="1755">
-          <caret line="25" column="0" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5952756" vertical-offset="312" max-vertical-offset="1005">
-          <caret line="46" column="0" selection-start-line="46" selection-start-column="0" selection-end-line="46" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/tests.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.77952754" vertical-offset="0" max-vertical-offset="635">
-          <caret line="34" column="31" selection-start-line="34" selection-start-column="31" selection-end-line="34" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/groundstations.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28661418" vertical-offset="478" max-vertical-offset="1830">
-          <caret line="48" column="0" selection-start-line="48" selection-start-column="0" selection-end-line="48" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/booking/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.330033" vertical-offset="0" max-vertical-offset="909">
-          <caret line="20" column="0" selection-start-line="20" selection-start-column="0" selection-end-line="20" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/accounts/periodictasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.5610561" vertical-offset="0" max-vertical-offset="909">
-          <caret line="34" column="39" selection-start-line="34" selection-start-column="39" selection-end-line="34" selection-end-column="39" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/ephem/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33333334" vertical-offset="1197" max-vertical-offset="9750">
-          <caret line="101" column="7" selection-start-line="101" selection-start-column="7" selection-end-line="101" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file:///usr/lib/python2.7/urllib2.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4774678" vertical-offset="1325" max-vertical-offset="21900">
-          <caret line="131" column="0" selection-start-line="131" selection-start-column="0" selection-end-line="131" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33860046" vertical-offset="0" max-vertical-offset="886">
-          <caret line="22" column="0" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/WebServices/settings.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2150" max-vertical-offset="4005">
-          <caret line="177" column="0" selection-start-line="177" selection-start-column="0" selection-end-line="177" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/ephem/_libastro.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.38115633" vertical-offset="1219" max-vertical-offset="11040">
-          <caret line="105" column="0" selection-start-line="105" selection-start-column="0" selection-end-line="105" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/lib/python2.7/site-packages/ephem/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33260393" vertical-offset="1196" max-vertical-offset="9750">
-          <caret line="101" column="7" selection-start-line="101" selection-start-column="7" selection-end-line="101" selection-end-column="7" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/rules.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3405" max-vertical-offset="7755">
-          <caret line="259" column="11" selection-start-line="259" selection-start-column="11" selection-end-line="259" selection-end-column="11" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/tests/test_misc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.17857143" vertical-offset="0" max-vertical-offset="924">
-          <caret line="11" column="40" selection-start-line="11" selection-start-column="40" selection-end-line="11" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/pytz/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33260155" vertical-offset="3342" max-vertical-offset="22740">
-          <caret line="243" column="6" selection-start-line="243" selection-start-column="6" selection-end-line="243" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/tests/test_gis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9053628" vertical-offset="26" max-vertical-offset="690">
-          <caret line="42" column="9" selection-start-line="42" selection-start-column="9" selection-end-line="42" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/booking/tests/test_models_tle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.47160885" vertical-offset="1066" max-vertical-offset="2355">
-          <caret line="99" column="20" selection-start-line="99" selection-start-column="20" selection-end-line="99" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/gis.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.64195585" vertical-offset="1438" max-vertical-offset="2385">
-          <caret line="124" column="9" selection-start-line="124" selection-start-column="9" selection-end-line="124" selection-end-column="9" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/__builtin__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.3989011" vertical-offset="61917" max-vertical-offset="76140">
-          <caret line="4152" column="36" selection-start-line="4152" selection-start-column="36" selection-end-line="4152" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/datetime.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.33296704" vertical-offset="2817" max-vertical-offset="9495">
-          <caret line="208" column="122" selection-start-line="208" selection-start-column="122" selection-end-line="208" selection-end-column="122" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/booking/periodictasks.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.28541225" vertical-offset="0" max-vertical-offset="946">
-          <caret line="18" column="35" selection-start-line="18" selection-start-column="35" selection-end-line="18" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/tests/test_simulation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.23890063" vertical-offset="809" max-vertical-offset="1785">
-          <caret line="75" column="31" selection-start-line="75" selection-start-column="31" selection-end-line="75" selection-end-column="31" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/misc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1765" max-vertical-offset="2400">
-          <caret line="32" column="13" selection-start-line="32" selection-start-column="13" selection-end-line="32" selection-end-column="13" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/booking/models/tle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7229437" vertical-offset="202" max-vertical-offset="3000">
-          <caret line="58" column="23" selection-start-line="58" selection-start-column="23" selection-end-line="58" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_jrpc.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.3181312" vertical-offset="0" max-vertical-offset="5700">
-          <caret line="79" column="42" selection-start-line="79" selection-start-column="42" selection-end-line="79" selection-end-column="42" />
-          <folding>
-            <element signature="e#645#670#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_jrpc_channels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.6674082" vertical-offset="0" max-vertical-offset="9180">
-          <caret line="49" column="31" selection-start-line="49" selection-start-column="31" selection-end-line="49" selection-end-column="31" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_models.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="1.043379" vertical-offset="181" max-vertical-offset="2250">
-          <caret line="73" column="34" selection-start-line="73" selection-start-column="34" selection-end-line="73" selection-end-column="34" />
-          <folding>
-            <element signature="e#645#675#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/signals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="360">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/serialization.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.52253217" vertical-offset="2633" max-vertical-offset="7440">
-          <caret line="208" column="0" selection-start-line="208" selection-start-column="0" selection-end-line="208" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_models_compatibility.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.35407725" vertical-offset="360" max-vertical-offset="8535">
-          <caret line="46" column="38" selection-start-line="46" selection-start-column="38" selection-end-line="46" selection-end-column="38" />
-          <folding>
-            <element signature="e#706#729#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2445" max-vertical-offset="5235">
-          <caret line="187" column="58" selection-start-line="187" selection-start-column="58" selection-end-line="187" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/rules.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="23" max-vertical-offset="1185">
-          <caret line="31" column="36" selection-start-line="31" selection-start-column="36" selection-end-line="31" selection-end-column="36" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/compatibility.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2745" max-vertical-offset="3690">
-          <caret line="223" column="33" selection-start-line="223" selection-start-column="33" selection-end-line="223" selection-end-column="33" />
-          <folding>
-            <element signature="e#706#733#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/testing.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="3495" max-vertical-offset="4440">
-          <caret line="289" column="40" selection-start-line="289" selection-start-column="40" selection-end-line="289" selection-end-column="40" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/common/simulation.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="1245" max-vertical-offset="2415">
-          <caret line="131" column="20" selection-start-line="131" selection-start-column="20" selection-end-line="131" selection-end-column="20" />
-          <folding>
-            <element signature="e#645#675#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/channels.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="2325" max-vertical-offset="4365">
-          <caret line="164" column="0" selection-start-line="164" selection-start-column="0" selection-end-line="164" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/models/bands.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.2730159" vertical-offset="957" max-vertical-offset="2985">
-          <caret line="82" column="0" selection-start-line="82" selection-start-column="0" selection-end-line="82" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/fields/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.33261803" vertical-offset="9560" max-vertical-offset="21075">
           <caret line="683" column="8" selection-start-line="683" selection-start-column="8" selection-end-line="683" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/signals.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.53968257" vertical-offset="1185" max-vertical-offset="2130">
-          <caret line="113" column="5" selection-start-line="113" selection-start-column="5" selection-end-line="113" selection-end-column="5" />
-          <folding>
-            <element signature="e#706#742#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/jrpc/__init__.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="924">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1101,52 +873,425 @@
         <state vertical-scroll-proportion="0.9492386" vertical-offset="174" max-vertical-offset="4680">
           <caret line="49" column="45" selection-start-line="49" selection-start-column="45" selection-end-line="49" selection-end-column="45" />
           <folding>
-            <element signature="e#702#734#0" expanded="true" />
+            <element signature="e#702#734#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/booking/models/operational.py">
+    <entry file="file://$PROJECT_DIR$/LICENSE">
+      <provider editor-type-id="com.intellij.persistence.database.editor.CsvTableFileEditorProvider">
+        <state />
+      </provider>
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="97" max-vertical-offset="5535">
-          <caret line="22" column="57" selection-start-line="22" selection-start-column="57" selection-end-line="22" selection-end-column="57" />
+        <state vertical-scroll-proportion="0.39130434" vertical-offset="0" max-vertical-offset="3120">
+          <caret line="24" column="42" selection-start-line="24" selection-start-column="42" selection-end-line="24" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/forms.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.35714287" vertical-offset="0" max-vertical-offset="924">
+          <caret line="22" column="55" selection-start-line="22" selection-start-column="55" selection-end-line="22" selection-end-column="55" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/configuration/models/availability.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="3330">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state vertical-scroll-proportion="-2.164693" vertical-offset="2401" max-vertical-offset="3330">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/.PyCharm30/system/python_stubs/712665272/datetime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3410596" vertical-offset="3816" max-vertical-offset="9495">
+          <caret line="275" column="8" selection-start-line="275" selection-start-column="8" selection-end-line="275" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/python-skeletons/datetime.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.21959096" vertical-offset="1176" max-vertical-offset="9435">
+          <caret line="94" column="0" selection-start-line="94" selection-start-column="0" selection-end-line="94" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/test_misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2866242" vertical-offset="0" max-vertical-offset="942">
+          <caret line="18" column="21" selection-start-line="18" selection-start-column="21" selection-end-line="18" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/misc.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.19375673" vertical-offset="1620" max-vertical-offset="2565">
+          <caret line="120" column="37" selection-start-line="120" selection-start-column="37" selection-end-line="120" selection-end-column="37" />
           <folding>
-            <element signature="e#706#721#0" expanded="true" />
+            <element signature="e#645#680#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/django/db/models/query.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3326157" vertical-offset="6621" max-vertical-offset="25815">
+          <caret line="478" column="8" selection-start-line="478" selection-start-column="8" selection-end-line="478" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/serialization.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49407965" vertical-offset="3216" max-vertical-offset="7425">
+          <caret line="246" column="67" selection-start-line="246" selection-start-column="67" selection-end-line="246" selection-end-column="67" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/tests/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/tests/models/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/jrpc/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.3821656" vertical-offset="0" max-vertical-offset="942">
+          <caret line="24" column="40" selection-start-line="24" selection-start-column="40" selection-end-line="24" selection-end-column="40" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/ajax.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5489774" vertical-offset="0" max-vertical-offset="929">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="30" selection-start-line="15" selection-start-column="30" selection-end-line="15" selection-end-column="30" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/ajax.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.48546824" vertical-offset="826" max-vertical-offset="1755">
+          <caret line="25" column="42" selection-start-line="25" selection-start-column="42" selection-end-line="25" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/slots/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/slots/test_merge.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="5550">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/tests/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="942">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.30254778" vertical-offset="0" max-vertical-offset="942">
+          <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/models/test_availability.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="6285">
+          <caret line="399" column="0" selection-start-line="399" selection-start-column="0" selection-end-line="399" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="375">
+          <caret line="19" column="33" selection-start-line="19" selection-start-column="33" selection-end-line="19" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/jrpc/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.24483134" vertical-offset="0" max-vertical-offset="919">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/models/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2388535" vertical-offset="0" max-vertical-offset="942">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/models/test_channels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.49019608" vertical-offset="0" max-vertical-offset="2130">
+          <caret line="28" column="20" selection-start-line="28" selection-start-column="20" selection-end-line="28" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/groundstations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.68503934" vertical-offset="0" max-vertical-offset="1575">
+          <caret line="47" column="45" selection-start-line="47" selection-start-column="45" selection-end-line="47" selection-end-column="45" />
+          <folding>
+            <element signature="e#0#607#1" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/tests/jrpc/test_segments.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.63779527" vertical-offset="0" max-vertical-offset="5700">
+          <caret line="27" column="0" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
+          <folding>
+            <element signature="e#645#670#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/urls.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6993569" vertical-offset="0" max-vertical-offset="622">
+          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/booking/jrpc/operational.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9527559" vertical-offset="700" max-vertical-offset="1395">
-          <caret line="87" column="15" selection-start-line="87" selection-start-column="15" selection-end-line="87" selection-end-column="15" />
+        <state vertical-scroll-proportion="2.6470587" vertical-offset="0" max-vertical-offset="3015">
+          <caret line="108" column="59" selection-start-line="108" selection-start-column="59" selection-end-line="108" selection-end-column="59" />
+          <folding>
+            <element signature="e#645#677#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/segments.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="3.133987" vertical-offset="1007" max-vertical-offset="5130">
+          <caret line="202" column="26" selection-start-line="202" selection-start-column="26" selection-end-line="202" selection-end-column="26" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/booking/tests/test_models_operational.py">
+    <entry file="file://$PROJECT_DIR$/common/tests/test_simulation.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0" vertical-offset="5260" max-vertical-offset="5955">
-          <caret line="391" column="0" selection-start-line="391" selection-start-column="0" selection-end-line="391" selection-end-column="0" />
+        <state vertical-scroll-proportion="1.4843918" vertical-offset="61" max-vertical-offset="1530">
+          <caret line="96" column="62" selection-start-line="96" selection-start-column="62" selection-end-line="96" selection-end-column="62" />
+          <folding>
+            <element signature="e#645#677#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/channels.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="2041" max-vertical-offset="4320">
+          <caret line="269" column="19" selection-start-line="269" selection-start-column="19" selection-end-line="269" selection-end-column="19" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/models.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="906">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/decorators.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.4733406" vertical-offset="0" max-vertical-offset="919">
+          <caret line="30" column="0" selection-start-line="30" selection-start-column="0" selection-end-line="30" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/tasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.1632209" vertical-offset="0" max-vertical-offset="919">
+          <caret line="10" column="0" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/__v_env/local/lib/python2.7/site-packages/periodically/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.47986943" vertical-offset="234" max-vertical-offset="1185">
+          <caret line="45" column="37" selection-start-line="45" selection-start-column="37" selection-end-line="45" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/models/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="0" max-vertical-offset="315">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/models/compatibility.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0" vertical-offset="1498" max-vertical-offset="3645">
+          <caret line="128" column="17" selection-start-line="128" selection-start-column="17" selection-end-line="128" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/signals.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.8229399" vertical-offset="1211" max-vertical-offset="2130">
+          <caret line="130" column="33" selection-start-line="130" selection-start-column="33" selection-end-line="130" selection-end-column="33" />
+          <folding>
+            <element signature="e#706#742#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/configuration/jrpc/rules.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.6648107" vertical-offset="243" max-vertical-offset="1185">
+          <caret line="61" column="0" selection-start-line="61" selection-start-column="0" selection-end-line="61" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/models/tle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.54735684" vertical-offset="1318" max-vertical-offset="3000">
+          <caret line="121" column="0" selection-start-line="121" selection-start-column="0" selection-end-line="121" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/WebServices/__init__.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.2542373" vertical-offset="0" max-vertical-offset="885">
+          <caret line="15" column="35" selection-start-line="15" selection-start-column="35" selection-end-line="15" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/periodictasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.88135594" vertical-offset="0" max-vertical-offset="1050">
+          <caret line="52" column="37" selection-start-line="52" selection-start-column="37" selection-end-line="52" selection-end-column="37" />
+          <folding>
+            <element signature="e#706#736#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/accounts/periodictasks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5947136" vertical-offset="0" max-vertical-offset="908">
+          <caret line="36" column="17" selection-start-line="36" selection-start-column="17" selection-end-line="36" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/tests/models/test_operational.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="2.2059472" vertical-offset="4027" max-vertical-offset="6210">
+          <caret line="402" column="26" selection-start-line="402" selection-start-column="26" selection-end-line="402" selection-end-column="26" />
           <folding>
             <element signature="e#645#659#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/configuration/tests/test_models_availability.py">
+    <entry file="file://$PROJECT_DIR$/WebServices/settings.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.9527559" vertical-offset="5590" max-vertical-offset="6285">
-          <caret line="422" column="9" selection-start-line="422" selection-start-column="9" selection-end-line="422" selection-end-column="9" />
+        <state vertical-scroll-proportion="0.280837" vertical-offset="0" max-vertical-offset="3960">
+          <caret line="17" column="0" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/common/simulation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.9669604" vertical-offset="397" max-vertical-offset="3405">
+          <caret line="85" column="0" selection-start-line="85" selection-start-column="0" selection-end-line="85" selection-end-column="0" />
+          <folding>
+            <element signature="e#645#675#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/booking/models/operational.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.91519827" vertical-offset="5814" max-vertical-offset="6735">
+          <caret line="443" column="47" selection-start-line="443" selection-start-column="47" selection-end-line="443" selection-end-column="47" />
+          <folding>
+            <element signature="e#645#660#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

@@ -18,16 +18,40 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 from django.db import models
 
-from booking.models import tle
 from common import misc, simulation
 from configuration.models import availability, channels, compatibility
+
+# Serialization constants.
+IDENTIFIER = 'identifier'
+GROUNDSTATION_CHANNEL = 'groundstation_channel'
+SPACECRAFT_CHANNEL = 'spacecraft_channel'
+DATE_START = 'date_start'
+DATE_END = 'date_end'
+STATE = 'slot_state'
 
 
 class OperationalSlotsManager(models.Manager):
     """
     Manager for handling all the operations associated with the objects from
-    the Booking table.
+    the OperationalSlots table.
     """
+
+    # Embedded OrbitalSimulator object.
+    _simulator = None
+
+    def get_simulator(self):
+        """
+        The embedded simulator should be accessed always through this
+        function, since it is the responsible for creating it in case it does
+        not exist. Several problems while including the creation of the
+        embedded simulator within this class forced the implementation of
+        this solution.
+        """
+        if self._simulator is None:
+            self._simulator = simulation.OrbitalSimulator(
+                reload_tle_database=True
+            )
+        return self._simulator
 
     def create(
         self, groundstation_channel, spacecraft_channel,
@@ -47,7 +71,7 @@ class OperationalSlotsManager(models.Manager):
         """
         return super(OperationalSlotsManager, self).create(
             identifier=OperationalSlot.create_identifier(
-                groundstation_channel, spacecraft_channel, start
+                groundstation_channel, spacecraft_channel
             ),
             groundstation_channel=groundstation_channel,
             spacecraft_channel=spacecraft_channel,
@@ -85,6 +109,35 @@ class OperationalSlotsManager(models.Manager):
 
         return o_slots
 
+    def get_spacecraft_changes(self, spacecraft):
+        """
+        Returns the list of OperationalSlots that have suffered changes for
+        the given Spacecraft. After returning that list, it changes the flag
+        "changed_notified" to False.
+        :param spacecraft: The Spacecraft for which the OperationalSlots are
+        requested.
+        :return: List with all the OperationalSlots.
+        """
+        s_slots = []
+
+        for sc_ch_i in channels.SpacecraftChannel.objects.filter(
+            enabled=True, spacecraft=spacecraft
+        ):
+
+            o_slots_i = self.filter(spacecraft_channel=sc_ch_i)
+            s_slots.append(
+                OperationalSlot.serialize_operational_slots(o_slots_i)
+            )
+            o_slots_i.update(change_notified=True)
+
+        if len(s_slots) == 0:
+            raise Exception(
+                'No OperationalSlots available for Spacecraft <'
+                + str(spacecraft) + '>'
+            )
+
+        return s_slots
+
     @staticmethod
     def compatibility_sc_channel_added(
         sender, instance, compatible_channels, **kwargs
@@ -114,8 +167,9 @@ class OperationalSlotsManager(models.Manager):
         if len(instance.groundstation_set.all()) == 0:
             return
 
-        gs = instance.groundstation_set.all()[0]
-        gs_sim = simulation.create_groundstation(gs)
+        OperationalSlot.objects.get_simulator().set_groundstation(
+            instance.groundstation_set.all()[0]
+        )
 
         start = misc.get_today_utc()
         end = start + datetime.timedelta(days=2)
@@ -126,15 +180,12 @@ class OperationalSlotsManager(models.Manager):
 
         for sc_ch_i in compatible_channels:
 
-            sc = sc_ch_i.spacecraft_set.all()[0]
-            tle_o = tle.TwoLineElement.objects.get(identifier=sc.tle_id)
-            sc_sim = simulation.create_spacecraft(
-                tle_o.identifier, tle_o.first_line, tle_o.second_line
+            OperationalSlot.objects.get_simulator().set_spacecraft(
+                sc_ch_i.spacecraft_set.all()[0]
             )
 
-            operational_s = simulation.calculate_pass_slots(
-                gs_sim, sc_sim, a_slots
-            )
+            operational_s = OperationalSlot.objects.get_simulator()\
+                .calculate_pass_slots(a_slots)
 
             OperationalSlot.objects.create_list(
                 instance, sc_ch_i, operational_s
@@ -147,9 +198,9 @@ class OperationalSlotsManager(models.Manager):
         :param sender: The database object that sent the signal.
         :param instance: The Channel affected by the event.
         """
-        # ### TODO Temporary insert deleted slots in a different table for
-        # ### TODO clients notification.
-        OperationalSlot.objects.filter(spacecraft_channel=instance).delete()
+        OperationalSlot.objects.filter(groundstation_channel=instance).update(
+            state=OperationalSlot.STATE_CHOICES[5][0]
+        )
 
     @staticmethod
     def compatibility_gs_channel_deleted(sender, instance, **kwargs):
@@ -158,9 +209,9 @@ class OperationalSlotsManager(models.Manager):
         :param sender: The database object that sent the signal.
         :param instance: The Channel affected by the event.
         """
-        # ### TODO Temporary insert deleted slots in a different table for
-        # ### TODO clients notification.
-        OperationalSlot.objects.filter(groundstation_channel=instance).delete()
+        OperationalSlot.objects.filter(groundstation_channel=instance).update(
+            state=OperationalSlot.STATE_CHOICES[5][0]
+        )
 
     @staticmethod
     def availability_slot_added(sender, instance, **kwargs):
@@ -176,14 +227,12 @@ class OperationalSlotsManager(models.Manager):
                 groundstation_channels=gs_ch
         ):
 
-            sc = comp_i.spacecraft_channel.spacecraft_set.all()[0]
-            tle_o = tle.TwoLineElement.objects.get(identifier=sc.tle_id)
-            sc_sim = simulation.create_spacecraft(
-                tle_o.identifier, tle_o.first_line, tle_o.second_line
+            OperationalSlot.objects.get_simulator().set_spacecraft(
+                comp_i.spacecraft_channel.spacecraft_set.all()[0]
             )
-
-            gs = gs_ch.groundstation_set.all()[0]
-            gs_sim = simulation.create_groundstation(gs)
+            OperationalSlot.objects.get_simulator().set_groundstation(
+                gs_ch.groundstation_set.all()[0]
+            )
 
             start = misc.get_today_utc()
             end = misc.get_midnight() + datetime.timedelta(days=2)
@@ -191,9 +240,8 @@ class OperationalSlotsManager(models.Manager):
                 instance, start=start, end=end
             )
 
-            operational_s = simulation.calculate_pass_slots(
-                gs_sim, sc_sim, [t_slot]
-            )
+            operational_s = OperationalSlot.objects.get_simulator()\
+                .calculate_pass_slots([t_slot])
 
             OperationalSlot.objects.create_list(
                 gs_ch, comp_i.spacecraft_channel, operational_s
@@ -207,9 +255,9 @@ class OperationalSlotsManager(models.Manager):
         :param sender The object that sent the signal.
         :param instance The instance of the object itself.
         """
-        # ### TODO Temporary insert deleted slots in a different table for
-        # ### TODO clients notification.
-        OperationalSlot.objects.filter(availability_slot=instance).delete()
+        OperationalSlot.objects.filter(availability_slot=instance).update(
+            state=OperationalSlot.STATE_CHOICES[5][0]
+        )
 
     @staticmethod
     def update_spacecraft_channel_slots(
@@ -234,25 +282,23 @@ class OperationalSlotsManager(models.Manager):
                 + 'should occurr sooner than <end=' + str(end) + '>'
             )
 
-        sc = spacecraft_channel.spacecraft_set.all()[0]
-        tle_o = tle.TwoLineElement.objects.get(identifier=sc.tle_id)
-        sc_sim = simulation.create_spacecraft(
-            tle_o.identifier, tle_o.first_line, tle_o.second_line
+        OperationalSlot.objects.get_simulator().set_spacecraft(
+            spacecraft_channel.spacecraft_set.all()[0]
         )
 
         for gs_ch_i in groundstation_channels:
 
-            gs = gs_ch_i.groundstation_set.all()[0]
-            gs_sim = simulation.create_groundstation(gs)
+            OperationalSlot.objects.get_simulator().set_groundstation(
+                gs_ch_i.groundstation_set.all()[0]
+            )
 
             a_slots = availability.AvailabilitySlot.objects.get_applicable(
                 groundstation_channel=gs_ch_i,
                 start=start, end=end
             )
 
-            operational_s = simulation.calculate_pass_slots(
-                gs_sim, sc_sim, a_slots
-            )
+            operational_s = OperationalSlot.objects.get_simulator()\
+                .calculate_pass_slots(a_slots)
 
             OperationalSlot.objects.create_list(
                 gs_ch_i, spacecraft_channel, operational_s
@@ -270,12 +316,14 @@ class OperationalSlotsManager(models.Manager):
         if start is None:
             start = misc.get_today_utc()
 
+        end = start+duration
+
         for compatible_i in compatibility.ChannelCompatibility.objects.all():
 
             OperationalSlotsManager.update_spacecraft_channel_slots(
                 compatible_i.spacecraft_channel,
                 compatible_i.groundstation_channels,
-                start, duration
+                start, end
             )
 
 
@@ -309,16 +357,14 @@ class OperationalSlot(models.Model):
     start = models.DateTimeField('Slot start')
     end = models.DateTimeField('Slot end')
 
-    # ### TODO It is right now a task for the client to check whether a slot
-    # ### TODO has changed its state with respect to the previous one. Maybe
-    # ### TODO future versions could include an additional table that saves
-    # ### TODO notifications to be made.
     STATE_CHOICES = (
         ('FREE', 'Slot not assigned for operation'),
-        ('RESERVED', 'Slot waiting for GroundStation confirmation'),
-        ('CONFIRMED', 'Slot confirmed for operation'),
+        ('SELECTED', 'Slot chosen for reservation'),
+        ('RESERVED', 'Slot confirmed by GroundStation'),
+        ('DENIED', 'Slot petition denied by GroundStation operators'),
+        ('CANCELED', 'Slot reservation canceled by GroundStation operators'),
+        ('REMOVED', 'Slot removed through a GroundStation policy change')
     )
-
     state = models.CharField(
         'String that indicates the current state of the slot',
         max_length=10,
@@ -326,13 +372,22 @@ class OperationalSlot(models.Model):
         default=STATE_CHOICES[0][0]
     )
 
+    change_notified = models.BooleanField(
+        'Flag that indicates whether the changes in the status of the slot '
+        'need already to be notified to the remote clients.',
+        default=True
+    )
+
+    # Deleting the related AvailabilitySlot will not provoke the removal of
+    # the related rows in this table.
     availability_slot = models.ForeignKey(
         availability.AvailabilitySlot,
-        verbose_name='Availability slot that generate this operational slot'
+        verbose_name='Availability slot that generate this operational slot',
+        blank=True, null=True, on_delete=models.SET_NULL
     )
 
     @staticmethod
-    def create_identifier(groundstation_channel, spacecraft_channel, start):
+    def create_identifier(groundstation_channel, spacecraft_channel):
         """
         This method creates a unique identifier for this OperationalSlot
         based on the information of the channels related with the slot itself.
@@ -340,19 +395,43 @@ class OperationalSlot(models.Model):
         owns this OperationalSlot.
         :param spacecraft_channel: The channel of the Spacecraft that is
         compatible with this OperationalSlot.
-        :param start: The start datetime of this slot.
         :return: The just created identifier as a String.
         """
-        gs = groundstation_channel.groundstation_set.all()[0]
-        sc = spacecraft_channel.spacecraft_set.all()[0]
-
-        return gs.identifier + OperationalSlot.ID_FIELDS_SEPARATOR\
-            + groundstation_channel.identifier\
+        return groundstation_channel.identifier\
             + OperationalSlot.ID_FIELDS_SEPARATOR\
-            + sc.identifier + OperationalSlot.ID_FIELDS_SEPARATOR\
             + spacecraft_channel.identifier\
             + OperationalSlot.ID_FIELDS_SEPARATOR\
-            + str(misc.get_utc_timestamp(start))
+            + str(misc.get_utc_timestamp())
+
+    @staticmethod
+    def serialize_slots(operational_slots):
+        """
+        Serializes a complete list of OperationalSlots into a JSON-like
+        structure.
+        :param operational_slots: The list to be serialized.
+        :return: JSON-like structure with the data serialized.
+        """
+        s_o_slots = []
+
+        for o_i in operational_slots:
+            s_o_slots.append(o_i.serialize())
+
+        return s_o_slots
+
+    def serialize(self, operational_slot):
+        """
+        Serializes a single OperationalSlot into a JSON-RPC data structure.
+        :param operational_slot: The slot to be serialized.
+        :return: JSON-like structure with the data serialized.
+        """
+        return {
+            IDENTIFIER: self.identifier,
+            GROUNDSTATION_CHANNEL: self.groundstation_channel,
+            SPACECRAFT_CHANNEL: self.spacecraft_channel,
+            DATE_START: misc.localize_datetime_utc(operational_slot.start),
+            DATE_END: misc.localize_datetime_utc(operational_slot.end),
+            STATE: self.state
+        }
 
     def __unicode__(self):
         """
@@ -361,4 +440,5 @@ class OperationalSlot(models.Model):
         """
         return 'id = ' + str(self.identifier)\
                + ', start = ' + str(self.start)\
-               + ', end = ' + str(self.end)
+               + ', end = ' + str(self.end)\
+               + ', state = ' + str(self.state)

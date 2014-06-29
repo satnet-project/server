@@ -16,9 +16,6 @@
 
 # Django settings for WebServices project.
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
-
 ADMINS = [
     ("Ricardo Tubio-Pardavila", "rtubiopa@calpoly.edu"),
 ]

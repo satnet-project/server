@@ -13,11 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-__author__ = 'rtubio'
+__author__ = 'rtubiopa@calpoly.edu'
 
-from configuration.signals import connect_rules_2_availability,\
-    connect_channels_2_compatibility
+from configuration import signals
 
 # ### Simple signal connection
-connect_rules_2_availability()
-connect_channels_2_compatibility()
+signals.connect_availability_2_operational()
+signals.connect_channels_2_compatibility()
+signals.connect_compatibility_2_operational()
+signals.connect_rules_2_availability()
+signals.connect_segments_2_booking_tle()

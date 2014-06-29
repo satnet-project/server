@@ -446,7 +446,7 @@ WHEN (new.%(col_name)s IS NULL)
         bounds = super(DatabaseOperations, self).year_lookup_bounds_for_datetime_field(value)
         if settings.USE_TZ:
             bounds = [b.astimezone(timezone.utc).replace(tzinfo=None) for b in bounds]
-        return [b.isoformat(b' ') for b in bounds]
+        return [b.isoformat(str(' ')) for b in bounds]
 
     def combine_expression(self, connector, sub_expressions):
         "Oracle requires special cases for %% and & operators in query expressions"
@@ -625,7 +625,8 @@ class DatabaseWrapper(BaseDatabaseWrapper):
         pass
 
     def _set_autocommit(self, autocommit):
-        self.connection.autocommit = autocommit
+        with self.wrap_database_errors:
+            self.connection.autocommit = autocommit
 
     def check_constraints(self, table_names=None):
         """
@@ -642,7 +643,7 @@ class DatabaseWrapper(BaseDatabaseWrapper):
             else:
                 # Use a cx_Oracle cursor directly, bypassing Django's utilities.
                 self.connection.cursor().execute("SELECT 1 FROM DUAL")
-        except DatabaseError:
+        except Database.Error:
             return False
         else:
             return True

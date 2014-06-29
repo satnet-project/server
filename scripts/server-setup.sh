@@ -131,6 +131,14 @@ create_virtualenv()
 
 }
 
+# ### This function upgrades all the pip packages installed in the
+# virtual environment
+pip_upgrade_packages()
+{
+    pip freeze --local | grep -v '^\-e' | cut -d = -f 1  | xargs pip install -U
+}
+
+
 # ### This is the function utilized for adding the crontab task required by
 # django-periodically for executing periodic maintenance tasks of the web
 # applications

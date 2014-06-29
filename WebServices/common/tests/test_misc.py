@@ -15,19 +15,20 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import datetime, timedelta
-from django.test import TestCase
+from datetime import timedelta
+from django import test
 
-from common.misc import localize_date_utc, get_utc_timestamp
+from common import misc
 
 
-class TestMisc(TestCase):
+class TestMisc(test.TestCase):
 
     def test_get_utc_timestamp(self):
         """
         Basic test for the generation of UTC timestamps.
         """
-        test_datetime = localize_date_utc(datetime(year=1970, month=1, day=2))
-        actual_stamp = get_utc_timestamp(test_datetime)
-        expected_stamp = timedelta(days=1).days*24*3600 * 10**3
+        test_datetime = misc.TIMESTAMP_0 + timedelta(days=1)
+        actual_stamp = misc.get_utc_timestamp(test_datetime)
+        expected_stamp = timedelta(days=1).days*24*3600 * 10**6
+
         self.assertEquals(expected_stamp, actual_stamp, 'Wrong timestamp!')

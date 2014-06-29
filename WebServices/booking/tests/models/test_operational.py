@@ -121,19 +121,27 @@ class JRPCRulesTest(test.TestCase):
                 ))
             )
         )
+
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-        self.assertIsNot(
-            len(operational.OperationalSlot.objects.all()), 0,
+        self.assertEquals(
+            len(operational.OperationalSlot.objects.all()), 2,
             'Operational slots must be available!'
         )
 
-        self.assertIsNot(
+        self.assertEquals(
             rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id),
-            0, 'Rule should have been added!'
+            True, 'Rule should have been added!'
         )
-        self.assertEqual(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'No operational slots must remain available!'
+
+        expected = [(unicode('REMOVED'),), (unicode('REMOVED'),)]
+        actual = list(
+            operational.OperationalSlot.objects.filter(
+                state='REMOVED'
+            ).values_list('state')
+        )
+        self.assertEquals(
+            actual, expected,
+            'All remaining slots must have the state \'REMOVED\'!'
         )
 
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
@@ -184,18 +192,20 @@ class JRPCRulesTest(test.TestCase):
             )
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-        self.assertIsNot(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'Operational slots must be available!'
-        )
 
-        self.assertIsNot(
+        self.assertEquals(
             rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id),
-            0, 'Rule should have been added!'
+            True, 'Rule should have been added!'
         )
-        self.assertEqual(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'No operational slots must remain available!'
+        expected = [(unicode('REMOVED'),), (unicode('REMOVED'),)]
+        actual = list(
+            operational.OperationalSlot.objects.filter(
+                state='REMOVED'
+            ).values_list('state')
+        )
+        self.assertEquals(
+            actual, expected,
+            'All remaining slots must have the state \'REMOVED\'!'
         )
 
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
@@ -246,19 +256,19 @@ class JRPCRulesTest(test.TestCase):
             )
         )
 
-        self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-        self.assertIsNot(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'Operational slots must be available!'
-        )
-
-        self.assertIsNot(
+        self.assertEquals(
             rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id),
-            0, 'Rule should have been added!'
+            True, 'Rule should have been added!'
         )
-        self.assertEqual(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'No operational slots must remain available!'
+        expected = [(unicode('REMOVED'),), (unicode('REMOVED'),)]
+        actual = list(
+            operational.OperationalSlot.objects.filter(
+                state='REMOVED'
+            ).values_list('state')
+        )
+        self.assertEquals(
+            actual, expected,
+            'All remaining slots must have the state \'REMOVED\'!'
         )
 
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
@@ -308,20 +318,24 @@ class JRPCRulesTest(test.TestCase):
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertIsNot(
-            len(operational.OperationalSlot.objects.all()), 0,
+        self.assertEquals(
+            len(operational.OperationalSlot.objects.all()), 2,
             'Operational slots must be available!'
         )
 
-        self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-        self.assertIsNot(
+        self.assertEquals(
             rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id),
-            False, 'Rule should have been removed!'
+            True, 'Rule should have been added!'
         )
-
-        self.assertEqual(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'No operational slots must remain available!'
+        expected = [(unicode('REMOVED'),), (unicode('REMOVED'),)]
+        actual = list(
+            operational.OperationalSlot.objects.filter(
+                state='REMOVED'
+            ).values_list('state')
+        )
+        self.assertEquals(
+            actual, expected,
+            'All remaining slots must have the state \'REMOVED\'!'
         )
 
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
@@ -371,20 +385,24 @@ class JRPCRulesTest(test.TestCase):
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertIsNot(
-            len(operational.OperationalSlot.objects.all()), 0,
+        self.assertEquals(
+            len(operational.OperationalSlot.objects.all()), 2,
             'Operational slots must be available!'
         )
 
-        self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-        self.assertIsNot(
+        self.assertEquals(
             rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id),
-            False, 'Rule should have been removed!'
+            True, 'Rule should have been added!'
         )
-
-        self.assertEqual(
-            len(operational.OperationalSlot.objects.all()), 0,
-            'No operational slots must remain available!'
+        expected = [(unicode('REMOVED'),), (unicode('REMOVED'),)]
+        actual = list(
+            operational.OperationalSlot.objects.filter(
+                state='REMOVED'
+            ).values_list('state')
+        )
+        self.assertEquals(
+            actual, expected,
+            'All remaining slots must have the state \'REMOVED\'!'
         )
 
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)

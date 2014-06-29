@@ -17,6 +17,4 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 # It is necessary to import this module here for rpc4django to detect the RPC
 # methods.
-from configuration.jrpc import groundstations
-from configuration.jrpc import channels
-from configuration.jrpc import rules
+from configuration.jrpc import groundstations, spacecraft, channels, rules

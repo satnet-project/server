@@ -246,6 +246,9 @@ class QuerySet(object):
             # Add the known related objects to the model, if there are any
             if self._known_related_objects:
                 for field, rel_objs in self._known_related_objects.items():
+                    # Avoid overwriting objects loaded e.g. by select_related
+                    if hasattr(obj, field.get_cache_name()):
+                        continue
                     pk = getattr(obj, field.get_attname())
                     try:
                         rel_obj = rel_objs[pk]
@@ -342,7 +345,7 @@ class QuerySet(object):
             return objs
         self._for_write = True
         connection = connections[self.db]
-        fields = self.model._meta.local_fields
+        fields = self.model._meta.local_concrete_fields
         with transaction.commit_on_success_unless_managed(using=self.db):
             if (connection.features.can_combine_inserts_with_and_without_auto_increment_pk
                 and self.model._meta.has_auto_field):

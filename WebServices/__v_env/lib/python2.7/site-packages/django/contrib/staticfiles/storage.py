@@ -35,6 +35,11 @@ class StaticFilesStorage(FileSystemStorage):
         check_settings(base_url)
         super(StaticFilesStorage, self).__init__(location, base_url,
                                                  *args, **kwargs)
+        # FileSystemStorage fallbacks to MEDIA_ROOT when location
+        # is empty, so we restore the empty value.
+        if not location:
+            self.base_location = None
+            self.location = None
 
     def path(self, name):
         if not self.location:
