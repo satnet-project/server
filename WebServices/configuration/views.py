@@ -25,7 +25,7 @@ from django.views.generic.detail import DetailView
 
 from configuration.forms import AddGroundStationForm
 from configuration.models.segments import GroundStation
-from common.misc import get_remote_user_location
+from common.gis import get_remote_user_location
 
 
 class AddGroundStationView(CreateView):
