@@ -17,6 +17,7 @@
 
 ################################################################################
 # Autor: rtpardavila[at]gmail.com
+# Autor: xabicrespog[at]gmail.com
 # Description: configures a Debian server for the SATNet project.
 ################################################################################
 
@@ -82,14 +83,12 @@ create_virtualenv()
     # packages since these should now be installed in the local directories
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
-<<<<<<< HEAD
 
     #pip install django==1.5.2
     #pip install eventlog==0.6.2
     #pip install django-jsonfield==0.8.12
     #pip install django-registration==1.0
     #pip install mysql-python==1.2.3
-=======
     
     pip install django==1.5.4
     pip install eventlog==0.6.2
@@ -98,7 +97,6 @@ create_virtualenv()
     pip install mysql-python==1.2.3
     pip install rpc4django
     pip install pytz
->>>>>>> 5b56ffdd66ac2f98f14c1a4054204ff219a915c8
 
     pip install distribute --upgrade
 
@@ -197,6 +195,20 @@ configure_pinax_repository()
 
 }
 
+# ### Examples of HOW TO call this script
+
+usage() { 
+
+    echo "Please, use ONLY ONE ARGUMENT at a time:"
+    echo "Usage: $0 [-d] #Delete Django databases" 
+    echo "Usage: $0 [-i] #Install required packages <root>" 
+    echo "Usage: $0 [-v] #Configure virtualenv" 
+
+    1>&2;
+    exit 1; 
+
+}
+
 ################################################################################
 # ### Main variables and parameters
 
@@ -216,28 +228,50 @@ venv_activate="$project_path/$venv/bin/activate"
 ################################################################################
 # ### Main execution loop
 
-# some configuration commands can be executed without root permissions
-[[ $# -gt 0 ]] && \
-{
-    [[ $1 == "--create-venv" ]] && \
-        create_virtualenv $*
-}
 
-# check running as <root>
-[[ $( whoami ) == 'root' ]] || \
-	{ echo 'Need to be <root>, exiting...'; exit -1; }
+if [ $OPTIND -gt 1 ] ; then
+    usage
+fi
 
-echo 'This process is not unattended, user interaction is required.'
-echo 'Press any key to start the configuration process...'
-read
-echo 'Before going ahead, check if project path is correctly configured.'
-read
+while getopts ":div" o; do
+    case "${o}" in
+        d)
+            echo 'Deleting MYSQL Django databases...'
+            delete_mysql_db
+            echo 'DONE'
+            exit 1;
+            ;;
+        i)
+            #Need to be root to install packages
+            [[ $( whoami ) == 'root' ]] || \
+                { echo 'Need to be <root>, exiting...'; exit -1; }
 
- install_packages
- configure_mysql
- add_crontab_django_periodically
- ### just in case the database needs to be restored:
- #delete_mysql_db
+            echo 'Installing required packages...'
+            echo 'This process is not unattended, user interaction is required. Press any key to continue...'
+            read
+            #install_packages
+            #add_crontab_django_periodically
+            echo 'DONE'
+
+            echo 'Configuring virtualenv...'
+            create_virtualenv $*
+            configure_mysql
+            echo 'DONE'
+            exit 1;
+
+            ;;
+        v)
+            echo 'Configuring virtualenv...'
+            create_virtualenv $*
+            configure_mysql
+            echo 'DONE'
+            exit 1;
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
 
 exit 1
-
