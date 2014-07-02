@@ -1,3 +1,4 @@
 *~
 *.pyc
-WebServices/__v_env
+WebServices/__v_env/
+__v_env/
