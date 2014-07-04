@@ -114,6 +114,8 @@ create_virtualenv()
     pip install python-dateutil
     pip install django-extensions
     pip install pyephem
+    pip install twisted
+    pip install txJSON-RPC
     # ### testing packages
     pip install django-selenium
     pip install selenium
