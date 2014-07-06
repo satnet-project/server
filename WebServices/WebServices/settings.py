@@ -15,6 +15,7 @@
 """
 
 # Django settings for WebServices project.
+DEBUG = True
 
 ADMINS = [
     ("Ricardo Tubio-Pardavila", "rtubiopa@calpoly.edu"),
