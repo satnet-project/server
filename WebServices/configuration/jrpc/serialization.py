@@ -16,7 +16,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from common.misc import localize_date_utc, localize_time_utc
+from common import serialization as common_serial
 from configuration.models import bands, rules
 
 CHANNEL_LIST_K = 'segment_channels'
@@ -242,9 +242,15 @@ def serialize_once_dates(rule, child_rule):
     :return: An object serializable structure.
     """
     return {
-        RULE_ONCE_DATE: localize_date_utc(rule.starting_date),
-        RULE_ONCE_S_TIME: localize_time_utc(child_rule.starting_time),
-        RULE_ONCE_E_TIME: localize_time_utc(child_rule.ending_time)
+        RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
+            rule.starting_date
+        ),
+        RULE_ONCE_S_TIME: common_serial.serialize_iso8601_time(
+            child_rule.starting_time
+        ),
+        RULE_ONCE_E_TIME: common_serial.serialize_iso8601_time(
+            child_rule.ending_time
+        )
     }
 
 
@@ -256,10 +262,18 @@ def serialize_daily_dates(rule, child_rule):
     :return: An object serializable structure.
     """
     return {
-        RULE_DAILY_I_DATE: localize_date_utc(rule.starting_date),
-        RULE_DAILY_F_DATE: localize_date_utc(rule.ending_date),
-        RULE_S_TIME: localize_time_utc(child_rule.starting_time),
-        RULE_E_TIME: localize_time_utc(child_rule.ending_time)
+        RULE_DAILY_I_DATE: common_serial.serialize_iso8601_date(
+            rule.starting_date
+        ),
+        RULE_DAILY_F_DATE: common_serial.serialize_iso8601_date(
+            rule.ending_date
+        ),
+        RULE_S_TIME: common_serial.serialize_iso8601_time(
+            child_rule.starting_time
+        ),
+        RULE_E_TIME: common_serial.serialize_iso8601_time(
+            child_rule.ending_time
+        )
     }
 
 
@@ -274,12 +288,20 @@ def serialize_weekly_dates(rule, child_rule):
     for d in RULE_WEEKLY_WEEKDAYS:
         dates.append({
             RULE_WEEKLY_DATE_DAY: d,
-            RULE_S_TIME: localize_time_utc(child_rule[d + '_starting_time']),
-            RULE_E_TIME: localize_time_utc(child_rule[d + '_ending_time'])
+            RULE_S_TIME: common_serial.serialize_iso8601_time(
+                child_rule[d + '_starting_time']
+            ),
+            RULE_E_TIME: common_serial.serialize_iso8601_time(
+                child_rule[d + '_ending_time']
+            )
         })
     return {
-        RULE_DAILY_I_DATE: localize_date_utc(rule.starting_date),
-        RULE_DAILY_F_DATE: localize_date_utc(rule.ending_date),
+        RULE_DAILY_I_DATE: common_serial.serialize_iso8601_date(
+            rule.starting_date
+        ),
+        RULE_DAILY_F_DATE: common_serial.serialize_iso8601_date(
+            rule.ending_date
+        ),
         RULE_DATES: dates
     }
 
@@ -339,8 +361,10 @@ def deserialize_once_dates(dates):
     :param dates: The dates object.
     :return: A 3-tuple containing all the deserialized date parameters.
     """
-    return dates[RULE_ONCE_DATE], dates[RULE_ONCE_S_TIME], \
-        dates[RULE_ONCE_E_TIME]
+    return\
+        common_serial.deserialize_iso8601_date(dates[RULE_ONCE_DATE]),\
+        common_serial.deserialize_iso8601_time(dates[RULE_ONCE_S_TIME]),\
+        common_serial.deserialize_iso8601_time(dates[RULE_ONCE_E_TIME])
 
 
 def deserialize_daily_dates(dates):
@@ -350,8 +374,11 @@ def deserialize_daily_dates(dates):
     :return: A 4-tuple containing all the deserialized date parameters (
     initial date, final date, starting daily hour and ending daily hour.
     """
-    return dates[RULE_DAILY_I_DATE], dates[RULE_DAILY_F_DATE], \
-        dates[RULE_S_TIME], dates[RULE_E_TIME]
+    return\
+        common_serial.deserialize_iso8601_date(dates[RULE_DAILY_I_DATE]), \
+        common_serial.deserialize_iso8601_date(dates[RULE_DAILY_F_DATE]), \
+        common_serial.deserialize_iso8601_time(dates[RULE_S_TIME]),\
+        common_serial.deserialize_iso8601_time(dates[RULE_E_TIME])
 
 
 def deserialize_weekly_dates(dates):

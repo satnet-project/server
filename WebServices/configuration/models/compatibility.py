@@ -22,11 +22,10 @@ from django import dispatch
 from django.core import exceptions
 from django.db import models
 import logging
-logger = logging.getLogger(__name__)
-
 from common import misc
 from configuration.models import channels
 
+logger = logging.getLogger(__name__)
 
 compatibility_add_gs_ch_signal = dispatch.Signal(
     providing_args=['instance', 'compatible_channels']
@@ -105,14 +104,14 @@ class ChannelCompatibilityManager(models.Manager):
         :param sc_ch_id: Identifier of the Spacecraft channel to be removed.
         """
         compatible_chs = []
+
         try:
-            s = ChannelCompatibility.objects.get(spacecraft_channel=instance)
-            compatible_chs = [
-                channels.GroundStationChannel.objects.get(identifier=id_gs_ch_i)
-                for id_gs_ch_i in s.groundstation_channels.all()
-            ]
+            s = ChannelCompatibility.objects.filter(
+                spacecraft_channel=instance
+            )[0]
+            compatible_chs = s.groundstation_channels.all()
             s.delete()
-        except exceptions.ObjectDoesNotExist:
+        except IndexError:
             logger.info(
                 'Deleted SpacecraftChannel <' + str(instance.identifier)
                 + '> does not exist in the Compatibility table.'

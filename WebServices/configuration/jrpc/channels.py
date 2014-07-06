@@ -19,19 +19,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 
-from configuration.models.channels import GroundStationChannel,\
-    SpacecraftChannel
-from configuration.models.bands import AvailableModulations,\
-    AvailablePolarizations, AvailableBitrates, AvailableBandwidths,\
-    AvailableBands
-from configuration.models.segments import GroundStation,\
-    Spacecraft
-from configuration.jrpc.serialization import\
-    serialize_gs_channel_configuration, serialize_sc_channel_configuration,\
-    deserialize_sc_channel_parameters, deserialize_gs_channel_parameters,\
-    CH_ID_K, MODULATIONS_K, BAND_K, POLARIZATIONS_K,\
-    BITRATES_K, BANDWIDTHS_K
-
+from configuration.models import bands, channels, segments
+from configuration.jrpc import serialization
 
 @rpcmethod(
     name='configuration.channels.getOptions',
@@ -46,20 +35,25 @@ def get_options():
     options for adding a new communications channel to a Ground Station.
     """
     return {
-        BAND_K: [
-            obj.get_band_name() for obj in AvailableBands.objects.all()
+        serialization.BAND_K: [
+            obj.get_band_name()
+            for obj in bands.AvailableBands.objects.all()
         ],
-        MODULATIONS_K: [
-            obj.modulation for obj in AvailableModulations.objects.all()
+        serialization.MODULATIONS_K: [
+            obj.modulation
+            for obj in bands.AvailableModulations.objects.all()
         ],
-        POLARIZATIONS_K: [
-            obj.polarization for obj in AvailablePolarizations.objects.all()
+        serialization.POLARIZATIONS_K: [
+            obj.polarization
+            for obj in bands.AvailablePolarizations.objects.all()
         ],
-        BITRATES_K: [
-            str(obj.bitrate) for obj in AvailableBitrates.objects.all()
+        serialization.BITRATES_K: [
+            str(obj.bitrate)
+            for obj in bands.AvailableBitrates.objects.all()
         ],
-        BANDWIDTHS_K: [
-            str(obj.bandwidth) for obj in AvailableBandwidths.objects.all()
+        serialization.BANDWIDTHS_K: [
+            str(obj.bandwidth)
+            for obj in bands.AvailableBandwidths.objects.all()
         ]
     }
 
@@ -76,8 +70,9 @@ def gs_channel_is_unique(identifier):
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
     """
-    return GroundStationChannel.objects\
-        .filter(identifier=identifier).count() > 0
+    return channels.GroundStationChannel.objects.filter(
+        identifier=identifier
+    ).count() > 0
 
 
 @rpcmethod(
@@ -95,20 +90,22 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
     """
     # 1) Get channel parameters from JSON representation into variables
     band_name, mod_l, bps_l, bws_l, pol_l =\
-        deserialize_gs_channel_parameters(configuration)
-    if GroundStationChannel.objects.filter(identifier=channel_id).count() > 0:
+        serialization.deserialize_gs_channel_parameters(configuration)
+    if channels.GroundStationChannel.objects.filter(
+        identifier=channel_id
+    ).count() > 0:
         raise Exception(
             "Channel identifier already exists, { "
-            + str(CH_ID_K) + ": "
+            + str(serialization.CH_ID_K) + ": "
             + str(channel_id) + "}"
         )
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the
     # given objects does not exist, an exception will be raised.
-    GroundStation.objects.add_channel(
+    segments.GroundStation.objects.add_channel(
         gs_identifier=ground_station_id,
         identifier=channel_id,
-        band=AvailableBands.objects.get(band_name=band_name),
+        band=bands.AvailableBands.objects.get(band_name=band_name),
         modulations=mod_l,
         bitrates=bps_l,
         bandwidths=bws_l,
@@ -123,16 +120,18 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
     signature=['String', 'String'],
     login_required=True
 )
-def gs_channel_delete(ground_station_id, channel_id):
+def gs_channel_delete(groundstation_id, channel_id):
     """
     JRPC callable method.
 
     Method that removes the given channel from the database and from the list
     of available channels of the Ground Station that owns it.
     """
-    GroundStation.objects.delete_channel(
-        ground_station_id, channel_id
-    )
+    segments.GroundStation.objects.get(
+        identifier=groundstation_id
+    ).channels.all().get(
+        identifier=channel_id
+    ).delete()
     return True
 
 
@@ -141,16 +140,18 @@ def gs_channel_delete(ground_station_id, channel_id):
     signature=['String', 'String'],
     login_required=True
 )
-def gs_channel_get_configuration(ground_station_id, channel_id):
+def gs_channel_get_configuration(groundstation_id, channel_id):
     """
     JRPC callable method.
 
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
-    return serialize_gs_channel_configuration(
-        GroundStation.objects.get_channel(
-            ground_station_id, channel_id
+    return serialization.serialize_gs_channel_configuration(
+        segments.GroundStation.objects.get(
+            identifier=groundstation_id
+        ).channels.all().get(
+            identifier=channel_id
         )
     )
 
@@ -160,7 +161,7 @@ def gs_channel_get_configuration(ground_station_id, channel_id):
     signature=['String', 'String', 'Object'],
     login_required=True
 )
-def gs_channel_set_configuration(ground_station_id, channel_id, configuration):
+def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     """
     JRPC callable method.
 
@@ -169,13 +170,15 @@ def gs_channel_set_configuration(ground_station_id, channel_id, configuration):
     to update some of the parameters of the channel.
     """
     # 1) Retrieve objects from database
-    ch = GroundStation.objects.get_channel(
-        ground_station_id, channel_id
+    ch = segments.GroundStation.objects.get(
+        identifier=groundstation_id
+    ).channels.all().get(
+        identifier=channel_id
     )
     # 2) Parameters sent through JRPC as a list as decoded first.
     band_name, mod_l, bps_l, bws_l, pol_l =\
-        deserialize_gs_channel_parameters(configuration)
-    band = AvailableBands.objects.get(band_name=band_name)
+        serialization.deserialize_gs_channel_parameters(configuration)
+    band = bands.AvailableBands.objects.get(band_name=band_name)
     # 3) Update channel configuration
     ch.update(
         band=band,
@@ -199,7 +202,9 @@ def sc_channel_is_unique(identifier):
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
     """
-    return SpacecraftChannel.objects.filter(identifier=identifier).count() > 0
+    return channels.SpacecraftChannel.objects.filter(
+        identifier=identifier
+    ).count() > 0
 
 
 @rpcmethod(
@@ -217,18 +222,20 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     """
     # 1) Get channel parameters from JSON representation into variables
     frequency, modulation, bitrate, bandwidth, polarization\
-        = deserialize_sc_channel_parameters(configuration)
+        = serialization.deserialize_sc_channel_parameters(configuration)
 
-    if SpacecraftChannel.objects.filter(identifier=channel_id).count() > 0:
+    if channels.SpacecraftChannel.objects.filter(
+        identifier=channel_id
+    ).count() > 0:
         raise Exception(
             "Channel identifier already exists, { "
-            + str(CH_ID_K) + ": "
+            + str(serialization.CH_ID_K) + ": "
             + str(channel_id) + "}"
         )
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the
     # given objects does not exist, an exception will be raised.
-    Spacecraft.objects.add_channel(
+    segments.Spacecraft.objects.add_channel(
         sc_identifier=spacecraft_id,
         identifier=channel_id,
         frequency=frequency,
@@ -253,9 +260,11 @@ def sc_channel_delete(spacecraft_id, channel_id):
     Method that removes the given channel from the database and from the list
     of available channels of the SpacecraftConfiguration object that owns it.
     """
-    Spacecraft.objects.delete_channel(
-        spacecraft_id, channel_id
-    )
+    segments.Spacecraft.objects.get(
+        identifier=spacecraft_id
+    ).channels.all().get(
+        identifier=channel_id
+    ).delete()
     return True
 
 
@@ -271,8 +280,12 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
-    return serialize_sc_channel_configuration(
-        Spacecraft.objects.get_channel(spacecraft_id, channel_id)
+    return serialization.serialize_sc_channel_configuration(
+        segments.Spacecraft.objects.get(
+            identifier=spacecraft_id
+        ).channels.all().get(
+            identifier=channel_id
+        )
     )
 
 
@@ -290,12 +303,14 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
     to update some of the parameters of the channel.
     """
     # 1) Retrieve objects from database
-    ch = Spacecraft.objects.get_channel(
-        spacecraft_id, channel_id
+    ch = segments.Spacecraft.objects.get(
+        identifier=spacecraft_id
+    ).channels.all().get(
+        identifier=channel_id
     )
     # 2) Parameters sent through JRPC as a list as decoded first.
     frequency, modulation, bitrate, bandwidth, polarization =\
-        deserialize_sc_channel_parameters(configuration)
+        serialization.deserialize_sc_channel_parameters(configuration)
     # 3) Update channel configuration
     ch.update(
         frequency=frequency,

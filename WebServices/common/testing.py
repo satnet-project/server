@@ -15,21 +15,19 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import timedelta, time as datetime_time
+import datetime
 from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
 from django.test.client import RequestFactory
 
 from accounts.models import UserProfile
-from booking.models.tle import TwoLineElementsManager
-from common import gis, misc
+from common import gis, misc, serialization as common_serial
 from configuration.jrpc import serialization
 from configuration.models.bands import AvailableModulations, AvailableBands,\
     AvailableBandwidths, AvailablePolarizations, AvailableBitrates
-from configuration.models.channels import SpacecraftChannel
-from configuration.models.segments import GroundStation, \
-    Spacecraft
+from configuration.models import channels, segments
 from registration.models import RegistrationProfile
+from scheduling.models.tle import TwoLineElementsManager
 
 
 def create_user(username='testuser', password='testuser.'):
@@ -108,7 +106,7 @@ def create_sc(
         print 'User already exists, getting a reference to it...'
         user_profile = UserProfile.objects.get(username=username)
 
-    return Spacecraft.objects.create(
+    return segments.Spacecraft.objects.create(
         user=user_profile,
         identifier=identifier,
         callsign=callsign,
@@ -174,7 +172,7 @@ def create_gs(
     if altitude is None:
         altitude = gis.get_altitude(latitude, longitude)
 
-    return GroundStation.objects.create(
+    return segments.GroundStation.objects.create(
         user=user_profile,
         identifier=identifier,
         callsign=callsign,
@@ -206,7 +204,7 @@ def sc_add_channel(
     if not polarization:
         polarization = AvailablePolarizations.objects.get(polarization='RHCP')
 
-    return Spacecraft.objects.add_channel(
+    return segments.Spacecraft.objects.add_channel(
         sc_identifier=sc.identifier,
         identifier=channel_id,
         frequency=frequency,
@@ -219,12 +217,12 @@ def sc_add_channel(
 
 def remove_sc(spacecraft_id):
 
-    Spacecraft.objects.get(identifier=spacecraft_id).delete()
+    segments.Spacecraft.objects.get(identifier=spacecraft_id).delete()
 
 
 def remove_sc_channel(sc_ch_id):
 
-    sc_ch = SpacecraftChannel.objects.get(identifier=sc_ch_id)
+    sc_ch = channels.SpacecraftChannel.objects.get(identifier=sc_ch_id)
     sc_ch.spacecraft_set.all()[0].channels.remove(sc_ch)
     sc_ch.delete()
 
@@ -243,7 +241,7 @@ def gs_add_channel(
     if polarizations is None:
         polarizations = AvailablePolarizations.objects.all()
 
-    gs_ch = GroundStation.objects.add_channel(
+    gs_ch = segments.GroundStation.objects.add_channel(
         gs_identifier=gs.identifier,
         identifier=gs_ch_id,
         band=band,
@@ -258,48 +256,82 @@ def gs_add_channel(
 
 def remove_gs_channel(gs_id, gs_ch_id):
 
-    GroundStation.objects.delete_channel(gs_id, gs_ch_id)
+    segments.GroundStation.objects.get(identifier=gs_id).channels.all().get(
+        identifier=gs_ch_id
+    ).delete()
 
 
 def create_jrpc_once_rule(
         operation=serialization.RULE_OP_ADD,
-        date=misc.get_today_utc()+timedelta(days=1),
-        starting_time=misc.localize_time_utc(datetime_time(
-            hour=11, minute=15, second=0
-        )),
-        ending_time=misc.localize_time_utc(datetime_time(
-            hour=11, minute=45, second=0
-        )),
+        date=None,
+        starting_time=None,
+        ending_time=None,
 ):
+
+    if date is None:
+        date = misc.get_today_utc() + datetime.timedelta(days=1)
+
+    now = misc.get_now_utc()
+    if starting_time is None:
+        starting_time = now + datetime.timedelta(minutes=30)
+    if ending_time is None:
+        ending_time = now + datetime.timedelta(minutes=45)
+
     return {
         serialization.RULE_OP: operation,
         serialization.RULE_PERIODICITY: serialization.RULE_PERIODICITY_ONCE,
         serialization.RULE_DATES: {
-            serialization.RULE_ONCE_DATE: date.isoformat(),
-            serialization.RULE_ONCE_S_TIME: starting_time.isoformat(),
-            serialization.RULE_ONCE_E_TIME: ending_time.isoformat(),
+            serialization.RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
+                date
+            ),
+            serialization.RULE_ONCE_S_TIME: common_serial.serialize_iso8601_time(
+                starting_time
+            ),
+            serialization.RULE_ONCE_E_TIME: common_serial.serialize_iso8601_time(
+                ending_time
+            )
         },
     }
 
 
 def create_jrpc_daily_rule(
         operation=serialization.RULE_OP_ADD,
-        date_i=misc.get_today_utc() + timedelta(days=1),
-        date_f=misc.get_today_utc() + timedelta(days=366),
-        starting_time=misc.localize_time_utc(datetime_time(
-            hour=11, minute=15, second=0
-        )),
-        ending_time=misc.localize_time_utc(datetime_time(
-            hour=11, minute=45, second=0
-        )),
+        date_i=None, date_f=None,
+        starting_time=None, ending_time=None
 ):
+
+    if date_i is None:
+        date_i = misc.get_today_utc() + datetime.timedelta(days=1)
+    if date_f is None:
+        date_f = misc.get_today_utc() + datetime.timedelta(days=366)
+
+    now = misc.get_now_utc()
+    if starting_time is None:
+        starting_time = now + datetime.timedelta(minutes=30)
+    if ending_time is None:
+        ending_time = now + datetime.timedelta(minutes=45)
+
     return {
         serialization.RULE_OP: operation,
         serialization.RULE_PERIODICITY: serialization.RULE_PERIODICITY_DAILY,
         serialization.RULE_DATES: {
-            serialization.RULE_DAILY_I_DATE: date_i.isoformat(),
-            serialization.RULE_DAILY_F_DATE: date_f.isoformat(),
-            serialization.RULE_S_TIME: starting_time.isoformat(),
-            serialization.RULE_E_TIME: ending_time.isoformat(),
+            serialization.RULE_DAILY_I_DATE:
+                common_serial.serialize_iso8601_date(date_i),
+            serialization.RULE_DAILY_F_DATE:
+                common_serial.serialize_iso8601_date(date_f),
+            serialization.RULE_S_TIME:
+                common_serial.serialize_iso8601_time(starting_time),
+            serialization.RULE_E_TIME:
+                common_serial.serialize_iso8601_time(ending_time),
         },
     }
+
+
+def create_identifier_list(json_slot_list):
+    identifier_l = []
+
+    for l_i in json_slot_list:
+
+        identifier_l.append(l_i['identifier'])
+
+    return identifier_l

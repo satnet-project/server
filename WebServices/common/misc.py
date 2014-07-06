@@ -15,23 +15,27 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import datetime, time
-from pytz import utc as pytz_utc
+import datetime
+import pytz
 import sys
-from StringIO import StringIO
+import StringIO
 
 
-def print_list(l, list_name='List', output=sys.stdout):
+def print_list(l, list_name=None, output=sys.stdout):
     """
     Function that prints the elements of a given list, one per line.
     :param l: The list to be printed out.
     """
-    print >> output, '>>>>>>> PRINTING ' + list_name + ', len = ' + str(len(l))
+    if len(l) == 0:
+        print >> output, 'Empty list'
+        return
+
+    if list_name is None:
+        list_name = str(l[0].__class__)
+
+    print >> output, '>>>>>>> list = ' + list_name + ', len = ' + str(len(l))
     for l_i in l:
-        if isinstance(l_i, datetime):
-            print >> output, l_i.isoformat()
-        else:
-            print >> output, l_i
+        print >> output, str(l_i)
 
 
 def list_2_string(l, list_name='List'):
@@ -41,7 +45,7 @@ def list_2_string(l, list_name='List'):
     :param list_name: The name for this list
     :return: String object with the list printed within
     """
-    buff = StringIO()
+    buff = StringIO.StringIO()
     print_list(l, list_name=list_name, output=buff)
     return buff.getvalue()
 
@@ -86,40 +90,56 @@ def dict_2_string(d):
     :param d: The dictionary to be printed in the string
     :return: String object with the dictionary printed within
     """
-    buff = StringIO()
+    buff = StringIO.StringIO()
     print_dictionary(d, output=buff)
     return buff.getvalue()
 
 
-def get_now_utc():
+def get_now_utc(no_microseconds=True):
     """
     This method returns now's datetime object UTC localized.
-    :return: Datetime object with now's date and time (UTC localized).
-    """
-    return pytz_utc.localize(datetime.now())
-
-
-def get_today_utc(no_microseconds=True):
-    """
-    This method returns today's date localized with the microseconds set to
-    zero.
     :param no_microseconds=True: sets whether microseconds should be cleared.
     :return: the just created datetime object with today's date.
     """
     if no_microseconds:
-        return pytz_utc.localize(datetime.today()).replace(microsecond=0)
+        return pytz.utc.localize(datetime.datetime.utcnow()).replace(
+            microsecond=0
+        )
     else:
-        return pytz_utc.localize(datetime.today())
+        return pytz.utc.localize(datetime.datetime.utcnow())
 
 
-def get_midnight():
+def get_now_hour_utc(no_microseconds=True):
+    """
+    This method returns now's hour in the UTC timezone.
+    :param no_microseconds=True: sets whether microseconds should be cleared.
+    :return: The time object within the UTC timezone.
+    """
+    if no_microseconds:
+        return datetime.time.utcnow().replace(microsecond=0).time()
+    else:
+        return datetime.time.utcnow().time()
+
+
+def get_today_utc():
+    """
+    This method returns today's date localized with the microseconds set to
+    zero.
+    :return: the just created datetime object with today's date.
+    """
+    return pytz.utc.localize(datetime.datetime.utcnow()).replace(
+        hour=0, minute=0, second=0, microsecond=0
+    )
+
+
+def get_next_midnight():
     """
     This method returns today's datetime 00am.
     :return: the just created datetime object with today's datetime 00am.
     """
-    return pytz_utc.localize(datetime.today()).replace(
+    return pytz.utc.localize(datetime.datetime.today()).replace(
         hour=0, minute=0, second=0, microsecond=0
-    )
+    ) + datetime.timedelta(days=1)
 
 
 def localize_date_utc(date):
@@ -128,8 +148,10 @@ def localize_date_utc(date):
     :param date: The date object to be localized.
     :return: A localized datetime object in the UTC timezone.
     """
-    return pytz_utc.localize(datetime.combine(date, time(
-        hour=0, minute=0, second=0))
+    return pytz.utc.localize(
+        datetime.datetime.combine(
+            date, datetime.time(hour=0, minute=0, second=0)
+        )
     )
 
 
@@ -139,7 +161,7 @@ def localize_datetime_utc(date_time):
     :param date_time: The object to be localized.
     :return: Localized Datetime object in the UTC timezone.
     """
-    return pytz_utc.localize(date_time)
+    return pytz.utc.localize(date_time)
 
 
 def localize_time_utc(non_utc_time):
@@ -148,9 +170,10 @@ def localize_time_utc(non_utc_time):
     :param non_utc_time: The time object to be localized.
     :return: A localized time object in the UTC timezone.
     """
-    return pytz_utc.localize(non_utc_time)
+    return pytz.utc.localize(non_utc_time)
 
-TIMESTAMP_0 = localize_date_utc(datetime(year=1970, month=1, day=1))
+
+TIMESTAMP_0 = localize_date_utc(datetime.datetime(year=1970, month=1, day=1))
 
 
 def get_utc_timestamp(utc_datetime=None):

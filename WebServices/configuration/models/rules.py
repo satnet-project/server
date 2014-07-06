@@ -16,12 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import datetime, timedelta
-from dateutil import parser
 from django.db import models
-from pytz import utc as pytz_utc
+import pytz
 
-from configuration.models.channels import GroundStationChannel
-from common.slots import define_interval, normalize_slots, merge_slots
+from configuration.models import channels
+from common import simulation, slots
 
 # Definition of the availability operation through rules over existing
 # operational slots.
@@ -64,7 +63,6 @@ class AvailabilityRuleManager(models.Manager):
         )
 
         # ### Generate availability slots and write them in the table.
-
         return AvailabilityRule.objects.get(
             id=rule_child.availabilityrule_ptr_id
         )
@@ -89,7 +87,7 @@ class AvailabilityRuleManager(models.Manager):
                                     + str(rule_id))
 
     @staticmethod
-    def get_applicable_rules(interval=define_interval()):
+    def get_applicable_rules(interval):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
@@ -101,6 +99,9 @@ class AvailabilityRuleManager(models.Manager):
         """
         add_slots = []
         remove_slots = []
+
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
             r_list = c.objects\
@@ -117,9 +118,7 @@ class AvailabilityRuleManager(models.Manager):
         return add_slots, remove_slots
 
     @staticmethod
-    def get_applicable_rule_values(
-            gs_channel, interval=define_interval()
-    ):
+    def get_applicable_rule_values(gs_channel, interval=None):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
@@ -133,6 +132,9 @@ class AvailabilityRuleManager(models.Manager):
         """
         add_slots = []
         remove_slots = []
+
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
             r_list = c.objects\
@@ -155,7 +157,7 @@ class AvailabilityRuleManager(models.Manager):
         return add_slots, remove_slots
 
     @staticmethod
-    def is_applicable(rule_values, interval=define_interval(days=14)):
+    def is_applicable(rule_values, interval):
         """
         This method checks whether this rule can generate slots for the given
         interval.
@@ -163,11 +165,14 @@ class AvailabilityRuleManager(models.Manager):
         :returns: In case the interval is applicable, it returns a tuple with
         the initial and final datetime objects.
         """
-        i_date = pytz_utc\
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
+
+        i_date = pytz.utc\
             .localize(datetime
                       .combine(rule_values['starting_date'],
                                rule_values['starting_time']))
-        f_date = pytz_utc\
+        f_date = pytz.utc\
             .localize(datetime
                       .combine(rule_values['ending_date'],
                                rule_values['ending_time']))
@@ -180,41 +185,75 @@ class AvailabilityRuleManager(models.Manager):
         return i_date, f_date
 
     @staticmethod
-    def generate_available_slots_once(rule_values):
+    def generate_available_slots_once(rule_values, interval=None):
         """
         This method generates the available slots for a only-once rule that
         starts and ends in the given dates, during the specified interval.
         """
-        r = AvailabilityRuleOnce.objects\
-            .get(availabilityrule_ptr=rule_values['availabilityrule_ptr_id'])
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        return [(pytz_utc.localize(datetime
-                 .combine(rule_values['starting_date'], r.starting_time)),
-                pytz_utc.localize(datetime
-                 .combine(rule_values['ending_date'], r.ending_time)))]
+        r = AvailabilityRuleOnce.objects.get(
+            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
+        )
+
+        slot_start = pytz.utc.localize(
+            datetime.combine(rule_values['starting_date'], r.starting_time)
+        )
+        slot_end = pytz.utc.localize(
+            datetime.combine(rule_values['ending_date'], r.ending_time)
+        )
+
+        if slot_start < interval[0]:
+            slot_start = interval[0]
+        if slot_end > interval[1]:
+            slot_end = interval[1]
+
+        return [(slot_start, slot_end)]
 
     @staticmethod
-    def generate_available_slots_daily(rule_values, interval):
+    def generate_available_slots_daily(rule_values, interval=None):
         """
         This method generates the available slots for a daily rule that
         starts and ends in the given dates, during the specified interval.
         """
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
+
+        first = True
         r = AvailabilityRuleDaily.objects\
             .get(availabilityrule_ptr=rule_values['availabilityrule_ptr_id'])
-        days = (interval[1] - interval[0]).days
-        slots = []
-        i = 0
+        result = []
 
-        while i < days:
-            i_day = interval[0] + timedelta(days=i)
-            i += 1
-            ii_date = pytz_utc.localize(datetime
-                                        .combine(i_day, r.starting_time))
-            ff_date = pytz_utc.localize(datetime
-                                        .combine(i_day, r.ending_time))
-            slots.append((ii_date, ff_date))
+        i_day = interval[0]
 
-        return slots
+        while i_day < interval[1]:
+
+            ii_date = pytz.utc.localize(
+                datetime.combine(i_day, r.starting_time)
+            )
+            ff_date = pytz.utc.localize(
+                datetime.combine(i_day, r.ending_time)
+            )
+
+            # We might have to truncate the first slot...
+            if first:
+
+                first = False
+
+                if ff_date <= interval[0]:
+
+                    i_day += timedelta(days=1)
+                    continue
+
+                if ii_date <= interval[0]:
+
+                    ii_date = interval[0]
+
+            result.append((ii_date, ff_date))
+            i_day += timedelta(days=1)
+
+        return result
 
     @staticmethod
     def generate_available_slots_weekly(i_date, f_date, rule_values, interval):
@@ -226,20 +265,24 @@ class AvailabilityRuleManager(models.Manager):
         pass
 
     @staticmethod
-    def generate_available_slots(rule_values, interval):
+    def generate_available_slots(rule_values, interval=None):
         """
         This method generates the available slots defined by this rule.
         :param interval: The interval for the slots generation.
         :return: Initial slots array, initial datetime and final datetime.
         """
-        i_date, f_date = AvailabilityRuleManager\
-            .is_applicable(rule_values, interval)
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
+
+        i_date, f_date = AvailabilityRuleManager.is_applicable(
+            rule_values, interval
+        )
 
         periodicity = rule_values['periodicity']
 
         if periodicity == ONCE_PERIODICITY:
             return AvailabilityRuleManager\
-                .generate_available_slots_once(rule_values)
+                .generate_available_slots_once(rule_values, interval)
         if periodicity == DAILY_PERIODICITY:
             return AvailabilityRuleManager\
                 .generate_available_slots_daily(rule_values, interval)
@@ -252,12 +295,15 @@ class AvailabilityRuleManager(models.Manager):
                                                                'supported')
 
     @staticmethod
-    def get_availability_slots(gs_channel, interval=define_interval(days=7)):
+    def get_availability_slots(gs_channel, interval=None):
         """
         This method generates the availability slots for this set of rules.
         :param interval: The interval of time during which the slots must be
                         generated.
         """
+        if interval is None:
+            interval = simulation.OrbitalSimulator.get_simulation_window()
+
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(
                 gs_channel, interval=interval
@@ -276,15 +322,15 @@ class AvailabilityRuleManager(models.Manager):
             )
 
         # 1) First, raw slots must be sorted and normalized.
-        add_slots = normalize_slots(
+        add_slots = slots.normalize_slots(
             sorted(add_slots, key=lambda s: s[1])
         )
-        remove_slots = normalize_slots(
+        remove_slots = slots.normalize_slots(
             sorted(remove_slots, key=lambda s: s[0])
         )
         # 2) Sorted and normalized slots can be merged to generated the final
         # availability slots.
-        return merge_slots(add_slots, remove_slots)
+        return slots.merge_slots(add_slots, remove_slots)
 
 
 class AvailabilityRule(models.Model):
@@ -310,7 +356,7 @@ class AvailabilityRule(models.Model):
     objects = AvailabilityRuleManager()
 
     gs_channel = models.ForeignKey(
-        GroundStationChannel,
+        channels.GroundStationChannel,
         verbose_name='Channel that this rule belongs to.'
     )
 
@@ -358,9 +404,10 @@ class AvailabilityRule(models.Model):
         """
         child = AvailabilityRule.objects.get_specific_rule(self.pk)
         return self.__operation2unicode__[self.operation]\
-            + self.__periodicity2unicode__[self.periodicity] + ':'\
-            + str(self.starting_date) + '>>' + str(self.ending_date) + ':'\
-            + str(child)
+            + self.__periodicity2unicode__[self.periodicity]\
+            + ':' + str(self.starting_date)\
+            + '>>' + str(self.ending_date)\
+            + '_T_' + str(child)
 
 
 class AvailabilityRuleOnceManager(models.Manager):
@@ -377,8 +424,8 @@ class AvailabilityRuleOnceManager(models.Manager):
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
-            starting_date=parser.parse(dates[0]),
-            ending_date=parser.parse(dates[0]),
+            starting_date=dates[0],
+            ending_date=dates[0],
             starting_time=dates[1],
             ending_time=dates[2]
         )
@@ -415,16 +462,15 @@ class AvailabilityRuleDailyManager(models.Manager):
         """
         This method creates a new object in the database.
         """
-        rule_daily = super(AvailabilityRuleDailyManager, self).create(
+        return super(AvailabilityRuleDailyManager, self).create(
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
-            starting_date=parser.parse(dates[0]),
-            ending_date=parser.parse(dates[1]),
+            starting_date=dates[0],
+            ending_date=dates[1],
             starting_time=dates[2],
             ending_time=dates[3]
         )
-        return rule_daily
 
 
 class AvailabilityRuleDaily(AvailabilityRule):
@@ -445,7 +491,8 @@ class AvailabilityRuleDaily(AvailabilityRule):
         """
         Unicode string representation of the contents of this object.
         """
-        return str(self.starting_time) + '>>' + str(self.ending_time)
+        return str(self.starting_time.isoformat())\
+            + '>>' + str(self.ending_time.isoformat())
 
 
 class AvailabilityRuleWeeklyManager(models.Manager):
@@ -462,8 +509,8 @@ class AvailabilityRuleWeeklyManager(models.Manager):
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
-            starting_date=parser.parse(dates[0]),
-            ending_date=parser.parse(dates[1]),
+            starting_date=dates[0],
+            ending_date=dates[1],
             monday_starting_time=dates[2],
             monday_ending_time=dates[3],
             tuesday_starting_time=dates[4],

@@ -34,7 +34,7 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__verbose_testing = False
 
         if not self.__verbose_testing:
-            logging.getLogger('booking').setLevel(level=logging.CRITICAL)
+            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'

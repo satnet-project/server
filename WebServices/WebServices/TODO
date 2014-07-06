@@ -17,3 +17,4 @@
 8) Update CompatibleChannels table when the configuraiton for either the
     channels of the GroundStation or the Spacecraft were updated.
 9) User registration through signal and not through class extension.
+10) GeoIP database.

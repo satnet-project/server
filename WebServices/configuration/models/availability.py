@@ -18,12 +18,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
 from django.db import models
 
-from common import misc
-from configuration.models import channels
-from configuration.models import rules
+from common import misc, simulation
+from configuration.models import channels, rules
 
 
 class AvailabilitySlotsManager(models.Manager):
@@ -60,32 +58,23 @@ class AvailabilitySlotsManager(models.Manager):
         defined applicability slot.
         """
         if start is None or end is None:
-            start = misc.get_today_utc()
-            end = start + datetime.timedelta(days=1)
-
-        if start >= end:
+            start, end = simulation.OrbitalSimulator.get_simulation_window()
+        elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '
                 + 'should occurr sooner than <end=' + str(end) + '>'
             )
 
-        slots = []
+        result = []
 
         for a_i in self.filter(groundstation_channel=groundstation_channel)\
                 .filter(start__lt=end).filter(end__gt=start):
 
-            if a_i.start < start:
-                s_0 = start
-            else:
-                s_0 = a_i.start
-            if a_i.end > end:
-                s_1 = end
-            else:
-                s_1 = a_i.end
+            result.append(
+                AvailabilitySlotsManager.truncate(a_i, start=start, end=end)
+            )
 
-            slots.append((s_0, s_1, a_i.identifier))
-
-        return slots
+        return result
 
     def update_slots(self, groundstation_channel, new_slots):
         """
@@ -138,40 +127,41 @@ class AvailabilitySlotsManager(models.Manager):
         new_slots = rules.AvailabilityRule.objects.get_availability_slots(
             instance.gs_channel
         )
-        AvailabilitySlot.objects.update_slots(
-            instance.gs_channel, new_slots
-        )
+        AvailabilitySlot.objects.update_slots(instance.gs_channel, new_slots)
 
     @staticmethod
-    def truncate(availability_slot, start, end):
+    def truncate(slot, start, end):
         """
         Static method that truncates the duration of a given AvailabilitySlot
         to the restrictions of the (start, end) period. This way,
         the AvailabilitySlot can be utilized within that period.
+        :param slot: The slot to be truncated.
+        :param start: The starting date for the applicability of this slot.
+        :param end: The ending date for the applicability of this slot.
         """
         if start is None or end is None:
-            start = misc.get_today_utc()
-            end = start + datetime.timedelta(days=1)
-
-        if start >= end:
+            start, end = simulation.OrbitalSimulator.get_simulation_window()
+        elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '
                 + 'should occurr sooner than <end=' + str(end) + '>'
             )
 
-        s = None
-        e = None
+        if slot.start >= end:
+            return None
+        if slot.end <= start:
+            return None
 
-        if availability_slot.start < start:
+        if slot.start < start:
             s = start
         else:
-            s = availability_slot.start
-        if availability_slot.end > end:
+            s = slot.start
+        if slot.end > end:
             e = end
         else:
-            e = availability_slot.end
+            e = slot.end
 
-        return s, e, availability_slot.identifier
+        return s, e, slot.identifier
 
 
 class AvailabilitySlot(models.Model):
@@ -214,4 +204,4 @@ class AvailabilitySlot(models.Model):
         :return: Unicode string.
         """
         return 'id = ' + str(self.identifier) + ', start = '\
-               + str(self.start) + ', end = ' + str(self.end)
+               + self.start.isoformat() + ', end = ' + self.end.isoformat()

@@ -15,26 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import datetime, timedelta
-from pytz import utc as pytz_utc
-from misc import get_today_utc
-
-
-def define_interval(days=7):
-    """
-    Defines a tuple with the starting and ending dates for the interval
-    of time that has to be used for the calculations of the available
-    slots.
-    :param days: Length of the interval for the calculations.
-    :return: A tuple with the initial datetime and the final datetime for
-    this interval.
-    """
-    utc_today = datetime.utcnow().date()
-    begin_interval = pytz_utc.localize(
-        datetime(utc_today.year, utc_today.month, utc_today.day)
-    )
-    end_interval = begin_interval + timedelta(days=days)
-    return begin_interval, end_interval
+import datetime
+import misc
 
 
 def normalize_slots(slots):
@@ -112,8 +94,8 @@ def merge_slots(p_slots, m_slots):
         # All slots will be generated from today on, so this will be the
         # "oldest" slot independently of the rest...
         m = (
-            get_today_utc() - timedelta(days=1),
-            get_today_utc() - timedelta(days=1)
+            misc.get_today_utc() - datetime.timedelta(days=1),
+            misc.get_today_utc() - datetime.timedelta(days=1)
         )
 
     # The algorithm is executed for all the add slots, since negative slots

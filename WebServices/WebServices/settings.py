@@ -37,7 +37,7 @@ DATABASES = {
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
 ALLOWED_HOSTS = []
 
-TIME_ZONE = 'America/Los_Angeles'
+TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'
 SITE_ID = 1
 
@@ -163,7 +163,7 @@ INSTALLED_APPS = (
 
     # ### developed applications
     'accounts',
-    'booking',
+    'scheduling',
     'configuration',
 )
 
@@ -214,7 +214,7 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
-        'booking': {
+        'scheduling': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

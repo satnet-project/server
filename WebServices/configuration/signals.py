@@ -20,7 +20,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
 
-from booking.models import operational, tle
+from scheduling.models import operational, tle
 from configuration.models import availability
 from configuration.models import channels, compatibility, rules, segments
 

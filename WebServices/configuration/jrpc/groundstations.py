@@ -112,7 +112,5 @@ def delete(ground_station_id):
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
     """
-    GroundStation.objects\
-        .get(identifier=ground_station_id)\
-        .delete()
+    GroundStation.objects.get(identifier=ground_station_id).delete()
     return True

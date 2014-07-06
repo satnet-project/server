@@ -109,7 +109,5 @@ def delete(spacecraft_id):
     Deletes the ground station identified by the given Spacecraft. It
     also deletes all channels associated to this ground station.
     """
-    Spacecraft.objects\
-        .get(identifier=spacecraft_id)\
-        .delete()
+    Spacecraft.objects.get(identifier=spacecraft_id).delete()
     return True

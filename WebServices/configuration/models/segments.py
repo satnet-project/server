@@ -72,32 +72,6 @@ class SpacecraftManager(models.Manager):
 
         return sc_ch
 
-    def delete_channel(self, spacecraft_id, channel_id):
-        """
-        Deletes a channel that is owned by this ground station and all its
-        associated resources.
-        """
-
-        # 1) First, we obtain the objects for the deletion. If they do not
-        #       exist, an exception will be raised automatically. This is
-        #       also a way for verifying that the given channel is owned by
-        #       that ground station.
-        ch = self.get_channel(spacecraft_id, channel_id)
-        # 2) Last, but not least, we remove the channel from the database.
-        self.get(identifier=spacecraft_id).channels.remove(ch)
-        ch.delete()
-
-    def get_channel(self, spacecraft_id, channel_id):
-        """
-        This method returns both the ground station and its associated channel
-        as a tuple. It obtains the channel object by accessing to the list of
-        channels associated with the given ground station. Therefore, in case
-        either the ground station does not exist or the requested channel is
-        not associated with that ground station, an exception will be raised.
-        """
-        gs = self.all().get(identifier=spacecraft_id)
-        return gs.channels.all().get(identifier=channel_id)
-
 
 class Spacecraft(models.Model):
     """
@@ -212,38 +186,6 @@ class GroundStationsManager(models.Manager):
 
         return gs_ch
 
-    def delete_channel(self, ground_station_id, channel_id):
-        """
-        Deletes a channel that is owned by this ground station and all its
-        associated resources.
-        """
-
-        # 1) First, we obtain the objects for the deletion. If they do not
-        #       exist, an exception will be raised automatically. This is
-        #       also a way for verifying that the given channel is owned by
-        #       that ground station.
-        ch = self.get_channel(ground_station_id, channel_id)
-
-        # 2) We unlink this channel from the ground station that owned it.
-        self.get(identifier=ground_station_id).channels.remove(ch)
-
-        # 3) We have to clear all the many-to-many relations for this object
-        ch.modulations.clear()
-        ch.bitrates.clear()
-        ch.bandwidths.clear()
-        ch.polarizations.clear()
-
-        # 4) Last, but not least, we remove the channel from the database.
-        ch.delete()
-
-    def get_channel(self, ground_station_id, channel_id):
-        """
-        This method returns the channel identified by the given id that
-        belongs to the given GroundStation.
-        """
-        gs = self.all().get(identifier=ground_station_id)
-        return gs.channels.all().get(identifier=channel_id)
-
 
 class GroundStation(models.Model):
     """
@@ -300,14 +242,6 @@ class GroundStation(models.Model):
         channels.GroundStationChannel,
         verbose_name='Communication channels that belong to this GroundStation'
     )
-
-    def delete(self, using=None):
-        """
-        Overriden method that deletes this object together with
-        all its associated resources.
-        """
-        self.channels.all().delete()
-        super(GroundStation, self).delete()
 
     def update(
         self, callsign=None,

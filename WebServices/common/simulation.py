@@ -15,10 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import timedelta
+import datetime
 import ephem
 
-from booking.models import tle
+from scheduling.models import tle
 from common import misc
 from common import gis
 
@@ -35,6 +35,13 @@ class OrbitalSimulator(object):
     # therefore, the behavior of the functions that depend on the results of
     # the simulations can be verified.
     _test_mode = False
+
+    def set_debug(self, on=True):
+        """
+        This method sets the OrbitalSimulator debug mode ON (on=True) or OFF
+        (on=False). Default: on=True
+        """
+        self._test_mode = on
 
     # Observer for the simulation (GroundStation simulation object).
     _observer = None
@@ -53,18 +60,22 @@ class OrbitalSimulator(object):
             tle.TwoLineElementsManager.load_tles()
 
     @staticmethod
-    def create_test_operational_slots():
+    def _create_test_operational_slots(
+        start, end, minimum_duration=datetime.timedelta(minutes=5)
+    ):
         """
         Static method that creates the OperationalSlots to be used for
         testing purposes.
         :return: List with the testing OperationalSlots.
         """
-        now = misc.get_now_utc()
-        return [
-            (now, now+timedelta(hours=2)),
-            (now+timedelta(days=1, hours=1), now+timedelta(days=1, hours=6)),
+        if start is None:
+            now = misc.get_now_utc()
+            return [(now, now + minimum_duration)]
 
-        ]
+        if end is None:
+            return [(start, start + minimum_duration)]
+
+        return [(start, end)]
 
     @staticmethod
     def ephem_date_2_utc_datetime(e_date):
@@ -132,7 +143,32 @@ class OrbitalSimulator(object):
         """
         return ephem.readtle(str(l0), str(l1), str(l2))
 
-    def calculate_pass_slots(self, availability_slots):
+    @staticmethod
+    def get_simulation_window():
+        """
+        Static method that returns the current 'in-use' simulation window,
+        this is, the start and end datetime objects for the simulation of the
+        slots that is currently being used.
+        :return: Tuple (start, end) with the simulation window currently in
+                use (UTC localized).
+        """
+        # From the 'window duration', 1 day has to be substracted (the day in
+        #  course).
+        start = misc.get_now_utc()
+        end = misc.get_next_midnight()\
+            + OrbitalSimulator.get_window_duration()\
+            - datetime.timedelta(days=1)
+        return start, end
+
+    @staticmethod
+    def get_window_duration():
+        """
+        Static method that returns the duration of the window for the
+        Simulation calculations of the slots.
+        """
+        return datetime.timedelta(days=3)
+
+    def calculate_passes(self, availability_slots):
         """
         Calculates the passess for the given spacecraft over the ground_station,
         for all the availability slots included in the list.
@@ -153,7 +189,7 @@ class OrbitalSimulator(object):
         return pass_slots
 
     def calculate_pass_slot(
-        self, start, end, minimum_slot_duration=timedelta(minutes=1)
+        self, start, end, minimum_slot_duration=datetime.timedelta(minutes=1)
     ):
         """
         Calculates the passes available for the given spacecraft in between the
@@ -169,7 +205,7 @@ class OrbitalSimulator(object):
         defined horizon.
         """
         if self._test_mode:
-            return OrbitalSimulator.create_test_operational_slots()
+            return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []
         self._observer.date = OrbitalSimulator.datetime_2_ephem_string(start)
@@ -200,13 +236,6 @@ class OrbitalSimulator(object):
             )
 
         return pass_slots
-
-    def set_debug(self, on):
-        """
-        This method sets the OrbitalSimulator debug mode ON (on=True) or OFF
-        (on=False).
-        """
-        self._test_mode = on
 
     def __unicode__(self):
 

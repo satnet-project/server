@@ -15,19 +15,20 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datadiff import diff
-from datetime import time, timedelta
+import datadiff
+import datetime
 import logging
-from django.test import TestCase
+from django import test
 
-from common import misc, testing as db_tools
-from configuration.jrpc import groundstations as jrpc_gs,\
-    spacecraft as jrpc_sc, rules as jrpc_rules, serialization as jrpc_serial
-from configuration.models.rules import AvailabilityRule
-from configuration.models.segments import GroundStation, Spacecraft
+from common import misc, testing as db_tools, serialization as common_serial
+from configuration.jrpc import groundstations as jrpc_gs
+from configuration.jrpc import spacecraft as jrpc_sc
+from configuration.jrpc import rules as jrpc_rules
+from configuration.jrpc import serialization as jrpc_serial
+from configuration.models import rules, segments
 
 
-class JRPCRulesTest(TestCase):
+class JRPCRulesTest(test.TestCase):
 
     def setUp(self):
         """
@@ -169,7 +170,7 @@ class JRPCRulesTest(TestCase):
         self.assertEquals(
             cfg, self.__gs_1_configuration,
             'Wrong configuration returned, diff = \n'
-            + str(diff(cfg, self.__gs_1_configuration))
+            + str(datadiff.diff(cfg, self.__gs_1_configuration))
         )
 
     def test_gs_set_configuration(self):
@@ -182,7 +183,7 @@ class JRPCRulesTest(TestCase):
             print '>>> TEST (test_gs_get_configuration):'
 
         cfg = jrpc_serial.serialize_gs_configuration(
-            GroundStation.objects.get(identifier=self.__gs_1_id)
+            segments.GroundStation.objects.get(identifier=self.__gs_1_id)
         )
 
         cfg[jrpc_serial.GS_CALLSIGN_K] = 'CHANGED'
@@ -201,7 +202,7 @@ class JRPCRulesTest(TestCase):
         self.assertEquals(
             actual_cfg, cfg,
             'Wrong configuration returned, diff = \n'
-            + str(diff(actual_cfg, cfg))
+            + str(datadiff.diff(actual_cfg, cfg))
         )
 
     def test_sc_get_configuration(self):
@@ -227,12 +228,12 @@ class JRPCRulesTest(TestCase):
         if self.__verbose_testing:
             print '>>> TEST (test_sc_get_configuration):'
         cfg = jrpc_serial.serialize_sc_configuration(
-            Spacecraft.objects.get(identifier=self.__sc_1_id)
+            segments.Spacecraft.objects.get(identifier=self.__sc_1_id)
         )
         old_callsign = cfg[jrpc_serial.SC_CALLSIGN_K]
         old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
         cfg[jrpc_serial.SC_CALLSIGN_K] = 'CHANGED'
-        cfg[jrpc_serial.SC_TLE_ID_K] = 'BLUR'
+        cfg[jrpc_serial.SC_TLE_ID_K] = 'XATCOBEO'
         self.assertEquals(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             True,
@@ -267,7 +268,14 @@ class JRPCRulesTest(TestCase):
             print '>>> TEST (test_gs_channel_add_rule)'
 
         # 1) add new rule to the database
-        rule_cfg = db_tools.create_jrpc_once_rule()
+        now = misc.get_now_utc()
+        starting_time = now + datetime.timedelta(minutes=30)
+        ending_time = now + datetime.timedelta(minutes=45)
+
+        rule_cfg = db_tools.create_jrpc_once_rule(
+            starting_time=starting_time,
+            ending_time=ending_time
+        )
         rule_id_1 = jrpc_rules.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
         )
@@ -279,14 +287,17 @@ class JRPCRulesTest(TestCase):
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_ONCE_DATE: misc.get_midnight() + timedelta(
-                    days=1
+                jrpc_serial.RULE_ONCE_DATE: common_serial
+                .serialize_iso8601_date(
+                    misc.get_today_utc() + datetime.timedelta(days=1)
                 ),
-                jrpc_serial.RULE_ONCE_S_TIME: misc.localize_time_utc(
-                    time(hour=11, minute=15)
+                jrpc_serial.RULE_ONCE_S_TIME: common_serial
+                .serialize_iso8601_time(
+                    starting_time
                 ),
-                jrpc_serial.RULE_ONCE_E_TIME: misc.localize_time_utc(
-                    time(hour=11, minute=45)
+                jrpc_serial.RULE_ONCE_E_TIME: common_serial
+                .serialize_iso8601_time(
+                    ending_time
                 )
             }
         }
@@ -299,10 +310,12 @@ class JRPCRulesTest(TestCase):
             print str(expected_r)
 
         self.assertEquals(
-            expected_r, rules_g1c1[0], 'Wrong ONCE rule!, diff = ' + str(
-                diff(expected_r, rules_g1c1[0])
+            rules_g1c1[0], expected_r, 'Wrong ONCE rule!, diff = ' + str(
+                datadiff.diff(rules_g1c1[0], expected_r)
             )
         )
+
+        jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id_1)
 
     def test_add_daily_rule(self):
         """
@@ -312,8 +325,14 @@ class JRPCRulesTest(TestCase):
         if self.__verbose_testing:
             print '>>> TEST (test_gs_channel_add_rule)'
 
+        now = misc.get_now_utc()
+        r_1_s_time = now + datetime.timedelta(minutes=30)
+        r_1_e_time = now + datetime.timedelta(minutes=45)
         # 1) A daily rule is inserted in the database:
-        rule_cfg = db_tools.create_jrpc_daily_rule()
+        rule_cfg = db_tools.create_jrpc_daily_rule(
+            starting_time=r_1_s_time,
+            ending_time=r_1_e_time
+        )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg)
 
         # 2) get the rule back through the JRPC interface
@@ -322,17 +341,21 @@ class JRPCRulesTest(TestCase):
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_DAILY_I_DATE: misc.get_midnight() + timedelta(
-                    days=1
+                jrpc_serial.RULE_DAILY_I_DATE: common_serial
+                .serialize_iso8601_date(
+                    misc.get_today_utc() + datetime.timedelta(days=1)
                 ),
-                jrpc_serial.RULE_DAILY_F_DATE: misc.get_midnight() + timedelta(
-                    days=366
+                jrpc_serial.RULE_DAILY_F_DATE: common_serial
+                .serialize_iso8601_date(
+                    misc.get_today_utc() + datetime.timedelta(days=366)
                 ),
-                jrpc_serial.RULE_S_TIME: misc.localize_time_utc(
-                    time(hour=11, minute=15)
+                jrpc_serial.RULE_S_TIME: common_serial
+                .serialize_iso8601_time(
+                    r_1_s_time
                 ),
-                jrpc_serial.RULE_E_TIME: misc.localize_time_utc(
-                    time(hour=11, minute=45)
+                jrpc_serial.RULE_E_TIME: common_serial
+                .serialize_iso8601_time(
+                    r_1_e_time
                 )
             }
         }
@@ -345,8 +368,8 @@ class JRPCRulesTest(TestCase):
             misc.print_dictionary(expected_r)
 
         self.assertEquals(
-            expected_r, rules_g1c1[0], 'Wrong DAILY rule!, diff = ' + str(
-                diff(expected_r, rules_g1c1[0])
+            rules_g1c1[0], expected_r, 'Wrong DAILY rule!, diff = ' + str(
+                datadiff.diff(rules_g1c1[0], expected_r)
             )
         )
 
@@ -365,11 +388,10 @@ class JRPCRulesTest(TestCase):
         jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id)
 
         try:
-            rule = AvailabilityRule.objects.get(id=rule_id)
+            rule = rules.AvailabilityRule.objects.get(id=rule_id)
             self.fail(
                 'Object should not have been found, rule_id = ' + str(rule.pk)
             )
-        except AvailabilityRule.DoesNotExist as e:
-
+        except rules.AvailabilityRule.DoesNotExist as e:
             if self.__verbose_testing:
                 print e.message
