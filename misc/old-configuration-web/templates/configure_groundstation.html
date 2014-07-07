@@ -1,0 +1,159 @@
+{% extends "users/users_home.html" %}
+
+{% comment %}
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+{% endcomment %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'css/lists.css' %}" />
+
+    <script type="text/javascript">
+        $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
+    </script>
+    <script type='text/javascript'
+            src="{% static 'prime-ui/scripts/jquery.json.min.js' %}" >
+    </script>
+    <script type='text/javascript'
+            src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
+    </script>
+
+{% endblock %}
+
+{% block content %}
+
+    <h2>Configuration</h2>
+    <div class='list-row'>
+        <div class="list-cell list-cell-link" ><a>{{ g.identifier }}</a></div>
+        <div class="list-cell list-cell-info-clear" style="width:300px;" >
+            <ul class='results-list'>
+                <li><b>Radio Callsign</b>: {{ g.callsign }}</li>
+                <li><b>Contact elevation (deg)</b>: 
+                        {{ g.contact_elevation|floatformat:2 }}</li>
+                <li><b>Coordinates</b>:
+                        ({{ g.latitude|floatformat:4 }}, 
+                            {{ g.longitude|floatformat:4 }})</li>
+            </ul>
+        </div>
+        <div class="list-cell list-cell-info-clear" style="font-size:50%">
+            <div style='padding:5px'>
+                <button id="edit-gs-button" class="edit-gs"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
+                    type="button">Edit</button></div>
+            <div style='padding:5px'>
+                <button id="delete-gs-button" class="delete-gs"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
+                    type="button">Delete</button></div>
+            <div style='padding:5px'>
+                <button id="add-ch-button" class="add-ch"
+                    style='width:75px' data-gs-id="{{ g.identifier }}"
+                    type="button">+Ch</button></div>
+            <div style='padding:5px'>
+                <button id="create-ch-rule"
+                    class="rule-ch" style='width:75px'
+                    data-gs-id="{{ g.identifier }}"
+                    type="button">+Rule</button></div>
+        </div>
+    </div>
+
+<h2>Communication Channels</h2>
+
+{% for c in chs %}
+
+    <div class='list-row'>
+        <div class='list-cell list-cell-link'><a>{{ c.identifier }}</a></div>
+        <div class='list-cell list-cell-info-clear' style='opacity:1.0'>
+            <div style='padding:5px'>
+            <div class='list-cell list-cell-info-clear'
+                    style='text-align:center;width:200px;font-size:100%' >
+                <p><b>IARU band:</b> {{ c.band.IARU_band }}</p>
+                <p><b>AMSAT letter:</b> {{ c.band.AMSAT_letter }}</p>
+                <p>({{ c.band.IARU_allocation_minimum_frequency }},
+                        {{ c.band.IARU_allocation_maximum_frequency }})</p>
+            </div>
+            <div class='list-cell list-cell-info-clear'
+                 style='width:250px;font-size:100%' >
+                <table>
+                    <tr><td><b>Modulation(s):</b></td>
+{% for e_i in c.modulation.all %}
+                    <td>{{ e_i.modulation }}</td>
+{% endfor %}
+                    </tr>
+                    <tr><td><b>Bitrate(s):</b></td>
+{% for e_i in c.bitrate.all %}
+                    <td>{{ e_i.bitrate }}</td>
+{% endfor %}
+                    </tr>
+                    <tr><td><b>Bandwidth(s):</b></td>
+{% for e_i in c.bandwidth.all %}
+                    <td>{{ e_i.bandwidth }}</td>
+{% endfor %}
+                    </tr>
+                    <tr><td><b>Polarization(s):</b></td>
+{% for e_i in c.polarization.all %}
+                    <td>{{ e_i.polarization }}</td>
+{% endfor %}
+                    </tr>
+                </table>
+            </div>
+            <div class="list-cell list-cell-info-clear"
+                 style="font-size:50%"><div style='padding:5px'>
+                <button id="edit-ch-{{ c.identifier }}"
+                        class="edit-ch" style='width:75px'
+                        data-ch-id="{{ c.identifier }}"
+                        data-gs-id="{{ g.identifier }}"
+                        type="button">Edit</button></div>
+                <div style='padding:5px'>
+                <button id="delete-ch-{{ c.identifier }}"
+                        class="delete-ch" style='width:75px'
+                        data-ch-id="{{ c.identifier }}"
+                        data-gs-id="{{ g.identifier }}"
+                        type="button">Delete</button></div>
+            </div></div>
+            <div>
+{% for r_i in c.rules.all %}
+                <div style='padding:5px'>
+                    <div class="list-cell list-cell-info-clear"
+                         style='padding:5px'>
+                        <button id="remove-rule-{{ r_i.pk }}"
+                                class="delete-rule" style='width:25px'
+                                data-ch-id="{{ c.identifier }}"
+                                data-gs-id="{{ g.identifier }}"
+                                data-rule-id="{{ r_i.pk }}"
+                                type="button"></button></div>
+                    <div class="list-cell list-cell-info"
+                         style="font-size:65%">
+                        <p>{{ r_i }}</p></div>
+                </div>
+{% empty %}
+                <div><p style='text-align: center;'>
+                    <b><i>(no rules for {{ c.identifier }})</i></b></p></div>
+{% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endfor %}
+
+    <h2>Channels Schedule</h2>
+
+{% include 'channels_dialog.html' with dialog_id='add_channel' dialog_title='Channel Configuration' %}
+{% include 'groundstation_dialog.html' with dialog_id='gs' dialog_title='Ground Station Configuration' %}
+{% include 'rules_dialog.html' with dialog_id='rules' dialog_title='Add new rule' %}
+
+{% endblock content %}

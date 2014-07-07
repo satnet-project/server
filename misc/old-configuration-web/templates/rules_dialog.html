@@ -1,0 +1,141 @@
+{% comment %}
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+{% endcomment %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+
+<link rel="stylesheet" href="{% static 'css/dialog.css' %}" />
+
+<script type="text/javascript">
+    $.ajaxSetup({ data: { csrfmiddlewaretoken: "{{ csrf_token }}" } });
+</script>
+<script type='text/javascript'
+        src="{% static 'prime-ui/scripts/jquery.json.min.js' %}" >
+</script>
+<script type='text/javascript'
+        src="{% static 'prime-ui/scripts/jquery.jsonrpcclient.js' %}" >
+</script>
+<link rel="stylesheet" href="{% static 'css/jquery.timepicker.css' %}" />
+<script type='text/javascript'
+        src="{% static 'scripts/jquery.timepicker.min.js' %}" >
+</script>
+<script type='text/javascript'
+        src="{% static 'scripts/common.js' %}" >
+</script>
+<script type='text/javascript'
+        src="{% static 'scripts/configure-rules.js' %}" >
+</script>
+
+{% endblock head %}
+
+<div id="{{ dialog_id }}_dialog_overlay" class='dialog-overlay' >
+<div id="{{ dialog_id }}_dialog" class='dialog' style="width:575px" >
+
+    <div class="dialog-title" >
+{% block dialog_title %}
+        {{ dialog_title }}
+{% endblock %}
+    </div>
+
+    <div class="dialog-content" >
+{% block dialog_content %}
+    <div style='text-align:center;' ><form>
+        <div class='list-cell'
+             style='text-align:center;width:200px;padding:25px' >
+        <p><label for="id_{{ dialog_id }}_chs">Select Channel(s):</label>
+            <select multiple id="id_{{ dialog_id }}_chs"></select></p>
+        <p><label for='id_{{ dialog_id }}_ops'>Select Operation:</label>
+            <select id='id_{{ dialog_id }}_ops' >
+                <option value='add_rule'>Add Slots (+)</option>
+                <option value='delete_rule'>Delete Slots (-)</option>
+            </select></p>
+        <p><label for='id_{{ dialog_id }}_period'>Periodicity:</label>
+            <select id='id_{{ dialog_id }}_period'
+                    onchange='rules_period_change(this)'>
+                <option value='once_rule'>Once</option>
+                <option value='daily_rule'>Daily</option>
+                <option value='weekly_rule'>Weekly</option>
+            </select></p>
+        </div>
+        <div class='list-cell'
+             style='text-align:center;width:200px;padding:25px;opacity:1.0;'
+             id='id_{{ dialog_id }}_rule_options' >
+            <div id='div_i_date' style='opacity:1.0'>
+                <label for="id_{{ dialog_id }}_i_date">Initial date</label>
+                <input id='id_{{ dialog_id }}_i_date'
+                       class='input_date init_date'/>
+            </div>
+            <div id='div_f_date' style='opacity:1.0'>
+                <label for="id_{{ dialog_id }}_f_date">Final date</label>
+                <input id='id_{{ dialog_id }}_f_date'
+                       class='input_date final_date' />
+            </div>
+            <div style='padding:20px' ><hr /></div>
+            <div id='div_i_time' style='opacity:1.0'>
+                <label for="id_{{ dialog_id }}_i_time">Initial time</label>
+                <input id='id_{{ dialog_id }}_i_time' class='input_time' />
+            </div>
+            <div id='div_f_time' style='opacity:1.0'>
+                <label for="id_{{ dialog_id }}_f_time">Final time</label>
+                <input id='id_{{ dialog_id }}_f_time' class='input_time'  />
+            </div>
+            <div id='div_week' style='padding:10px;text-align:center;'>
+
+{% for d in weekdays %}
+
+                <div id="{{ d }}">
+                    <div class='list-cell' style='width:100px'>
+                        <label for="id_{{ dialog_id }}_check_{{ d }}">
+                            {{ d }}</label></div>
+                    <div class='list-cell' style='text-align:center;'>
+                        <input type='checkbox' class='input_w_check'
+                               id="id_{{ dialog_id }}_check_{{ d }}"
+                               data-day="{{ d }}"
+                               onclick='activate_input_time(this)'/></div>
+                    <div class='list-cell' style='opacity:1.0'>
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input id="id_{{ dialog_id }}_i_time_{{ d }}" disabled
+                               class='input_w_time small_input' /></div>
+                    <div class='list-cell' style='opacity:1.0'>
+                        <!--suppress HtmlFormInputWithoutLabel -->
+                        <input id="id_{{ dialog_id }}_f_time_{{ d }}" disabled
+                               class='input_w_time small_input' /></div>
+                </div>
+
+{% endfor %}
+
+            </div>
+        </div></form></div>
+{% endblock dialog_content %}
+    </div>
+
+{% block dialog_buttons %}
+    <div style='text-align: center;'>
+    <div style='display: table-cell; padding:5px'>
+        <button id="{{ dialog_id }}_dialog_submit"
+                style='width:125px;font-size:75%;'
+                type='button'>Submit</button></div>
+    <div style='display: table-cell; padding:5px'>
+        <button id="{{ dialog_id }}_dialog_cancel"
+                style='width:125px;font-size:75%;'
+                type='button'>Cancel</button></div>
+    </div>
+{% endblock dialog_buttons %}
+
+</div>
+</div>

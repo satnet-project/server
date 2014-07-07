@@ -1,0 +1,78 @@
+{% extends "users/users_home.html" %}
+
+{% comment %}
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+{% endcomment %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <link rel="stylesheet" href="{% static 'css/lists.css'%}"   />
+{% endblock %}
+
+{% block content %}
+
+<div>
+
+    <a class='button-dark' href="{% url 'add_groundstation' %}"
+        style='font-size:175%;padding:15px;'>
+        (+) Add Ground Station
+    </a>
+    <br/><br/>
+    <hr class='spacer'/>
+    <br/>
+    
+    <h1>List of Ground Stations</h1>
+        <br/>
+    
+    <div id='groundstations_list'>
+    
+{% if groundstations_list|length == 0 %}
+
+        <p><b><i>(empty list)</i></b></p>
+
+{% else %}
+
+{% for g in groundstations_list %}
+
+    <div class='list-row'>
+    <div class="list-cell list-cell-link" >
+        <a class='link' href="{% url 'configure_groundstation' pk=g.pk%}">
+            {{ g.identifier }}
+        </a>
+    </div>
+    <div class="list-cell list-cell-info" style="width:325px;">
+        <ul class='results-list'>
+            <li><b>Radio Callsign</b>: {{ g.callsign }}</li>
+            <li><b>Contact elevation (deg)</b>: 
+                    {{ g.contact_elevation|floatformat:2 }}</li>
+            <li><b>Coordinates</b>:
+                    ({{ g.latitude|floatformat:4 }}, 
+                        {{ g.longitude|floatformat:4 }})</li>
+        </ul>
+    </div>
+    </div>
+
+{% endfor %}
+
+{% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+    
