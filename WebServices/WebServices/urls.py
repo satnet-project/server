@@ -13,30 +13,26 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+__author__ = 'rtubiopa@calpoly.edu'
 
-from django.conf.urls import patterns, include, url
-import accounts.views
+from django.conf import urls
+from accounts import views
 
-# Uncomment the next two lines to enable the admin:
-from django.contrib import admin
-admin.autodiscover()
+urlpatterns = urls.patterns(
+    '',
+    urls.url(r'^$', views.redirect_home, name='index'),
+    # ### for overriding default 'accounts' urls from
+    # django-registration
+    urls.url(r'^accounts/', urls.include('accounts.urls')),
+    # ### default django auth accounts
+    (r'^accounts/', urls.include('django.contrib.auth.urls')),
+    # ### sc/gs configuration service application
+    urls.url(r'^configuration/', urls.include('configuration.urls')),
+    # ### JSON-Rpc API
+    urls.url(r'^jrpc/$', 'rpc4django.views.serve_rpc_request'),
+    # ### django-registration
+    urls.url(r'^accounts/', urls.include('registration.backends.default.urls')),
+    # ### django-session-security
+    urls.url(r'session_security/', urls.include('session_security.urls'))
 
-urlpatterns =\
-    patterns('',
-             url(r'^$', accounts.views.redirect_home, name='index'),
-             # ### for overriding default 'accounts' urls from
-             # django-registration
-             url(r'^accounts/', include('accounts.urls')),
-             # ### sc/gs configuration service application
-             url(r'^configuration/', include('configuration.urls')),
-             # ### JSON-Rpc API
-             url(r'^jrpc/$', 'rpc4django.views.serve_rpc_request'),
-             # Uncomment the admin/doc line below to enable admin docs:
-             url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-             # Uncomment the next line to enable the admin:
-             url(r'^admin/', include(admin.site.urls)),
-             # ### django-registration
-             url(r'^accounts/', include('registration.backends.default.urls')),
-             # ### django-session-security
-             url(r'session_security/', include('session_security.urls')),
-             )
+)

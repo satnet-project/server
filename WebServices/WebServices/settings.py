@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+__author__ = 'rtubiopa@calpoly.edu'
 
 # Django settings for WebServices project.
 DEBUG = True
@@ -23,16 +24,8 @@ ADMINS = [
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'satnet_db',
-        'USER': 'satnet_django',
-        'PASSWORD': '_805Django',
-        'HOST': '',
-        'PORT': '',
-    }
-}
+from private_settings import database
+DATABASES = database.DATABASES
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.4/ref/settings/#allowed-hosts
@@ -124,15 +117,13 @@ WSGI_APPLICATION = 'WebServices.wsgi.application'
 
 # ### templates directories loading, relative to project's structure
 main_templates = os.path.join(os.path.dirname(__file__), 'templates')
-accounts_templates = os.path.join(os.path.dirname(__file__), '..', 'accounts',
-                                  'templates')
-configuration_templates = os.path.join(os.path.dirname(__file__), '..',
-                                       'configuration', 'templates')
+accounts_templates = os.path.join(
+    os.path.dirname(__file__), '..', 'accounts', 'templates'
+)
 
 TEMPLATE_DIRS = (
     main_templates,
     accounts_templates,
-    configuration_templates,
 )
 
 INSTALLED_APPS = (
@@ -153,9 +144,6 @@ INSTALLED_APPS = (
     'leaflet',
     # ### periodical task scheduling
     'periodically',
-    # ### django-admin
-    'django.contrib.admin',
-    'django.contrib.admindocs',
     # ### rpc4django (must appear before RPC implementors)
     'rpc4django',
 
@@ -166,6 +154,7 @@ INSTALLED_APPS = (
     'accounts',
     'scheduling',
     'configuration',
+
 )
 
 # A sample logging configuration. The only tangible logging
@@ -253,12 +242,11 @@ SESSION_SECURITY_EXPIRE_AFTER = 540
 # restarted
 # SESSION_SECURITY_PASSIVE_URLS = 
 
-# ### e-mail settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'mail.calpoly.edu'
-EMAIL_PORT = 25
+from private_settings import email
 
-# ### TODO Real non-personal account
-EMAIL_HOST_USER = 'rtubiopa@calpoly.edu'
-# ### EMAIL_HOST_PASSWORD = ''
-EMAIL_USE_TLS = 'True'
+EMAIL_BACKEND = email.EMAIL_BACKEND
+EMAIL_HOST = email.EMAIL_HOST
+EMAIL_PORT = email.EMAIL_PORT
+EMAIL_HOST_USER = email.EMAIL_HOST_USER
+EMAIL_HOST_PASSWORD = email.EMAIL_HOST_PASSWORD
+EMAIL_USE_TLS = email.EMAIL_USE_TLS
