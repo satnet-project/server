@@ -41,6 +41,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         self.__verbose_testing = False
 
         if not self.__verbose_testing:
+            logging.getLogger('common').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
@@ -478,7 +479,8 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             ))
         )
 
-        # 2) The changes should be notified now to the compatible gs
+        # 2) The changes should be notified now to the compatible gs, but only
+        # once!
         actual = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
         self.assertEquals(
             actual, expected,
@@ -486,20 +488,14 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 actual, expected
             ))
         )
-        actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEquals(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
-
-        # 3) Not notified again!
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
         self.assertRaises(
             Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
+        )
+
+        # 3) Spacecraft should not be notified about the changes that its
+        # actions provoked
+        self.assertRaises(
+            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
         )
 
         # ### clean up sc/gs

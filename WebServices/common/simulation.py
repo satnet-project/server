@@ -17,10 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import ephem
+import logging
 
 from scheduling.models import tle
 from common import misc
 from common import gis
+
+logger = logging.getLogger('common')
 
 
 class OrbitalSimulator(object):
@@ -42,6 +45,12 @@ class OrbitalSimulator(object):
         (on=False). Default: on=True
         """
         self._test_mode = on
+
+    def get_debug(self):
+        """Returns the debug flag for the Simulation object.
+        :return: boolean debug flag.
+        """
+        return self._test_mode
 
     # Observer for the simulation (GroundStation simulation object).
     _observer = None
@@ -98,7 +107,7 @@ class OrbitalSimulator(object):
         """
         if dt is None:
             dt = misc.get_today_utc()
-        return dt.strftime("%Y/%m/%d %I:%M:%S")
+        return dt.strftime("%Y/%m/%d %H:%M:%S")
 
     def set_groundstation(self, groundstation):
         """
@@ -181,10 +190,10 @@ class OrbitalSimulator(object):
 
         for a_slot_i in availability_slots:
 
-            pass_slots.append((
-                self.calculate_pass_slot(a_slot_i[0], a_slot_i[1]),
-                a_slot_i[2]
-            ))
+            pass_i = self.calculate_pass_slot(a_slot_i[0], a_slot_i[1])
+            pass_i_id = a_slot_i[2]
+
+            pass_slots.append((pass_i, pass_i_id))
 
         return pass_slots
 
@@ -205,6 +214,10 @@ class OrbitalSimulator(object):
         defined horizon.
         """
         if self._test_mode:
+            logger.warning(
+                "Simulator is in TESTING mode, returns the slots that are"
+                "given as <AvailabilitySlot>'s to it."
+            )
             return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []

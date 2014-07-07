@@ -83,8 +83,10 @@ def confirm_selections(groundstation_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_RESERVED, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_RESERVED, slots=slots,
+        notify_sc=True, notify_gs=False
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)
 
 
@@ -116,8 +118,10 @@ def deny_selections(groundstation_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_DENIED, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_DENIED, slots=slots,
+        notify_sc=True, notify_gs=False
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)
 
 
@@ -150,6 +154,8 @@ def cancel_reservations(groundstation_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_CANCELED, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_CANCELED, slots=slots,
+        notify_sc=True, notify_gs=False
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)

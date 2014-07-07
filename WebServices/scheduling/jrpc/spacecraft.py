@@ -84,8 +84,10 @@ def select_slots(spacecraft_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_SELECTED, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_SELECTED, slots=slots,
+        notify_sc=False, notify_gs=True
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)
 
 
@@ -115,8 +117,10 @@ def cancel_selections(spacecraft_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_FREE, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_FREE, slots=slots,
+        notify_sc=False, notify_gs=True
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)
 
 
@@ -147,6 +151,8 @@ def cancel_reservations(spacecraft_id, slot_identifiers):
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects\
-        .update_state(state=operational.STATE_FREE, slots=slots)
+    changed_slots = operational.OperationalSlot.objects.update_state(
+        state=operational.STATE_FREE, slots=slots,
+        notify_sc=False, notify_gs=True
+    )
     return operational.OperationalSlot.serialize_slots(changed_slots)

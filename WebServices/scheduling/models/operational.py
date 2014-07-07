@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 from django.db import models
+from django.db.models import Q
 import logging
 
 from common import misc, simulation
@@ -180,15 +181,22 @@ class OperationalSlotsManager(models.Manager):
             result += o_slots_i
             o_slots_i.update(sc_notified=True)
 
-            o_slots_i.filter(state=STATE_CANCELED).update(state=STATE_FREE)
-            o_slots_i.filter(state=STATE_DENIED).update(state=STATE_FREE)
-
         if len(result) == 0:
             raise Exception(
                 'No OperationalSlots available for Spacecraft <' + str(
                     spacecraft.identifier
                 ) + '>'
             )
+
+        # Once notified, 'CANCELED' and 'DENIED' slots have to be
+        # automatically changed to 'FREE'.
+        ids_i = [s_i.identifier for s_i in result]
+        OperationalSlot.objects\
+            .filter(identifier__in=ids_i)\
+            .filter(
+                Q(state=STATE_CANCELED) | Q(state=STATE_DENIED)
+            )\
+            .update(state=STATE_FREE)
 
         return result
 
@@ -222,7 +230,9 @@ class OperationalSlotsManager(models.Manager):
 
         return result
 
-    def update_state(self, state=STATE_FREE, slots=None):
+    def update_state(
+            self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
+    ):
         """
         Updates the state of the OperationalSlots implementing the policy for
         the change in the state of the OperationalSlots should be included
@@ -243,7 +253,9 @@ class OperationalSlotsManager(models.Manager):
 
             try:
 
-                slot_i.change_state(new=state)
+                slot_i.change_state(
+                    new=state, notify_sc=notify_sc, notify_gs=notify_gs
+                )
                 result.append(slot_i)
 
             except ValueError as e:
@@ -557,19 +569,24 @@ class OperationalSlot(models.Model):
         blank=True, null=True, on_delete=models.SET_NULL
     )
 
-    def change_state(self, new):
+    def change_state(self, new, notify_sc=True, notify_gs=True):
         """
         Static method that returns 'True' in case the state change from
         'current' to 'new' can be performed; otherwise, it returns 'False'.
         :param new: The new state for this slot.
+        :param notify_sc: Flag that defines whether Spacecraft should be
+        notified about this change or not.
+        :param notify_gs: Flag that defines whether GroundStations should be
+        notified about this change or not.
         :raises TypeError: any of the states (either current or new) is not
         valid.
         """
         if self.STATE_CHANGE[self.state][new]:
 
             self.state = new
-            self.gs_notified = False
-            self.sc_notified = False
+            self.gs_notified = not notify_gs
+            self.sc_notified = not notify_sc
+
             self.save()
 
         else:
