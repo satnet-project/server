@@ -1,0 +1,27 @@
+# Django libraries
+django
+rpc4django
+django-jsonfield
+django-registration
+django_countries
+django-passwords
+django-jquery
+django-session-security
+django-jsonview
+django-leaflet
+django-extensions
+django-periodically
+django-selenium
+# Python libraries
+pyephem
+python-dateutil
+pytz
+eventlog
+mysql-python
+datadiff
+# Maybe?
+#twisted
+#txJSON-RPC
+#selenium
+#six
+#unittest-data-provider

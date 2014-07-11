@@ -84,23 +84,11 @@ create_virtualenv()
     # hierarchy within the created environment
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
 
-    #pip install django==1.5.2
-    #pip install eventlog==0.6.2
-    #pip install django-jsonfield==0.8.12
-    #pip install django-registration==1.0
-    #pip install mysql-python==1.2.3
-    
-    pip install django==1.5.4
-    pip install eventlog==0.6.2
-    pip install django-jsonfield==0.8.12
-    pip install django-registration==1.0
-    pip install mysql-python==1.2.3
-    pip install rpc4django
-    pip install pytz
-
     pip install distribute --upgrade
 
     pip install django
+    pip install rpc4django
+    pip install pytz
     pip install eventlog
     pip install django-jsonfield
     pip install django-registration
@@ -114,16 +102,9 @@ create_virtualenv()
     pip install python-dateutil
     pip install django-extensions
     pip install pyephem
-    pip install twisted
-    pip install txJSON-RPC
     # ### testing packages
-    pip install django-selenium
-    pip install selenium
-    pip install six
-    pip install unittest-data-provider
     pip install datadiff
-
-    pip install git+https://github.com/hzdg/django-periodically.git#egg=django-periodically
+    pip install django-periodically
 
     # ### TODO make it relocatable...
     # ### rellocatable virtual environment: --relocatable
@@ -142,23 +123,36 @@ pip_upgrade_packages()
 # ### This is the function utilized for adding the crontab task required by
 # django-periodically for executing periodic maintenance tasks of the web
 # applications
-
 add_crontab_django_periodically()
 {
     echo 'Adding crontab task for django-periodically...'
-    #crontab_task=$( "*/5 * * * * python $MANAGE_PY runtasks" )
+    crontab_task=$( "*/5 * * * * python $MANAGE_PY runtasks" )
     echo '#!/bin/sh' > $__crontab_conf
     echo "source $venv_activate" >> $__crontab_conf
     echo "python $MANAGE_PY runtasks" >> $__crontab_conf
     chmod +x $__crontab_conf
 }
 
-# ### TODO Configuration of system dependencies by GeoDjango.
+node_js_root_dir='/opt'
 
-# configure_geodjango()
-# {
-#     
-# }
+# ### This function installs bower together with Node.js, the vanilla version
+# that can be downloaded from GitHub.
+install_bower()
+{
+    apt-get install python g++ make checkinstall
+    cd $node_js_root_dir
+    wget -N http://nodejs.org/dist/node-latest.tar.gz
+    tar xzvf node-latest.tar.gz && cd node-v*
+    ./configure
+    # ### IMPORTANT
+    echo 'In the next menu that will be prompted, the <v> letter from the'
+    echo 'version number must be erased. For doing that, select <Choice 3>'
+    echo 'and erase the <v> letter leaving the rest of the version number'
+    echo 'intact.'
+    checkinstall -D
+    dpkg -i node_*
+    npm install -g bower
+}
 
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
 bashrc_file="$HOME/.bashrc"
@@ -184,11 +178,11 @@ configure_virtualenvwrapper()
 # uses django-user-accounts for user login and registration. It installs all
 # the dependencies of the PINAX project through python-pip
 
+pinax_template_url='https://github.com/pinax/pinax-project-account/zipball/master'
+satnet_web_services_dir='WebServices'
+    
 configure_pinax_repository()
 {
-
-    pinax_template_url='https://github.com/pinax/pinax-project-account/zipball/master'
-    satnet_web_services_dir='WebServices'
 
     django-admin.py startproject\
         --template=$pinax_template_url $satnet_web_services_dir
@@ -202,6 +196,8 @@ configure_pinax_repository()
 usage() { 
 
     echo "Please, use ONLY ONE ARGUMENT at a time:"
+    echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)" 
+    echo "Usage: $0 [-m] #Configures Django database" 
     echo "Usage: $0 [-d] #Delete Django databases" 
     echo "Usage: $0 [-i] #Install required packages <root>" 
     echo "Usage: $0 [-v] #Configure virtualenv" 
@@ -230,13 +226,23 @@ venv_activate="$project_path/$venv/bin/activate"
 ################################################################################
 # ### Main execution loop
 
-
-if [ $OPTIND -gt 1 ] ; then
+if [ $# -lt 1 ] ; then
     usage
+    exit 0
 fi
 
-while getopts ":div" o; do
-    case "${o}" in
+while getopts ":bdiv" opt; do
+    case $opt in
+        b)
+            #Need to be root to install packages
+            [[ $( whoami ) == 'root' ]] || \
+                { echo 'Need to be <root>, exiting...'; exit -1; }
+
+            echo 'Installing Bower and Node.js...'
+            install_bower
+            echo 'DONE'
+            exit 1
+            ;;
         d)
             echo 'Deleting MYSQL Django databases...'
             delete_mysql_db
@@ -249,23 +255,22 @@ while getopts ":div" o; do
                 { echo 'Need to be <root>, exiting...'; exit -1; }
 
             echo 'Installing required packages...'
-            echo 'This process is not unattended, user interaction is required. Press any key to continue...'
+            echo 'This process is not unattended, user interaction is required.'
+            echo 'Press any key to continue...'
             read
-            #install_packages
-            #add_crontab_django_periodically
+            install_packages
             echo 'DONE'
-
-            echo 'Configuring virtualenv...'
-            create_virtualenv $*
+            ;;
+         m)
+            echo 'Configuring MySQL...'
             configure_mysql
+            add_crontab_django_periodically
             echo 'DONE'
-            exit 1;
-
+            exit 1
             ;;
         v)
             echo 'Configuring virtualenv...'
             create_virtualenv $*
-            configure_mysql
             echo 'DONE'
             exit 1;
             ;;
@@ -273,7 +278,9 @@ while getopts ":div" o; do
             usage
             ;;
     esac
+    
+    shift $((OPTIND-1))
+
 done
-shift $((OPTIND-1))
 
 exit 1
