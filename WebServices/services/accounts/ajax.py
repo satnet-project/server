@@ -15,16 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
-import json
-from jsonview import decorators, exceptions
 from django.contrib.auth import decorators as auth_decorators
+from django.contrib.auth import models as auth_models
 from django.contrib.sites import models as site_models
 from django.forms import models as form_models
 from django.shortcuts import get_object_or_404
 
-from services.accounts import models
-from registration.models import RegistrationProfile
+import logging
+import json
+from jsonview import decorators, exceptions
+
+from services.accounts import models, utils
 
 logger = logging.getLogger('accounts')
 
@@ -81,8 +82,9 @@ def user_verification(request):
     for user_id in user_list:
     
         # 1) first, the confirmation email is sent
-        r_profile = get_object_or_404(RegistrationProfile, user_id=user_id)
-        r_profile.send_activation_email(site)
+        utils.allauth_confirm_email(
+            auth_models.User.objects.get(pk=user_id), request
+        )
         # 2) afterwards, the profile is set as verified and saved
         u_profile = get_object_or_404(models.UserProfile, pk=user_id)
         # ### Uncomment when ready ### u_profile.is_verified = True

@@ -105,6 +105,7 @@ create_virtualenv()
     # ### testing packages
     pip install datadiff
     pip install django-periodically
+    pip install django-allauth
 
     # ### TODO make it relocatable...
     # ### rellocatable virtual environment: --relocatable

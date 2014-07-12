@@ -16,23 +16,49 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
+from django.contrib import admin
 
 from services.accounts import views
 
+admin.autodiscover()
+
 urlpatterns = urls.patterns(
     '',
-    urls.url(r'^$', views.redirect_home, name='index'),
+    urls.url(
+        r'^$',
+        views.redirect_home,
+        name='index'
+    ),
     # ### Command and Control Interface
-    urls.url(r'^c2/', views.redirect_home, name='c2_interface'),
+    urls.url(
+        r'^c2/',
+        views.redirect_home,
+        name='c2_interface'
+    ),
     # ### for overriding default 'accounts' urls from
     # django-registration
-    urls.url(r'^accounts/', urls.include('services.accounts.urls')),
-    # ### default django auth accounts
-    urls.url(r'^accounts/', urls.include('django.contrib.auth.urls')),
+    urls.url(
+        r'^accounts/',
+        urls.include('services.accounts.urls')
+    ),
     # ### django-registration
-    urls.url(r'^accounts/', urls.include('registration.backends.default.urls')),
+    urls.url(
+        r'^accounts/',
+        urls.include('allauth.urls')
+    ),
     # ### JSON-Rpc API
-    urls.url(r'^jrpc/$', 'rpc4django.views.serve_rpc_request'),
+    urls.url(
+        r'^jrpc/$',
+        'rpc4django.views.serve_rpc_request'
+    ),
     # ### django-session-security
-    urls.url(r'session_security/', urls.include('session_security.urls')),
+    urls.url(
+        r'session_security/',
+        urls.include('session_security.urls')
+    ),
+    # ### django admin
+    urls.url(
+        r'^admin/',
+        urls.include(admin.site.urls)
+    ),
 )

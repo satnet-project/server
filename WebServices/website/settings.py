@@ -132,6 +132,8 @@ MIDDLEWARE_CLASSES = (
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.contrib.auth.context_processors.auth',
+    'allauth.account.context_processors.account',
+    'allauth.socialaccount.context_processors.socialaccount',
 )
 
 ROOT_URLCONF = 'website.urls'
@@ -164,9 +166,10 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # ### django-registration
-    'registration',
+
+    # ### django-allauth
+    'allauth',
+    'allauth.account',
     # ### django-session-security
     'session_security',
     # ### mapping!
@@ -183,6 +186,9 @@ INSTALLED_APPS = (
     'services.accounts',
     'services.configuration',
     'services.scheduling',
+
+    # ### django-admin
+    'django.contrib.admin',
 
 )
 
@@ -251,14 +257,31 @@ LOGGING = {
     }
 }
 
-# ### django-registration: 4 days for the user to activate the account
-ACCOUNT_ACTIVATION_DAYS = 4
+# ### django-allauth configuration:
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend"
+)
+# ### django-allauth configuration:
+ACCOUNT_AUTHENTICATION_METHOD = "email"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 4
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_SESSION_REMEMBER = False
+ACCOUNT_SIGNUP_PASSWORD_VERIFICATION = True
+ACCOUNT_SIGNUP_FORM_CLASS = 'services.accounts.forms.RegistrationForm'
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_REQUIRED = True
+EMAIL_CONFIRMATION_SIGNUP = True
 LOGIN_URL = '/accounts/login'
 LOGIN_REDIRECT_URL = '/accounts/login_ok/'
 LOGOUT_URL = '/accounts/logout'
-CSRF_FAILURE_VIEW = 'accounts.views.csrf_failure_handler'
+CSRF_FAILURE_VIEW = 'services.accounts.views.csrf_failure_handler'
+
 # ### this parameter links __my__ UserProfile with the User from contrib.auth
-AUTH_PROFILE_MODULE = 'accounts.UserProfile'
+AUTH_PROFILE_MODULE = 'services.accounts.UserProfile'
 # ### this parameter provokes that a user has to re-log-in every time the
 # browser is closed
 # value required to be True bye django-session-security

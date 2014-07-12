@@ -1,0 +1,4 @@
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans %}[satnet] Welcome to the Network!{% endblocktrans %}
+{% endautoescape %}

@@ -16,9 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
-
 from periodically import decorators
-from registration import models
 
 logger = logging.getLogger('accounts')
 
@@ -30,4 +28,4 @@ def accounts_delete_expired_users():
     key is expired and they did not complete still their registration process.
     """
     logger.debug("DeleteExpiredUsers, daily task execution!")
-    models.RegistrationProfile.objects.delete_expired_users()
+    # ### TODO :: check user experation for django-allauth

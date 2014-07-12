@@ -1,0 +1,11 @@
+{% load account %}{% user_display user as user_display %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}Welcome {{ user_display }}
+to the node {{ site_name }} of the SATNet network.
+
+Your application to join the network has just been received and has to be
+accepted yet by the network manager before you get access to the system. You
+will receive an email for confirming your account once your personal
+information had been verified.
+{% endblocktrans %}{% endautoescape %}

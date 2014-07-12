@@ -20,8 +20,8 @@ from django.core import exceptions
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+import utils
 from services.accounts import models as account_models
-from passwords import fields
 
 
 class BaseUserProfileForm(forms.ModelForm):
@@ -44,38 +44,6 @@ class BaseUserProfileForm(forms.ModelForm):
             )
         else:
             return self.cleaned_data['username']
-
-    # To change the list of banned domains, subclass this form and
-    # override the attribute ``bad_domains``.
-    bad_domains = [
-        'aim.com', 'aol.com', 'email.com', 'gmail.com',
-        'googlemail.com', 'hotmail.com', 'hushmail.com',
-        'msn.com', 'mail.ru', 'mailinator.com', 'live.com',
-        'yahoo.com'
-    ]
-
-    @staticmethod
-    def validate_email(email):
-        """Checks mail address validity.
-
-        This method is used for checking whether a given email address is
-        valid or not (free mail providers are forbidden).
-        :param email: email address to be checked
-        :return: 'True' in case the email address is valid
-        :raises ValidationError: in case the email is not valid
-        """
-        email_domain = email.split('@')[1]
-
-        if email_domain in BaseUserProfileForm.bad_domains:
-
-            raise forms.ValidationError(
-                _(
-                    "Registration using free email addresses is "
-                    "forbidden. Please provide a different email address."
-                )
-            )
-
-        return True
 
     def clean_email(self):
         """
@@ -110,32 +78,54 @@ class BaseUserProfileForm(forms.ModelForm):
                     _("The two password fields didn't match.")
                 )
 
-        print 'XXXXX ' + str(self.cleaned_data)
-
         return self.cleaned_data
 
 
-class RegistrationForm(BaseUserProfileForm):
+class RegistrationForm(forms.ModelForm):
     """Form for registering a new user in the system.
     """
-    username = forms.CharField(label=_("Username"))
-    password = fields.PasswordField(label=_("Password"))
-    password_c = fields.PasswordField(label=_("(confirm)"))
-
     class Meta:
-        """Model to be used from within this form."""
+        """Model to be used from within this form.
+        """
         model = account_models.UserProfile
         fields = (
             'username', 'first_name', 'last_name', 'email',
-            'organization', 'country', 'password'
+            'organization', 'country'
         )
+
+    def signup(self, request, user):
+        """(Overriden) save() method for ModelForm.
+        This method has to be overriden for saving the UserProfile that
+        extends the basic User handled by the Django auth system.
+        :param user: User linked with this UserProfile.
+        """
+        print '>>>>>>>>>>>>>>>>> USER = ' + str(user)
+        print '<<<<<<<<<<<<<<<<< ' + str(self.cleaned_data)
+
+        profile = account_models.UserProfile()
+        profile.user_ptr = user
+        profile.organization = self.cleaned_data['organization']
+        profile.country = self.cleaned_data['country']
+        profile.is_blocked = False
+        profile.is_verified = False
+        profile.save()
+
+        user.username = self.cleaned_data['username']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
+        user.is_superuser = False
+        user.is_staff = False
+        user.is_active = False
+        user.set_password(self.cleaned_data['password1'])
+        user.save()
 
 
 class ProfileUpdateForm(forms.ModelForm):
     """Form for updating the profile of an existing user.
     """
     username = forms.CharField(widget=forms.HiddenInput)
-    email = forms.CharField(label=_("Email address"))
+    #email = forms.CharField(label=_("Email address"))
 
     class Meta:
         """Model to be used from within this form."""
@@ -165,7 +155,7 @@ class ProfileUpdateForm(forms.ModelForm):
 
         if user.email != new_email:
 
-            BaseUserProfileForm.validate_email(self.cleaned_data['email'])
+            utils.validate_email(self.cleaned_data['email'])
 
             if User.objects.filter(email__iexact=self.cleaned_data['email']):
 

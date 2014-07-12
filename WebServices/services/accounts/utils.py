@@ -15,6 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django import forms
+from django.utils.translation import ugettext_lazy as _
+
+from allauth.account import utils as allauth_utils, models as allauth_models
+
 import logging
 import re
 
@@ -57,3 +62,48 @@ def get_user_operations(request):
         operations[user_id] = operation
 
     return operations
+
+
+# To change the list of banned domains, subclass this form and
+# override the attribute ``bad_domains``.
+forbidden_domains = [
+    'aim.com', 'aol.com', 'email.com', 'gmail.com', 'googlemail.com',
+    'hotmail.com', 'hushmail.com', 'msn.com', 'mail.ru', 'mailinator.com',
+    'live.com', 'yahoo.com'
+]
+
+
+def validate_email(email):
+    """Checks mail address validity.
+    This method is used for checking whether a given email address is
+    valid or not (free mail providers are forbidden).
+    :param email: email address to be checked
+    :return: 'True' in case the email address is valid
+    :raises ValidationError: in case the email is not valid
+    """
+    email_domain = email.split('@')[1]
+
+    if email_domain in forbidden_domains:
+
+        raise forms.ValidationError(
+            _(
+                "Registration using free email addresses is forbidden. Please"
+                "provide a different email address."
+            )
+        )
+
+    return True
+
+
+def allauth_confirm_email(user, request):
+    """django-allauth confirmation email.
+    This method sends a confirmation email to the given user.
+    :param user: the user whose confirmation is still missed
+    :param request: the request object for the view that requests this
+    confirmation
+    """
+    email = allauth_utils.user_email(user)
+    email_address = allauth_models.EmailAddress.objects.get_for_user(
+        user, email
+    )
+    email_address.send_confirmation(request, signup=True)

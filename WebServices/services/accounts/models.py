@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from django.db import models
-from django.contrib.auth.models import User
+from django.contrib.auth import models as auth_models
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
 
@@ -28,12 +28,7 @@ class UserProfileManager(models.Manager):
     """
     Custom manager that implements a set of function to perform basic tasks
     over the users and profiles of this extended model.
-    
-    :Author:
-        Ricardo Tubio-Pardavila (rtubiopa@calpoly.edu)
-    
     """
-    
     def verify_user(self, user_id):
         """
         Function that changes user status to 'verified' in the database.
@@ -109,8 +104,20 @@ class UserProfileManager(models.Manager):
         user.is_active = False
         user.save()
 
+    @staticmethod
+    def user_saved(sender, instance, **kwargs):
+        """User saved callback.
+        """
+        print 'XXXXXXXXXXXXXXX SAVED'
 
-class UserProfile(User):
+    @staticmethod
+    def user_deleted(sender, instance, **kwargs):
+        """User deleted callback.
+        """
+        print 'XXXXXXXXXXXXXXX DELETED'
+
+
+class UserProfile(auth_models.User):
     """
     This class holds additional data required from each user. It is used in 
     accordance with the process for extending the User model from 

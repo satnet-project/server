@@ -16,23 +16,17 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import exceptions
-from django.contrib.auth.models import User
+from django.contrib.auth import models as auth_models
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site, RequestSite
-from django.shortcuts import get_object_or_404, render_to_response
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
 
 import logging
-from smtplib import SMTPSenderRefused
 
-from registration import signals
-from registration.models import RegistrationProfile
-from registration.backends.default.views import RegistrationView
-
-from services.accounts import forms, helpers, models
+from services.accounts import forms, models, utils
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +37,7 @@ class UserProfileView(UpdateView):
     """
     model = models.UserProfile
     form_class = forms.ProfileUpdateForm
-    template_name = 'users/user_profile_form.html'
+    template_name = "users/user_profile_form.html"
     success_url = '/accounts/login_ok/'
 
     def get_context_data(self, **kwargs):
@@ -78,56 +72,6 @@ class UserProfileView(UpdateView):
             return models.UserProfile.objects.get(pk=self.request.user.id)
 
 
-class RegisterView(RegistrationView):
-    """
-    This is a form that contains all the required fields from the UserProfile
-    and User tables, as selected by the constructor of the form_class class.
-    """
-
-    template_name = 'registration/registration_form.html'
-    success_url = '/'
-    form_class = forms.RegistrationForm
-
-    def register(self, request, **cleaned_data):
-        """
-        This method overrides the register method of the selected backend. It
-        implements all the same operations than the original one, with the
-        exception that it does not send the confirmation email to the user.
-        This way, it permits an intermediate step in which the network
-        administrator first accepts the registration request.
-        """
-        user_profile = models.UserProfile.objects.create(
-            username=cleaned_data['username'],
-            first_name=cleaned_data['first_name'],
-            last_name=cleaned_data['last_name'],
-            email=cleaned_data['email'],
-            organization=cleaned_data['organization'],
-            country=cleaned_data['country'],
-            is_active=False,
-            is_verified=False,
-            is_blocked=False
-        )
-
-        user_id = user_profile.user_ptr_id
-        new_user = User.objects.get(id=user_id)
-        new_user.set_password(cleaned_data['password'])
-        new_user.save()
-
-        registration_profile = RegistrationProfile.objects.create_profile(
-            new_user
-        )
-
-        signals.user_registered.send(
-            sender=self.__class__,
-            user=new_user,
-            request=request,
-            cleaned_data=cleaned_data,
-            registration_profile=registration_profile
-        )
-
-        return user_profile
-
-
 class PendingRegView(ListView):
     """
     This class helps in handling how users are shown to the network
@@ -148,7 +92,7 @@ class PendingRegView(ListView):
         POST method handler. This method is invoked once the submit button of
         the form is pressed.
         """
-        operations = helpers.get_user_operations(request.POST)
+        operations = utils.get_user_operations(request.POST)
         self.apply_user_operations(operations)
         return self.get(request, *args, **kwargs)
 
@@ -186,12 +130,9 @@ class PendingRegView(ListView):
             site = RequestSite(None)
 
         # 1) first, the confirmation email is sent
-        r_profile = get_object_or_404(RegistrationProfile, user_id=user_id)
-        try:
-            r_profile.send_activation_email(site)
-        except SMTPSenderRefused, e:
-            logger.exception(e)
-
+        utils.allauth_confirm_email(
+            auth_models.User.objects.get(pk=user_id), self.request
+        )
         # 2) afterwards, the profile is set as verified and saved
         models.UserProfile.objects.verify_user(user_id)
 
@@ -231,17 +172,6 @@ class PendingRegView(ListView):
                 __name__ + ", deleting models.UserProfile(" + user_id + ")"
             )
 
-        try:
-
-            r_profile = RegistrationProfile.objects.get(user_id=user_id)
-            r_profile.delete()
-            return
-
-        except exceptions.ObjectDoesNotExist:
-            logger.exception(
-                __name__ + ', deleting RegistrationProfile(' + user_id + ')'
-            )
-
     # Operations dictionary
     operations = {
         'verify': activate_user,
@@ -258,8 +188,7 @@ class BlockedRegView(PendingRegView):
     template_name = 'staff/blocked_requests.html'
     queryset = models.UserProfile.objects.filter(is_blocked=True)
 
-    @staticmethod
-    def unblock_user(user_id):
+    def unblock_user(self, user_id):
         """
         Unblocks a registration request made by the user whose identifier is
         the given parameter.
@@ -283,8 +212,7 @@ class VerifiedView(PendingRegView):
         filter(is_verified=True).\
         filter(is_blocked=False)
 
-    @staticmethod
-    def deactivate_user(user_id):
+    def deactivate_user(self, user_id):
         """
         Marks the given user as inactive, so that the user cannot login in
         the system.
@@ -308,8 +236,7 @@ class InactiveView(PendingRegView):
         filter(is_verified=True).\
         filter(is_blocked=False)
 
-    @staticmethod
-    def activate_user(user_id):
+    def activate_user(self, user_id):
         """
         Marks the given user as active, so that the user cannot login in the
         system.
@@ -332,7 +259,7 @@ def csrf_failure_handler(request, reason=""):
     Method that renders the HTML to be displayed whenever a CSRF exception is
     raised.
     """
-    return TemplateResponse(request, 'registration/csrf_failure.html')
+    return TemplateResponse(request, 'csrf_failure.html')
 
 
 def redirect_home(request):

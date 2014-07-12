@@ -16,17 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth import decorators
 
 from services.accounts import ajax, views
 
 urlpatterns = urls.patterns(
     '',
-    urls.url(
-        r'^register/$',
-        views.RegisterView.as_view(),
-        name='register'
-    ),
     urls.url(
         r'^login_ok/$',
         views.redirect_home,
@@ -35,28 +30,28 @@ urlpatterns = urls.patterns(
     # ### Staff specific views
     urls.url(
         r'^pending/$',
-        login_required(views.PendingRegView.as_view()),
+        decorators.login_required(views.PendingRegView.as_view()),
         name='pending'
     ),
     urls.url(
         r'^blocked/$',
-        login_required(views.BlockedRegView.as_view()),
+        decorators.login_required(views.BlockedRegView.as_view()),
         name='blocked'
     ),
     urls.url(
         r'^verified/$',
-        login_required(views.VerifiedView.as_view()),
+        decorators.login_required(views.VerifiedView.as_view()),
         name='verified'
     ),
     urls.url(
         r'^inactive/$',
-        login_required(views.InactiveView.as_view()),
+        decorators.login_required(views.InactiveView.as_view()),
         name='inactive'
     ),
     # ### UserProfile views
     urls.url(
         r'^user_profile/$',
-        login_required(views.UserProfileView.as_view()),
+        decorators.login_required(views.UserProfileView.as_view()),
         name='user_profile'
     ),
     # ### AJAX views
