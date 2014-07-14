@@ -20,7 +20,6 @@ import datetime
 from django.contrib.auth.models import User
 from django.db import transaction, IntegrityError
 from django.test.client import RequestFactory
-from registration.models import RegistrationProfile
 
 from services.accounts.models import UserProfile
 from services.common import misc, gis
@@ -67,7 +66,6 @@ def create_user_profile(username='testuser', password='testuser.'):
     new_user = User.objects.get(id=user_id)
     new_user.set_password(password)
     new_user.save()
-    RegistrationProfile.objects.create_profile(new_user)
 
     return user_profile
 
