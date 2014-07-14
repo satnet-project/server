@@ -116,8 +116,18 @@ configure_apache()
     /etc/init.d/apache2 restart
 }
 
-# ### Method that configures a Python virtual environment 
+# ### Method that configures a given root with the virtualenvirment required,
+# all the pip packages and the directories.
+configure_root()
+{
+    mkdir -p logs
+    mkdir -p public_html/static
+    
+    virtualenv .venv
+    pip install -r requirements.txt
+}
 
+# ### Method that configures a Python virtual environment 
 create_virtualenv()
 {
 
@@ -242,7 +252,8 @@ configure_pinax_repository()
 usage() { 
 
     echo "Please, use ONLY ONE ARGUMENT at a time:"
-    echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)" 
+    echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
+    echo "Usage: $0 [-c] #Create and install self-signed certificates" 
     echo "Usage: $0 [-m] #Configures Django database" 
     echo "Usage: $0 [-d] #Delete Django databases" 
     echo "Usage: $0 [-i] #Install required packages <root>" 
@@ -322,7 +333,7 @@ while getopts ":bcdimv" opt; do
             ;;
         v)
             echo 'Configuring virtualenv...'
-            create_virtualenv $*
+            configure_root
             echo 'DONE'
             exit 1;
             ;;
