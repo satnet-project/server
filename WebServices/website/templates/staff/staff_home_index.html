@@ -91,13 +91,12 @@ These tools can only be accessed within the same network of the server node.
 
 <ul>
     <li>
-        <a class='link' href="http://localhost:8000/admin">Django Admin</a>
+        <a class='link' href="{% url 'admin:index' %}">Django Admin</a>
         , an external Django application manager.
     </li>
     <li>
-        <a class='link' href="http://localhost/phpmyadmin">PhpMy Admin</a>
-        , an external database management.
+        <a class='link' href="{% url 'phpmyadmin' %}">PhpMy Admin</a>
+        , an external database management tool.
     </li>
 </ul>
 </p>
-

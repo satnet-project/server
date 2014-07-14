@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
 from django.contrib import admin
+from django.views.generic import base as django_views
 
 from services.accounts import views
 
@@ -34,6 +35,11 @@ urlpatterns = urls.patterns(
         r'^c2/',
         views.redirect_home,
         name='c2_interface'
+    ),
+    urls.url(
+        r'^phpmyadmin/',
+        django_views.RedirectView.as_view(url='/phpmyadmin'),
+        name='phpmyadmin'
     ),
     # ### for overriding default 'accounts' urls from
     # django-registration

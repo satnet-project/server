@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import os
 import sys
 
+
 from secrets import auth, database, email
 
 # Django website for WebServices project.
@@ -76,7 +77,9 @@ MEDIA_URL = ''
 # Don't put anything in this directory yourself; store your static files
 # in services' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = os.path.join(
+    os.path.dirname(__file__), '..', 'public_html/static/'
+)
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -144,7 +147,7 @@ WSGI_APPLICATION = 'website.wsgi.application'
 # ### templates directories loading, relative to project's structure
 TEMPLATE_DIRS = (
     os.path.join(
-        os.path.dirname(__file__), '..', 'website', 'templates'
+        os.path.dirname(__file__), 'templates'
     ),
     os.path.join(
         os.path.dirname(__file__), '..', 'services', 'accounts', 'templates'
@@ -264,20 +267,29 @@ AUTHENTICATION_BACKENDS = (
     # `allauth` specific authentication methods, such as login by e-mail
     "allauth.account.auth_backends.AuthenticationBackend"
 )
+
 # ### django-allauth configuration:
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 4
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_LOGOUT_REDIRECT_URL = 'services.accounts.views.redirect_home'
 ACCOUNT_SESSION_REMEMBER = False
 ACCOUNT_SIGNUP_PASSWORD_VERIFICATION = True
 ACCOUNT_SIGNUP_FORM_CLASS = 'services.accounts.forms.RegistrationForm'
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USERNAME_MIN_LENGTH = 5
 ACCOUNT_USERNAME_REQUIRED = True
 EMAIL_CONFIRMATION_SIGNUP = True
-LOGIN_URL = '/accounts/login'
-LOGIN_REDIRECT_URL = '/accounts/login_ok/'
-LOGOUT_URL = '/accounts/logout'
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = False
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = '/'
+
+LOGIN_URL = 'services.accounts.views.redirect_login'
+LOGIN_REDIRECT_URL = 'services.accounts.views.redirect_home'
+LOGOUT_URL = 'services.accounts.views.redirect_home'
 CSRF_FAILURE_VIEW = 'services.accounts.views.csrf_failure_handler'
 
 # ### this parameter links __my__ UserProfile with the User from contrib.auth
@@ -303,4 +315,4 @@ EMAIL_USE_TLS = email.EMAIL_USE_TLS
 
 # https://github.com/dstufft/django-passwords/
 PASSWORD_MIN_LENGTH = 8
-PASSWORD_COMPLEXITY = { "UPPER":  1, "LOWER":  1, "DIGITS": 1 }
+PASSWORD_COMPLEXITY = {"UPPER":  1, "LOWER":  1, "DIGITS": 1}

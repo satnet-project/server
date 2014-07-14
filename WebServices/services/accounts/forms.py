@@ -125,7 +125,6 @@ class ProfileUpdateForm(forms.ModelForm):
     """Form for updating the profile of an existing user.
     """
     username = forms.CharField(widget=forms.HiddenInput)
-    #email = forms.CharField(label=_("Email address"))
 
     class Meta:
         """Model to be used from within this form."""

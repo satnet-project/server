@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import exceptions
+from django.core import urlresolvers
 from django.contrib.auth import models as auth_models
 from django.contrib.auth.decorators import login_required
 from django.contrib.sites.models import Site, RequestSite
@@ -31,14 +32,46 @@ from services.accounts import forms, models, utils
 logger = logging.getLogger(__name__)
 
 
+def csrf_failure_handler(request, reason=''):
+    """
+    Method that renders the HTML to be displayed whenever a CSRF exception is
+    raised.
+    """
+    logger.error('CSRF ERROR, reason = ' + str(reason))
+    return TemplateResponse(request, 'csrf_failure.html')
+
+
+def redirect_home(request):
+    """
+    Redirects user access to 'home', so in case a user is already logged in,
+    the system redirects that access to the post-login 'home' page.
+    """
+    logger.info('<redirect_home>')
+    if request.user.is_authenticated():
+        return redirect_login(request)
+    else:
+        return TemplateResponse(request, 'index.html')
+
+
+@login_required
+def redirect_login(request):
+    """
+    Redirects users based on their priviledges.
+    """
+    if request.user.is_staff:
+        return TemplateResponse(request, 'staff/staff_home.html')
+    else:
+        return TemplateResponse(request, 'users/users_home.html')
+
+
 class UserProfileView(UpdateView):
     """
     This class shows a view for users to edit the details of their profiles.
     """
     model = models.UserProfile
     form_class = forms.ProfileUpdateForm
-    template_name = "users/user_profile_form.html"
-    success_url = '/accounts/login_ok/'
+    template_name = 'users/user_profile_form.html'
+    success_url = urlresolvers.reverse_lazy(redirect_home)
 
     def get_context_data(self, **kwargs):
         """ Returns the context data dictionary for the template (overriden).
@@ -79,7 +112,6 @@ class PendingRegView(ListView):
     second step of the registration process, that takes place after a user has
     sent the registration request.
     """
-
     model = models.UserProfile
     template_name = 'staff/registration_requests.html'
     queryset = models.UserProfile.objects.\
@@ -248,38 +280,3 @@ class InactiveView(PendingRegView):
         'activate': activate_user,
         'delete': PendingRegView.delete_user,
     }
-    
-################################################################################
-# ### Standalone view handlers
-################################################################################
-
-
-def csrf_failure_handler(request, reason=""):
-    """
-    Method that renders the HTML to be displayed whenever a CSRF exception is
-    raised.
-    """
-    return TemplateResponse(request, 'csrf_failure.html')
-
-
-def redirect_home(request):
-    """
-    Redirects user access to 'home', so in case a user is already logged in,
-    the system redirects that access to the post-login 'home' page.
-    """
-    logger.info('<redirect_home>')
-    if request.user.is_authenticated():
-        return redirect_login(request)
-    else:
-        return TemplateResponse(request, 'index.html')
-
-
-@login_required
-def redirect_login(request):
-    """
-    Redirects users based on their priviledges.
-    """
-    if request.user.is_staff:
-        return TemplateResponse(request, 'staff/staff_home.html')
-    else:
-        return TemplateResponse(request, 'users/users_home.html')

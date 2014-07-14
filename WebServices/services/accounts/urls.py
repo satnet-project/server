@@ -34,6 +34,11 @@ urlpatterns = urls.patterns(
         name='pending'
     ),
     urls.url(
+        r'^inactive/services.accounts.views.redirect_login$',
+        views.redirect_login,
+        name='post-email-confirmation'
+    ),
+    urls.url(
         r'^blocked/$',
         decorators.login_required(views.BlockedRegView.as_view()),
         name='blocked'

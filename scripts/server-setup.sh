@@ -30,15 +30,53 @@ install_packages()
     apt-get update
     apt-get dist-upgrade
 
-    apt-get install apache2 phpmyadmin
-    apt-get install mysql-server libmysqlclient-dev
-    apt-get install python python-virtualenv python-pip python-dev python-mysqldb 
+    apt-get install apache2
+    apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
+    apt-get install mysql-server libmysqlclient-dev phpmyadmin
+    apt-get install python python-virtualenv python-pip python-dev
+    apt-get install python-mysqldb 
     apt-get install binutils libproj-dev gdal-bin
 
     apt-get clean
 
     pip install virtualenvwrapper
 
+}
+
+APACHE_2_CERTIFICATES_DIR='/etc/apache2/certificates'
+CERTIFICATE_NAME='marajota.calpoly.edu'
+KEY_NAME='marajota.calpoly.edu'
+
+# ### This function creates a new self signed certificate and key to be used by
+# the Apache2 server and installs them in the correct directory.
+create_self_signed_cert()
+{
+    # 1: Generate a Private Key
+    openssl genrsa -des3 -out s.key 1024
+    # 2: Generate a CSR (Certificate Signing Request) 
+    openssl req -new -key s.key -out s.csr
+    # 3: Remove Passphrase from Key 
+    cp s.key s.key.org
+    openssl rsa -in s.key.org -out s.key
+    # 4: Generating a Self-Signed Certificate 
+    openssl x509 -req -days 365 -in s.csr -signkey s.key -out s.crt
+    
+    # 5: Certificates installation
+    if [[ ! -d $APACHE_2_CERTIFICATES_DIR ]]
+    then
+        mkdir -p $APACHE_2_CERTIFICATES_DIR
+    fi
+    
+    mv -f s.crt "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME.crt"
+    mv -f s.key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME.key"
+}
+
+# ### This function configures the apache2 server.
+configure_apache()
+{
+    a2enmod gnutls
+    
+    service apache2 reload
 }
 
 configure_mysql()
@@ -69,6 +107,13 @@ delete_mysql_db()
 
     mysql -h localhost -u root -p < $__mysql_batch
 
+}
+
+configure_apache()
+{
+    a2ensite satnet
+    a2enmod ssl
+    /etc/init.d/apache2 restart
 }
 
 # ### Method that configures a Python virtual environment 
@@ -232,7 +277,7 @@ if [ $# -lt 1 ] ; then
     exit 0
 fi
 
-while getopts ":bdiv" opt; do
+while getopts ":bcdimv" opt; do
     case $opt in
         b)
             #Need to be root to install packages
@@ -243,6 +288,12 @@ while getopts ":bdiv" opt; do
             install_bower
             echo 'DONE'
             exit 1
+            ;;
+        c)
+            echo 'Creating self-signed certificates...'
+            create_self_signed_cert
+            echo 'DONE'
+            exit 1;
             ;;
         d)
             echo 'Deleting MYSQL Django databases...'

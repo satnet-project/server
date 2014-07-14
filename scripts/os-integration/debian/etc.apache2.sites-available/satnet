@@ -1,0 +1,26 @@
+<VirtualHost *:443>
+
+    ServerAdmin satnet.calpoly@gmail.com
+
+    Alias /favicon.ico /home/rtubio/repositories/satnet-release-1/WebServices/public_html/favicon.ico
+    Alias /static /home/rtubio/repositories/satnet-release-1/WebServices/public_html/static
+
+    GnuTLSEnable on
+    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT
+    GnuTLSCertificateFile /etc/apache2/certificates/marajota.calpoly.edu.crt
+    GnuTLSKeyFile /etc/apache2/certificates/marajota.calpoly.edu.key
+
+    WSGIScriptAlias / /home/rtubio/repositories/satnet-release-1/WebServices/website/wsgi.py
+    WSGIDaemonProcess satnet user=rtubio python-path=/home/rtubio/repositories/satnet-release-1/WebServices:/home/rtubio/repositories/satnet-release-1/WebServices/.venv/lib/python2.7/site-packages
+
+    <Directory /home/rtubio/repositories/satnet-release-1/WebServices/>
+        WSGIProcessGroup satnet
+        Order deny,allow
+        Allow from all
+    </Directory>
+
+    CustomLog /home/rtubio/repositories/satnet-release-1/WebServices/logs/access.log combined
+    CustomLog /home/rtubio/repositories/satnet-release-1/WebServices/logs/ssl_request.log "%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \"%r\" %b"
+    ErrorLog /home/rtubio/repositories/satnet-release-1/WebServices/logs/error.log
+
+</VirtualHost>
