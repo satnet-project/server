@@ -124,7 +124,8 @@ configure_root()
     mkdir -p public_html/static
     
     virtualenv .venv
-    pip install -r requirements.txt
+    source $venv_activate && echo 'VENV_ACTIVATED!!!!'
+    pip install -r "$project_path/scripts/requirements.txt"
 }
 
 # ### Method that configures a Python virtual environment 
@@ -243,7 +244,7 @@ configure_pinax_repository()
     django-admin.py startproject\
         --template=$pinax_template_url $satnet_web_services_dir
     cd $satnet_web_services_dir
-    sudo pip install -r requirements.txt
+    sudo pip install -r "$project_path/scripts/requirements.txt"
 
 }
 
@@ -277,7 +278,7 @@ django_db='satnet_db'
 project_path="$( cd "$( dirname "$0" )" && pwd )"
 project_path=$project_path"/.."
 manage_py="$project_path/WebServices/manage.py"
-venv='__v_env'
+venv='.venv'
 venv_activate="$project_path/$venv/bin/activate"
 
 ################################################################################

@@ -1,4 +1,6 @@
-# Django libraries
+########################
+## Django libraries
+########################
 django
 rpc4django
 django-jsonfield
@@ -12,16 +14,20 @@ django-leaflet
 django-extensions
 django-periodically
 django-selenium
-# Python libraries
+########################
+## Python libraries
+########################
 pyephem
 python-dateutil
 pytz
 eventlog
 mysql-python
 datadiff
-# Maybe?
-#twisted
-#txJSON-RPC
+twisted
+txJSON-RPC
+########################
+## Maybe?
+########################
 #selenium
 #six
 #unittest-data-provider
