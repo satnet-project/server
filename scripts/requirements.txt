@@ -4,7 +4,6 @@
 django
 rpc4django
 django-jsonfield
-django-registration
 django_countries
 django-passwords
 django-jquery
@@ -14,6 +13,7 @@ django-leaflet
 django-extensions
 django-periodically
 django-selenium
+django-allauth
 ########################
 ## Python libraries
 ########################
@@ -31,3 +31,7 @@ txJSON-RPC
 #selenium
 #six
 #unittest-data-provider
+########################
+## Not used anymore
+########################
+#django-registration

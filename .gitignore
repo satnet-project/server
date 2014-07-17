@@ -2,3 +2,4 @@
 *.pyc
 WebServices/__v_env/
 __v_env/
+.venv
