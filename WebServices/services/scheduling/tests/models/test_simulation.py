@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
@@ -22,7 +21,8 @@ from datetime import timedelta, datetime
 import logging
 from pytz import utc as pytz_utc
 
-from services.common import testing as db_tools, simulation
+from services.common import testing as db_tools
+from services.scheduling.models import tle
 
 
 class TestSimulation(TestCase):
@@ -48,7 +48,7 @@ class TestSimulation(TestCase):
         db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
-        self.__simulator = simulation.OrbitalSimulator(
+        self.__simulator = tle.OrbitalSimulator(
             reload_tle_database=True
         )
 

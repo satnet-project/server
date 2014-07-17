@@ -25,10 +25,11 @@ import pytz
 
 from django import test
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import testing as db_tools, misc
 from services.configuration.jrpc import serialization as jrpc_serial
 from services.configuration.jrpc import rules as jrpc_rules_if
 from services.configuration.models import rules, availability
+from services.scheduling.models import tle
 
 
 class TestAvailability(test.TestCase):
@@ -54,7 +55,7 @@ class TestAvailability(test.TestCase):
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
 
-    def add_slots_no_rules(self):
+    def test_0_add_slots_no_rules(self):
         """
         This method tests the addition of new availability slots to the
         AvailabilitySlots table in the database, when no rule has still been
@@ -178,7 +179,7 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@2'
@@ -214,7 +215,7 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@3'
@@ -250,7 +251,7 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@4'
@@ -285,7 +286,7 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@5'
@@ -320,7 +321,7 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@6'
@@ -443,7 +444,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES@1'
@@ -476,7 +477,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(x_slots, list_name='XSLOTS@2')
             misc.print_list(a_slots, list_name='AVAILABLE@2')

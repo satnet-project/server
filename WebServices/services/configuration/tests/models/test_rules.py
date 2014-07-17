@@ -20,9 +20,10 @@ import datetime
 from django import test
 import logging
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import testing as db_tools, misc
 from services.configuration.models import availability, rules
 from services.configuration.jrpc import rules as jrpc_rules_if
+from services.scheduling.models import tle
 
 
 class TestRules(test.TestCase):
@@ -93,7 +94,7 @@ class TestRules(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(actual, list_name='Generated Slots')
 
@@ -130,7 +131,7 @@ class TestRules(test.TestCase):
             print 'UTC now = ' + str(now)
             print 'UTC today = ' + str(misc.get_today_utc())
             print '$ window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(rules.AvailabilityRule.objects.all())
             misc.print_list(availability.AvailabilitySlot.objects.all())

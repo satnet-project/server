@@ -21,10 +21,11 @@ from django import test
 import logging
 import pytz
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import testing as db_tools, misc
 from services.configuration.models import rules
 from services.configuration.jrpc import rules as jrpc_rules_if
 from services.configuration.models import availability
+from services.scheduling.models import tle
 
 
 class TestMisc(test.TestCase):
@@ -146,7 +147,7 @@ class TestMisc(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  list_name='RULES'

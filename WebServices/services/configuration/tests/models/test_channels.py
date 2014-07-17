@@ -13,18 +13,17 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 from django import test
 import logging
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import testing as db_tools, misc
 from services.configuration.jrpc import serialization as jrpc_keys
 from services.configuration.jrpc import rules as jrpc_rules
 from services.configuration.models import rules
-
+from services.scheduling.models import tle
 
 class TestModels(test.TestCase):
     """
@@ -135,7 +134,7 @@ class TestModels(test.TestCase):
         if self.__verbose_testing:
             print '>>> today_utc = ' + str(misc.get_today_utc())
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
                 rules.AvailabilityRule.objects.all(), list_name='RULES'

@@ -21,8 +21,9 @@ from django.db.models import Q
 import datetime
 import logging
 
-from services.common import misc, simulation
+from services.common import misc
 from services.configuration.models import availability, channels, compatibility
+from services.scheduling.models import tle
 
 logger = logging.getLogger('scheduling')
 
@@ -100,7 +101,7 @@ class OperationalSlotsManager(models.Manager):
         this solution.
         """
         if self._simulator is None:
-            self._simulator = simulation.OrbitalSimulator(
+            self._simulator = tle.OrbitalSimulator(
                 reload_tle_database=True
             )
         return self._simulator
@@ -350,7 +351,7 @@ class OperationalSlotsManager(models.Manager):
         :param instance The instance of the object itself.
         """
         gs_ch = instance.groundstation_channel
-        start, end = simulation.OrbitalSimulator.get_simulation_window()
+        start, end = tle.OrbitalSimulator.get_simulation_window()
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
                 groundstation_channels=gs_ch
@@ -402,7 +403,7 @@ class OperationalSlotsManager(models.Manager):
         :param end: The end for the update process.
         """
         if start is None or end is None:
-            start, end = simulation.OrbitalSimulator.get_simulation_window()
+            start, end = tle.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '
@@ -439,7 +440,7 @@ class OperationalSlotsManager(models.Manager):
         simulation window.
         :param duration: Time length for which the slots will be populated.
         """
-        s_start, s_end = simulation.OrbitalSimulator.get_simulation_window()
+        s_start, s_end = tle.OrbitalSimulator.get_simulation_window()
         start = s_end
         end = start + duration
 

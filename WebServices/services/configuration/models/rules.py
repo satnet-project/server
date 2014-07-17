@@ -13,13 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.scheduling.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import datetime, timedelta
 from django.db import models
 import pytz
 
-from services.common import simulation, slots
+from services.common import slots
 from services.configuration.models import channels
 
 # Definition of the availability operation through rules over existing
@@ -101,7 +103,7 @@ class AvailabilityRuleManager(models.Manager):
         remove_slots = []
 
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
             r_list = c.objects\
@@ -134,7 +136,7 @@ class AvailabilityRuleManager(models.Manager):
         remove_slots = []
 
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
             r_list = c.objects\
@@ -166,7 +168,7 @@ class AvailabilityRuleManager(models.Manager):
         the initial and final datetime objects.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         i_date = pytz.utc\
             .localize(datetime
@@ -191,7 +193,7 @@ class AvailabilityRuleManager(models.Manager):
         starts and ends in the given dates, during the specified interval.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         r = AvailabilityRuleOnce.objects.get(
             availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
@@ -218,7 +220,7 @@ class AvailabilityRuleManager(models.Manager):
         starts and ends in the given dates, during the specified interval.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         first = True
         r = AvailabilityRuleDaily.objects\
@@ -272,7 +274,7 @@ class AvailabilityRuleManager(models.Manager):
         :return: Initial slots array, initial datetime and final datetime.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         i_date, f_date = AvailabilityRuleManager.is_applicable(
             rule_values, interval
@@ -302,7 +304,7 @@ class AvailabilityRuleManager(models.Manager):
                         generated.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            interval = tle.OrbitalSimulator.get_simulation_window()
 
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(

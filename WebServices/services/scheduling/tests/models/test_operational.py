@@ -15,19 +15,18 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
-
 import logging
-import datadiff
 import datetime
 
-from services.common import testing as db_tools, misc, simulation
+from django import test
+import datadiff
+from services.common import testing as db_tools, misc
 from services.configuration import signals
 from services.configuration.jrpc import channels as jrpc_channels_if
 from services.configuration.jrpc import rules as jrpc_rules_if
 from services.configuration.jrpc import serialization as jrpc_keys
 from services.configuration.models import rules, availability, channels
-from services.scheduling.models import operational
+from services.scheduling.models import operational, tle
 
 
 class JRPCRulesTest(test.TestCase):
@@ -181,7 +180,7 @@ class JRPCRulesTest(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
+                tle.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(rules.AvailabilityRule.objects.all())
             misc.print_list(availability.AvailabilitySlot.objects.all())
