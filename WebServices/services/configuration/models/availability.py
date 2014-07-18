@@ -17,9 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 
-from services.common import misc
+from services.common import misc, simulation
 from services.configuration.models import rules, channels
-from services.scheduling.models import tle
 
 
 class AvailabilitySlotsManager(models.Manager):
@@ -56,7 +55,7 @@ class AvailabilitySlotsManager(models.Manager):
         defined applicability slot.
         """
         if start is None or end is None:
-            start, end = tle.OrbitalSimulator.get_simulation_window()
+            start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '
@@ -138,7 +137,7 @@ class AvailabilitySlotsManager(models.Manager):
         :param end: The ending date for the applicability of this slot.
         """
         if start is None or end is None:
-            start, end = tle.OrbitalSimulator.get_simulation_window()
+            start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '

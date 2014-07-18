@@ -132,3 +132,9 @@ def connect_compatibility_2_operational():
         operational.OperationalSlotsManager.compatibility_sc_channel_deleted,
         sender=compatibility.ChannelCompatibility
     )
+
+connect_availability_2_operational()
+connect_channels_2_compatibility()
+connect_compatibility_2_operational()
+connect_rules_2_availability()
+connect_segments_2_booking_tle()

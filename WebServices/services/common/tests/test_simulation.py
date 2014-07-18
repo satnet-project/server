@@ -21,9 +21,8 @@ from datetime import timedelta, datetime
 import logging
 from pytz import utc as pytz_utc
 
-from services.common import testing as db_tools
+from services.common import testing as db_tools, simulation
 from services.scheduling.models import tle
-
 
 class TestSimulation(TestCase):
     """
@@ -48,9 +47,8 @@ class TestSimulation(TestCase):
         db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
-        self.__simulator = tle.OrbitalSimulator(
-            reload_tle_database=True
-        )
+        self.__simulator = simulation.OrbitalSimulator()
+        db_tools.init_tles_database()
 
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__test_user_profile, identifier=self.__gs_1_id,
@@ -82,7 +80,9 @@ class TestSimulation(TestCase):
             print '>>> test_calculate_pass_slot:'
 
         self.__simulator.set_groundstation(self.__gs_1)
-        self.__simulator.set_spacecraft(self.__sc_1)
+        self.__simulator.set_spacecraft(tle.TwoLineElement.objects.get(
+            identifier=self.__sc_1_tle_id
+        ))
 
         if self.__verbose_testing:
             print self.__simulator.__unicode__()

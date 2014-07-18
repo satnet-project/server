@@ -21,7 +21,7 @@ from django.db.models import Q
 import datetime
 import logging
 
-from services.common import misc
+from services.common import misc, simulation
 from services.configuration.models import availability, channels, compatibility
 from services.scheduling.models import tle
 
@@ -101,10 +101,23 @@ class OperationalSlotsManager(models.Manager):
         this solution.
         """
         if self._simulator is None:
-            self._simulator = tle.OrbitalSimulator(
-                reload_tle_database=True
-            )
+
+            self._simulator = simulation.OrbitalSimulator()
+            tle.TwoLineElementsManager.load_tles()
+
         return self._simulator
+
+    def set_spacecraft(self, spacecraft):
+        """
+        Sets the Spacecraft for which the embeded simulator will calculate
+        the OperationalSlot set.
+        :param spacecraft: The Spacecraft object as read from the Spacecraft
+        database.
+        """
+        simulator = self.get_simulator()
+        simulator.set_spacecraft(
+            tle.TwoLineElement.objects.get(identifier=spacecraft.tle_id)
+        )
 
     def create(
         self, groundstation_channel, spacecraft_channel,
@@ -128,7 +141,8 @@ class OperationalSlotsManager(models.Manager):
             ),
             groundstation_channel=groundstation_channel,
             spacecraft_channel=spacecraft_channel,
-            start=start, end=end,
+            start=start,
+            end=end,
             availability_slot=availability_slot
         )
 
@@ -309,7 +323,7 @@ class OperationalSlotsManager(models.Manager):
 
         for sc_ch_i in compatible_channels:
 
-            OperationalSlot.objects.get_simulator().set_spacecraft(
+            OperationalSlot.objects.set_spacecraft(
                 sc_ch_i.spacecraft_set.all()[0]
             )
 
@@ -351,13 +365,13 @@ class OperationalSlotsManager(models.Manager):
         :param instance The instance of the object itself.
         """
         gs_ch = instance.groundstation_channel
-        start, end = tle.OrbitalSimulator.get_simulation_window()
+        start, end = simulation.OrbitalSimulator.get_simulation_window()
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
                 groundstation_channels=gs_ch
         ):
 
-            OperationalSlot.objects.get_simulator().set_spacecraft(
+            OperationalSlot.objects.set_spacecraft(
                 comp_i.spacecraft_channel.spacecraft_set.all()[0]
             )
             OperationalSlot.objects.get_simulator().set_groundstation(
@@ -403,14 +417,14 @@ class OperationalSlotsManager(models.Manager):
         :param end: The end for the update process.
         """
         if start is None or end is None:
-            start, end = tle.OrbitalSimulator.get_simulation_window()
+            start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
                 '<start=' + str(start) + '> '
                 + 'should occurr sooner than <end=' + str(end) + '>'
             )
 
-        OperationalSlot.objects.get_simulator().set_spacecraft(
+        OperationalSlot.objects.set_spacecraft(
             spacecraft_channel.spacecraft_set.all()[0]
         )
 
@@ -440,7 +454,7 @@ class OperationalSlotsManager(models.Manager):
         simulation window.
         :param duration: Time length for which the slots will be populated.
         """
-        s_start, s_end = tle.OrbitalSimulator.get_simulation_window()
+        s_start, s_end = simulation.OrbitalSimulator.get_simulation_window()
         start = s_end
         end = start + duration
 

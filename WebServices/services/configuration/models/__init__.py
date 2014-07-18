@@ -14,12 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-from services.configuration import signals
-
-# ### Simple signal connection
-signals.connect_availability_2_operational()
-signals.connect_channels_2_compatibility()
-signals.connect_compatibility_2_operational()
-signals.connect_rules_2_availability()
-signals.connect_segments_2_booking_tle()
