@@ -24,7 +24,6 @@ eventlog
 mysql-python
 datadiff
 twisted
-txJSON-RPC
 ########################
 ## Maybe?
 ########################
@@ -35,3 +34,4 @@ txJSON-RPC
 ## Not used anymore
 ########################
 #django-registration
+#txJSON-RPC

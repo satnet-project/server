@@ -86,6 +86,10 @@ configure_mysql()
         > $__mysql_batch
     #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
     #    > $__mysql_batch
+    # To run unittest
+    # echo "GRANT ALL PRIVILEGES ON *.* TO '$django_user'@'localhost';" \
+    #>> $__mysql_batch
+
     echo "CREATE DATABASE $django_db;" \
         >> $__mysql_batch
     echo "GRANT all privileges ON $django_db.* TO '$django_user'@'localhost';" \
