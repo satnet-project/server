@@ -24,6 +24,7 @@ eventlog
 mysql-python
 datadiff
 twisted
+pyOpenSSL
 ########################
 ## Maybe?
 ########################

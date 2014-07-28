@@ -36,6 +36,7 @@ install_packages()
     apt-get install python python-virtualenv python-pip python-dev
     apt-get install python-mysqldb 
     apt-get install binutils libproj-dev gdal-bin
+    sudo apt-get install build-essential libssl-dev libffi-dev
 
     apt-get clean
 
