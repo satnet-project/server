@@ -36,7 +36,7 @@ install_packages()
     apt-get install postgresql-server-all
     apt-get install python python-virtualenv python-pip python-dev
     apt-get install binutils libproj-dev gdal-bin
-    sudo apt-get install build-essential libssl-dev libffi-dev
+    apt-get install build-essential libssl-dev libffi-dev
 
     apt-get clean
 
@@ -79,7 +79,6 @@ configure_apache()
     service apache2 reload
 }
 
-<<<<<<< HEAD
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
 __pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
@@ -87,30 +86,6 @@ __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
 django_db='satnet_db'
 django_user='satnet_django'
 django_user_password='_805Django'
-=======
-configure_mysql()
-{
-
-    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-        > $__mysql_batch
-    #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-    #    > $__mysql_batch
-    # To run unittest
-    # echo "GRANT ALL PRIVILEGES ON *.* TO '$django_user'@'localhost';" \
-    #>> $__mysql_batch
-
-    echo "CREATE DATABASE $django_db;" \
-        >> $__mysql_batch
-    echo "GRANT all privileges ON $django_db.* TO '$django_user'@'localhost';" \
-        >> $__mysql_batch
-
-    mysql -h localhost -u root -p < $__mysql_batch
-
-    python $manage_py syncdb
-
-}
->>>>>>> 38b5a8d30ca3aa7bf3154b030266ecea2ac5eb5d
-
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
 {
