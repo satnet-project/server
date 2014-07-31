@@ -123,6 +123,15 @@ class Spacecraft(models.Model):
         if changes:
             self.save()
 
+    def __unicode__(self):
+        """
+        Prints in a unicode string the most remarkable data for this
+        spacecraft object.
+        """
+        return ' >>> SC, id = ' + str(self.identifier) + ', tle_id = ' + str(
+            self.tle_id
+        )
+
 
 class GroundStationsManager(models.Manager):
     """
@@ -273,3 +282,12 @@ class GroundStation(models.Model):
             self.altitude = gis.get_altitude(self.latitude, self.longitude)[0]
         if changes:
             self.save()
+
+    def __unicode__(self):
+        """
+        Prints in a unicode string the most remarkable data for this
+        spacecraft object.
+        """
+        return ' >>> GS, id = ' + str(self.identifier) + ', callsign = ' + str(
+            self.callsign
+        )

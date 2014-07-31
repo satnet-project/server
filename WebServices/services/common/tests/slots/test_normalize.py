@@ -59,9 +59,9 @@ class NormalizeSlotsTest(test.TestCase):
         actual_s = slots.normalize_slots([s, t])
 
         if self.__verbose_testing:
-            misc.print_list([s, t], list_name='RAW slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([s, t], name='RAW slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
@@ -83,9 +83,9 @@ class NormalizeSlotsTest(test.TestCase):
         actual_s = slots.normalize_slots([s, t])
 
         if self.__verbose_testing:
-            misc.print_list([s, t], list_name='RAW slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([s, t], name='RAW slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
@@ -107,9 +107,9 @@ class NormalizeSlotsTest(test.TestCase):
         actual_s = slots.normalize_slots([s, t])
 
         if self.__verbose_testing:
-            misc.print_list([s, t], list_name='RAW slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([s, t], name='RAW slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
@@ -141,9 +141,9 @@ class NormalizeSlotsTest(test.TestCase):
         actual_s = slots.normalize_slots([s, t, u, v, w, x])
 
         if self.__verbose_testing:
-            misc.print_list([s, t, u, v, w, x], list_name='RAW slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([s, t, u, v, w, x], name='RAW slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'CASE COMPLEX#1: Wrong result!'
@@ -171,9 +171,9 @@ class NormalizeSlotsTest(test.TestCase):
         actual_s = slots.normalize_slots([s, t, u, v])
 
         if self.__verbose_testing:
-            misc.print_list([s, t, u, v], list_name='RAW slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([s, t, u, v], name='RAW slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'CASE COMPLEX#1: Wrong result!'

@@ -32,9 +32,9 @@ install_packages()
 
     apt-get install apache2
     apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
-    apt-get install mysql-server libmysqlclient-dev phpmyadmin
+    apt-get install postgresql postgresql-contrib phppgadmin
+    apt-get install postgresql-server-all
     apt-get install python python-virtualenv python-pip python-dev
-    apt-get install python-mysqldb 
     apt-get install binutils libproj-dev gdal-bin
 
     apt-get clean
@@ -75,45 +75,51 @@ create_self_signed_cert()
 configure_apache()
 {
     a2enmod gnutls
-    
     service apache2 reload
 }
 
-configure_mysql()
+__pgsql_batch='/tmp/__pgsql_batch'
+__pgsql_user='postgres'
+__pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
+__phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
+django_db='satnet_db'
+django_user='satnet_django'
+django_user_password='_805Django'
+
+# ### Configures a PostgreSQL server with a database for the SATNET system.
+configure_postgresql()
 {
+    
+    # ### Uncomment the following lines if you want to reset default user's
+    # password.
+    #echo 'User <postgres> grants access through <phppgadmin>'
+    #echo 'Configure password for user <postgres>.'
+    #echo "\password postgres" > $__pgsql_batch
+    #sudo -u postgres psql -f $__pgsql_batch
 
-    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-        > $__mysql_batch
-    #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-    #    > $__mysql_batch
-    echo "CREATE DATABASE $django_db;" \
-        >> $__mysql_batch
-    echo "GRANT all privileges ON $django_db.* TO '$django_user'@'localhost';" \
-        >> $__mysql_batch
-
-    mysql -h localhost -u root -p < $__mysql_batch
-
-    python $manage_py syncdb
+    sudo -u postgres createdb $django_db
+    echo "User <$django_user> is about to be created, insert password..."
+    sudo -u postgres createuser -r -l -S -E -P -d $django_user
+    
+    #echo "CREATE USER $django_user PASSWORD $django_user_password" > $__pgsql_batch
+    echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_user;" > $__pgsql_batch
+    sudo -u postgres psql -f $__pgsql_batch
+    
+    # ### Extra login security can be disabled for local access only by
+    # uncommenting the following <sed> command. This permits the access to
+    # <phppgadmin> by using <root> or <postgres>.
+    # If this level of security is necessary and, thus, this mechanism has to
+    # be enabled again, an additional user for access through <phppgadmin> has
+    # to be created and configured.
+    #sed -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" -i $__phppgadmin_config_file
 
 }
 
-delete_mysql_db()
+# ### Deletes all the database configuration required for the SATNET system.
+remove_postgresql()
 {
-
-    echo "DROP USER '$django_user'@'localhost';" \
-        > $__mysql_batch
-    echo "DROP DATABASE IF EXISTS $django_db;" \
-        >> $__mysql_batch
-
-    mysql -h localhost -u root -p < $__mysql_batch
-
-}
-
-configure_apache()
-{
-    a2ensite satnet
-    a2enmod ssl
-    /etc/init.d/apache2 restart
+    sudo -u postgres dropdb $django_db
+    sudo -u postgres dropuser $django_user
 }
 
 # ### Method that configures a given root with the virtualenvirment required,
@@ -158,6 +164,7 @@ create_virtualenv()
     pip install python-dateutil
     pip install django-extensions
     pip install pyephem
+    pip install psycopg2
     # ### testing packages
     pip install datadiff
     pip install django-periodically
@@ -177,17 +184,25 @@ pip_upgrade_packages()
 }
 
 
+__crontab_conf='/etc/cron.d/satnet'
+__crontab_user='root'
+__crontab_shell='/bin/bash'
+__crontab_path='/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
+
 # ### This is the function utilized for adding the crontab task required by
 # django-periodically for executing periodic maintenance tasks of the web
 # applications
-add_crontab_django_periodically()
+configure_crontab()
 {
-    echo 'Adding crontab task for django-periodically...'
-    crontab_task=$( "*/5 * * * * python $MANAGE_PY runtasks" )
-    echo '#!/bin/sh' > $__crontab_conf
-    echo "source $venv_activate" >> $__crontab_conf
-    echo "python $MANAGE_PY runtasks" >> $__crontab_conf
-    chmod +x $__crontab_conf
+    __django_runtasks="python $webservices_manage_py runtasks"
+    __crontab_command="source $webservices_venv_activate && $__django_runtasks"
+    __crontab_task="30 23 * * * $__crontab_user $__crontab_command"
+
+    echo 'Adding crontab task for django-periodically...' > $__crontab_conf
+    echo "SHELL=$__crontab_shell" >> $__crontab_conf
+    echo "PATH=$__crontab_path" >> $__crontab_conf
+    echo "$__crontab_task" >> $__crontab_conf
+    #chmod +x $__crontab_conf
 }
 
 node_js_root_dir='/opt'
@@ -255,8 +270,9 @@ usage() {
     echo "Please, use ONLY ONE ARGUMENT at a time:"
     echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
     echo "Usage: $0 [-c] #Create and install self-signed certificates" 
-    echo "Usage: $0 [-m] #Configures Django database" 
-    echo "Usage: $0 [-d] #Delete Django databases" 
+    echo "Usage: $0 [-p] #Configures PostgreSQL" 
+    echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET." 
+    echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
     echo "Usage: $0 [-i] #Install required packages <root>" 
     echo "Usage: $0 [-v] #Configure virtualenv" 
 
@@ -267,35 +283,26 @@ usage() {
 
 ################################################################################
 # ### Main variables and parameters
-
-__mysql_batch='/tmp/__mysql_batch'
-__crontab_conf='/etc/cron.daily/satnet_periodically'
-
-django_user='satnet_django'
-django_user_password='_805Django'
-django_db='satnet_db'
-
 project_path="$( cd "$( dirname "$0" )" && pwd )"
-project_path=$project_path"/.."
-manage_py="$project_path/WebServices/manage.py"
-venv='.venv'
-venv_activate="$project_path/$venv/bin/activate"
+webservices_dir="$project_path/WebServices"
+webservices_venv_dir="$webservices_dir/.venv"
+webservices_venv_activate="$webservices_venv_dir/bin/activate"
+webservices_manage_py="$webservices_dir/manage.py"
+project_path="$project_path/.."
 
 ################################################################################
 # ### Main execution loop
+[[ $( whoami ) == 'root' ]] || \
+    { echo 'Need to be <root>, exiting...'; exit -1; }
 
 if [ $# -lt 1 ] ; then
     usage
     exit 0
 fi
 
-while getopts ":bcdimv" opt; do
+while getopts ":bciprov" opt; do
     case $opt in
         b)
-            #Need to be root to install packages
-            [[ $( whoami ) == 'root' ]] || \
-                { echo 'Need to be <root>, exiting...'; exit -1; }
-
             echo 'Installing Bower and Node.js...'
             install_bower
             echo 'DONE'
@@ -307,17 +314,7 @@ while getopts ":bcdimv" opt; do
             echo 'DONE'
             exit 1;
             ;;
-        d)
-            echo 'Deleting MYSQL Django databases...'
-            delete_mysql_db
-            echo 'DONE'
-            exit 1;
-            ;;
         i)
-            #Need to be root to install packages
-            [[ $( whoami ) == 'root' ]] || \
-                { echo 'Need to be <root>, exiting...'; exit -1; }
-
             echo 'Installing required packages...'
             echo 'This process is not unattended, user interaction is required.'
             echo 'Press any key to continue...'
@@ -325,10 +322,21 @@ while getopts ":bcdimv" opt; do
             install_packages
             echo 'DONE'
             ;;
-         m)
-            echo 'Configuring MySQL...'
-            configure_mysql
-            add_crontab_django_periodically
+        p)
+            echo 'Configuring PostgreSQL...'
+            configure_postgresql
+            echo 'DONE'
+            exit 1
+            ;;
+        r)
+            echo 'Removing PostgreSQL...'
+            remove_postgresql
+            echo 'DONE'
+            exit 1;
+            ;;
+        o)
+            echo 'Configuring Crontab...'
+            configure_crontab
             echo 'DONE'
             exit 1
             ;;
@@ -342,7 +350,7 @@ while getopts ":bcdimv" opt; do
             usage
             ;;
     esac
-    
+
     shift $((OPTIND-1))
 
 done

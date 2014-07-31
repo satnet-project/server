@@ -36,12 +36,12 @@ DATE_END = 'date_end'
 STATE = 'slot_state'
 
 # Possible states for the slots.
-STATE_FREE = 'FREE'
-STATE_SELECTED = 'SELECTED'
-STATE_RESERVED = 'RESERVED'
-STATE_DENIED = 'DENIED'
-STATE_CANCELED = 'CANCELED'
-STATE_REMOVED = 'REMOVED'
+STATE_FREE = unicode('FREE')
+STATE_SELECTED = unicode('SELECTED')
+STATE_RESERVED = unicode('RESERVED')
+STATE_DENIED = unicode('DENIED')
+STATE_CANCELED = unicode('CANCELED')
+STATE_REMOVED = unicode('REMOVED')
 
 
 class OperationalSlotsManager(models.Manager):
@@ -365,7 +365,7 @@ class OperationalSlotsManager(models.Manager):
         :param instance The instance of the object itself.
         """
         gs_ch = instance.groundstation_channel
-        start, end = simulation.OrbitalSimulator.get_simulation_window()
+        #start, end = simulation.OrbitalSimulator.get_simulation_window()
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
                 groundstation_channels=gs_ch
@@ -378,14 +378,16 @@ class OperationalSlotsManager(models.Manager):
                 gs_ch.groundstation_set.all()[0]
             )
 
-            t_slot = availability.AvailabilitySlotsManager.truncate(
-                instance, start=start, end=end
-            )
-            if t_slot is None:
-                continue
+            #t_slot = availability.AvailabilitySlotsManager.truncate(
+            #    instance, start=start, end=end
+            #)
+            #if t_slot is None:
+            #    continue
 
-            operational_s = OperationalSlot.objects.get_simulator()\
-                .calculate_passes([t_slot])
+            operational_s = OperationalSlot.objects\
+                .get_simulator().calculate_passes([
+                    (instance.start, instance.end, instance.identifier)
+                ])
 
             OperationalSlot.objects.create_list(
                 gs_ch, comp_i.spacecraft_channel, operational_s
@@ -581,8 +583,10 @@ class OperationalSlot(models.Model):
     # the related rows in this table.
     availability_slot = models.ForeignKey(
         availability.AvailabilitySlot,
-        verbose_name='Availability slot that generate this operational slot',
-        blank=True, null=True, on_delete=models.SET_NULL
+        verbose_name='Availability slot that generates this OperationalSlot',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL
     )
 
     def change_state(self, new, notify_sc=True, notify_gs=True):

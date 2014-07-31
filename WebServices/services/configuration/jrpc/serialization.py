@@ -153,18 +153,18 @@ def serialize_gs_channel_configuration(channel):
     return {
         CH_ID_K: channel.identifier,
         BAND_K: channel.band.get_band_name(),
-        MODULATIONS_K: [
-            obj.modulation for obj in channel.modulations.all()
-        ],
-        POLARIZATIONS_K: [
-            obj.polarization for obj in channel.polarizations.all()
-        ],
-        BITRATES_K: [
-            obj.bitrate for obj in channel.bitrates.all()
-        ],
-        BANDWIDTHS_K: [
-            obj.bandwidth for obj in channel.bandwidths.all()
-        ]
+        MODULATIONS_K: sorted(
+            [obj.modulation for obj in channel.modulations.all()]
+        ),
+        POLARIZATIONS_K: sorted(
+            [obj.polarization for obj in channel.polarizations.all()]
+        ),
+        BITRATES_K: sorted(
+            [obj.bitrate for obj in channel.bitrates.all()]
+        ),
+        BANDWIDTHS_K: sorted(
+            [obj.bandwidth for obj in channel.bandwidths.all()]
+        )
     }
 
 

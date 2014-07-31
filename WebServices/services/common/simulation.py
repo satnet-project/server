@@ -142,8 +142,39 @@ class OrbitalSimulator(object):
         return ephem.readtle(str(l0), str(l1), str(l2))
 
     @staticmethod
-    def get_simulation_window():
+    def get_update_duration():
+        """Update window duration.
+        This method returns the number of days for which the slots should be
+        populated in the future.
+        :return: Number of days as a datetime.timedelta object.
         """
+        return datetime.timedelta(days=1)
+
+    @staticmethod
+    def get_update_window():
+        """Population window slot.
+        Static method that returns the time window for which the slots should
+        be populated. Initially the slots should be populated from the end of
+        the simulation window to N days after.
+        :return: 2-tuple object with the start and the end of the window.
+        """
+        s_window = OrbitalSimulator.get_simulation_window()
+        return (
+            s_window[1],
+            s_window[1] + OrbitalSimulator.get_update_duration()
+        )
+
+    @staticmethod
+    def get_window_duration():
+        """Simulation window duration.
+        Static method that returns the duration of the window for the
+        Simulation calculations of the slots.
+        """
+        return datetime.timedelta(days=3)
+
+    @staticmethod
+    def get_simulation_window():
+        """Simulation window slot.
         Static method that returns the current 'in-use' simulation window,
         this is, the start and end datetime objects for the simulation of the
         slots that is currently being used.
@@ -157,14 +188,6 @@ class OrbitalSimulator(object):
             + OrbitalSimulator.get_window_duration()\
             - datetime.timedelta(days=1)
         return start, end
-
-    @staticmethod
-    def get_window_duration():
-        """
-        Static method that returns the duration of the window for the
-        Simulation calculations of the slots.
-        """
-        return datetime.timedelta(days=3)
 
     def calculate_passes(self, availability_slots):
         """
@@ -203,10 +226,7 @@ class OrbitalSimulator(object):
         defined horizon.
         """
         if self._test_mode:
-            logger.warning(
-                "Simulator is in TESTING mode, returns the slots that are"
-                "given as <AvailabilitySlot>'s to it."
-            )
+            logger.warning('Simulator is in TESTING mode.')
             return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []

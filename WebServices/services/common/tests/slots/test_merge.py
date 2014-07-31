@@ -58,10 +58,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
@@ -83,10 +83,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
@@ -108,10 +108,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
@@ -133,10 +133,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE D: Wrong result!')
 
@@ -158,10 +158,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE E: Wrong result!')
 
@@ -182,10 +182,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(expected_s, actual_s, 'CASE F: Wrong result!')
 
@@ -211,10 +211,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p, q, r, s], [])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list([], list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list([], name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'CASE NONE M: Wrong result!'
@@ -244,10 +244,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p, q, r, s], [m])
 
         if self.__verbose_testing:
-            misc.print_list(p, list_name='(+) slots')
-            misc.print_list(m, list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list(p, name='(+) slots')
+            misc.print_list(m, name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'CASE MULTIPLE: Wrong result!'
@@ -281,10 +281,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p, q, r, s], [m, n])
 
         if self.__verbose_testing:
-            misc.print_list([p, q, r, s], list_name='(+) slots')
-            misc.print_list([m, n], list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([p, q, r, s], name='(+) slots')
+            misc.print_list([m, n], name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'COMPLEX CASE #1: Wrong result!'
@@ -315,10 +315,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p, q, r, s], [m])
 
         if self.__verbose_testing:
-            misc.print_list([p, q, r, s], list_name='(+) slots')
-            misc.print_list([m], list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([p, q, r, s], name='(+) slots')
+            misc.print_list([m], name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'COMPLEX CASE #2: Wrong result!'
@@ -359,10 +359,10 @@ class MergeSlotsTest(test.TestCase):
         actual_s = slots.merge_slots([p, q, r, s, t, u, v], [m, n])
 
         if self.__verbose_testing:
-            misc.print_list([p, q, r, s], list_name='(+) slots')
-            misc.print_list([m, n], list_name='(-) slots')
-            misc.print_list(actual_s, list_name='(A) slots')
-            misc.print_list(expected_s, list_name='(EXPECTED) slots')
+            misc.print_list([p, q, r, s], name='(+) slots')
+            misc.print_list([m, n], name='(-) slots')
+            misc.print_list(actual_s, name='(A) slots')
+            misc.print_list(expected_s, name='(EXPECTED) slots')
 
         self.assertItemsEqual(
             expected_s, actual_s, 'COMPLEX CASE #1: Wrong result!'

@@ -15,15 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django import dispatch
 from django.contrib.auth import models as auth_models
 from django.core import exceptions
 
-from allauth.account import models, signals
+from allauth.account import signals as allauth_signals
 import logging
 
 logger = logging.getLogger('accounts')
 
 
+@dispatch.receiver(allauth_signals.user_signed_up)
 def user_signed_up_receiver(request, user, **kwargs):
     """User signed up callback.
     This method overrides the default behavior for handling the sign up of a
@@ -38,6 +40,7 @@ def user_signed_up_receiver(request, user, **kwargs):
     )
 
 
+@dispatch.receiver(allauth_signals.email_confirmed)
 def email_confirmed_receiver(email_address, **kwargs):
     """Email confirmed callback.
     This method overrides the default behavior for handling the sign up of a
@@ -60,20 +63,7 @@ def email_confirmed_receiver(email_address, **kwargs):
     except exceptions.ObjectDoesNotExist:
 
         logger.warning(
-            'Confirmed email = <' + str(email_address) + '> does not exist in'
-            'the database.'
+            'Confirmed email = <' + str(
+                email_address
+            ) + '> does not exist in the database.'
         )
-
-
-def connect_user_2_accounts():
-    """Callbacks connection function.
-    Simple function that connects the callbacks from the allauth signals to
-    the receiver for the accounts application.
-    """
-    signals.user_signed_up.connect(
-        user_signed_up_receiver,
-    )
-    signals.email_confirmed.connect(
-        email_confirmed_receiver,
-        sender=models.EmailConfirmation
-    )

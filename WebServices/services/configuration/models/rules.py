@@ -19,7 +19,7 @@ from datetime import datetime, timedelta
 from django.db import models
 import pytz
 
-from services.common import simulation, slots
+from services.common import misc, simulation, slots
 from services.configuration.models import channels
 
 # Definition of the availability operation through rules over existing
@@ -226,11 +226,16 @@ class AvailabilityRuleManager(models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         first = True
-        r = AvailabilityRuleDaily.objects\
-            .get(availabilityrule_ptr=rule_values['availabilityrule_ptr_id'])
+        r = AvailabilityRuleDaily.objects.get(
+            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
+        )
         result = []
+        rule_starting_dt = misc.localize_date_utc(rule_values['starting_date'])
 
-        i_day = interval[0]
+        if rule_starting_dt > interval[0]:
+            i_day = rule_starting_dt
+        else:
+            i_day = interval[0]
 
         while i_day < interval[1]:
 

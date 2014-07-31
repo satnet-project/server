@@ -14,7 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-from services.accounts import signals
-
-signals.connect_user_2_accounts()
