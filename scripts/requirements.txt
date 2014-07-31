@@ -24,7 +24,8 @@ eventlog
 mysql-python
 datadiff
 twisted
-txJSON-RPC
+pyOpenSSL
+service_identity
 ########################
 ## Maybe?
 ########################
@@ -35,3 +36,4 @@ txJSON-RPC
 ## Not used anymore
 ########################
 #django-registration
+#txJSON-RPC
