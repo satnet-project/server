@@ -1,7 +1,9 @@
 from twisted.protocols import amp
-from twisted.internet import reactor
+from twisted.internet import reactor, ssl
 from twisted.internet.protocol import Factory
 from prototipes import *
+from twisted.python import log
+import sys
 
 
 class Server(amp.AMP):
@@ -24,9 +26,13 @@ class Server(amp.AMP):
 
 
 def main():
+    log.startLogging(sys.stdout)
+
     pf = Factory()
     pf.protocol = Server
-    reactor.listenTCP(1234, pf)
+    cert = ssl.PrivateCertificate.loadPEM(open('key/private.pem').read())
+
+    reactor.listenSSL(1234, pf, cert.options())
     print 'Server running...'
     reactor.run()
 

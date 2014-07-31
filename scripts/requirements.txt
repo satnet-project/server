@@ -25,6 +25,7 @@ mysql-python
 datadiff
 twisted
 pyOpenSSL
+service_identity
 ########################
 ## Maybe?
 ########################

@@ -1,10 +1,14 @@
-from twisted.internet import reactor
-from twisted.internet.endpoints import TCP4ClientEndpoint, connectProtocol
-from twisted.protocols import amp
+from twisted.internet import reactor, protocol, ssl
+from twisted.protocols.amp import AMP
 from prototipes import *
+from twisted.python import log
+import sys
 
 
-class Client(amp.AMP):
+class ClientProtocol(AMP):
+
+    def connectionMade(self):
+        d = self.callRemote(StartRemote, iClientId=13, iSlotId=81)
 
     def vNotifyError(self, sDescription):
         print "NotifyError"
@@ -26,11 +30,15 @@ class Client(amp.AMP):
         return {}
     NotifySlotEnd.responder(vNotifySlotEnd)
 
-def beginTest():
-    d = connectProtocol(destination, Client())
 
-    def connected(ampProto):
-        return ampProto.callRemote(StartRemote, iClientId=13, iSlotId=81)
+class ClientFactory(protocol.ClientFactory):
+    protocol = ClientProtocol
+
+
+def beginTest(d, proto):
+
+    def connected(_):
+        return proto.callRemote(StartRemote, iClientId=13, iSlotId=81)
     d.addCallback(connected)
     
     def done(result):
@@ -40,6 +48,9 @@ def beginTest():
 
 
 if __name__ == '__main__':
-    destination = TCP4ClientEndpoint(reactor, '127.0.0.1', 1234)
-    beginTest()
+    log.startLogging(sys.stdout)
+    cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
+    options = ssl.optionsForClientTLS(u'humsat.org', cert)
+
+    reactor.connectSSL('localhost', 1234, ClientFactory(), options)
     reactor.run()

@@ -7,7 +7,7 @@ sys.path.append(os.path.dirname(os.getcwd())+"/WebServices")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 # Import your models for use in your script
-from services.accounts.models import UserProfile
+from django.contrib.auth import User
 
 # Start of application script (demo code below)
 sample_user = UserProfile.objects.all()
