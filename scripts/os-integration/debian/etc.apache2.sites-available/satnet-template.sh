@@ -1,6 +1,7 @@
 #!/bin/bash
 
 __load_default_config=false
+__output_file='satnet-ssl'
 
 if [ $# -gt 0 ]
 then
@@ -33,31 +34,31 @@ then
     document_root="$static_dir"
 fi
 
-echo '<VirtualHost *:443>' > $1
-echo '' >> $1
-echo "	  ServerName $server_name" >> $1
-echo "    ServerAdmin $server_admin" >> $1
-echo "	  DocumentRoot $static_dir" >> $1
-echo '' >> $1
-echo "    Alias /favicon.ico $public_html_dir/favicon.ico" >> $1
-echo "    Alias /static $static_dir" >> $1
-echo '' >> $1
-echo '    GnuTLSEnable on' >> $1
-echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' >> $1
-echo "    GnuTLSCertificateFile $server_certificate" >> $1
-echo "    GnuTLSKeyFile $server_key" >> $1
-echo '' >> $1
-echo "    WSGIScriptAlias / $project_root_dir/website/wsgi.py" >> $1
-echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$project_root_dir/.venv/lib/python2.7/site-packages" >> $1
-echo '' >> $1
-echo "    <Directory $project_root_dir/>" >> $1
-echo '        WSGIProcessGroup satnet' >> $1
-echo '        Order deny,allow' >> $1
-echo '        Allow from all' >> $1
-echo '    </Directory>' >> $1
-echo '' >> $1
-echo "    CustomLog $logs_dir/access.log combined" >> $1
-echo "    CustomLog $logs_dir/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" >> $1
-echo "    ErrorLog $logs_dir/error.log" >> $1
-echo '' >> $1
-echo '</VirtualHost>' >> $1
+echo '<VirtualHost *:443>' > $__output_file
+echo '' >> $__output_file
+echo "	  ServerName $server_name" >> $__output_file
+echo "    ServerAdmin $server_admin" >> $__output_file
+echo "	  DocumentRoot $static_dir" >> $__output_file
+echo '' >> $__output_file
+echo "    Alias /favicon.ico $public_html_dir/favicon.ico" >> $__output_file
+echo "    Alias /static $static_dir" >> $__output_file
+echo '' >> $__output_file
+echo '    GnuTLSEnable on' >> $__output_file
+echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' >> $__output_file
+echo "    GnuTLSCertificateFile $server_certificate" >> $__output_file
+echo "    GnuTLSKeyFile $server_key" >> $__output_file
+echo '' >> $__output_file
+echo "    WSGIScriptAlias / $project_root_dir/website/wsgi.py" >> $__output_file
+echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$project_root_dir/.venv/lib/python2.7/site-packages" >> $__output_file
+echo '' >> $__output_file
+echo "    <Directory $project_root_dir/>" >> $__output_file
+echo '        WSGIProcessGroup satnet' >> $__output_file
+echo '        Order deny,allow' >> $__output_file
+echo '        Allow from all' >> $__output_file
+echo '    </Directory>' >> $__output_file
+echo '' >> $__output_file
+echo "    CustomLog $logs_dir/access.log combined" >> $__output_file
+echo "    CustomLog $logs_dir/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" >> $__output_file
+echo "    ErrorLog $logs_dir/error.log" >> $__output_file
+echo '' >> $__output_file
+echo '</VirtualHost>' >> $__output_file
