@@ -36,6 +36,10 @@ install_packages()
     apt-get install postgresql postgresql-contrib phppgadmin
     apt-get install postgresql-server-all
     apt-get install python python-virtualenv python-pip python-dev
+<<<<<<< HEAD
+    apt-get install python-mysqldb
+=======
+>>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
     apt-get install binutils libproj-dev gdal-bin
     apt-get install build-essential libssl-dev libffi-dev
 
@@ -55,20 +59,20 @@ create_self_signed_cert()
 {
     # 1: Generate a Private Key
     openssl genrsa -des3 -out s.key 1024
-    # 2: Generate a CSR (Certificate Signing Request) 
+    # 2: Generate a CSR (Certificate Signing Request)
     openssl req -new -key s.key -out s.csr
-    # 3: Remove Passphrase from Key 
+    # 3: Remove Passphrase from Key
     cp s.key s.key.org
     openssl rsa -in s.key.org -out s.key
-    # 4: Generating a Self-Signed Certificate 
+    # 4: Generating a Self-Signed Certificate
     openssl x509 -req -days 365 -in s.csr -signkey s.key -out s.crt
-    
+
     # 5: Certificates installation
     if [[ ! -d $APACHE_2_CERTIFICATES_DIR ]]
     then
         mkdir -p $APACHE_2_CERTIFICATES_DIR
     fi
-    
+
     mv -f s.crt "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME.crt"
     mv -f s.key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME.key"
 }
@@ -89,6 +93,24 @@ configure_apache()
     service apache2 reload
 }
 
+<<<<<<< HEAD
+configure_mysql()
+{
+    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
+        > $__mysql_batch
+    #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
+    #    > $__mysql_batch
+    echo "CREATE DATABASE $django_db;" \
+        >> $__mysql_batch
+    echo "GRANT all privileges ON $django_db.* TO '$django_user'@'localhost';" \
+        >> $__mysql_batch
+
+    mysql -h localhost -u root -p < $__mysql_batch
+    python $manage_py syncdb
+}
+
+delete_mysql_db()
+=======
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
 __pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
@@ -98,6 +120,7 @@ django_user='satnet_django'
 django_user_password='_805Django'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
+>>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
 {
     
     # ### Uncomment the following lines if you want to reset default user's
@@ -138,13 +161,19 @@ configure_root()
 {
     mkdir -p logs
     mkdir -p public_html/static
-    
+
     virtualenv .venv
+<<<<<<< HEAD
+    source .venv/bin/activate
+    pip install -r requirements.txt
+    deactivate
+=======
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
     pip install -r "$project_path/scripts/requirements.txt"
+>>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
 }
 
-# ### Method that configures a Python virtual environment 
+# ### Method that configures a Python virtual environment
 create_virtualenv()
 {
 
@@ -243,7 +272,6 @@ venv_projects="$HOME/repositories/satnet-release-1/WebServices"
 
 # ### Configures an environment for using the virtualenvironment wrapper. This 
 # is the full configuration, which might not be required in all cases.
-
 configure_virtualenvwrapper()
 {
 
@@ -253,16 +281,15 @@ configure_virtualenvwrapper()
     echo "source /usr/local/bin/virtualenvwrapper.sh" >> $bashrc_file
 
     bash
-    
+
 }
 
 # ### Configures a given directory with the initial PINAX website template that
 # uses django-user-accounts for user login and registration. It installs all
 # the dependencies of the PINAX project through python-pip
-
 pinax_template_url='https://github.com/pinax/pinax-project-account/zipball/master'
 satnet_web_services_dir='WebServices'
-    
+
 configure_pinax_repository()
 {
 
