@@ -24,6 +24,7 @@
 # mysql-server, admin password: _805Mysql
 # phpmyadmin user:password for database: phpmyadmin:_805Phpmyadmin
 
+# ### Installs the packages necessary for the Debian operating system.
 install_packages()
 {
 
@@ -71,6 +72,15 @@ create_self_signed_cert()
     mv -f s.crt "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME.crt"
     mv -f s.key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME.key"
 }
+
+# ### This function configures the operating system with the required users,
+# permissions and directories necessary.
+__username=''
+configure_os()
+{
+    usermod -aG adm $__username
+}
+
 
 # ### This function configures the apache2 server.
 configure_apache()
