@@ -34,7 +34,7 @@ install_packages()
     apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
     apt-get install mysql-server libmysqlclient-dev phpmyadmin
     apt-get install python python-virtualenv python-pip python-dev
-    apt-get install python-mysqldb 
+    apt-get install python-mysqldb
     apt-get install binutils libproj-dev gdal-bin
 
     apt-get clean
@@ -53,20 +53,20 @@ create_self_signed_cert()
 {
     # 1: Generate a Private Key
     openssl genrsa -des3 -out s.key 1024
-    # 2: Generate a CSR (Certificate Signing Request) 
+    # 2: Generate a CSR (Certificate Signing Request)
     openssl req -new -key s.key -out s.csr
-    # 3: Remove Passphrase from Key 
+    # 3: Remove Passphrase from Key
     cp s.key s.key.org
     openssl rsa -in s.key.org -out s.key
-    # 4: Generating a Self-Signed Certificate 
+    # 4: Generating a Self-Signed Certificate
     openssl x509 -req -days 365 -in s.csr -signkey s.key -out s.crt
-    
+
     # 5: Certificates installation
     if [[ ! -d $APACHE_2_CERTIFICATES_DIR ]]
     then
         mkdir -p $APACHE_2_CERTIFICATES_DIR
     fi
-    
+
     mv -f s.crt "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME.crt"
     mv -f s.key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME.key"
 }
@@ -75,13 +75,11 @@ create_self_signed_cert()
 configure_apache()
 {
     a2enmod gnutls
-    
     service apache2 reload
 }
 
 configure_mysql()
 {
-
     echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
         > $__mysql_batch
     #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
@@ -92,9 +90,7 @@ configure_mysql()
         >> $__mysql_batch
 
     mysql -h localhost -u root -p < $__mysql_batch
-
     python $manage_py syncdb
-
 }
 
 delete_mysql_db()
@@ -122,12 +118,14 @@ configure_root()
 {
     mkdir -p logs
     mkdir -p public_html/static
-    
+
     virtualenv .venv
+    source .venv/bin/activate
     pip install -r requirements.txt
+    deactivate
 }
 
-# ### Method that configures a Python virtual environment 
+# ### Method that configures a Python virtual environment
 create_virtualenv()
 {
 
@@ -217,7 +215,6 @@ venv_projects="$HOME/repositories/satnet-release-1/WebServices"
 
 # ### Configures an environment for using the virtualenvironment wrapper. This 
 # is the full configuration, which might not be required in all cases.
-
 configure_virtualenvwrapper()
 {
 
@@ -227,16 +224,15 @@ configure_virtualenvwrapper()
     echo "source /usr/local/bin/virtualenvwrapper.sh" >> $bashrc_file
 
     bash
-    
+
 }
 
 # ### Configures a given directory with the initial PINAX website template that
 # uses django-user-accounts for user login and registration. It installs all
 # the dependencies of the PINAX project through python-pip
-
 pinax_template_url='https://github.com/pinax/pinax-project-account/zipball/master'
 satnet_web_services_dir='WebServices'
-    
+
 configure_pinax_repository()
 {
 
