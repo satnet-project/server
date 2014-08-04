@@ -113,13 +113,13 @@ class TestMisc(test.TestCase):
         )
 
         actual = [
-            str(r) for r in rules.AvailabilityRule.objects.all()
+            unicode(r) for r in rules.AvailabilityRule.objects.all()
         ]
         expected = [
             '+(D):' + utc_i_date.isoformat().split('T')[0]
             + '>>' + utc_e_date.isoformat().split('T')[0]
-            + '_T_' + utc_s_time.time().isoformat().split('.')[0]
-            + '>>' + utc_e_time.time().isoformat().split('.')[0]
+            + '_T_' + utc_s_time.time().isoformat()
+            + '>>' + utc_e_time.time().isoformat()
         ]
 
         self.assertEquals(
@@ -149,7 +149,7 @@ class TestMisc(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES'
+                rules.AvailabilityRule.objects.all(),  name='RULES'
             )
 
         actual = [
@@ -178,5 +178,5 @@ class TestMisc(test.TestCase):
         if self.__verbose_testing:
             misc.print_list(
                 availability.AvailabilitySlot.objects.all(),
-                list_name='Availability Slots'
+                name='Availability Slots'
             )

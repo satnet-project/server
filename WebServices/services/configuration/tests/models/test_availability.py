@@ -54,7 +54,7 @@ class TestAvailability(test.TestCase):
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
 
-    def add_slots_no_rules(self):
+    def test_0_add_slots_no_rules(self):
         """
         This method tests the addition of new availability slots to the
         AvailabilitySlots table in the database, when no rule has still been
@@ -139,6 +139,7 @@ class TestAvailability(test.TestCase):
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
         """
+        #self.__verbose_testing = True
         if self.__verbose_testing:
             print '##### test_add_slots: several rules (1)'
 
@@ -160,9 +161,9 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@1'
+                rules.AvailabilityRule.objects.all(),  name='RULES@1'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@1')
+            misc.print_list(av_slots, name='AVAILABLE@1')
 
         # R2) ADD+DAILY (+2 slots)
         rule_2_id = jrpc_rules_if.add_rule(
@@ -181,11 +182,11 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@2'
+                rules.AvailabilityRule.objects.all(),  name='RULES@2'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@2')
+            misc.print_list(av_slots, name='AVAILABLE@2')
 
-        expected_slots = 3
+        expected_slots = 2
 
         self.assertEquals(
             len(a_slots), expected_slots,
@@ -217,11 +218,11 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@3'
+                rules.AvailabilityRule.objects.all(),  name='RULES@3'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@3')
+            misc.print_list(av_slots, name='AVAILABLE@3')
 
-        expected_slots = 2
+        expected_slots = 1
 
         self.assertEquals(
             len(a_slots), expected_slots,
@@ -253,9 +254,9 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@4'
+                rules.AvailabilityRule.objects.all(),  name='RULES@4'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@4')
+            misc.print_list(av_slots, name='AVAILABLE@4')
 
         expected = 0
 
@@ -288,11 +289,11 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@5'
+                rules.AvailabilityRule.objects.all(),  name='RULES@5'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@5')
+            misc.print_list(av_slots, name='AVAILABLE@5')
 
-        expected = 2
+        expected = 1
 
         self.assertEquals(
             len(a_slots), expected,
@@ -323,11 +324,11 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@6'
+                rules.AvailabilityRule.objects.all(),  name='RULES@6'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@6')
+            misc.print_list(av_slots, name='AVAILABLE@6')
 
-        expected = 3
+        expected = 2
 
         self.assertEquals(
             len(a_slots), expected,
@@ -359,9 +360,9 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@7'
+                rules.AvailabilityRule.objects.all(),  name='RULES@7'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@7')
+            misc.print_list(av_slots, name='AVAILABLE@7')
 
         # REMOVE R#1 (-1 slot)
         jrpc_rules_if.remove_rule(
@@ -382,9 +383,11 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@8'
+                rules.AvailabilityRule.objects.all(),  name='RULES@8'
             )
-            misc.print_list(av_slots, list_name='AVAILABLE@8')
+            misc.print_list(av_slots, name='AVAILABLE@8')
+
+        self.__verbose_testing = False
 
     def test_4_get_availability_slots(self):
         """
@@ -428,10 +431,6 @@ class TestAvailability(test.TestCase):
         # ### execution of the method
         x_slots = [
             (
-                starting_time,
-                ending_time,
-            ),
-            (
                 starting_time + datetime.timedelta(days=1),
                 ending_time + datetime.timedelta(days=1),
             ),
@@ -446,9 +445,9 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  list_name='RULES@1'
+                rules.AvailabilityRule.objects.all(),  name='RULES@1'
             )
-            misc.print_list(a_slots, list_name='AVAILABLE@1')
+            misc.print_list(a_slots, name='AVAILABLE@1')
 
         self.assertEquals(
             a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
@@ -458,8 +457,8 @@ class TestAvailability(test.TestCase):
 
         # 3) Period ending in the middle of an AvailabilitySlot, should
         # return the applicable half of that slot...
-        start = now + datetime.timedelta(minutes=25)
-        end = now + datetime.timedelta(minutes=35)
+        start = now + datetime.timedelta(days=1, minutes=25)
+        end = now + datetime.timedelta(days=1, minutes=35)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1,
@@ -468,8 +467,8 @@ class TestAvailability(test.TestCase):
         )
         x_slots = [
             (
-                now + datetime.timedelta(minutes=30),
-                now + datetime.timedelta(minutes=35),
+                now + datetime.timedelta(days=1, minutes=30),
+                now + datetime.timedelta(days=1, minutes=35),
                 a_slots[0][2]
             )
         ]
@@ -478,8 +477,8 @@ class TestAvailability(test.TestCase):
             print '>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
             )
-            misc.print_list(x_slots, list_name='XSLOTS@2')
-            misc.print_list(a_slots, list_name='AVAILABLE@2')
+            misc.print_list(x_slots, name='XSLOTS@2')
+            misc.print_list(a_slots, name='AVAILABLE@2')
 
         self.assertEquals(
             a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
@@ -494,16 +493,16 @@ class TestAvailability(test.TestCase):
 
         # 4) Period starting in the middle of an AvailabilitySlot, should
         # return the applicable half of that slot...
-        start = now + datetime.timedelta(minutes=35)
-        end = now + datetime.timedelta(minutes=50)
+        start = now + datetime.timedelta(days=1, minutes=35)
+        end = now + datetime.timedelta(days=1, minutes=50)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
         )
         x_slots = [(
             (
-                now + datetime.timedelta(minutes=35),
-                now + datetime.timedelta(minutes=45),
+                now + datetime.timedelta(days=1, minutes=35),
+                now + datetime.timedelta(days=1, minutes=45),
                 a_slots[0][2]
             )
         )]
@@ -514,8 +513,8 @@ class TestAvailability(test.TestCase):
 
         # 5) Period starting after an AvailabilitySlot, should not return any
         #  slot at all...
-        start = now + datetime.timedelta(minutes=50)
-        end = now + datetime.timedelta(minutes=55)
+        start = now + datetime.timedelta(days=1, minutes=50)
+        end = now + datetime.timedelta(days=1, minutes=55)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
@@ -527,8 +526,8 @@ class TestAvailability(test.TestCase):
 
         # 6) Period starting JUST after an AvailabilitySlot, should not return
         #  any slot at all...
-        start = now + datetime.timedelta(minutes=45)
-        end = now + datetime.timedelta(minutes=55)
+        start = now + datetime.timedelta(days=1, minutes=45)
+        end = now + datetime.timedelta(days=1, minutes=55)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
@@ -540,8 +539,8 @@ class TestAvailability(test.TestCase):
 
         # 7) Period ending after an AvailabilitySlot, should not return any
         #  slot at all...
-        start = now + datetime.timedelta(minutes=10)
-        end = now + datetime.timedelta(minutes=15)
+        start = now + datetime.timedelta(days=1, minutes=10)
+        end = now + datetime.timedelta(days=1, minutes=15)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
@@ -553,8 +552,8 @@ class TestAvailability(test.TestCase):
 
         # 8) Period starting JUST before an AvailabilitySlot, should not return
         #  any slot at all...
-        start = now + datetime.timedelta(minutes=10)
-        end = now + datetime.timedelta(minutes=30)
+        start = now + datetime.timedelta(days=1, minutes=10)
+        end = now + datetime.timedelta(days=1, minutes=30)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end

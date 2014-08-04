@@ -21,6 +21,7 @@ from django import test
 import logging
 
 from services.common import testing as db_tools, misc, simulation
+from services.configuration import signals
 from services.configuration.models import availability, rules
 from services.configuration.jrpc import rules as jrpc_rules_if
 
@@ -36,6 +37,8 @@ class TestRules(test.TestCase):
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
+
+        signals.connect_rules_2_availability()
 
         db_tools.init_available()
         db_tools.init_tles_database()
@@ -71,13 +74,9 @@ class TestRules(test.TestCase):
             self.__gs_1_ch_1
         )
         if self.__verbose_testing:
-            misc.print_list(rs, list_name='Rules')
+            misc.print_list(rs, name='Rules')
 
         expected = [
-            (
-                r_1_s_time,
-                r_1_e_time
-            ),
             (
                 r_1_s_time + datetime.timedelta(days=1),
                 r_1_e_time + datetime.timedelta(days=1),
@@ -95,7 +94,7 @@ class TestRules(test.TestCase):
             print '>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
             )
-            misc.print_list(actual, list_name='Generated Slots')
+            misc.print_list(actual, name='Generated Slots')
 
         self.assertEquals(
             actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
@@ -110,15 +109,17 @@ class TestRules(test.TestCase):
         This test validates the generation of AvailabilitySlots by a daily
         rule when the slot has already started.
         """
-        #self.__verbose_testing = True
         if self.__verbose_testing:
             print '>>> test_2_a_slots_daily_first_cut:'
 
+        today = misc.get_today_utc()
         now = misc.get_now_utc()
         r_1_s_time = now - datetime.timedelta(minutes=30)
         r_1_e_time = now + datetime.timedelta(minutes=30)
 
         r_cfg = db_tools.create_jrpc_daily_rule(
+            date_i=today,
+            date_f=today + datetime.timedelta(days=365),
             starting_time=r_1_s_time,
             ending_time=r_1_e_time
         )
@@ -153,8 +154,53 @@ class TestRules(test.TestCase):
         )
 
         if self.__verbose_testing:
-            misc.print_list(actual, list_name='ACTUAL_VALUES')
-            misc.print_list(expected, list_name='EXPECTED_LIST')
+            misc.print_list(actual, name='ACTUAL_VALUES')
+            misc.print_list(expected, name='EXPECTED_LIST')
+
+        self.assertEquals(
+            actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
+                actual, expected
+            ))
+        )
+
+        jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
+        self.__verbose_testing = False
+
+    def test_3_a_slots_daily_future(self):
+        """Unit test.
+        Tests the generation of AvailabilitySlot's by a daily rule that
+        starts in the future.
+        """
+        if self.__verbose_testing:
+            print '>>> test_3_a_slots_daily_future:'
+
+        now = misc.get_now_utc()
+        r_1_s_time = now + datetime.timedelta(minutes=10)
+        r_1_e_time = now + datetime.timedelta(hours=5)
+
+        r_cfg = db_tools.create_jrpc_daily_rule(
+            starting_time=r_1_s_time,
+            ending_time=r_1_e_time
+        )
+        r_1_id = jrpc_rules_if.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id, r_cfg
+        )
+
+        expected = [
+            (
+                r_1_s_time + datetime.timedelta(days=1),
+                r_1_e_time + datetime.timedelta(days=1),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=2),
+                r_1_e_time + datetime.timedelta(days=2),
+            ),
+        ]
+        actual = list(
+            availability.AvailabilitySlot.objects.values_list(
+                'start', 'end'
+            )
+        )
 
         self.assertEquals(
             actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(

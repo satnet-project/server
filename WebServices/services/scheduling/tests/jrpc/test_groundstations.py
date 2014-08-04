@@ -158,14 +158,6 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: s_time.isoformat(),
-                operational.DATE_END: e_time.isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: '2',
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
                 operational.DATE_START: (
                     s_time + datetime.timedelta(days=1)
                 ).isoformat(),
@@ -174,7 +166,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 ).isoformat()
             },
             {
-                operational.SLOT_IDENTIFIER: '3',
+                operational.SLOT_IDENTIFIER: '2',
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,

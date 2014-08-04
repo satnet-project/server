@@ -104,18 +104,6 @@ class UserProfileManager(models.Manager):
         user.is_active = False
         user.save()
 
-    @staticmethod
-    def user_saved(sender, instance, **kwargs):
-        """User saved callback.
-        """
-        print 'XXXXXXXXXXXXXXX SAVED'
-
-    @staticmethod
-    def user_deleted(sender, instance, **kwargs):
-        """User deleted callback.
-        """
-        print 'XXXXXXXXXXXXXXX DELETED'
-
 
 class UserProfile(auth_models.User):
     """

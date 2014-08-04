@@ -34,7 +34,10 @@ def get_operational_slots(spacecraft_id):
     :param spacecraft_id: Identifier of the spacecraft.
     :return: JSON-like structure with the data serialized.
     """
-    return serialization.serialize_sc_operational_slots(spacecraft_id)
+    return sorted(
+        serialization.serialize_sc_operational_slots(spacecraft_id),
+        key=lambda s: s[operational.SLOT_IDENTIFIER]
+    )
 
 
 @rpc4django.rpcmethod(
@@ -52,7 +55,11 @@ def get_changes(spacecraft_id):
     sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
     changed_slots = operational.OperationalSlot.objects\
         .get_spacecraft_changes(sc)
-    return operational.OperationalSlot.serialize_slots(changed_slots)
+
+    return sorted(
+        operational.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational.SLOT_IDENTIFIER]
+    )
 
 
 @rpc4django.rpcmethod(
@@ -88,7 +95,10 @@ def select_slots(spacecraft_id, slot_identifiers):
         state=operational.STATE_SELECTED, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return operational.OperationalSlot.serialize_slots(changed_slots)
+    return sorted(
+        operational.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational.SLOT_IDENTIFIER]
+    )
 
 
 @rpc4django.rpcmethod(
@@ -121,7 +131,10 @@ def cancel_selections(spacecraft_id, slot_identifiers):
         state=operational.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return operational.OperationalSlot.serialize_slots(changed_slots)
+    return sorted(
+        operational.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational.SLOT_IDENTIFIER]
+    )
 
 
 @rpc4django.rpcmethod(
@@ -155,4 +168,7 @@ def cancel_reservations(spacecraft_id, slot_identifiers):
         state=operational.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return operational.OperationalSlot.serialize_slots(changed_slots)
+    return sorted(
+        operational.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational.SLOT_IDENTIFIER]
+    )

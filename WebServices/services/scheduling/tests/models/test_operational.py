@@ -17,9 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
 
-import logging
 import datadiff
 import datetime
+import logging
 
 from services.common import testing as db_tools, misc, simulation
 from services.configuration import signals
@@ -30,7 +30,7 @@ from services.configuration.models import rules, availability, channels
 from services.scheduling.models import operational
 
 
-class JRPCRulesTest(test.TestCase):
+class OperationalModels(test.TestCase):
 
     def setUp(self):
         """
@@ -171,7 +171,6 @@ class JRPCRulesTest(test.TestCase):
         expected = [
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
@@ -206,7 +205,6 @@ class JRPCRulesTest(test.TestCase):
         expected = [
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
@@ -230,7 +228,6 @@ class JRPCRulesTest(test.TestCase):
             )
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
         ]

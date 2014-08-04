@@ -166,7 +166,7 @@ class JRPCBookingProcessTest(test.TestCase):
         # 1) selection has to be notified only once to the GS
         gs_s_slots = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
         self.assertEquals(
-            len(gs_s_slots), 3, 'Selected slots should be 3, selected = ' +
+            len(gs_s_slots), 2, 'Selected slots should be 2, selected = ' +
             misc.list_2_string(gs_s_slots)
         )
         self.assertRaises(
@@ -183,7 +183,7 @@ class JRPCBookingProcessTest(test.TestCase):
             self.__gs_1_id, [1, 2, 3]
         )
         self.assertEquals(
-            len(gs_c_slots), 3, 'Confirmed slots should be 3, selected = ' +
+            len(gs_c_slots), 2, 'Confirmed slots should be 2, selected = ' +
             misc.list_2_string(gs_c_slots)
         )
         self.assertRaises(
@@ -194,7 +194,7 @@ class JRPCBookingProcessTest(test.TestCase):
         # but only once!
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
         self.assertEquals(
-            len(sc_r_slots), 3, 'Reserved slots should be 3, selected = ' +
+            len(sc_r_slots), 2, 'Reserved slots should be 2, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
         self.assertRaises(
@@ -213,7 +213,7 @@ class JRPCBookingProcessTest(test.TestCase):
         # but only once!
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
         self.assertEquals(
-            len(sc_r_slots), 3, 'Canceled slots should be 3, selected = ' +
+            len(sc_r_slots), 2, 'Canceled slots should be 2, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
         self.assertRaises(
@@ -238,8 +238,8 @@ class JRPCBookingProcessTest(test.TestCase):
         # 7) SpacecraftOperator retries the selection...
         self.assertEquals(
             len(jrpc_sc_scheduling.select_slots(self.__sc_1_id, [1, 2, 3])),
-            3,
-            '3 slots must have been selected.'
+            2,
+            '2 slots must have been selected.'
         )
 
         # 8) GroundStation operator denies the selection...
@@ -247,7 +247,7 @@ class JRPCBookingProcessTest(test.TestCase):
             self.__gs_1_id, [1, 2, 3]
         )
         self.assertEquals(
-            len(gs_d_slots), 3, 'Denied slots should be 3, selected = ' +
+            len(gs_d_slots), 2, 'Denied slots should be 3, selected = ' +
             misc.list_2_string(gs_d_slots)
         )
         self.assertRaises(
@@ -255,7 +255,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
         self.assertEquals(
-            len(sc_r_slots), 3, 'Denied slots should be 3, selected = ' +
+            len(sc_r_slots), 2, 'Denied slots should be 3, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
         self.assertRaises(

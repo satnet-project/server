@@ -1,0 +1,39 @@
+########################
+## Django libraries
+########################
+django
+rpc4django
+django-jsonfield
+django_countries
+django-passwords
+django-jquery
+django-session-security
+django-jsonview
+django-leaflet
+django-extensions
+django-periodically
+django-selenium
+django-allauth
+########################
+## Python libraries
+########################
+pyephem
+python-dateutil
+pytz
+eventlog
+mysql-python
+datadiff
+twisted
+pyOpenSSL
+service_identity
+########################
+## Maybe?
+########################
+#selenium
+#six
+#unittest-data-provider
+########################
+## Not used anymore
+########################
+#django-registration
+#txJSON-RPC

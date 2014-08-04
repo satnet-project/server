@@ -13,7 +13,6 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
@@ -138,12 +137,12 @@ class TestModels(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(
-                rules.AvailabilityRule.objects.all(), list_name='RULES'
+                rules.AvailabilityRule.objects.all(), name='RULES'
             )
-            misc.print_list(actual_s, list_name='AVAILABLE')
+            misc.print_list(actual_s, name='AVAILABLE')
 
         self.assertEquals(
-            len(actual_s), 2,
+            len(actual_s), 1,
             'Wrong number of available slots, e = 2, actual = ' + str(len(
                 actual_s
             ))

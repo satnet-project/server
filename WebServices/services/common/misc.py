@@ -21,7 +21,7 @@ import sys
 import StringIO
 
 
-def print_list(l, list_name=None, output=sys.stdout):
+def print_list(l, name=None, output=sys.stdout):
     """
     Function that prints the elements of a given list, one per line.
     :param l: The list to be printed out.
@@ -30,10 +30,10 @@ def print_list(l, list_name=None, output=sys.stdout):
         print >> output, 'Empty list'
         return
 
-    if list_name is None:
-        list_name = str(l[0].__class__)
+    if name is None:
+        name = str(l[0].__class__)
 
-    print >> output, '>>>>>>> list = ' + list_name + ', len = ' + str(len(l))
+    print >> output, '>>>>>>> list = ' + name + ', len = ' + str(len(l))
     for l_i in l:
         print >> output, str(l_i)
 
@@ -46,7 +46,7 @@ def list_2_string(l, list_name='List'):
     :return: String object with the list printed within
     """
     buff = StringIO.StringIO()
-    print_list(l, list_name=list_name, output=buff)
+    print_list(l, name=list_name, output=buff)
     return buff.getvalue()
 
 
