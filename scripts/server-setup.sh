@@ -36,10 +36,6 @@ install_packages()
     apt-get install postgresql postgresql-contrib phppgadmin
     apt-get install postgresql-server-all
     apt-get install python python-virtualenv python-pip python-dev
-<<<<<<< HEAD
-    apt-get install python-mysqldb
-=======
->>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
     apt-get install binutils libproj-dev gdal-bin
     apt-get install build-essential libssl-dev libffi-dev
 
@@ -93,24 +89,6 @@ configure_apache()
     service apache2 reload
 }
 
-<<<<<<< HEAD
-configure_mysql()
-{
-    echo "GRANT USAGE ON *.* TO '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-        > $__mysql_batch
-    #echo "CREATE USER '$django_user'@'localhost' IDENTIFIED BY '$django_user_password';" \
-    #    > $__mysql_batch
-    echo "CREATE DATABASE $django_db;" \
-        >> $__mysql_batch
-    echo "GRANT all privileges ON $django_db.* TO '$django_user'@'localhost';" \
-        >> $__mysql_batch
-
-    mysql -h localhost -u root -p < $__mysql_batch
-    python $manage_py syncdb
-}
-
-delete_mysql_db()
-=======
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
 __pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
@@ -120,7 +98,6 @@ django_user='satnet_django'
 django_user_password='_805Django'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
->>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
 {
     
     # ### Uncomment the following lines if you want to reset default user's
@@ -163,14 +140,8 @@ configure_root()
     mkdir -p public_html/static
 
     virtualenv .venv
-<<<<<<< HEAD
-    source .venv/bin/activate
-    pip install -r requirements.txt
-    deactivate
-=======
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
     pip install -r "$project_path/scripts/requirements.txt"
->>>>>>> 3e2c2de98720b2816bd37c07cca41121b36d96ee
 }
 
 # ### Method that configures a Python virtual environment
