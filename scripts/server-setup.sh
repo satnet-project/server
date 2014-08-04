@@ -255,24 +255,7 @@ configure_virtualenvwrapper()
 
 }
 
-# ### Configures a given directory with the initial PINAX website template that
-# uses django-user-accounts for user login and registration. It installs all
-# the dependencies of the PINAX project through python-pip
-pinax_template_url='https://github.com/pinax/pinax-project-account/zipball/master'
-satnet_web_services_dir='WebServices'
-
-configure_pinax_repository()
-{
-
-    django-admin.py startproject\
-        --template=$pinax_template_url $satnet_web_services_dir
-    cd $satnet_web_services_dir
-    sudo pip install -r "$project_path/scripts/requirements.txt"
-
-}
-
 # ### Examples of HOW TO call this script
-
 usage() { 
 
     echo "Please, use ONLY ONE ARGUMENT at a time:"

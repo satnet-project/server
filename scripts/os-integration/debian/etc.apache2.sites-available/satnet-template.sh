@@ -1,14 +1,37 @@
-user='rtubiopa'
-server_name='satnet.aero.calpoly.edu'
-server_admin='satnet.calpoly@gmail.com'
-server_certificates_dir='/etc/apache2/certificates'
-server_certificate="$server_certificates_dir/satnet.aero.calpoly.edu.crt"
-server_key="$server_certificates_dir/satnet.aero.calpoly.edu.key"
-project_root_dir='/home/rtubiopa/repositories/satnet-release-1/WebServices'
-logs_dir="$project_root_dir/logs"
-public_html_dir="$project_root_dir/public_html"
-static_dir="$public_html_dir/static"
-document_root="$static_dir"
+#!/bin/bash
+
+__load_default_config=false
+
+if [ $# -gt 0 ]
+then
+    if [ ! -f $1 ]
+    then
+        echo "File <$1> does not exist!"
+        __load_default_config=true
+    else
+        echo "Loading custom configuration from <$1>..."
+        source $1
+    fi
+else
+    echo "No custom configuration provided, loading defaults..."
+    __load_default_config=true
+fi
+
+if [ "$__load_default_config" = true ]
+then
+    echo 'Loading default configuration...'
+    user='rtubiopa'
+    server_name='satnet.aero.calpoly.edu'
+    server_admin='satnet.calpoly@gmail.com'
+    server_certificates_dir='/etc/apache2/certificates'
+    server_certificate="$server_certificates_dir/satnet.aero.calpoly.edu.crt"
+    server_key="$server_certificates_dir/satnet.aero.calpoly.edu.key"
+    project_root_dir='/home/rtubiopa/repositories/satnet-release-1/WebServices'
+    logs_dir="$project_root_dir/logs"
+    public_html_dir="$project_root_dir/public_html"
+    static_dir="$public_html_dir/static"
+    document_root="$static_dir"
+fi
 
 echo '<VirtualHost *:443>' > $1
 echo '' >> $1
