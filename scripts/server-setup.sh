@@ -34,7 +34,7 @@ install_packages()
     apt-get install apache2
     apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
     apt-get install postgresql postgresql-contrib phppgadmin
-    apt-get install postgresql-server-all
+    apt-get install postgresql-server-all postgresql-server-dev-all
     apt-get install python python-virtualenv python-pip python-dev
     apt-get install binutils libproj-dev gdal-bin
     apt-get install build-essential libssl-dev libffi-dev

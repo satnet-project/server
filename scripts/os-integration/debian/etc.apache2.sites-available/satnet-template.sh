@@ -1,7 +1,7 @@
 #!/bin/bash
 
 __load_default_config=false
-__output_file='satnet-ssl'
+__output_file='satnet-tls.conf'
 
 if [ $# -gt 0 ]
 then
@@ -34,7 +34,12 @@ then
     document_root="$static_dir"
 fi
 
-echo '<VirtualHost *:443>' > $__output_file
+echo '<VirtualHost *:80>' > $__output_file
+echo '	ServerName satnet.aero.calpoly.edu' >> $__output_file
+echo '	Redirect permanent / https://satnet.aero.calpoly.edu/' >> $__output_file
+echo '</VirtualHost>' >> $__output_file
+echo '' >> $__output_file
+echo '<VirtualHost *:443>' >> $__output_file
 echo '' >> $__output_file
 echo "	  ServerName $server_name" >> $__output_file
 echo "    ServerAdmin $server_admin" >> $__output_file
@@ -53,8 +58,13 @@ echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$pro
 echo '' >> $__output_file
 echo "    <Directory $project_root_dir/>" >> $__output_file
 echo '        WSGIProcessGroup satnet' >> $__output_file
-echo '        Order deny,allow' >> $__output_file
-echo '        Allow from all' >> $__output_file
+echo '	      <IfVersion < 2.3 >' >> $__output_file
+echo '        	Order deny,allow' >> $__output_file
+echo '        	Allow from all' >> $__output_file
+echo '	      </IfVersion>' >> $__output_file
+echo '	      <IfVersion >= 2.3>' >> $__output_file
+echo '		Require all granted' >> $__output_file
+echo '	      </IfVersion>' >> $__output_file
 echo '    </Directory>' >> $__output_file
 echo '' >> $__output_file
 echo "    CustomLog $logs_dir/access.log combined" >> $__output_file
