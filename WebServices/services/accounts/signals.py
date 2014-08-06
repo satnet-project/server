@@ -40,6 +40,8 @@ def user_signed_up_receiver(request, user, **kwargs):
     )
 
 
+
+
 @dispatch.receiver(allauth_signals.email_confirmed)
 def email_confirmed_receiver(email_address, **kwargs):
     """Email confirmed callback.

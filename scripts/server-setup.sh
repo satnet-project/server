@@ -136,12 +136,15 @@ remove_postgresql()
 # all the pip packages and the directories.
 configure_root()
 {
-    mkdir -p logs
-    mkdir -p public_html/static
+    mkdir -p $webservices_logs_dir
+    mkdir -p $webservices_public_html_dir
+    cp -f $webservices_dir/website/static $webservices_public_html_dir/.
 
     virtualenv .venv
     source $venv_activate && echo 'VENV_ACTIVATED!!!!'
-    pip install -r "$project_path/scripts/requirements.txt"
+    pip install -r "$webservices_dir/requirements.txt"
+    
+    python "$webservices_dir/manage.py" syncdb
 }
 
 # ### Method that configures a Python virtual environment
@@ -279,6 +282,8 @@ webservices_dir="$project_path/WebServices"
 webservices_venv_dir="$webservices_dir/.venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"
+webservices_public_html_dir="$webservices_dir/public_html"
+webservices_logs_dir="$webservices_dir/logs"
 project_path="$project_path/.."
 
 ################################################################################
