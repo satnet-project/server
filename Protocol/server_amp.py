@@ -1,10 +1,14 @@
-from twisted.protocols import amp
-from twisted.internet import reactor, ssl
-from twisted.internet.protocol import Factory
-from prototipes import *
-from twisted.python import log
 import sys
 
+from twisted.python import log
+from twisted.protocols import amp
+from twisted.internet import reactor, ssl
+from twisted.internet import protocol
+from twisted.cred.portal import Portal
+
+from commands import *
+from ampauth.credentials import *
+from ampauth.server import *
 
 class Server(amp.AMP):
 
@@ -28,8 +32,12 @@ class Server(amp.AMP):
 def main():
     log.startLogging(sys.stdout)
 
-    pf = Factory()
-    pf.protocol = Server
+    checker = DjangoAuthChecker()
+    realm = Realm()
+    portal = Portal(realm, [checker])
+
+    pf = CredAMPServerFactory(portal)
+    #pf.protocol = Server
     cert = ssl.PrivateCertificate.loadPEM(open('key/private.pem').read())
 
     reactor.listenSSL(1234, pf, cert.options())
