@@ -360,7 +360,9 @@ class TestJRPCChannels(TestCase):
 
         self.assertEquals(
             actual_c, expected_c,
-            'Configuration dictionaries do not match!'
+            'Configuration dictionaries do not match! Diff = ' + unicode(
+                datadiff.diff(actual_c, expected_c)
+            )
         )
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
 
@@ -488,8 +490,8 @@ class TestJRPCChannels(TestCase):
             jrpc_serial.CH_ID_K: self.__gs_1_ch_1_id,
             jrpc_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_serial.MODULATIONS_K: ['FM', 'AFSK'],
-            jrpc_serial.POLARIZATIONS_K: ['LHCP', 'RHCP'],
+            jrpc_serial.MODULATIONS_K: [unicode('AFSK'), unicode('FM')],
+            jrpc_serial.POLARIZATIONS_K: [unicode('LHCP'), unicode('RHCP')],
             jrpc_serial.BITRATES_K: [300, 600],
             jrpc_serial.BANDWIDTHS_K: [25]
         }

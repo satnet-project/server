@@ -58,7 +58,7 @@ class JRPCRulesTest(test.TestCase):
 
         self.__sc_1_id = 'sc-xatcobeo'
         self.__sc_1_callsign = 'BABA00'
-        self.__sc_1_tle_id = 'XaTcobeo'
+        self.__sc_1_tle_id = unicode('XATCOBEO')
         self.__sc_1_ch_1_id = 'xatcobeo-qpsk-1'
         self.__sc_1_ch_2_id = 'xatcobeo-gmsk-2'
         self.__sc_1_ch_1_f = 437000000

@@ -17,8 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 
+import logging
+
 from services.common import misc, simulation
 from services.configuration.models import rules, channels
+
+logger = logging.getLogger('configuration')
 
 
 class AvailabilitySlotsManager(models.Manager):
@@ -64,8 +68,9 @@ class AvailabilitySlotsManager(models.Manager):
 
         result = []
 
-        for a_i in self.filter(groundstation_channel=groundstation_channel)\
-                .filter(start__lt=end).filter(end__gt=start):
+        for a_i in self.filter(
+                groundstation_channel=groundstation_channel
+        ).filter(start__lt=end).filter(end__gt=start):
 
             result.append(
                 AvailabilitySlotsManager.truncate(a_i, start=start, end=end)
@@ -73,7 +78,22 @@ class AvailabilitySlotsManager(models.Manager):
 
         return result
 
-    def update_slots(self, groundstation_channel, new_slots):
+    def add_slots(self, groundstation_channel, slot_list):
+        """Adds a list of slots.
+        This method adds a list of slots to the AvailabilitySlot's table.
+        :param groundstation_channel: The GroundStation channel that all
+        these slots will be associated with.
+        :param slot_list: List of slots to be added to the table.
+        """
+        for slot_i in slot_list:
+
+            self.create(
+                groundstation_channel=groundstation_channel,
+                start=slot_i[0],
+                end=slot_i[1]
+            )
+
+    def update_slots(self, groundstation_channel, slot_list):
         """
         Updates the table with the availability slots by checking the
         existance of the new ones into the table. If they do not exist,
@@ -81,7 +101,7 @@ class AvailabilitySlotsManager(models.Manager):
         the database.
         :param groundstation_channel The GroundStationChannel object that
         generates these new slots.
-        :param new_slots List with the new availability slots to be
+        :param slot_list List with the new availability slots to be
         cross-checked with the existing ones. The items in this list must be
         tuples of DateTime objects UTC localized.
         """
@@ -95,23 +115,53 @@ class AvailabilitySlotsManager(models.Manager):
         added = []
         removed = []
 
-        for a_slot in self.all():
+        for slot_i in self.all():
 
-            s, e = a_slot.start, a_slot.end
+            s, e = slot_i.start, slot_i.end
 
-            if not (s, e) in new_slots:
+            if not (s, e) in slot_list:
+
                 removed.append((s, e))
-                a_slot.delete()
+                slot_i.delete()
+
             else:
-                new_slots.remove((s, e))
+
+                slot_list.remove((s, e))
 
         # 2) The remaining slots are added to the database.
-        for n_a_slot in new_slots:
+        for n_a_slot in slot_list:
 
             self.create(groundstation_channel, n_a_slot[0], n_a_slot[1])
             added.append((n_a_slot[0], n_a_slot[1]))
 
         return added, removed
+
+    def propagate_slots(self):
+        """Method for slot population.
+        This method generates the future slots to be populated in the
+        database for future operations.
+        """
+        logger.info(
+            '[POPULATE] s_window = ' + str(
+                simulation.OrbitalSimulator.get_simulation_window()
+            )
+        )
+        update_window = simulation.OrbitalSimulator.get_update_window()
+        logger.info('[POPULATE] p_window = ' + str(update_window))
+
+        for gs_ch_i in channels.GroundStationChannel.objects.filter(
+                enabled=True
+        ):
+
+            logger.info('[POPULATE] (1/2) Channel = ' + str(gs_ch_i))
+            slots_i = rules.AvailabilityRule.objects.get_availability_slots(
+                gs_ch_i, interval=update_window
+            )
+
+            logger.info(
+                '[POPULATE] (2/2) New slots = ' + misc.list_2_string(slots_i)
+            )
+            self.add_slots(gs_ch_i, slots_i)
 
     @staticmethod
     def availability_rule_updated(sender, instance, **kwargs):
@@ -140,8 +190,8 @@ class AvailabilitySlotsManager(models.Manager):
             start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
-                '<start=' + str(start) + '> '
-                + 'should occurr sooner than <end=' + str(end) + '>'
+                '<start=' + str(start) + '> should occurr sooner than <end='
+                + str(end) + '>'
             )
 
         if slot.start >= end:
@@ -153,6 +203,7 @@ class AvailabilitySlotsManager(models.Manager):
             s = start
         else:
             s = slot.start
+
         if slot.end > end:
             e = end
         else:

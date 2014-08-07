@@ -28,22 +28,9 @@ TESTING = sys.argv[1:2] == ['test']
 ADMINS = [
     ("Ricardo Tubio-Pardavila", "rtubiopa@calpoly.edu"),
 ]
-
 MANAGERS = ADMINS
 
 DATABASES = database.DATABASES
-# ### Expected databases dictionary
-#
-# DATABASES = {
-#     'default': {
-#        'ENGINE': 'django.db.backends.mysql',
-#        'NAME': 'satnet_db', # ### name of the database
-#        'USER': 'satnet_django',
-#        'PASSWORD': 'XXXX',
-#        'HOST': '', # ### localhost
-#        'PORT': '', # ### localhost
-#     }
-# }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.4/ref/website/#allowed-hosts
@@ -216,6 +203,12 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
+        'mail_admins': {
+            'level': 'ERROR',
+            #'filters': ['require_debug_false'],
+            'class': 'django.utils.log.AdminEmailHandler',
+            'formatter': 'simple',
+        },
     },
     'loggers': {
         'django': {
@@ -229,7 +222,7 @@ LOGGING = {
             'propagate': False,
         },
         'periodically': {
-            'handlers': ['console'],
+            'handlers': ['console', 'mail_admins'],
             'level': 'ERROR',
             'propagate': True,
         },
@@ -278,7 +271,7 @@ AUTHENTICATION_BACKENDS = (
 ACCOUNT_AUTHENTICATION_METHOD = "email"
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 4
 ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'services.accounts.views.redirect_home'
 ACCOUNT_SESSION_REMEMBER = False
 ACCOUNT_SIGNUP_PASSWORD_VERIFICATION = True

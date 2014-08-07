@@ -1,33 +1,74 @@
-server_admin='satnet.calpoly@gmail.com'
-server_certificates_dir='/etc/apache2/certificates'
-server_certificate="$server_certificates_dir/marajota.calpoly.edu.crt"
-server_key="$server_certificates_dir/marajota.calpoly.edu.key"
-project_root_dir='/home/rtubio/repositories/satnet-release-1/WebServices'
-public_html_dir="$project_root_dir/public_html"
+#!/bin/bash
 
-echo '<VirtualHost *:443>' > $1
-echo '' >> $1
-echo "    ServerAdmin $server_admin" >> $1
-echo '' >> $1
-echo "    Alias /favicon.ico $public_html_dir/favicon.ico" >> $1
-echo "    Alias /static $public_html_dir/static" >> $1
-echo '' >> $1
-echo '    GnuTLSEnable on' >> $1
-echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' >> $1
-echo "    GnuTLSCertificateFile $server_certificate" >> $1
-echo "    GnuTLSKeyFile $server_key" >> $1
-echo '' >> $1
-echo "    WSGIScriptAlias / $project_root_dir/website/wsgi.py" >> $1
-echo "    WSGIDaemonProcess satnet user=rtubio python-path=$project_root_dir:$project_root_dir/.venv/lib/python2.7/site-packages" >> $1
-echo '' >> $1
-echo "    <Directory $project_root_dir/>" >> $1
-echo '        WSGIProcessGroup satnet' >> $1
-echo '        Order deny,allow' >> $1
-echo '        Allow from all' >> $1
-echo '    </Directory>' >> $1
-echo '' >> $1
-echo "    CustomLog $project_root_dir/logs/access.log combined" >> $1
-echo "    CustomLog $project_root_dir/logs/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" >> $1
-echo "    ErrorLog $project_root_dir/logs/error.log" >> $1
-echo '' >> $1
-echo '</VirtualHost>' >> $1
+__load_default_config=false
+__output_file='satnet-tls.conf'
+
+if [ $# -gt 0 ]
+then
+    if [ ! -f $1 ]
+    then
+        echo "File <$1> does not exist!"
+        __load_default_config=true
+    else
+        echo "Loading custom configuration from <$1>..."
+        source $1
+    fi
+else
+    echo "No custom configuration provided, loading defaults..."
+    __load_default_config=true
+fi
+
+if [ "$__load_default_config" = true ]
+then
+    echo 'Loading default configuration...'
+    user='rtubiopa'
+    server_name='satnet.aero.calpoly.edu'
+    server_admin='satnet.calpoly@gmail.com'
+    server_certificates_dir='/etc/apache2/certificates'
+    server_certificate="$server_certificates_dir/satnet.aero.calpoly.edu.crt"
+    server_key="$server_certificates_dir/satnet.aero.calpoly.edu.key"
+    project_root_dir='/home/rtubiopa/repositories/satnet-release-1/WebServices'
+    logs_dir="$project_root_dir/logs"
+    public_html_dir="$project_root_dir/public_html"
+    static_dir="$public_html_dir/static"
+    document_root="$static_dir"
+fi
+
+echo '<VirtualHost *:80>' > $__output_file
+echo '	ServerName satnet.aero.calpoly.edu' >> $__output_file
+echo '	Redirect permanent / https://satnet.aero.calpoly.edu/' >> $__output_file
+echo '</VirtualHost>' >> $__output_file
+echo '' >> $__output_file
+echo '<VirtualHost *:443>' >> $__output_file
+echo '' >> $__output_file
+echo "	  ServerName $server_name" >> $__output_file
+echo "    ServerAdmin $server_admin" >> $__output_file
+echo "	  DocumentRoot $static_dir" >> $__output_file
+echo '' >> $__output_file
+echo "    Alias /favicon.ico $public_html_dir/favicon.ico" >> $__output_file
+echo "    Alias /static $static_dir" >> $__output_file
+echo '' >> $__output_file
+echo '    GnuTLSEnable on' >> $__output_file
+echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' >> $__output_file
+echo "    GnuTLSCertificateFile $server_certificate" >> $__output_file
+echo "    GnuTLSKeyFile $server_key" >> $__output_file
+echo '' >> $__output_file
+echo "    WSGIScriptAlias / $project_root_dir/website/wsgi.py" >> $__output_file
+echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$project_root_dir/.venv/lib/python2.7/site-packages" >> $__output_file
+echo '' >> $__output_file
+echo "    <Directory $project_root_dir/>" >> $__output_file
+echo '        WSGIProcessGroup satnet' >> $__output_file
+echo '	      <IfVersion < 2.3 >' >> $__output_file
+echo '        	Order deny,allow' >> $__output_file
+echo '        	Allow from all' >> $__output_file
+echo '	      </IfVersion>' >> $__output_file
+echo '	      <IfVersion >= 2.3>' >> $__output_file
+echo '		Require all granted' >> $__output_file
+echo '	      </IfVersion>' >> $__output_file
+echo '    </Directory>' >> $__output_file
+echo '' >> $__output_file
+echo "    CustomLog $logs_dir/access.log combined" >> $__output_file
+echo "    CustomLog $logs_dir/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" >> $__output_file
+echo "    ErrorLog $logs_dir/error.log" >> $__output_file
+echo '' >> $__output_file
+echo '</VirtualHost>' >> $__output_file

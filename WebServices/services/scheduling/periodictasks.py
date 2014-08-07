@@ -15,38 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-
 import logging
 from periodically import decorators
 
-from services.common import misc
-from services.scheduling.models import operational, tle
+from services.scheduling.models import tle
 
 logger = logging.getLogger('scheduling')
-
-
-@decorators.daily()
-def update_operational_slots():
-    """
-    Task to be executed periodically for updating the pass slots with the
-    following ones (3 days in advance).
-    """
-    logger.info("Populating OperationalSlots table, daily task execution!")
-    operational.OperationalSlotsManager.populate_slots()
-
-
-@decorators.daily()
-def clean_operational_slots():
-    """
-    This task cleans all the old OperationalSlots from the database.
-    """
-    logger.info("Cleaning OperationalSlots table, daily task execution!")
-    old_slots = operational.OperationalSlot.objects.filter(
-        end__lte=misc.get_today_utc()
-    )
-    logger.info('> About to delete ' + len(old_slots) + ' OperationaSlots.')
-    old_slots.delete()
-    logger.info('> Deleted!')
 
 
 @decorators.daily()

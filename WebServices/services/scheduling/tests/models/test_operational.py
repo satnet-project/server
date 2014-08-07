@@ -15,21 +15,22 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
-import datetime
-
 from django import test
+
 import datadiff
-from services.common import testing as db_tools, misc
+import datetime
+import logging
+
+from services.common import testing as db_tools, misc, simulation
 from services.configuration import signals
 from services.configuration.jrpc import channels as jrpc_channels_if
 from services.configuration.jrpc import rules as jrpc_rules_if
 from services.configuration.jrpc import serialization as jrpc_keys
 from services.configuration.models import rules, availability, channels
-from services.scheduling.models import operational, tle
+from services.scheduling.models import operational
 
 
-class JRPCRulesTest(test.TestCase):
+class OperationalModels(test.TestCase):
 
     def setUp(self):
         """
@@ -170,7 +171,6 @@ class JRPCRulesTest(test.TestCase):
         expected = [
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
@@ -180,7 +180,7 @@ class JRPCRulesTest(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> window = ' + str(
-                tle.OrbitalSimulator.get_simulation_window()
+                simulation.OrbitalSimulator.get_simulation_window()
             )
             misc.print_list(rules.AvailabilityRule.objects.all())
             misc.print_list(availability.AvailabilitySlot.objects.all())
@@ -203,7 +203,6 @@ class JRPCRulesTest(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
         ]
@@ -229,7 +228,6 @@ class JRPCRulesTest(test.TestCase):
             )
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
             (unicode(operational.STATE_REMOVED),),
         ]
