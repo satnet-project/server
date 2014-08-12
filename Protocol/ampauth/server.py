@@ -30,7 +30,6 @@ class CredReceiver(AMP):
         """
         Generate a new challenge for the given username.
         """
-        print "Login attempt: " + sUsername
         self.username = sUsername
         d = self.portal.login(UsernamePassword(sUsername, sPassword), None, IBoxReceiver)
         def cbLoggedIn((interface, avatar, logout)):

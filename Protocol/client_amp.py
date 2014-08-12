@@ -48,10 +48,10 @@ def beginTest(d, proto):
 
 def connected(d):
     d.callRemote(StartRemote, iClientId=13, iSlotId=81)
-    print "Successful connection"
+    log.err("Successful connection")
 
-def notConnected(_ignored):
-    print "Error during connection"
+def notConnected(failure):
+    log.err("Error during connection")
     reactor.stop()
 
 if __name__ == '__main__':

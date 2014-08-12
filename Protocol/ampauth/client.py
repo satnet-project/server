@@ -1,3 +1,4 @@
+from twisted.python import log
 from twisted.cred.credentials import IUsernamePassword
 from commands import *
 from twisted.cred.error import UnauthorizedLogin
@@ -36,14 +37,15 @@ def login(client, credentials):
     if not IUsernamePassword.providedBy(credentials):
         raise UnhandledCredentials()
     
-    print "Login attempt: " + credentials.username
+    log.msg("Login attempt: " + credentials.username)
     d = client.callRemote(
         PasswordLogin, sUsername=credentials.username, sPassword=credentials.password)
     def result(_ignored):
         return True
     d.addCallback(result)
-    def trapUnauthorizedLogin(result):
-       raise UnauthorizedLogin()
+    def trapUnauthorizedLogin(failure):
+        log.err(failure)
+        raise failure
     d.addErrback(trapUnauthorizedLogin)
 
     return d.addCallback(lambda ignored: client)

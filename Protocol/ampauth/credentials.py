@@ -25,26 +25,32 @@ class DjangoAuthChecker:
 
     def _passwordMatch(self, matched, user):
         if matched:
-            print 'User: ' + user.username
+            log.msg('User ' + user.username + ' -> correct password')
             return user
         else:
-            return failure.Failure(UnauthorizedLogin())
+            raise UnauthorizedLogin('Incorrect password')
 
     def requestAvatarId(self, creds):
         try:
             user = User.objects.get(username=creds.username)
             if user.check_password(creds.password):
-                print "User authenticated correctly"
+                log.msg('User authenticated correctly')
             return defer.maybeDeferred(user.check_password,
                 creds.password).addCallback(self._passwordMatch, user)
         except User.DoesNotExist:
-            return defer.fail(UnauthorizedLogin())
+            return defer.fail(UnauthorizedLogin('Incorrect username'))
 
 
 class Realm:
     implements(portal.IRealm)
-    
+    avatars = {}
+
     def requestAvatar(self, avatarId, mind, *interfaces):
+        if avatarId in self.avatars:
+            log.err('User already logged in')
+            raise UnauthorizedLogin('User already logged in')
+        else:
+            self.avatars[avatarId] = avatarId
         if IBoxReceiver in interfaces:
             print avatarId
             return (IBoxReceiver, Server(), lambda: None)
