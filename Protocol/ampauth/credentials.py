@@ -6,12 +6,14 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 # Import your models for use in your script
 from zope.interface import implements, Interface
-from twisted.python import failure, log
+from twisted.python import log
 from twisted.cred import portal, checkers, credentials
 from twisted.cred.error import UnauthorizedLogin
 from twisted.internet import defer
-from django.contrib.auth.models import User
 from twisted.protocols.amp import IBoxReceiver
+from twisted.internet import reactor
+
+from django.contrib.auth.models import User
 
 from server_amp import Server
 
@@ -43,14 +45,8 @@ class DjangoAuthChecker:
 
 class Realm:
     implements(portal.IRealm)
-    avatars = {}
 
     def requestAvatar(self, avatarId, mind, *interfaces):
-        if avatarId in self.avatars:
-            log.err('User already logged in')
-            raise UnauthorizedLogin('User already logged in')
-        else:
-            self.avatars[avatarId] = avatarId
         if IBoxReceiver in interfaces:
             print avatarId
             return (IBoxReceiver, Server(), lambda: None)
