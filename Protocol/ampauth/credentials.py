@@ -30,6 +30,7 @@ class DjangoAuthChecker:
             log.msg('User ' + user.username + ' -> correct password')
             return user
         else:
+            
             raise UnauthorizedLogin('Incorrect password')
 
     def requestAvatarId(self, creds):

@@ -3,12 +3,13 @@ from twisted.protocols.amp import AMP
 from twisted.cred.credentials import UsernamePassword
 from twisted.protocols.amp import IBoxReceiver
 from twisted.python import log
+from twisted.protocols.policies import TimeoutMixin
 
 from commands import PasswordLogin
 from twisted.cred.error import UnauthorizedLogin
 
 
-class CredReceiver(AMP):
+class CredReceiver(AMP, TimeoutMixin):
     """
     Integration between AMP and L{twisted.cred}. 
 
@@ -28,23 +29,37 @@ class CredReceiver(AMP):
     :type username:
         L{String}
 
-    :ivar last_command:
-        The time the last command was received from the User
-    :type last_command:
+    :ivar iTimeOut:
+        The duration of the session timeout
+    :type iTimeOut:
         L{int}
 
     """
     portal = None
     logout = None
     username = 'NOT_AUTHENTICATED'
-    last_command = 0
+    iTimeOut = 5 #seconds
 
+    def connectionMade(self):
+        self.setTimeout(self.iTimeOut)
+        super(CredReceiver, self).connectionMade()
+
+    def dataReceived(self, data):
+        log.msg('Session timeout reset')
+        self.resetTimeout()
+        super(CredReceiver, self).dataReceived(data)
+
+    def timeoutConnection(self):
+        log.err('Session timeout expired')
+        self.transport.abortConnection()
 
     def connectionLost(self, reason):
         if self.username != 'NOT_AUTHENTICATED':
             self.factory.active_protocols.pop(self.username)
         log.err(reason.getErrorMessage())
         log.msg('Active connections: ' + str(len(self.factory.active_protocols)))
+        self.setTimeout(None) #Cancel the pending timeout
+        self.transport.loseConnection()
 
     def passwordLogin(self, sUsername, sPassword):
         """
@@ -52,11 +67,10 @@ class CredReceiver(AMP):
         """
         if self.factory.active_protocols.get(sUsername):
             raise UnauthorizedLogin('Client already logged in')
-        else:
-            self.username = sUsername
 
         d = self.portal.login(UsernamePassword(sUsername, sPassword), None, IBoxReceiver)
         def cbLoggedIn((interface, avatar, logout)):
+            self.username = sUsername
             self.logout = logout
             self.boxReceiver = avatar
             self.boxReceiver.startReceivingBoxes(self.boxSender)

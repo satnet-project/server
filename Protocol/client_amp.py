@@ -1,7 +1,9 @@
 import sys
 
 from twisted.python import log
-from twisted.internet import reactor, protocol, ssl, defer
+from twisted.internet import reactor, ssl, defer
+from twisted.internet.protocol import ClientCreator
+from twisted.internet.error import ReactorNotRunning
 from twisted.protocols.amp import AMP
 from twisted.cred.credentials import UsernamePassword
 
@@ -11,8 +13,13 @@ from commands import *
 
 class ClientProtocol(AMP):
 
-    #def connectionMade(self):
-    #    d = self.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    def connectionLost(self, reason):
+        log.err(reason)
+        try:
+            reactor.stop()
+        except ReactorNotRunning:
+            log.err('Reactor not running. Bad credentials?')
+        super(ClientProtocol, self).connectionLost(reason)
 
     def vNotifyError(self, sDescription):
         print "NotifyError"
@@ -59,7 +66,7 @@ if __name__ == '__main__':
 
     cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
     options = ssl.optionsForClientTLS(u'humsat.org', cert)
-    cc = protocol.ClientCreator(reactor, ClientProtocol)
+    cc = ClientCreator(reactor, ClientProtocol)
     d = cc.connectSSL('localhost', 1234, options)
     d.addCallback(login, UsernamePassword('xabi.crespo', 'pwd4django'))
     d.addCallback(connected)
