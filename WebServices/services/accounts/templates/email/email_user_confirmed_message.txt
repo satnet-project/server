@@ -1,0 +1,8 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}
+
+A user's email address has been confirmed. Account confirmation is required.
+
+{% endblocktrans %}{% endautoescape %}

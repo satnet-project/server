@@ -28,18 +28,18 @@
 install_packages()
 {
 
-    apt-get update
-    apt-get dist-upgrade
+    sudo apt-get update
+    sudo apt-get dist-upgrade
 
-    apt-get install apache2
-    apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
-    apt-get install postgresql postgresql-contrib phppgadmin
-    apt-get install postgresql-server-all postgresql-server-dev-all
-    apt-get install python python-virtualenv python-pip python-dev
-    apt-get install binutils libproj-dev gdal-bin
-    apt-get install build-essential libssl-dev libffi-dev
+    sudo apt-get install apache2
+    sudo apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
+    sudo apt-get install postgresql postgresql-contrib phppgadmin
+    sudo apt-get install postgresql-server-all postgresql-server-dev-all
+    sudo apt-get install python python-virtualenv python-pip python-dev
+    sudo apt-get install binutils libproj-dev gdal-bin
+    sudo apt-get install build-essential libssl-dev libffi-dev
 
-    apt-get clean
+    sudo apt-get clean
 
     pip install virtualenvwrapper
 
@@ -76,7 +76,7 @@ create_self_signed_cert()
 # ### This function configures the operating system with the required users,
 # permissions and directories necessary.
 __username=''
-configure_os()
+configure_ubuntu_os()
 {
     usermod -aG adm $__username
 }
@@ -85,8 +85,8 @@ configure_os()
 # ### This function configures the apache2 server.
 configure_apache()
 {
-    a2enmod gnutls
-    service apache2 reload
+    sudo a2enmod gnutls
+    sudo service apache2 reload
 }
 
 __pgsql_batch='/tmp/__pgsql_batch'
@@ -140,53 +140,15 @@ configure_root()
     mkdir -p $webservices_public_html_dir
     cp -f $webservices_dir/website/static $webservices_public_html_dir/.
 
-    virtualenv .venv
-    source $venv_activate && echo 'VENV_ACTIVATED!!!!'
+    virtualenv $webservices_venv_dir
+    [[ ! -f "$webservices_venv_activate" ]] && {
+        echo 'Virtual environment activation failed... exiting!'
+        exit -1
+    }
+    source $webservices_venv_activate
+
     pip install -r "$webservices_dir/requirements.txt"
-    
     python "$webservices_dir/manage.py" syncdb
-}
-
-# ### Method that configures a Python virtual environment
-create_virtualenv()
-{
-
-    virtualenv "$project_path/$venv"
-
-    # ### starts virtual environment
-    # the virtual environment must be activated before installing the required
-    # packages since these should now be installed in the local directories
-    # hierarchy within the created environment
-    source $venv_activate && echo 'VENV_ACTIVATED!!!!'
-
-    pip install distribute --upgrade
-
-    pip install django
-    pip install rpc4django
-    pip install pytz
-    pip install eventlog
-    pip install django-jsonfield
-    pip install django-registration
-    pip install mysql-python
-    pip install django_countries
-    pip install django-passwords
-    pip install django-jquery
-    pip install django-session-security
-    pip install django-jsonview
-    pip install django-leaflet
-    pip install python-dateutil
-    pip install django-extensions
-    pip install pyephem
-    pip install psycopg2
-    # ### testing packages
-    pip install datadiff
-    pip install django-periodically
-    pip install django-allauth
-
-    # ### TODO make it relocatable...
-    # ### rellocatable virtual environment: --relocatable
-    # virtualenv --relocatable $venv
-
 }
 
 # ### This function upgrades all the pip packages installed in the
@@ -211,10 +173,10 @@ configure_crontab()
     __crontab_command="source $webservices_venv_activate && $__django_runtasks"
     __crontab_task="30 23 * * * $__crontab_user $__crontab_command"
 
-    echo 'Adding crontab task for django-periodically...' > $__crontab_conf
-    echo "SHELL=$__crontab_shell" >> $__crontab_conf
-    echo "PATH=$__crontab_path" >> $__crontab_conf
-    echo "$__crontab_task" >> $__crontab_conf
+    sudo echo 'Adding crontab task for django-periodically...' > $__crontab_conf
+    sudo echo "SHELL=$__crontab_shell" >> $__crontab_conf1
+    sudo echo "PATH=$__crontab_path" >> $__crontab_conf
+    sudo echo "$__crontab_task" >> $__crontab_conf
     #chmod +x $__crontab_conf
 }
 
@@ -244,20 +206,6 @@ bashrc_file="$HOME/.bashrc"
 venv_workon="$HOME/.virtualenvs"
 venv_projects="$HOME/repositories/satnet-release-1/WebServices"
 
-# ### Configures an environment for using the virtualenvironment wrapper. This 
-# is the full configuration, which might not be required in all cases.
-configure_virtualenvwrapper()
-{
-
-    echo -e "\n# ### Virtualenv Wrapper" >> $bashrc_file
-    echo "export WORKON_HOME=$venv_workon" >> $bashrc_file
-    echo "export PROJECT_HOME=$venv_projects" >>  $bashrc_file
-    echo "source /usr/local/bin/virtualenvwrapper.sh" >> $bashrc_file
-
-    bash
-
-}
-
 # ### Examples of HOW TO call this script
 usage() { 
 
@@ -267,7 +215,7 @@ usage() {
     echo "Usage: $0 [-p] #Configures PostgreSQL" 
     echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET." 
     echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
-    echo "Usage: $0 [-i] #Install required packages <root>" 
+    echo "Usage: $0 [-d] #Install Debian packages <root>" 
     echo "Usage: $0 [-v] #Configure virtualenv" 
 
     1>&2;
@@ -277,26 +225,27 @@ usage() {
 
 ################################################################################
 # ### Main variables and parameters
-project_path="$( cd "$( dirname "$0" )" && pwd )"
+script_path="$( cd "$( dirname "$0" )" && pwd )"
+project_path="$script_path/.."
 webservices_dir="$project_path/WebServices"
 webservices_venv_dir="$webservices_dir/.venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"
 webservices_public_html_dir="$webservices_dir/public_html"
 webservices_logs_dir="$webservices_dir/logs"
-project_path="$project_path/.."
 
 ################################################################################
 # ### Main execution loop
-[[ $( whoami ) == 'root' ]] || \
-    { echo 'Need to be <root>, exiting...'; exit -1; }
+echo "script_path = $script_path"
+echo "project_path = $project_path"
+echo "webservices_path = $webservices_dir"
 
 if [ $# -lt 1 ] ; then
     usage
     exit 0
 fi
 
-while getopts ":bciprov" opt; do
+while getopts ":bcdprov" opt; do
     case $opt in
         b)
             echo 'Installing Bower and Node.js...'
@@ -311,7 +260,7 @@ while getopts ":bciprov" opt; do
             exit 1;
             ;;
         i)
-            echo 'Installing required packages...'
+            echo 'Installing Debian packages...'
             echo 'This process is not unattended, user interaction is required.'
             echo 'Press any key to continue...'
             read

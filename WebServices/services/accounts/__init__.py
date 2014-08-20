@@ -14,3 +14,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
+
+# Signals have to be imported
+from services.accounts import signals

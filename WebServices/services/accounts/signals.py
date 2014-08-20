@@ -19,8 +19,12 @@ from django import dispatch
 from django.contrib.auth import models as auth_models
 from django.core import exceptions
 
+from allauth.account import adapter as allauth_adapter
 from allauth.account import signals as allauth_signals
+
 import logging
+
+from services.accounts import models as account_models
 
 logger = logging.getLogger('accounts')
 
@@ -40,6 +44,7 @@ def user_signed_up_receiver(request, user, **kwargs):
     )
 
 
+CONFIRMED_EMAIL_TEMPLATE = 'email/email_user_confirmed'
 
 
 @dispatch.receiver(allauth_signals.email_confirmed)
@@ -58,9 +63,36 @@ def email_confirmed_receiver(email_address, **kwargs):
 
     try:
 
+        # User has to be activated by server's administrator.
         user = auth_models.User.objects.get(email=email_address.email)
-        user.is_active = True
+        user.is_active = False
         user.save()
+
+        # The confirmation of the email only verifies the account.
+        u_profile = account_models.UserProfile.objects.get(
+            email=email_address.email
+        )
+        u_profile.is_verified = True
+        u_profile.save()
+
+        # Email sent to the administrator to report the new user
+        for staff_email_i in auth_models.User.objects.filter(
+                is_staff=True
+        ).values_list('email', flat=True):
+
+            logger.info(
+                '(((((email_confirmed))))), notifying to staff = ' + str(
+                    staff_email_i
+                )
+            )
+
+            allauth_adapter.get_adapter().send_mail(
+                template_prefix=CONFIRMED_EMAIL_TEMPLATE,
+                email=staff_email_i,
+                context={
+                    'staff_email': staff_email_i,
+                }
+            )
 
     except exceptions.ObjectDoesNotExist:
 

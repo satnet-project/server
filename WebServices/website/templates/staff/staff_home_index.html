@@ -55,12 +55,20 @@ permitted within this system.
 <p>
 <ol>
     <li>Users are initially <b>unregistered</b>.</li>
-    <li>For accessing the system, they need to create an account in the system. 
-        This account creation will appear as a <b>pending</b> to any 
+    <li>In order to access to the system, they need to create an account in the
+        system. This account creation will appear as a <b>pending</b> to any
         staff user.</li>
-    <li>Staff users can <b>verify</b> this pending account, so that the system
-        will automatically send an email to the user for verifing that email
-        address and will mark the account as <b>inactive</b> .</li>
+    <li>When a user makes a registration of a given email address in the
+        system, the server automatically sends a verification email to the
+        user.</li>
+    <ul>
+        <li>The link provided expires after 4 days. If it was not used, the
+            still existing but <i>inactive</i> account will be deleted by
+            the system maintenance periodic task.</li>
+    </ul>
+    <li>After the user confirms its email address, all staff for the site are
+        notified through email and must accept the new user before it gets
+        access to the system:
     <ul>
         <li>In case the information provided by users cannot be trusted, staff
             users can <b>delete</b> that request.</li>
@@ -68,16 +76,9 @@ permitted within this system.
             address, staff users can <b>block</b> that email address so that
             subsequent requests will not appear as pending again.</li>
     </ul>
-    <li>Once users receive the confirmation email, they can click on the link 
-        that is provided for verifying that they own their email address. In 
-        case the verification was correct, user account changes its state to
-        <b>verified</b>, enabling users access to the system.</li>
-    <ul>
-        <li>The link provided expires after 4 days. If it was not used, the 
-            still existing but <i>inactive</i> account will be deleted by 
-            the system maintenance periodic task.</li>
-    </ul>
-    <li>Verified users can be either blocked or deleted, as required.</li>
+    <li>Those who get accepted into the system will receive a notification
+    through email.</li>
+    <li>Accepted users can be either blocked or deleted, as required.</li>
 </ol>
 </p>
 

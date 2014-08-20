@@ -1,0 +1,8 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}
+
+Your user account has been activated. You can access to the network services.
+
+{% endblocktrans %}{% endautoescape %}

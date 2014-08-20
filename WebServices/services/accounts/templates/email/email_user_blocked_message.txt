@@ -1,0 +1,9 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}
+
+Your account to access to the SATNet network has been blocked.
+For more information, contact the administrator of the network.
+
+{% endblocktrans %}{% endautoescape %}

@@ -219,9 +219,9 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
         identifier=channel_id
     ).count() > 0:
         raise Exception(
-            "Channel identifier already exists, { "
-            + str(serialization.CH_ID_K) + ": "
-            + str(channel_id) + "}"
+            'Channel identifier already exists, { '
+            + str(serialization.CH_ID_K) + ': '
+            + str(channel_id) + '}'
         )
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the

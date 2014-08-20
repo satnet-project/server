@@ -27,7 +27,7 @@ urlpatterns = urls.patterns(
     '',
     urls.url(
         r'^$',
-        views.redirect_home,
+        views.redirect_login,
         name='index'
     ),
     # ### Command and Control Interface
