@@ -12,8 +12,9 @@ class StartRemote(amp.Command):
     response = [('iResult', amp.Integer())]
     """
     Invoked when a client wants to connect to an N-server.
+    
     :param iClientId:
-        Remote client identification number
+        Local client identification number
     :type iClientId:
         int
     :param iClientId:
@@ -21,7 +22,7 @@ class StartRemote(amp.Command):
     :type iClientId:
         int
 
-    :returns:
+    :returns iResult:
         Code indicating whether the slot has ended or not, and whether the
         other client required for the remote operation is still connected or not.
     :rtype:
@@ -42,6 +43,7 @@ class SendMsg(amp.Command):
     requiresAnswer = False
     """
     Invoked when a client wants to send a message to a remote entity.
+    
     :param bMsg:
         Array containing the message
     :type bMsg:
@@ -59,6 +61,7 @@ class NotifyError(amp.Command):
     requiresAnswer = False
     """
     Used to informed a client about an error in the network.
+    
     :param sDescription:
 
     :type sDescription:
@@ -71,6 +74,7 @@ class NotifyConnection(amp.Command):
     requiresAnswer = False
     """
     Notifies to a client the connecton of an aditional remote client.
+    
     :param iClientId:
         Client identification number
     :type iClientId:
@@ -83,6 +87,7 @@ class NotifyMsg(amp.Command):
     requiresAnswer = False
     """
     Used to send a message to a remote client.
+    
     :param bMsg:
         Remote client identification number
     :type bMsg:
@@ -95,6 +100,7 @@ class NotifySlotEnd(amp.Command):
     requiresAnswer = False
     """
     Notifies to a client the end of the operations slot.
+    
     :param iSlotId:
         Slot identification number
     :type iSlotId:

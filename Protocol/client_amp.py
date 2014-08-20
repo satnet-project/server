@@ -1,14 +1,18 @@
-from twisted.internet import reactor, protocol, ssl
-from twisted.protocols.amp import AMP
-from prototipes import *
-from twisted.python import log
 import sys
+
+from twisted.python import log
+from twisted.internet import reactor, protocol, ssl, defer
+from twisted.protocols.amp import AMP
+from twisted.cred.credentials import UsernamePassword
+
+from ampauth.client import login
+from commands import *
 
 
 class ClientProtocol(AMP):
 
-    def connectionMade(self):
-        d = self.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    #def connectionMade(self):
+    #    d = self.callRemote(StartRemote, iClientId=13, iSlotId=81)
 
     def vNotifyError(self, sDescription):
         print "NotifyError"
@@ -31,13 +35,9 @@ class ClientProtocol(AMP):
     NotifySlotEnd.responder(vNotifySlotEnd)
 
 
-class ClientFactory(protocol.ClientFactory):
-    protocol = ClientProtocol
-
-
 def beginTest(d, proto):
 
-    def connected(_):
+    def connected(_ignored):
         return proto.callRemote(StartRemote, iClientId=13, iSlotId=81)
     d.addCallback(connected)
     
@@ -46,11 +46,22 @@ def beginTest(d, proto):
         reactor.stop()
     d.addCallback(done)
 
+def connected(d):
+    d.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    log.err("Successful connection")
+
+def notConnected(failure):
+    log.err("Error during connection")
+    reactor.stop()
 
 if __name__ == '__main__':
     log.startLogging(sys.stdout)
+
     cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
     options = ssl.optionsForClientTLS(u'humsat.org', cert)
-
-    reactor.connectSSL('localhost', 1234, ClientFactory(), options)
+    cc = protocol.ClientCreator(reactor, ClientProtocol)
+    d = cc.connectSSL('localhost', 1234, options)
+    d.addCallback(login, UsernamePassword('xabi.crespo', 'pwd4django'))
+    d.addCallback(connected)
+    d.addErrback(notConnected)
     reactor.run()

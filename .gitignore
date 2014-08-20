@@ -5,3 +5,4 @@ __v_env/
 .venv
 .idea
 Protocol/key/
+.env
