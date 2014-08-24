@@ -57,9 +57,6 @@ def email_confirmed_receiver(email_address, **kwargs):
     :param user: the new user
     :param kwargs: other args
     """
-    logger.info(
-        '((((((email_confirmed)))))), email = ' + str(email_address.email)
-    )
 
     try:
 
