@@ -1,0 +1,8 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}Your account for
+accessing to the SATNet network has been removed.
+
+For more details, contact the administrator of the network.
+{% endblocktrans %}{% endautoescape %}

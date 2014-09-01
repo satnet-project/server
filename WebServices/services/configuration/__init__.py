@@ -19,3 +19,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 # methods.
 from services.configuration.jrpc import channels, rules
 from services.configuration.jrpc import groundstations, spacecraft
+
+# It is also necessary to import the signals.
+from services.configuration import signals

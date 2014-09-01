@@ -21,6 +21,8 @@ from django.contrib.auth import models as auth_models
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
 
+from allauth.account import adapter as allauth_adapter
+
 logger = logging.getLogger('accounts')
 
 
@@ -44,6 +46,14 @@ class UserProfileManager(models.Manager):
         user.is_verified = True
         user.save()
 
+        allauth_adapter.get_adapter().send_mail(
+            template_prefix='email/email_user_activated',
+            email=user.email,
+            context={
+                'user_email': user.email,
+            }
+        )
+
     def block_user(self, user_id):
         """
         Function that changes user status to 'blocked' in the database.
@@ -58,6 +68,14 @@ class UserProfileManager(models.Manager):
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_blocked = True
         user.save()
+
+        allauth_adapter.get_adapter().send_mail(
+            template_prefix='email/email_user_blocked',
+            email=user.email,
+            context={
+                'user_email': user.email,
+            }
+        )
 
     def unblock_user(self, user_id):
         """
@@ -74,6 +92,14 @@ class UserProfileManager(models.Manager):
         user.is_blocked = False
         user.save()
 
+        allauth_adapter.get_adapter().send_mail(
+            template_prefix='email/email_user_activated',
+            email=user.email,
+            context={
+                'user_email': user.email,
+            }
+        )
+
     def activate_user(self, user_id):
         """
         Function that changes user status to 'active' in the database.
@@ -88,7 +114,15 @@ class UserProfileManager(models.Manager):
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_active = True
         user.save()
-        
+
+        allauth_adapter.get_adapter().send_mail(
+            template_prefix='email/email_user_activated',
+            email=user.email,
+            context={
+                'user_email': user.email,
+            }
+        )
+
     def deactivate_user(self, user_id):
         """
         Function that changes user status to 'active' in the database.
@@ -103,6 +137,14 @@ class UserProfileManager(models.Manager):
         user = get_object_or_404(UserProfile, user_ptr=user_id)
         user.is_active = False
         user.save()
+
+        allauth_adapter.get_adapter().send_mail(
+            template_prefix='email/email_user_blocked',
+            email=user.email,
+            context={
+                'user_email': user.email,
+            }
+        )
 
 
 class UserProfile(auth_models.User):

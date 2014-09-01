@@ -17,9 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import exceptions
 from django.core import urlresolvers
-from django.contrib.auth import models as auth_models
 from django.contrib.auth.decorators import login_required
-from django.contrib.sites.models import Site, RequestSite
 from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import UpdateView
@@ -41,20 +39,20 @@ def csrf_failure_handler(request, reason=''):
     return TemplateResponse(request, 'csrf_failure.html')
 
 
-def redirect_home(request):
+def redirect_login(request):
     """
     Redirects user access to 'home', so in case a user is already logged in,
     the system redirects that access to the post-login 'home' page.
     """
     logger.info('<redirect_home>')
     if request.user.is_authenticated():
-        return redirect_login(request)
+        return redirect_home(request)
     else:
         return TemplateResponse(request, 'index.html')
 
 
 @login_required
-def redirect_login(request):
+def redirect_home(request):
     """
     Redirects users based on their priviledges.
     """
@@ -151,21 +149,10 @@ class PendingRegView(ListView):
 
     def activate_user(self, user_id):
         """
-        Activates a given user in the database and triggers the automatic
-        sending of the account verification email.
+        Activates a given user in the database.
         :parameter user_id: Identifier of the user
         :type user_id: int
         """
-        if Site._meta.installed:
-            site = Site.objects.get_current()
-        else:
-            site = RequestSite(None)
-
-        # 1) first, the confirmation email is sent
-        utils.allauth_confirm_email(
-            auth_models.User.objects.get(pk=user_id), self.request
-        )
-        # 2) afterwards, the profile is set as verified and saved
         models.UserProfile.objects.verify_user(user_id)
 
     def block_user(self, user_id):
