@@ -33,12 +33,12 @@ class CredReceiver(AMP, TimeoutMixin):
         The duration of the session timeout
     :type iTimeOut:
         L{int}
-
     """
+
     portal = None
     logout = None
     username = 'NOT_AUTHENTICATED'
-    iTimeOut = 5 #seconds
+    iTimeOut =  10 #seconds
 
     def connectionMade(self):
         self.setTimeout(self.iTimeOut)
@@ -65,7 +65,9 @@ class CredReceiver(AMP, TimeoutMixin):
         """
         Generate a new challenge for the given username.
         """
+
         if self.factory.active_protocols.get(sUsername):
+            log.err('Client already logged in')
             raise UnauthorizedLogin('Client already logged in')
 
         d = self.portal.login(UsernamePassword(sUsername, sPassword), None, IBoxReceiver)
@@ -101,8 +103,8 @@ class CredAMPServerFactory(ServerFactory):
         A list containing a reference to all active protocols
     :type active_protocols:
         L{List}
-
     """
+
     protocol = CredReceiver
     active_protocols = {}
 

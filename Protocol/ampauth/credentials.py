@@ -29,19 +29,18 @@ class DjangoAuthChecker:
         if matched:
             log.msg('User ' + user.username + ' -> correct password')
             return user
-        else:
-            
+        else:      
             raise UnauthorizedLogin('Incorrect password')
 
     def requestAvatarId(self, creds):
         try:
             user = User.objects.get(username=creds.username)
-            if user.check_password(creds.password):
-                log.msg('User authenticated correctly')
-            return defer.maybeDeferred(user.check_password,
-                creds.password).addCallback(self._passwordMatch, user)
+            d = defer.maybeDeferred(user.check_password,
+                creds.password)
+            d.addCallback(self._passwordMatch, user)
+            return d
         except User.DoesNotExist:
-            return defer.fail(UnauthorizedLogin('Incorrect username'))
+            raise UnauthorizedLogin('Incorrect username')
 
 
 class Realm:

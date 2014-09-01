@@ -1,7 +1,7 @@
 import sys
 
 from twisted.python import log
-from twisted.internet import reactor, ssl, defer
+from twisted.internet import reactor, ssl, defer, protocol, endpoints
 from twisted.internet.protocol import ClientCreator
 from twisted.internet.error import ReactorNotRunning
 from twisted.protocols.amp import AMP
@@ -11,14 +11,28 @@ from ampauth.client import login
 from commands import *
 
 
+def connected(d):
+    d.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    log.err("Successful connection")
+
+def notConnected(failure):
+    log.err("Error during connection")
+    reactor.stop()
+
+
 class ClientProtocol(AMP):
+
+    """
+    CLIENT
+    def connectionMade(self):
+        d = login(self, UsernamePassword('xabi.crespo', 'pwd4django'))
+        d.addCallback(connected)
+        d.addErrback(notConnected)
+        return d
+    """
 
     def connectionLost(self, reason):
         log.err(reason)
-        try:
-            reactor.stop()
-        except ReactorNotRunning:
-            log.err('Reactor not running. Bad credentials?')
         super(ClientProtocol, self).connectionLost(reason)
 
     def vNotifyError(self, sDescription):
@@ -53,22 +67,29 @@ def beginTest(d, proto):
         reactor.stop()
     d.addCallback(done)
 
-def connected(d):
-    d.callRemote(StartRemote, iClientId=13, iSlotId=81)
-    log.err("Successful connection")
 
-def notConnected(failure):
-    log.err("Error during connection")
-    reactor.stop()
+class Client():
+    def __init__(self):
+        log.startLogging(sys.stdout)
+
+        cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
+        options = ssl.optionsForClientTLS(u'humsat.org', cert)
+
+        factory = protocol.Factory.forProtocol(ClientProtocol)
+        endpoint = endpoints.SSL4ClientEndpoint(reactor, 'localhost', 1234,
+                                                options)
+        d = endpoint.connect(factory)
+        def endPointConnected(clientAMP):
+            self.proto = clientAMP
+            return clientAMP
+        d.addCallback(endPointConnected)        
+        d.addCallback(login, UsernamePassword('xasbi.crespo', 'pwd4django'))
+
+        d.addCallback(connected)
+        d.addErrback(notConnected)
+
+        reactor.run()
+
 
 if __name__ == '__main__':
-    log.startLogging(sys.stdout)
-
-    cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
-    options = ssl.optionsForClientTLS(u'humsat.org', cert)
-    cc = ClientCreator(reactor, ClientProtocol)
-    d = cc.connectSSL('localhost', 1234, options)
-    d.addCallback(login, UsernamePassword('xabi.crespo', 'pwd4django'))
-    d.addCallback(connected)
-    d.addErrback(notConnected)
-    reactor.run()
+    c = Client()

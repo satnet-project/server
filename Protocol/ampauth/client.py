@@ -2,6 +2,7 @@ from twisted.python import log
 from twisted.cred.credentials import IUsernamePassword
 from commands import *
 from twisted.cred.error import UnauthorizedLogin
+from twisted.internet.defer import fail
 
 
 class UnhandledCredentials(Exception):
@@ -44,8 +45,8 @@ def login(client, credentials):
         return True
     d.addCallback(result)
     def trapUnauthorizedLogin(failure):
-        log.err(failure)
-        raise failure
+        #log.err(failure)
+        return failure
     d.addErrback(trapUnauthorizedLogin)
 
     return d.addCallback(lambda ignored: client)
