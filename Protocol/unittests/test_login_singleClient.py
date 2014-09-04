@@ -1,13 +1,15 @@
+import sys 
+print sys.path
 from twisted.internet import defer, protocol
 from twisted.trial import unittest
+from twisted.cred.portal import Portal
+from twisted.internet import reactor, ssl
+
+from client_amp import ClientProtocol
+from ampauth.server import CredReceiver
 from ampauth.credentials import *
 from ampauth.server import *
 from ampauth.client import login
-
-from twisted.cred.portal import Portal
-from twisted.internet import reactor, ssl
-from client_amp import ClientProtocol
-from ampauth.server import CredReceiver
 
 """
 To perform correct end to end tests:
@@ -88,7 +90,7 @@ class TestSingleClient(unittest.TestCase):
 
     def test_validLogin(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'xabi.crespo', 'pwd4django'))
+            'xabi', 'pwdxabi'))
         d.addCallback(self.assertTrue)
         return d
 
@@ -99,7 +101,7 @@ class TestSingleClient(unittest.TestCase):
 
     def test_wrongUsername(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'wrongUser', 'pwd4django'))
+            'wrongUser', 'pwdxabi'))
 
         def checkError(result):
             self.assertEqual(result.message, 'Incorrect username')
@@ -112,7 +114,7 @@ class TestSingleClient(unittest.TestCase):
 
     def test_wrongPassword(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'xabi.crespo', 'wrongPass'))
+            'xabi', 'wrongPass'))
 
         def checkError(result):
             self.assertEqual(result.message, 'Incorrect password')

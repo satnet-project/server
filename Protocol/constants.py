@@ -19,6 +19,7 @@
 """
 __author__ = 'xabicrespog@gmail.com'
 
+
 CODE_OK = 0
 CODE_CLIENT_OK = CODE_OK
 CODE_NO_CLIENT = -1

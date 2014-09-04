@@ -1,3 +1,25 @@
+# coding=utf-8
+"""
+   Copyright 2014 Xabier Crespo Álvarez
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+:Author:
+    Xabier Crespo Álvarez (xabicrespog@gmail.com)
+"""
+__author__ = 'xabicrespog@gmail.com'
+
+
 import sys
 
 from twisted.python import log
@@ -11,8 +33,11 @@ from ampauth.client import login
 from commands import *
 
 
-def connected(d):
-    d.callRemote(StartRemote, iClientId=13, iSlotId=81)
+def connected(_ignored, proto):
+    d = proto.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    def printError(error):
+        print error
+    d.addErrback(printError)
     log.err("Successful connection")
 
 def notConnected(failure):
@@ -22,14 +47,11 @@ def notConnected(failure):
 
 class ClientProtocol(AMP):
 
-    """
-    CLIENT
     def connectionMade(self):
-        d = login(self, UsernamePassword('xabi.crespo', 'pwd4django'))
-        d.addCallback(connected)
+        d = login(self, UsernamePassword('xabi', 'pwdxabi'))
+        d.addCallback(connected, self)
         d.addErrback(notConnected)
         return d
-    """
 
     def connectionLost(self, reason):
         log.err(reason)
@@ -56,18 +78,6 @@ class ClientProtocol(AMP):
     NotifySlotEnd.responder(vNotifySlotEnd)
 
 
-def beginTest(d, proto):
-
-    def connected(_ignored):
-        return proto.callRemote(StartRemote, iClientId=13, iSlotId=81)
-    d.addCallback(connected)
-    
-    def done(result):
-        print 'Done'
-        reactor.stop()
-    d.addCallback(done)
-
-
 class Client():
     def __init__(self):
         log.startLogging(sys.stdout)
@@ -83,10 +93,6 @@ class Client():
             self.proto = clientAMP
             return clientAMP
         d.addCallback(endPointConnected)        
-        d.addCallback(login, UsernamePassword('xasbi.crespo', 'pwd4django'))
-
-        d.addCallback(connected)
-        d.addErrback(notConnected)
 
         reactor.run()
 

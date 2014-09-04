@@ -29,18 +29,18 @@ from services.configuration.models import bands, channels, segments
 from services.scheduling.models import tle
 
 
-def create_user(username='testuser', password='testuser.'):
+def create_user(username='testuser', password='testuser.', email='test@test.test'):
     """
     This method creates a new user in the database.
     :return: Reference to the just-created user.
     """
     user = User.objects.create_user(
-        username=username, email='test@test.test', password=password)
+        username=username, email=email, password=password)
     user.save()
     return user
 
 
-def create_user_profile(username='testuser', password='testuser.'):
+def create_user_profile(username='testuser', password='testuser.', email='test@test.test'):
     """
     This method creates a new user profile and its associated User, with the
     parameteres provided, in case the given user object is None.
@@ -49,7 +49,6 @@ def create_user_profile(username='testuser', password='testuser.'):
     :return: The UserProfile object created.
     """
 
-    email = 'test@test.test'
     first_name, last_name = 'test_first_name', 'test_last_name'
     organization, country = 'test_organization', 'US'
 

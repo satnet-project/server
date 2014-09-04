@@ -1,13 +1,13 @@
 from twisted.internet import defer, protocol
 from twisted.trial import unittest
+from twisted.cred.portal import Portal
+from twisted.internet import reactor, ssl
+
 from ampauth.credentials import *
 from ampauth.server import *
 from ampauth.client import login
-
-from twisted.cred.portal import Portal
-from twisted.internet import reactor, ssl
-from client_amp import ClientProtocol
 from ampauth.server import CredReceiver
+from client_amp import ClientProtocol
 
 """
 To perform correct end to end tests:
@@ -98,12 +98,25 @@ class TestMultipleClients(unittest.TestCase):
     def test_duplicatedUser(self):
 
         d1 = login(self.factory1.protoInstance, UsernamePassword(
-            'xabi.crespo', 'pwd4django'))
+            'xabi', 'pwdxabi'))
 
         d2 = login(self.factory2.protoInstance, UsernamePassword(
-            'xabi.crespo', 'pwd4django'))
+            'xabi', 'pwdxabi'))
 
         def checkError(result):
             self.assertEqual(result.message, 'Client already logged in')
         d = self.assertFailure(d2, UnauthorizedLogin).addCallback(checkError)
         return defer.gatherResults([d1, d2, d])
+
+
+    def test_simultaneousUsers(self):
+
+        d1 = login(self.factory1.protoInstance, UsernamePassword(
+            'xabi', 'pwdxabi'))
+        d1.addCallback(self.assertTrue)
+
+        d2 = login(self.factory2.protoInstance, UsernamePassword(
+            'marti', 'pwdmarti'))
+        d2.addCallback(self.assertTrue)
+
+        return defer.gatherResults([d1, d2])
