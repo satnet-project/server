@@ -1,15 +1,19 @@
-import sys 
-print sys.path
+import logging
+
 from twisted.internet import defer, protocol
 from twisted.trial import unittest
 from twisted.cred.portal import Portal
 from twisted.internet import reactor, ssl
 
-from client_amp import ClientProtocol
-from ampauth.server import CredReceiver
+from commands import *
 from ampauth.credentials import *
 from ampauth.server import *
 from ampauth.client import login
+from ampauth.server import CredReceiver
+from client_amp import ClientProtocol
+from errors import SlotNotAvailable
+
+from services.common import testing as db_tools, misc, simulation
 
 """
 To perform correct end to end tests:
@@ -39,15 +43,14 @@ class ClientProtocolTest(ClientProtocol):
         self.factory.onConnectionLost.callback(self)
 
 
-class TestSingleClient(unittest.TestCase):
+class TestRemoteConnection(unittest.TestCase):
 
     """
-    Testing for one single client connection
-    TODO. Test timeout
+    Testing starting a remote connection
     """
 
     def setUp(self):
-        # log.startLogging(sys.stdout)
+        log.startLogging(sys.stdout)
         self.serverDisconnected = defer.Deferred()
         self.serverPort = self._listenServer(self.serverDisconnected)
         self.connected = defer.Deferred()
@@ -84,37 +87,24 @@ class TestSingleClient(unittest.TestCase):
                                     self.clientDisconnected])
 
     """
-    Log in with valid credentianls. The server should return True
+    Call StartRemote method with a non existing slot id
     """
 
-    def test_validLogin(self):
+    def test_wrongSlot(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'xabi', 'pwdxabi'))
-        d.addCallback(lambda res : self.assertTrue(res['bAuthenticated']))
+            'testuser', 'testuser.'))
+        d.addCallback(lambda l : self.factory.protoInstance.callRemote(StartRemote, iClientId=13, iSlotId=100))
+        def checkError(result):
+            self.assertEqual(result.message, 'Slot 100 not operational yet')
+        return self.assertFailure(d, SlotNotAvailable).addCallback(checkError)
+
+    """
+    Call StartRemote method with a existing slot id
+    """
+
+    def test_validSlot(self):
+        d = login(self.factory.protoInstance, UsernamePassword(
+            'testuser', 'testuser.'))
+        d.addCallback(lambda l : self.factory.protoInstance.callRemote(StartRemote, iClientId=13, iSlotId=1))
+        d.addCallback(lambda res : self.assertEqual(res['iResult'], 1))
         return d
-
-    """
-    Log in with wrong username. The server should raise UnauthorizedLogin
-    with 'Incorrect username' message
-    """
-
-    def test_wrongUsername(self):
-        d = login(self.factory.protoInstance, UsernamePassword(
-            'wrongUser', 'pwdxabi'))
-
-        def checkError(result):
-            self.assertEqual(result.message, 'Incorrect username')
-        return self.assertFailure(d, UnauthorizedLogin).addCallback(checkError)
-
-    """
-    Log in with wrong password. The server should raise UnauthorizedLogin
-    with 'Incorrect password' message
-    """
-
-    def test_wrongPassword(self):
-        d = login(self.factory.protoInstance, UsernamePassword(
-            'xabi', 'wrongPass'))
-
-        def checkError(result):
-            self.assertEqual(result.message, 'Incorrect password')
-        return self.assertFailure(d, UnauthorizedLogin).addCallback(checkError)

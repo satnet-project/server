@@ -14,3 +14,6 @@ python "$unittests/test_login_populateDB.py"
 trial "$unittests/test_login_singleClient.py"
 
 trial "$unittests/test_login_multipleClients.py"
+
+python "$unittests/test_startRemote_populateDB.py"
+trial "$unittests/test_startRemote.py"

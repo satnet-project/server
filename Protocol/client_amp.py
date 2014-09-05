@@ -34,7 +34,7 @@ from commands import *
 
 
 def connected(_ignored, proto):
-    d = proto.callRemote(StartRemote, iClientId=13, iSlotId=81)
+    d = proto.callRemote(StartRemote, iClientId=13, iSlotId=1)
     def printError(error):
         print error
     d.addErrback(printError)

@@ -38,18 +38,24 @@ from ampauth.server import *
 from errors import SlotNotAvailable
 
 from services.scheduling.models.operational import OperationalSlot
+from services.configuration.models.channels import SpacecraftChannel
 
 
 class Server(amp.AMP):
 
     def iStartRemote(self, iClientId, iSlotId):
         log.msg("--------- StartRemote ---------")
-        slot = OperationalSlot.objects.filter(identifier=iSlotId)
+        slot = OperationalSlot.objects.filter(id=iSlotId)
         if not slot:
           log.err('Slot ' + str(iSlotId) + ' not operational yet')
           raise SlotNotAvailable('Slot ' + str(iSlotId) + ' not operational yet')
+        elif len(slot) > 1:
+          log.err('Multiple slots with the same id: ' + str(iSlotId))
+          raise SlotNotAvailable('Incorrect slot number')
         else:
-          self.callRemote(NotifyError, sDescription="CODE")
+          #user_id = slot[0].groundstation_channel.user_id
+          #print "user id: " + str(user_id)
+          #self.callRemote(NotifyError, sDescription="CODE")
           return {'iResult': iSlotId}
     StartRemote.responder(iStartRemote)
     

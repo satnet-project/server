@@ -38,7 +38,6 @@ class TestMultipleClients(unittest.TestCase):
 
     """
     Testing multiple client connections
-    TODO. Create user in Django DB 
     TDOD. Test multiple valid connections
     """
 
@@ -99,6 +98,7 @@ class TestMultipleClients(unittest.TestCase):
 
         d1 = login(self.factory1.protoInstance, UsernamePassword(
             'xabi', 'pwdxabi'))
+        d1.addCallback(lambda res : self.assertTrue(res['bAuthenticated']))
 
         d2 = login(self.factory2.protoInstance, UsernamePassword(
             'xabi', 'pwdxabi'))
@@ -113,10 +113,10 @@ class TestMultipleClients(unittest.TestCase):
 
         d1 = login(self.factory1.protoInstance, UsernamePassword(
             'xabi', 'pwdxabi'))
-        d1.addCallback(self.assertTrue)
+        d1.addCallback(lambda res : self.assertTrue(res['bAuthenticated']))
 
         d2 = login(self.factory2.protoInstance, UsernamePassword(
             'marti', 'pwdmarti'))
-        d2.addCallback(self.assertTrue)
+        d2.addCallback(lambda res : self.assertTrue(res['bAuthenticated']))
 
         return defer.gatherResults([d1, d2])
