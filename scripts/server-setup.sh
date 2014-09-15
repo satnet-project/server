@@ -34,7 +34,7 @@ install_packages()
     sudo apt-get install apache2
     sudo apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
     sudo apt-get install postgresql postgresql-contrib phppgadmin
-    sudo apt-get install postgresql-server-all postgresql-server-dev-all
+    sudo apt-get install postgresql-server-dev-all
     sudo apt-get install python python-virtualenv python-pip python-dev
     sudo apt-get install binutils libproj-dev gdal-bin
     sudo apt-get install build-essential libssl-dev libffi-dev
@@ -147,7 +147,7 @@ configure_root()
     }
     source $webservices_venv_activate
 
-    pip install -r "$webservices_dir/requirements.txt"
+    pip install -r "$script_path/requirements.txt"
     python "$webservices_dir/manage.py" syncdb
 }
 
@@ -212,10 +212,10 @@ usage() {
     echo "Please, use ONLY ONE ARGUMENT at a time:"
     echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
     echo "Usage: $0 [-c] #Create and install self-signed certificates" 
+    echo "Usage: $0 [-i] #Install Debian packages <root>"     
     echo "Usage: $0 [-p] #Configures PostgreSQL" 
     echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET." 
     echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
-    echo "Usage: $0 [-d] #Install Debian packages <root>" 
     echo "Usage: $0 [-v] #Configure virtualenv" 
 
     1>&2;
@@ -245,8 +245,22 @@ if [ $# -lt 1 ] ; then
     exit 0
 fi
 
-while getopts ":bcdprov" opt; do
+while getopts ":abciprov" opt; do
     case $opt in
+        a)
+            echo 'Complete SATNET installation...'
+            echo 'Installing Debian packages...'
+            echo 'This process is not unattended, user interaction is required.'
+            echo 'Press any key to continue...'
+            read
+            install_packages
+            echo 'Configuring PostgreSQL...'
+            configure_postgresql
+            echo 'Configuring virtualenv...'
+            configure_root            
+            echo 'DONE'
+            exit 1
+            ;;
         b)
             echo 'Installing Bower and Node.js...'
             install_bower
