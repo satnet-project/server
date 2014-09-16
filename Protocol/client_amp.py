@@ -69,11 +69,13 @@ class ClientProtocol(AMP):
     def vNotifyConnection(self, sClientId):
         log.msg("--------- Notify Connection ---------")        
         log.msg(sClientId + " has just connected to the server")
+        self.callRemote(SendMsg, sMsg='ola tubío')
         return {}
     NotifyConnection.responder(vNotifyConnection)
 
-    def vNotifyMsg(self, bMsg):
-        print "NotifyMsg"
+    def vNotifyMsg(self, sMsg):
+        log.msg("--------- Notify Message ---------")
+        log.msg(sMsg)                
         return {}
     NotifyMsg.responder(vNotifyMsg)
 

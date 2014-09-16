@@ -76,21 +76,25 @@ class Server(AMP):
                 self.callRemote(NotifyError, sDescription='Both MCC and GSS belong to the same client')
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
+                self.gs_user = self.sUsername
                 if not self.active_protocols[str(sc_user)]:              
                     log.msg('Remote user not connected yet')                          
                     self.callRemote(NotifyError, sDescription="Remote user not connected yet")
                 else:
                     log.msg('Remote user is ' + sc_user)
                     self.active_connections[gs_user] = sc_user
+                    self.active_connections[sc_user] = gs_user                    
                     self.active_protocols[sc_user].callRemote(NotifyConnection, sClientId=str(gs_user))                            
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
+                self.sc_user = self.sUsername
                 if str(gs_user) not in self.active_protocols:
                     log.msg('Remote user ' + gs_user + ' not connected yet')             
                     self.callRemote(NotifyError, sDescription='Remote user ' + str(gs_user) + ' not connected yet')
                 else:
                     log.msg('Remote user is ' + gs_user)
-                    self.active_connections[gs_user] = sc_user              
+                    self.active_connections[gs_user] = sc_user
+                    self.active_connections[sc_user] = gs_user                                  
                     self.active_protocols[gs_user].callRemote(NotifyConnection, sClientId=str(sc_user))              
 
             return {'iResult': iSlotId}
@@ -101,8 +105,9 @@ class Server(AMP):
         return {}
     EndRemote.responder(vEndRemote)
 
-    def vSendMsg(self, bMsg):
+    def vSendMsg(self, sMsg):
         log.msg("--------- Send Message ---------")
+        self.active_protocols[self.sUsername].callRemote(NotifyMsg, sMsg=sMsg)
 
         return {}
     SendMsg.responder(vSendMsg)

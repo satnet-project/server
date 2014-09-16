@@ -79,8 +79,14 @@ class CredReceiver(AMP, TimeoutMixin):
     def connectionLost(self, reason):
         if self.username != 'NOT_AUTHENTICATED':
             self.factory.active_protocols.pop(self.username)
+            # TODO - remove connections when a user is disconnected
+            #self.factory.active_protocols[self.factory.active_connections[self.username]].callRemote(NofifyError, sDescription='Remote client ' + self.factory.active_connections[self.username] + ' was disconnected' )
+            if self.username in self.factory.active_connections:
+                self.factory.active_connections.pop(self.factory.active_connections[self.username])
+                self.factory.active_connections.pop(self.username)
         log.err(reason.getErrorMessage())
-        log.msg('Active connections: ' + str(len(self.factory.active_protocols)))
+        log.msg('Active clients: ' + str(len(self.factory.active_protocols)))
+        log.msg('Active connections: ' + str(len(self.factory.active_connections)/2))#divided by 2 because the dictionary is doubly linked        
         self.setTimeout(None) #Cancel the pending timeout
         self.transport.loseConnection()
 
@@ -105,9 +111,9 @@ class CredReceiver(AMP, TimeoutMixin):
             avatar.active_protocols = self.factory.active_protocols
             avatar.sUsername = sUsername
             avatar.active_connections = self.factory.active_connections
-            self.factory.active_protocols[sUsername] = self
+            self.factory.active_protocols[sUsername] = avatar
             log.msg('Connection made')
-            log.msg('Active connections: ' + str(len(self.factory.active_protocols)))
+            log.msg('Active clients: ' + str(len(self.factory.active_protocols)))
 
             return {'bAuthenticated':True}
         d.addCallback(cbLoggedIn)
@@ -137,8 +143,8 @@ class CredAMPServerFactory(ServerFactory):
 
     :ivar active_connections:
         A dictionary containing a reference to all active protocols (clients).
-        The dictionary keys are the GS clients usernames and the corresponding values
-        are the SC client usernames
+        The dictionary is doubly linked so the keys are the whether the GS clients 
+        or the SC clients and the values are the remote client usernames
     :type active_connections:
         L{Dictionary}        
     """
