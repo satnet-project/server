@@ -70,6 +70,5 @@ class Realm:
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         if IBoxReceiver in interfaces:
-            print avatarId
             return (IBoxReceiver, Server(), lambda: None)
         raise NotImplementedError()

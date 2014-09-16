@@ -11,6 +11,8 @@ from services.common import testing as db_tools, misc, simulation
 from services.configuration.jrpc import channels as jrpc_channels_if
 from services.configuration.jrpc import rules as jrpc_rules_if
 from services.configuration.jrpc import serialization as jrpc_keys
+from services.scheduling.jrpc import groundstations as jrpc_gs_scheduling
+from services.scheduling.jrpc import spacecraft as jrpc_sc_scheduling
 from services.configuration.models import rules, availability, channels
 from services.configuration import signals
 from services.scheduling.models import operational
@@ -27,9 +29,9 @@ def _initDjangoDB():
         logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
         logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
-    __sc_1_id = 'xatcobeo-sc'
-    __sc_1_tle_id = 'XATCOBEO'
-    __sc_1_ch_1_id = 'xatcobeo-fm'
+    __sc_1_id = 'humsat-sc'
+    __sc_1_tle_id = 'HUMSAT-D'
+    __sc_1_ch_1_id = 'humsat-fm'
     __sc_1_ch_1_cfg = {
         jrpc_keys.FREQUENCY_K: '437000000',
         jrpc_keys.MODULATION_K: 'FM',
@@ -66,17 +68,33 @@ def _initDjangoDB():
     db_tools.init_available()
     db_tools.init_tles_database()
     __band = db_tools.create_band()
-    __user_profile = db_tools.create_user_profile()
+
+    __usr_1_name = 'crespo'
+    __usr_1_pass = 'cre.spo'
+    __usr_1_mail = 'crespo@crespo.gal'
+
+    __usr_2_name = 'tubio'
+    __usr_2_pass = 'tu.bio'
+    __usr_2_mail = 'tubio@tubio.gal'
+
     # Default values: username=testuser, password=testuser.
+    __user_def = db_tools.create_user_profile()
+    __usr_1 = db_tools.create_user_profile(
+        username=__usr_1_name, password=__usr_1_pass, email=__usr_1_mail)
+    __usr_2 = db_tools.create_user_profile(
+        username=__usr_2_name, password=__usr_2_pass, email=__usr_2_mail)
+
     __sc_1 = db_tools.create_sc(
-        user_profile=__user_profile,
+        user_profile=__usr_1,
         identifier=__sc_1_id,
         tle_id=__sc_1_tle_id,
     )
     __gs_1 = db_tools.create_gs(
-        user_profile=__user_profile, identifier=__gs_1_id,
+        user_profile=__usr_2, identifier=__gs_1_id,
     )
+
     operational.OperationalSlot.objects.get_simulator().set_debug()
+    operational.OperationalSlot.objects.set_debug()
 
     jrpc_channels_if.gs_channel_create(
         ground_station_id=__gs_1_id,
@@ -102,6 +120,13 @@ def _initDjangoDB():
         configuration=__sc_1_ch_1_cfg
     )
 
+    sc_s_slots = jrpc_sc_scheduling.select_slots(
+        __sc_1_id, [1, 2]
+    )
+
+    gs_c_slots = jrpc_gs_scheduling.confirm_selections(
+        __gs_1_id, [1, 2]
+    )
 
 if __name__ == '__main__':
     _initDjangoDB()

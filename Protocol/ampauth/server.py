@@ -61,7 +61,7 @@ class CredReceiver(AMP, TimeoutMixin):
     portal = None
     logout = None
     username = 'NOT_AUTHENTICATED'
-    iTimeOut =  10 #seconds
+    iTimeOut =  300 #seconds
 
     def connectionMade(self):
         self.setTimeout(self.iTimeOut)
@@ -99,6 +99,12 @@ class CredReceiver(AMP, TimeoutMixin):
             self.logout = logout
             self.boxReceiver = avatar
             self.boxReceiver.startReceivingBoxes(self.boxSender)
+            # Pass to the SATNET server information of the active users.
+            # If the next two lines were removed, only the authentication 
+            # server would have that information.
+            avatar.active_protocols = self.factory.active_protocols
+            avatar.sUsername = sUsername
+            avatar.active_connections = self.factory.active_connections
             self.factory.active_protocols[sUsername] = self
             log.msg('Connection made')
             log.msg('Active connections: ' + str(len(self.factory.active_protocols)))
@@ -123,13 +129,23 @@ class CredAMPServerFactory(ServerFactory):
         L{Portal}
 
     :ivar active_protocols:
-        A list containing a reference to all active protocols
+        A dictionary containing a reference to all active protocols (clients).
+        The dictionary keys are the client usernames and the corresponding values
+        are the protocol instances
     :type active_protocols:
-        L{List}
+        L{Dictionary}
+
+    :ivar active_connections:
+        A dictionary containing a reference to all active protocols (clients).
+        The dictionary keys are the GS clients usernames and the corresponding values
+        are the SC client usernames
+    :type active_connections:
+        L{Dictionary}        
     """
 
     protocol = CredReceiver
     active_protocols = {}
+    active_connections = {}
 
     def __init__(self, portal):
         self.portal = portal

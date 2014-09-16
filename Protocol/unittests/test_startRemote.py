@@ -92,7 +92,7 @@ class TestRemoteConnection(unittest.TestCase):
 
     def test_wrongSlot(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'testuser', 'testuser.'))
+            'crespo', 'cre.spo'))
         d.addCallback(lambda l : self.factory.protoInstance.callRemote(StartRemote, iClientId=13, iSlotId=100))
         def checkError(result):
             self.assertEqual(result.message, 'Slot 100 not operational yet')
@@ -104,7 +104,7 @@ class TestRemoteConnection(unittest.TestCase):
 
     def test_validSlot(self):
         d = login(self.factory.protoInstance, UsernamePassword(
-            'testuser', 'testuser.'))
+            'crespo', 'cre.spo'))
         d.addCallback(lambda l : self.factory.protoInstance.callRemote(StartRemote, iClientId=13, iSlotId=1))
         d.addCallback(lambda res : self.assertEqual(res['iResult'], 1))
         return d

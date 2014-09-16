@@ -34,7 +34,7 @@ from commands import *
 
 
 def connected(_ignored, proto):
-    d = proto.callRemote(StartRemote, iClientId=13, iSlotId=1)
+    d = proto.callRemote(StartRemote, iSlotId=1)
     def printError(error):
         print error
     d.addErrback(printError)
@@ -46,9 +46,12 @@ def notConnected(failure):
 
 
 class ClientProtocol(AMP):
-
+    USERNAME = 'crespo'
+    PASSWORD = 'cre.spo'
     def connectionMade(self):
-        d = login(self, UsernamePassword('xabi', 'pwdxabi'))
+        d = login(self, UsernamePassword(self.USERNAME, self.PASSWORD))
+        def connected(self, proto):
+            proto.callRemote(StartRemote, iSlotId=1)
         d.addCallback(connected, self)
         d.addErrback(notConnected)
         return d
@@ -58,12 +61,14 @@ class ClientProtocol(AMP):
         super(ClientProtocol, self).connectionLost(reason)
 
     def vNotifyError(self, sDescription):
-        print "NotifyError"
+        log.err("--------- Notify Error ---------")
+        log.err(sDescription)
         return {}
     NotifyError.responder(vNotifyError)
 
-    def vNotifyConnection(self, iClientId):
-        print "NotifyConnection"
+    def vNotifyConnection(self, sClientId):
+        log.msg("--------- Notify Connection ---------")        
+        log.msg(sClientId + " has just connected to the server")
         return {}
     NotifyConnection.responder(vNotifyConnection)
 
