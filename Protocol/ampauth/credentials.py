@@ -37,7 +37,7 @@ from twisted.internet import reactor
 
 from django.contrib.auth.models import User
 
-from server_amp import Server
+from server_amp import SATNETServer
 
 
 """
@@ -70,5 +70,5 @@ class Realm:
 
     def requestAvatar(self, avatarId, mind, *interfaces):
         if IBoxReceiver in interfaces:
-            return (IBoxReceiver, Server(), lambda: None)
+            return (IBoxReceiver, SATNETServer(), lambda: None)
         raise NotImplementedError()
