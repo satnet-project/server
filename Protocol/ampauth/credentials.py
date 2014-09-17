@@ -22,8 +22,9 @@ __author__ = 'xabicrespog@gmail.com'
 
 # First of all we need to add satnet-release-1/WebServices to the path
 # to import Django modules
-import os, sys
-sys.path.append(os.path.dirname(os.getcwd())+"/WebServices")
+import os
+import sys
+sys.path.append(os.path.dirname(os.getcwd()) + "/WebServices")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 # Import your models for use in your script
@@ -43,6 +44,8 @@ from server_amp import SATNETServer
 """
 Verifies the user credentials against the Django users DB.
 """
+
+
 class DjangoAuthChecker:
     implements(checkers.ICredentialsChecker)
     credentialInterfaces = (credentials.IUsernamePassword,)
@@ -51,14 +54,14 @@ class DjangoAuthChecker:
         if matched:
             log.msg('User ' + user.username + ' -> correct password')
             return user
-        else:      
+        else:
             raise UnauthorizedLogin('Incorrect password')
 
     def requestAvatarId(self, creds):
         try:
             user = User.objects.get(username=creds.username)
             d = defer.maybeDeferred(user.check_password,
-                creds.password)
+                                    creds.password)
             d.addCallback(self._passwordMatch, user)
             return d
         except User.DoesNotExist:

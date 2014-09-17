@@ -22,8 +22,10 @@ __author__ = 'xabicrespog@gmail.com'
 
 # First of all we need to add satnet-release-1/WebServices to the path
 # to import Django modules
-import os, sys, logging
-sys.path.append(os.path.dirname(os.getcwd())+"/WebServices")
+import os
+import sys
+import logging
+sys.path.append(os.path.dirname(os.getcwd()) + "/WebServices")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
 from twisted.python import log
@@ -42,6 +44,7 @@ from services.configuration.models.channels import SpacecraftChannel
 
 
 class SATNETServer(AMP):
+
     """
     Integration between AMP and L{twisted.cred}. This class is only intended
     to be used for credentials purposes. The specific SATNET protocol will be
@@ -63,13 +66,19 @@ class SATNETServer(AMP):
     factory = None
     sUsername = ""
 
+    def dataReceived(self, data):
+        log.msg(self.sUsername + ' session timeout reset')
+        self.resetTimeout()
+        super(SATNETServer, self).dataReceived(data)
+
     def iStartRemote(self, iSlotId):
         log.msg("--------- Start Remote ---------")
         slot = operational.OperationalSlot.objects.filter(id=iSlotId)
         # If slot NOT operational yet...
         if not slot:
             log.err('Slot ' + str(iSlotId) + ' not operational yet')
-            raise SlotErrorNotification('Slot ' + str(iSlotId) + ' not operational yet')
+            raise SlotErrorNotification(
+                'Slot ' + str(iSlotId) + ' not operational yet')
         # ... if multiple slots have the same ID (never should happen)...
         elif len(slot) > 1:
             log.err('Multiple slots with the same id: ' + str(iSlotId))
@@ -78,44 +87,52 @@ class SATNETServer(AMP):
         else:
             # If it is too soon to connect to this slot...
             if slot[0].state != operational.STATE_RESERVED:
-                log.err('Slot has not been reserved yet')                          
+                log.err('Slot has not been reserved yet')
                 raise SlotErrorNotification('Slot has not been reserved yet')
-            gs_user = slot[0].groundstation_channel.groundstation_set.all()[0].user.username
-            sc_user = slot[0].spacecraft_channel.spacecraft_set.all()[0].user.username
+            gs_user = slot[
+                0].groundstation_channel.groundstation_set.all()[0].user.username
+            sc_user = slot[
+                0].spacecraft_channel.spacecraft_set.all()[0].user.username
             # If this slot has not been assigned to this user...
             if gs_user != self.sUsername and sc_user != self.sUsername:
-                log.err('This slot has not been assigned to this user')          
-                raise SlotErrorNotification('This user has not been asigned to this slot')
-            #... if the GS user and the SC user belong to the same client... 
+                log.err('This slot has not been assigned to this user')
+                raise SlotErrorNotification(
+                    'This user has not been asigned to this slot')
+            #... if the GS user and the SC user belong to the same client...
             elif gs_user == self.sUsername and sc_user == self.sUsername:
-                log.msg('Both MCC and GSS belong to the same client')          
-                self.callRemote(NotifyError, sDescription='Both MCC and GSS belong to the same client')
+                log.msg('Both MCC and GSS belong to the same client')
+                self.callRemote(
+                    NotifyError, sDescription='Both MCC and GSS belong to the same client')
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
                 self.gs_user = self.sUsername
-                if not self.factory.active_protocols[str(sc_user)]:              
-                    log.msg('Remote user not connected yet')                          
-                    self.callRemote(NotifyError, sDescription="Remote user not connected yet")
+                if not self.factory.active_protocols[str(sc_user)]:
+                    log.msg('Remote user not connected yet')
+                    self.callRemote(
+                        NotifyError, sDescription="Remote user not connected yet")
                 else:
                     log.msg('Remote user is ' + sc_user)
                     self.factory.active_connections[gs_user] = sc_user
-                    self.factory.active_connections[sc_user] = gs_user                    
-                    self.factory.active_protocols[sc_user].callRemote(NotifyConnection, sClientId=str(gs_user))                            
+                    self.factory.active_connections[sc_user] = gs_user
+                    self.factory.active_protocols[sc_user].callRemote(
+                        NotifyConnection, sClientId=str(gs_user))
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
                 self.sc_user = self.sUsername
                 if str(gs_user) not in self.factory.active_protocols:
-                    log.msg('Remote user ' + gs_user + ' not connected yet')             
-                    self.callRemote(NotifyError, sDescription='Remote user ' + str(gs_user) + ' not connected yet')
+                    log.msg('Remote user ' + gs_user + ' not connected yet')
+                    self.callRemote(
+                        NotifyError, sDescription='Remote user ' + str(gs_user) + ' not connected yet')
                 else:
                     log.msg('Remote user is ' + gs_user)
                     self.factory.active_connections[gs_user] = sc_user
-                    self.factory.active_connections[sc_user] = gs_user                                  
-                    self.factory.active_protocols[gs_user].callRemote(NotifyConnection, sClientId=str(sc_user))              
+                    self.factory.active_connections[sc_user] = gs_user
+                    self.factory.active_protocols[gs_user].callRemote(
+                        NotifyConnection, sClientId=str(sc_user))
 
             return {'iResult': iSlotId}
     StartRemote.responder(iStartRemote)
-    
+
     def vEndRemote(self):
         print "EndRemote"
         return {}
@@ -123,13 +140,16 @@ class SATNETServer(AMP):
 
     def vSendMsg(self, sMsg):
         log.msg("--------- Send Message ---------")
-        self.factory.active_protocols[self.sUsername].callRemote(NotifyMsg, sMsg=sMsg)
+        self.factory.active_protocols[
+            self.sUsername].callRemote(NotifyMsg, sMsg=sMsg)
 
         return {}
     SendMsg.responder(vSendMsg)
 
     def vRemoteClientDisconnected(self):
-        self.callRemote(NotifyError, sDescription='Remote client ' + str(self.factory.active_connections[self.sUsername]) + ' was disconnected' )
+        self.callRemote(NotifyError, sDescription='Remote client ' +
+                        str(self.factory.active_connections[self.sUsername]) + ' was disconnected')
+
 
 def main():
     logger = logging.getLogger('server')

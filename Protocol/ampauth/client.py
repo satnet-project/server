@@ -28,10 +28,12 @@ from twisted.internet.defer import fail
 
 
 class UnhandledCredentials(Exception):
+
     """
     L{login} was passed a credentials object which did not provide a 
     recognized credentials interface.
     """
+
 
 def login(client, credentials):
     """
@@ -59,7 +61,7 @@ def login(client, credentials):
     """
     if not IUsernamePassword.providedBy(credentials):
         raise UnhandledCredentials()
-    
+
     log.msg("Login attempt: " + credentials.username)
     d = client.callRemote(
         PasswordLogin, sUsername=credentials.username, sPassword=credentials.password)

@@ -20,7 +20,6 @@
 __author__ = 'xabicrespog@gmail.com'
 
 
-
 from twisted.internet.protocol import ServerFactory
 from twisted.protocols.amp import AMP
 from twisted.cred.credentials import UsernamePassword
@@ -33,6 +32,7 @@ from twisted.cred.error import UnauthorizedLogin
 
 
 class CredReceiver(AMP, TimeoutMixin):
+
     """
     Integration between AMP and L{twisted.cred}. This class is only intended
     to be used for credentials purposes. The specific SATNET protocol will be
@@ -64,14 +64,14 @@ class CredReceiver(AMP, TimeoutMixin):
     portal = None
     logout = None
     sUsername = 'NOT_AUTHENTICATED'
-    iTimeOut =  300 #seconds
+    iTimeOut = 10  # seconds
 
     def connectionMade(self):
         self.setTimeout(self.iTimeOut)
         super(CredReceiver, self).connectionMade()
 
     def dataReceived(self, data):
-        log.msg('Session timeout reset')
+        log.msg(self.sUsername + ' session timeout reset')
         self.resetTimeout()
         super(CredReceiver, self).dataReceived(data)
 
@@ -80,24 +80,30 @@ class CredReceiver(AMP, TimeoutMixin):
         self.transport.abortConnection()
 
     def connectionLost(self, reason):
-        # If the client has been added to active_protocols and/or to active_connections
+        # If the client has been added to active_protocols and/or to
+        # active_connections
         print self.sUsername
         if self.sUsername != 'NOT_AUTHENTICATED':
             # Remove from active protocols
             self.factory.active_protocols.pop(self.sUsername)
-            # If the client is still in active_connections (only true when he 
-            # was in a remote connection and he was disconnected in the first place)
+            # If the client is still in active_connections (only true when he
+            # was in a remote connection and he was disconnected in the first
+            # place)
             if self.sUsername in self.factory.active_connections:
                 # Notify the remote client about this disconnection. The notification is
                 # sent through the SATNETServer instance
-                self.factory.active_protocols[self.factory.active_connections[self.sUsername]].vRemoteClientDisconnected()
+                self.factory.active_protocols[
+                    self.factory.active_connections[self.sUsername]].vRemoteClientDisconnected()
                 # Remove active connection
-                self.factory.active_connections.pop(self.factory.active_connections[self.sUsername])
+                self.factory.active_connections.pop(
+                    self.factory.active_connections[self.sUsername])
                 self.factory.active_connections.pop(self.sUsername)
         log.err(reason.getErrorMessage())
         log.msg('Active clients: ' + str(len(self.factory.active_protocols)))
-        log.msg('Active connections: ' + str(len(self.factory.active_connections)/2))#divided by 2 because the dictionary is doubly linked        
-        self.setTimeout(None) #Cancel the pending timeout
+        # divided by 2 because the dictionary is doubly linked
+        log.msg(
+            'Active connections: ' + str(len(self.factory.active_connections) / 2))
+        self.setTimeout(None)  # Cancel the pending timeout
         self.transport.loseConnection()
 
     def passwordLogin(self, sUsername, sPassword):
@@ -109,28 +115,32 @@ class CredReceiver(AMP, TimeoutMixin):
             log.err('Client already logged in')
             raise UnauthorizedLogin('Client already logged in')
 
-        d = self.portal.login(UsernamePassword(sUsername, sPassword), None, IBoxReceiver)
+        d = self.portal.login(
+            UsernamePassword(sUsername, sPassword), None, IBoxReceiver)
+
         def cbLoggedIn((interface, avatar, logout)):
             self.sUsername = sUsername
             self.logout = logout
             self.boxReceiver = avatar
             self.boxReceiver.startReceivingBoxes(self.boxSender)
             # Pass to the SATNET server information of the active users.
-            # If the next two lines were removed, only the authentication 
+            # If the next two lines were removed, only the authentication
             # server would have that information.
             avatar.factory = self.factory
             avatar.sUsername = sUsername
             self.factory.active_protocols[sUsername] = avatar
             log.msg('Connection made')
-            log.msg('Active clients: ' + str(len(self.factory.active_protocols)))
+            log.msg(
+                'Active clients: ' + str(len(self.factory.active_protocols)))
 
-            return {'bAuthenticated':True}
+            return {'bAuthenticated': True}
         d.addCallback(cbLoggedIn)
         return d
     PasswordLogin.responder(passwordLogin)
 
 
 class CredAMPServerFactory(ServerFactory):
+
     """
     Server factory useful for creating L{CredReceiver} and L{SATNETServer} instances.
 
@@ -165,7 +175,6 @@ class CredAMPServerFactory(ServerFactory):
 
     def __init__(self, portal):
         self.portal = portal
-
 
     def buildProtocol(self, addr):
         proto = ServerFactory.buildProtocol(self, addr)

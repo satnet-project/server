@@ -25,6 +25,7 @@ from twisted.cred.error import UnauthorizedLogin
 
 
 class PasswordLogin(amp.Command):
+
     """
     Command to authenticate an user.  The server response is a boolean
     granting or not the access to the client.
@@ -46,9 +47,8 @@ class PasswordLogin(amp.Command):
     """
 
     arguments = [('sUsername', amp.String()),
-    			 ('sPassword', amp.String())]
+                 ('sPassword', amp.String())]
     response = [('bAuthenticated', amp.Boolean())]
     errors = {
         UnauthorizedLogin: 'UNAUTHORIZED_LOGIN',
         NotImplementedError: 'NOT_IMPLEMENTED_ERROR'}
-
