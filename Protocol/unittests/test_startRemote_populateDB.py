@@ -39,6 +39,18 @@ def _initDjangoDB():
         jrpc_keys.BITRATE_K: '300',
         jrpc_keys.BANDWIDTH_K: '12.500000000'
     }
+
+    __sc_2_id = 'beesat-sc'
+    __sc_2_tle_id = 'BEESAT-2'
+    __sc_2_ch_1_id = 'beesat-fm'
+    __sc_2_ch_1_cfg = {
+        jrpc_keys.FREQUENCY_K: '437000000',
+        jrpc_keys.MODULATION_K: 'FM',
+        jrpc_keys.POLARIZATION_K: 'LHCP',
+        jrpc_keys.BITRATE_K: '300',
+        jrpc_keys.BANDWIDTH_K: '12.500000000'
+    }
+
     __gs_1_id = 'gs-la'
     __gs_1_ch_1_id = 'gs-la-fm'
     __gs_1_ch_1_cfg = {
@@ -89,6 +101,12 @@ def _initDjangoDB():
         identifier=__sc_1_id,
         tle_id=__sc_1_tle_id,
     )
+
+    __sc_2 = db_tools.create_sc(
+        user_profile=__usr_2,
+        identifier=__sc_2_id,
+        tle_id=__sc_2_tle_id,
+    )
     __gs_1 = db_tools.create_gs(
         user_profile=__usr_2, identifier=__gs_1_id,
     )
@@ -120,12 +138,26 @@ def _initDjangoDB():
         configuration=__sc_1_ch_1_cfg
     )
 
-    sc_s_slots = jrpc_sc_scheduling.select_slots(
+    jrpc_channels_if.sc_channel_create(
+        spacecraft_id=__sc_2_id,
+        channel_id=__sc_2_ch_1_id,
+        configuration=__sc_2_ch_1_cfg
+    )
+
+    sc_1_s_slots = jrpc_sc_scheduling.select_slots(
         __sc_1_id, [1, 2]
+    )
+
+    sc_2_s_slots = jrpc_sc_scheduling.select_slots(
+        __sc_2_id, [3, 4]
     )
 
     gs_c_slots = jrpc_gs_scheduling.confirm_selections(
         __gs_1_id, [1, 2]
+    )
+
+    gs_c_slots = jrpc_gs_scheduling.confirm_selections(
+        __gs_1_id, [3, 4]
     )
 
 if __name__ == '__main__':

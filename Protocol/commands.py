@@ -44,12 +44,18 @@ class StartRemote(amp.Command):
         int
 
     :returns iResult:
-        Code indicating whether the slot has ended or not, and whether the
-        other client required for the remote operation is still connected or not.
+        Raises an error if the slot is not available yet or if it isn't assigned to 
+        the calling client. Otherwise, returns a code indicating whether that the remote
+        client is not connected or if the remote client is the same as the calling client.
+
+        In case that any of the previous cases are detected, the slotId is returned.
     :rtype:
         int or L{SlotNotAvailable}
     """
-
+    #Both MCC and GSS belong to the same client
+    CLIENTS_COINCIDE = -1
+    #Remote user not connected yet
+    REMOTE_NOT_CONNECTED = -2
 
 class EndRemote(amp.Command):
     arguments = []

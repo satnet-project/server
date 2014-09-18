@@ -64,7 +64,7 @@ class CredReceiver(AMP, TimeoutMixin):
     portal = None
     logout = None
     sUsername = 'NOT_AUTHENTICATED'
-    iTimeOut = 10  # seconds
+    iTimeOut = 300  # seconds
 
     def connectionMade(self):
         self.setTimeout(self.iTimeOut)
@@ -82,7 +82,6 @@ class CredReceiver(AMP, TimeoutMixin):
     def connectionLost(self, reason):
         # If the client has been added to active_protocols and/or to
         # active_connections
-        print self.sUsername
         if self.sUsername != 'NOT_AUTHENTICATED':
             # Remove from active protocols
             self.factory.active_protocols.pop(self.sUsername)

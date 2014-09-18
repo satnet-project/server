@@ -101,15 +101,13 @@ class SATNETServer(AMP):
             #... if the GS user and the SC user belong to the same client...
             elif gs_user == self.sUsername and sc_user == self.sUsername:
                 log.msg('Both MCC and GSS belong to the same client')
-                self.callRemote(
-                    NotifyError, sDescription='Both MCC and GSS belong to the same client')
+                return {'iResult': StartRemote.CLIENTS_COINCIDE}
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
                 self.gs_user = self.sUsername
                 if not self.factory.active_protocols[str(sc_user)]:
                     log.msg('Remote user not connected yet')
-                    self.callRemote(
-                        NotifyError, sDescription="Remote user not connected yet")
+                    return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
                 else:
                     log.msg('Remote user is ' + sc_user)
                     self.factory.active_connections[gs_user] = sc_user
@@ -121,8 +119,7 @@ class SATNETServer(AMP):
                 self.sc_user = self.sUsername
                 if str(gs_user) not in self.factory.active_protocols:
                     log.msg('Remote user ' + gs_user + ' not connected yet')
-                    self.callRemote(
-                        NotifyError, sDescription='Remote user ' + str(gs_user) + ' not connected yet')
+                    return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
                 else:
                     log.msg('Remote user is ' + gs_user)
                     self.factory.active_connections[gs_user] = sc_user
