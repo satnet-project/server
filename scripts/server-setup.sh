@@ -248,7 +248,6 @@ fi
 while getopts ":abciprov" opt; do
     case $opt in
         a)
-            echo 'Complete SATNET installation...'
             echo 'Installing Debian packages...'
             echo 'This process is not unattended, user interaction is required.'
             echo 'Press any key to continue...'
@@ -256,8 +255,12 @@ while getopts ":abciprov" opt; do
             install_packages
             echo 'Configuring PostgreSQL...'
             configure_postgresql
+            echo 'Configuring Apache...'
+            configure_apache
+            echo 'Configuring Crontab...'
+            configure_crontab
             echo 'Configuring virtualenv...'
-            configure_root            
+            configure_root
             echo 'DONE'
             exit 1
             ;;
