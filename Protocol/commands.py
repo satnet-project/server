@@ -1,4 +1,27 @@
+# coding=utf-8
+"""
+   Copyright 2014 Xabier Crespo Álvarez
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+
+:Author:
+    Xabier Crespo Álvarez (xabicrespog@gmail.com)
+"""
+__author__ = 'xabicrespog@gmail.com'
+
+
 from twisted.protocols import amp
+from errors import *
 
 """
 Commandes implemented by the N-server which will be invoked by a
@@ -7,28 +30,32 @@ G- or M- clients.
 
 
 class StartRemote(amp.Command):
-    arguments = [('iClientId', amp.Integer()),
-                 ('iSlotId', amp.Integer())]
+    arguments = [('iSlotId', amp.Integer())]
     response = [('iResult', amp.Integer())]
+    errors = {
+        SlotErrorNotification: 'SLOT_ERROR_NOTIFICATION'}    
     """
     Invoked when a client wants to connect to an N-server.
     
-    :param iClientId:
-        Local client identification number
-    :type iClientId:
-        int
-    :param iClientId:
-
-    :type iClientId:
+    :param iSlotId:
+        ID number of the slot which should have been previously reserved through
+        the web interface.
+    :type iSlotId:
         int
 
     :returns iResult:
-        Code indicating whether the slot has ended or not, and whether the
-        other client required for the remote operation is still connected or not.
-    :rtype:
-        int
-    """
+        Raises an error if the slot is not available yet or if it isn't assigned to 
+        the calling client. Otherwise, returns a code indicating whether that the remote
+        client is not connected or if the remote client is the same as the calling client.
 
+        In case that any of the previous cases are detected, the slotId is returned.
+    :rtype:
+        int or L{SlotNotAvailable}
+    """
+    #Both MCC and GSS belong to the same client
+    CLIENTS_COINCIDE = -1
+    #Remote user not connected yet
+    REMOTE_NOT_CONNECTED = -2
 
 class EndRemote(amp.Command):
     arguments = []
@@ -52,7 +79,7 @@ class SendMsg(amp.Command):
 
 """
 Commandes implemented by G- or M- clients which will be invoked
-by a N- server.
+by a N-server.
 """
 
 
@@ -70,15 +97,15 @@ class NotifyError(amp.Command):
 
 
 class NotifyConnection(amp.Command):
-    arguments = [('iClientId', amp.Integer())]
+    arguments = [('sClientId', amp.String())]
     requiresAnswer = False
     """
-    Notifies to a client the connecton of an aditional remote client.
+    Notifies to a client when the remote client connects to the N-server.
     
-    :param iClientId:
-        Client identification number
-    :type iClientId:
-        int
+    :param sClientId:
+        Remote client username
+    :type sClientId:
+        string
     """
 
 
