@@ -27,7 +27,7 @@ from services.scheduling.models import tle
 
 
 class TestTle(TestCase):
-    """
+    """Unit test.
     Test for the TLE's class model.
     """
 

@@ -31,7 +31,7 @@ def list_groundstations(**kwargs):
     JRPC method.
 
     Creates a list with the identifiers of the available ground stations for
-    the user that is requesting the service.
+    the user that is logged in within this request.
     """
 
     # 1) user must be obtained from the request, since this has already been

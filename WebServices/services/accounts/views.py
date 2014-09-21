@@ -40,11 +40,10 @@ def csrf_failure_handler(request, reason=''):
 
 
 def redirect_login(request):
-    """
+    """Redirect method.
     Redirects user access to 'home', so in case a user is already logged in,
     the system redirects that access to the post-login 'home' page.
     """
-    logger.info('<redirect_home>')
     if request.user.is_authenticated():
         return redirect_home(request)
     else:
@@ -53,13 +52,21 @@ def redirect_login(request):
 
 @login_required
 def redirect_home(request):
-    """
+    """Redirect method.
     Redirects users based on their priviledges.
     """
     if request.user.is_staff:
         return TemplateResponse(request, 'staff/staff_home.html')
     else:
         return TemplateResponse(request, 'users/users_home.html')
+
+
+@login_required
+def redirect_c2(request):
+    """Redirect method.
+    Redirects users either to their C2 interface or to the login window.
+    """
+    return TemplateResponse(request, 'users/users_c2.html')
 
 
 class UserProfileView(UpdateView):

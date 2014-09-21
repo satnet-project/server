@@ -1,0 +1,6 @@
+1) [optional] Install: sudo openssh-server
+2) [optional] Configure: /etc/sudoers
+3) Install: git
+4) Clone "satnet" repositories into $HOME folder
+5) Execute "setup.sh" script for server installation
+

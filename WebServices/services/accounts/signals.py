@@ -60,9 +60,13 @@ def email_confirmed_receiver(email_address, **kwargs):
 
     try:
 
-        # User has to be activated by server's administrator.
+        # User has to be activated by server's administrator, unless the user
+        # is the administrator itself!
         user = auth_models.User.objects.get(email=email_address.email)
-        user.is_active = False
+        if user.is_staff or user.is_superuser:
+            user.is_active = True
+        else:
+            user.is_active = False
         user.save()
 
         # The confirmation of the email only verifies the account.

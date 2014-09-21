@@ -1,0 +1,32 @@
+{
+  "name": "satellite.tracker.js",
+  "version": "0.0.1",
+  "homepage": "https://github.com/satnet-project/satnet-release-1",
+  "description": "JavaScript-Leaflet application for satellite tracking.",
+  "main": "simulator.js",
+  "moduleType": [
+    "globals"
+  ],
+  "keywords": [
+    "satellite",
+    "tracking",
+    "javascript",
+    "leaflet"
+  ],
+  "authors": [
+    "rtubiopa@calpoly.edu"
+  ],
+  "license": "Apache v2",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-jsonrpcclient": "Textalk/jquery.jsonrpcclient.js#~0.6.1",
+    "jquery": "~2.1.1",
+    "leaflet-dist": "~0.7.2"
+  }
+}

@@ -32,11 +32,12 @@ then
     public_html_dir="$project_root_dir/public_html"
     static_dir="$public_html_dir/static"
     document_root="$static_dir"
+    redirect_url='https://satnet.aero.calpoly.edu/'
 fi
 
 echo '<VirtualHost *:80>' > $__output_file
-echo '	ServerName satnet.aero.calpoly.edu' >> $__output_file
-echo '	Redirect permanent / https://satnet.aero.calpoly.edu/' >> $__output_file
+echo "	ServerName $server_name" >> $__output_file
+echo "	Redirect permanent / $redirect_url" >> $__output_file
 echo '</VirtualHost>' >> $__output_file
 echo '' >> $__output_file
 echo '<VirtualHost *:443>' >> $__output_file
@@ -54,7 +55,7 @@ echo "    GnuTLSCertificateFile $server_certificate" >> $__output_file
 echo "    GnuTLSKeyFile $server_key" >> $__output_file
 echo '' >> $__output_file
 echo "    WSGIScriptAlias / $project_root_dir/website/wsgi.py" >> $__output_file
-echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$project_root_dir/.venv/lib/python2.7/site-packages" >> $__output_file
+echo "    WSGIDaemonProcess satnet user=$user python-path=$project_root_dir:$project_root_dir/.__venv/lib/python2.7/site-packages" >> $__output_file
 echo '' >> $__output_file
 echo "    <Directory $project_root_dir/>" >> $__output_file
 echo '        WSGIProcessGroup satnet' >> $__output_file
