@@ -61,7 +61,7 @@ class EndRemote(amp.Command):
     arguments = []
     requiresAnswer = False
     """
-    Invoked to send a message to a remote entity.
+    Invoked by a client whenever this one wants to finalize the remote operation.
     """
 
 
@@ -123,7 +123,7 @@ class NotifyMsg(amp.Command):
 
 
 class NotifySlotEnd(amp.Command):
-    arguments = [('iSlotId', amp.Integer())]
+    arguments = [('iReason', amp.Integer())]
     requiresAnswer = False
     """
     Notifies to a client the end of the operations slot.
@@ -133,3 +133,7 @@ class NotifySlotEnd(amp.Command):
     :type iSlotId:
         int
     """
+    #Both MCC and GSS belong to the same client
+    SLOT_END = -1
+    #Remote user not connected yet
+    REMOTE_DISCONNECTED = -2

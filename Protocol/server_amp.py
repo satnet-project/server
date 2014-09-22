@@ -58,13 +58,19 @@ class SATNETServer(AMP):
     :ivar factory:
         CredAMPServerFactory instance which handles SATNETServer instances as well
         as CredReceiver instances    
-    :type factory.active_protocols:
+    :type factory:
         L{ServerFactory}
+
+    :ivar credProto:
+        Used to disconnect the users from the servers (via credProto.loseConnection())
+    :type credProto:
+        L{CredReceiver}
 
     """
 
     factory = None
     sUsername = ""
+    credProto = None
 
     def dataReceived(self, data):
         log.msg(self.sUsername + ' session timeout reset')
@@ -72,7 +78,7 @@ class SATNETServer(AMP):
         super(SATNETServer, self).dataReceived(data)
 
     def iStartRemote(self, iSlotId):
-        log.msg("--------- Start Remote ---------")
+        log.msg("(" + self.sUsername + ") --------- Start Remote ---------")
         slot = operational.OperationalSlot.objects.filter(id=iSlotId)
         # If slot NOT operational yet...
         if not slot:
@@ -105,7 +111,7 @@ class SATNETServer(AMP):
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
                 self.gs_user = self.sUsername
-                if not self.factory.active_protocols[str(sc_user)]:
+                if str(sc_user) not in self.factory.active_protocols:
                     log.msg('Remote user not connected yet')
                     return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
                 else:
@@ -131,14 +137,26 @@ class SATNETServer(AMP):
     StartRemote.responder(iStartRemote)
 
     def vEndRemote(self):
-        print "EndRemote"
+        log.msg("(" + self.sUsername + ") --------- End Remote ---------")
+        # Disconnect both users (need to be done from the CredReceiver instance)
+        self.factory.active_protocols[self.factory.active_connections[
+            self.sUsername]].callRemote(NotifySlotEnd, iReason=NotifySlotEnd.REMOTE_DISCONNECTED)
+        self.credProto.transport.loseConnection()
+        self.factory.active_protocols[self.factory.active_connections[
+            self.sUsername]].credProto.transport.loseConnection()
+
         return {}
     EndRemote.responder(vEndRemote)
 
     def vSendMsg(self, sMsg):
-        log.msg("--------- Send Message ---------")
-        self.factory.active_protocols[
-            self.sUsername].callRemote(NotifyMsg, sMsg=sMsg)
+        log.msg("(" + self.sUsername + ") --------- Send Message ---------")
+        if self.sUsername not in self.factory.active_protocols:
+            log.msg('Connection not available. Call StartRemote command first')
+            raise SlotErrorNotification(
+                'Connection not available. Call StartRemote command first.')
+        else:
+            self.factory.active_protocols[self.factory.active_connections[
+                self.sUsername]].callRemote(NotifyMsg, sMsg=sMsg)
 
         return {}
     SendMsg.responder(vSendMsg)
@@ -161,7 +179,7 @@ def main():
     cert = ssl.PrivateCertificate.loadPEM(open('key/private.pem').read())
 
     reactor.listenSSL(1234, pf, cert.options())
-    print 'Server running...'
+    log.msg('Server running...')
     reactor.run()
 
 if __name__ == '__main__':
