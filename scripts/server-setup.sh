@@ -21,9 +21,6 @@
 # Description: configures a Debian server for the SATNet project.
 ################################################################################
 
-# mysql-server, admin password: _805Mysql
-# phpmyadmin user:password for database: phpmyadmin:_805Phpmyadmin
-
 # ### Installs the packages necessary for the Debian operating system.
 install_packages()
 {
@@ -73,15 +70,6 @@ create_apache_keys()
     sudo mv -f $__tmp_key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME"
     sudo chmod -R o-w $APACHE_2_CERTIFICATES_DIR
 }
-
-# ### This function configures the operating system with the required users,
-# permissions and directories necessary.
-__username=''
-configure_ubuntu_os()
-{
-    usermod -aG adm $__username
-}
-
 
 __satnet_apache_conf='/etc/apache2/sites-available/satnet_tls'
 __apache_user='satnet'
@@ -150,6 +138,8 @@ configure_apache()
     # default 80 ports are disabled (TLS access only!)
     sudo sed -i -e 's/NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/Listen 80/# Listen 80/g' $__apache_server_ports
 
+    create_apache_keys
+
     sudo a2enmod gnutls
     sudo a2dismod ssl
     sudo a2ensite satnet_tls
@@ -160,9 +150,8 @@ configure_apache()
 
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
-__pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
 django_db='satnet_db'
-django_user='satnet_django'
+django_user='satnet'
 django_user_password='satnet'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
@@ -237,10 +226,10 @@ create_secrets()
     read
     
     echo "EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
-    echo "EMAIL_HOST='smtp.mmmm.zzz'" >> $webservices_secrets_email
+    echo "EMAIL_HOST='smtp.gmail.com'" >> $webservices_secrets_email
     echo "EMAIL_PORT=587" >> $webservices_secrets_email
-    echo "EMAIL_HOST_USER='xxx@mmmm.zzz'" >> $webservices_secrets_email
-    echo "EMAIL_HOST_PASSWORD='MailPassword'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_USER='XXXXXX@gmail.com'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_PASSWORD='XXXXXXXX'" >> $webservices_secrets_email
     echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email    
 
 }
@@ -259,6 +248,8 @@ configure_root()
         exit -1
     }
 
+    create_secrets
+    
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
     source $webservices_venv_activate
@@ -394,8 +385,6 @@ while getopts ":abcikprsovx" opt; do
             configure_crontab
             clear && echo '>>>>>>> Configuring virtualenv...'
             configure_root
-            clear && echo '>>>>>>> Creating secrets...'
-            create_secrets
             clear && echo '>>>>>>> Configuring Apache...'
             configure_apache
             echo 'DONE'
