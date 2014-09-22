@@ -46,31 +46,32 @@ install_packages()
 }
 
 APACHE_2_CERTIFICATES_DIR='/etc/apache2/certificates'
-CERTIFICATE_NAME='marajota.calpoly.edu'
-KEY_NAME='marajota.calpoly.edu'
-
+CERTIFICATE_NAME='marajota.calpoly.edu.crt'
+KEY_NAME='marajota.calpoly.edu.key'
+__tmp_cert="/tmp/tmp.crt"
+__tmp_csr="/tmp/tmp.csr"
+__tmp_key="/tmp/tmp.key"
+__original_tmp_key="/tmp/tmp.key.original"
 # ### This function creates a new self signed certificate and key to be used by
 # the Apache2 server and installs them in the correct directory.
-create_self_signed_cert()
+create_apache_keys()
 {
     # 1: Generate a Private Key
-    openssl genrsa -des3 -out s.key 1024
+    openssl genrsa -des3 -out $__tmp_key 1024
     # 2: Generate a CSR (Certificate Signing Request)
-    openssl req -new -key s.key -out s.csr
+    openssl req -new -key $__tmp_key -out $__tmp_csr
     # 3: Remove Passphrase from Key
-    cp s.key s.key.org
-    openssl rsa -in s.key.org -out s.key
+    mv -f $__tmp_key $__original_tmp_key
+    openssl rsa -in $__original_tmp_key -out $__tmp_key
     # 4: Generating a Self-Signed Certificate
-    openssl x509 -req -days 365 -in s.csr -signkey s.key -out s.crt
+    openssl x509 -req -days 365 -in $__tmp_csr -signkey $__tmp_key -out $__tmp_cert
 
     # 5: Certificates installation
-    if [[ ! -d $APACHE_2_CERTIFICATES_DIR ]]
-    then
-        mkdir -p $APACHE_2_CERTIFICATES_DIR
-    fi
-
-    mv -f s.crt "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME.crt"
-    mv -f s.key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME.key"
+    [[ ! -d $APACHE_2_CERTIFICATES_DIR ]] &&\
+        sudo mkdir -p $APACHE_2_CERTIFICATES_DIR
+    sudo mv -f $__tmp_cert "$APACHE_2_CERTIFICATES_DIR/$CERTIFICATE_NAME"
+    sudo mv -f $__tmp_key "$APACHE_2_CERTIFICATES_DIR/$KEY_NAME"
+    sudo chmod -R o-w $APACHE_2_CERTIFICATES_DIR
 }
 
 # ### This function configures the operating system with the required users,
@@ -82,20 +83,87 @@ configure_ubuntu_os()
 }
 
 
+__satnet_apache_conf='/etc/apache2/sites-available/satnet_tls'
+__apache_user='satnet'
+__apache_group='satnet'
+__apache_redirect_url='https://localhost:8443'
+__apache_server_name='localhost'
+__apache_server_admin='satnet.calpoly@gmail.com'
+__apache_server_ports='/etc/apache2/ports.conf'
+__apache_server_certificates_dir='/etc/apache2/certificates'
+__apache_server_certificate="$__apache_server_certificates_dir/$CERTIFICATE_NAME"
+__apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
+__apache_document_root="$webservices_static_dir"
+__phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
+__phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
 # ### This function configures the apache2 server.
 configure_apache()
 {
+    echo '<VirtualHost *:80>'  | sudo tee $__satnet_apache_conf
+    echo "	ServerName $__apache_server_name" | sudo tee -a $__satnet_apache_conf
+    echo "	Redirect permanent / $__apache_redirect_url" | sudo tee -a $__satnet_apache_conf
+    echo '</VirtualHost>' | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo '<VirtualHost *:443>' | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo "	  ServerName $__apache_server_name" | sudo tee -a $__satnet_apache_conf
+    echo "    ServerAdmin $__apache_server_admin" | sudo tee -a $__satnet_apache_conf
+    echo "	  DocumentRoot $webservices_static_dir" | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo "    Alias /favicon.ico $webservices_public_html_dir/favicon.ico" | sudo tee -a $__satnet_apache_conf
+    echo "    Alias /static $webservices_static_dir" | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo '    GnuTLSEnable on' | sudo tee -a $__satnet_apache_conf
+    echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' | sudo tee -a $__satnet_apache_conf
+    echo "    GnuTLSCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_conf
+    echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIDaemonProcess satnet user=$__apache_user python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
+    echo "        WSGIProcessGroup $__apache_group" | sudo tee -a $__satnet_apache_conf
+    echo '	      <IfVersion < 2.3 >' | sudo tee -a $__satnet_apache_conf
+    echo '        	Order deny,allow' | sudo tee -a $__satnet_apache_conf
+    echo '        	Allow from all' | sudo tee -a $__satnet_apache_conf
+    echo '	      </IfVersion>' | sudo tee -a $__satnet_apache_conf
+    echo '	      <IfVersion >= 2.3>' | sudo tee -a $__satnet_apache_conf
+    echo '		    Require all granted' | sudo tee -a $__satnet_apache_conf
+    echo '	      </IfVersion>' | sudo tee -a $__satnet_apache_conf
+    echo '    </Directory>' | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo "    CustomLog $webservices_logs_dir/access.log combined" | sudo tee -a $__satnet_apache_conf
+    echo "    CustomLog $webservices_logs_dir/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" | sudo tee -a $__satnet_apache_conf
+    echo "    ErrorLog $webservices_logs_dir/error.log" | sudo tee -a $__satnet_apache_conf
+    echo '' | sudo tee -a $__satnet_apache_conf
+    echo '</VirtualHost>' | sudo tee -a $__satnet_apache_conf
+    
+    sudo sed -i -e 's/allow from 127/# allow from 127/g' -e 's/# allow from all/allow from all/g' $__phppgadmin_apache_config
+    # ### Extra login security can be disabled for local access only by
+    # uncommenting the following <sed> command. This permits the access to
+    # <phppgadmin> by using <root> or <postgres>.
+    # If this level of security is necessary and, thus, this mechanism has to
+    # be enabled again, an additional user for access through <phppgadmin> has
+    # to be created and configured.
+    # sudo sed -i -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" $__phppgadmin_config_file
+    
+    # default 80 ports are disabled (TLS access only!)
+    sudo sed -i -e 's/NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/Listen 80/# Listen 80/g' $__apache_server_ports
+
     sudo a2enmod gnutls
+    sudo a2dismod ssl
+    sudo a2ensite satnet_tls
+    sudo a2dissite default
+    sudo a2dissite default-ssl
     sudo service apache2 reload
 }
 
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
 __pgsql_password='pg805sql'     # Must be entered manually (interactive mode).
-__phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
 django_db='satnet_db'
 django_user='satnet_django'
-django_user_password='_805Django'
+django_user_password='satnet'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
 {
@@ -107,21 +175,23 @@ configure_postgresql()
     #echo "\password postgres" > $__pgsql_batch
     #sudo -u postgres psql -f $__pgsql_batch
 
-    sudo -u postgres createdb $django_db
-    echo "User <$django_user> is about to be created, insert password..."
-    sudo -u postgres createuser -r -l -S -E -P -d $django_user
-    
-    #echo "CREATE USER $django_user PASSWORD $django_user_password" > $__pgsql_batch
-    echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_user;" > $__pgsql_batch
-    sudo -u postgres psql -f $__pgsql_batch
-    
-    # ### Extra login security can be disabled for local access only by
-    # uncommenting the following <sed> command. This permits the access to
-    # <phppgadmin> by using <root> or <postgres>.
-    # If this level of security is necessary and, thus, this mechanism has to
-    # be enabled again, an additional user for access through <phppgadmin> has
-    # to be created and configured.
-    #sed -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" -i $__phppgadmin_config_file
+    if [[ $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]]
+    then
+        echo ">>>> Creating postgres database, name = <$django_db>"
+        sudo -u postgres createdb $django_db
+    else
+        echo ">>>> Database db = $django_db already exists, skipping..."
+    fi
+
+    if [[ ! $( sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$django_user'" ) -eq 1 ]]
+    then
+        echo ">>>> Creating postgres user = <$django_user>"
+        sudo -u postgres createuser -r -l -S -E -P -d $django_user
+        echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_user;" > $__pgsql_batch
+        sudo -u postgres psql -f $__pgsql_batch
+    else
+        echo ">>>> Postgres user = <$django_user> already exists, skipping..."
+    fi
 
 }
 
@@ -132,23 +202,74 @@ remove_postgresql()
     sudo -u postgres dropuser $django_user
 }
 
+
+__secret_key_file='secret.key'
+# ### Method that creates the <secrets> directory and initializes it with the
+# passwords for accessing to the database and to the email account.
+create_secrets()
+{
+    mkdir -p $webservices_secrets_dir
+    [[ -e $webservices_secrets_init ]] || touch $webservices_secrets_init
+    
+    __secret_key=$( ./django-secret-key-generator.py )
+    echo ">>> Generating django's SECRET_KEY=$__secret_key"
+    echo "SECRET_KEY='$__secret_key'" > $webservices_secrets_auth
+
+    echo '>>> Generating database access configuration file...'
+    echo ">>> $webservices_secrets_database should be updated in case the user/password for the database change."
+    echo 'Press any key to continue...'
+    read
+
+    echo 'DATABASES = {' > $webservices_secrets_database
+    echo "    'default': {" >> $webservices_secrets_database
+    echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
+    echo "        'NAME': '$django_db'," >> $webservices_secrets_database
+    echo "        'USER': '$django_user'," >> $webservices_secrets_database
+    echo "        'PASSWORD': '$django_user_password'," >> $webservices_secrets_database
+    echo "        'HOST': 'localhost'," >> $webservices_secrets_database
+    echo "        'PORT': ''," >> $webservices_secrets_database
+    echo "    }" >> $webservices_secrets_database
+    echo "}" >> $webservices_secrets_database
+
+    echo ">>> Generating email configuration file..."
+    echo ">>> $webservices_secrets_email should be updated with the correct email account information."
+    echo 'Press any key to continue...'
+    read
+    
+    echo "EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
+    echo "EMAIL_HOST='smtp.mmmm.zzz'" >> $webservices_secrets_email
+    echo "EMAIL_PORT=587" >> $webservices_secrets_email
+    echo "EMAIL_HOST_USER='xxx@mmmm.zzz'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_PASSWORD='MailPassword'" >> $webservices_secrets_email
+    echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email    
+
+}
+
 # ### Method that configures a given root with the virtualenvirment required,
 # all the pip packages and the directories.
 configure_root()
 {
     mkdir -p $webservices_logs_dir
     mkdir -p $webservices_public_html_dir
-    cp -f $webservices_dir/website/static $webservices_public_html_dir/.
 
+    [[ -f "$webservices_venv_activate" ]] && rm -Rf $webservices_venv_activate
     virtualenv $webservices_venv_dir
     [[ ! -f "$webservices_venv_activate" ]] && {
         echo 'Virtual environment activation failed... exiting!'
         exit -1
     }
+
+    clear && echo '>>>>> Activating virtual environment...'
+    cd $webservices_dir
     source $webservices_venv_activate
 
     pip install -r "$script_path/requirements.txt"
-    python "$webservices_dir/manage.py" syncdb
+    python manage.py syncdb
+    python manage.py collectstatic
+    
+    deactivate
+    cd $script_path
+
 }
 
 # ### This function upgrades all the pip packages installed in the
@@ -173,11 +294,10 @@ configure_crontab()
     __crontab_command="source $webservices_venv_activate && $__django_runtasks"
     __crontab_task="30 23 * * * $__crontab_user $__crontab_command"
 
-    sudo echo 'Adding crontab task for django-periodically...' > $__crontab_conf
-    sudo echo "SHELL=$__crontab_shell" >> $__crontab_conf1
-    sudo echo "PATH=$__crontab_path" >> $__crontab_conf
-    sudo echo "$__crontab_task" >> $__crontab_conf
-    #chmod +x $__crontab_conf
+    echo '# Adding crontab task for django-periodically...' | sudo tee $__crontab_conf
+    echo "SHELL=$__crontab_shell" | sudo tee -a $__crontab_conf
+    echo "PATH=$__crontab_path" | sudo tee -a $__crontab_conf
+    echo "$__crontab_task" | sudo tee -a $__crontab_conf
 }
 
 node_js_root_dir='/opt'
@@ -186,19 +306,19 @@ node_js_root_dir='/opt'
 # that can be downloaded from GitHub.
 install_bower()
 {
-    apt-get install python g++ make checkinstall
+    sudo apt-get install python g++ make checkinstall
     cd $node_js_root_dir
-    wget -N http://nodejs.org/dist/node-latest.tar.gz
-    tar xzvf node-latest.tar.gz && cd node-v*
-    ./configure
+    sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
+    sudo tar xzvf node-latest.tar.gz && cd node-v*
+    sudo ./configure
     # ### IMPORTANT
     echo 'In the next menu that will be prompted, the <v> letter from the'
     echo 'version number must be erased. For doing that, select <Choice 3>'
     echo 'and erase the <v> letter leaving the rest of the version number'
     echo 'intact.'
-    checkinstall -D
-    dpkg -i node_*
-    npm install -g bower
+    sudo checkinstall -D
+    sudo dpkg -i node_*
+    sudo npm install -g bower
 }
 
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
@@ -207,16 +327,20 @@ venv_workon="$HOME/.virtualenvs"
 venv_projects="$HOME/repositories/satnet-release-1/WebServices"
 
 # ### Examples of HOW TO call this script
-usage() { 
+usage()
+{
 
     echo "Please, use ONLY ONE ARGUMENT at a time:"
+    echo "Usage: $0 [-a] #Installs EVERYTHING."
     echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
     echo "Usage: $0 [-c] #Create and install self-signed certificates" 
     echo "Usage: $0 [-i] #Install Debian packages <root>"     
     echo "Usage: $0 [-p] #Configures PostgreSQL" 
-    echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET." 
+    echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET."
+    echo "Usage: $0 [-s] #Creates the <secrets> module with initial values."
     echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
-    echo "Usage: $0 [-v] #Configure virtualenv" 
+    echo "Usage: $0 [-v] #Configure virtualenv"
+    echo "Usage: $0 [-x] #Configures Apache web server"
 
     1>&2;
     exit 1; 
@@ -226,13 +350,21 @@ usage() {
 ################################################################################
 # ### Main variables and parameters
 script_path="$( cd "$( dirname "$0" )" && pwd )"
-project_path="$script_path/.."
+project_path=$( readlink -e "$script_path/.." )
 webservices_dir="$project_path/WebServices"
-webservices_venv_dir="$webservices_dir/.venv"
+webservices_secrets_dir="$webservices_dir/website/secrets"
+webservices_secrets_init="$webservices_secrets_dir/__init__.py"
+webservices_secrets_auth="$webservices_secrets_dir/auth.py"
+webservices_secrets_database="$webservices_secrets_dir/database.py"
+webservices_secrets_email="$webservices_secrets_dir/email.py"
+webservices_venv_dir="$webservices_dir/.__venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"
 webservices_public_html_dir="$webservices_dir/public_html"
 webservices_logs_dir="$webservices_dir/logs"
+webservices_logs_dir="$webservices_dir/logs"
+webservices_public_html_dir="$webservices_dir/public_html"
+webservices_static_dir="$webservices_public_html_dir/static"
 
 ################################################################################
 # ### Main execution loop
@@ -240,24 +372,32 @@ echo "script_path = $script_path"
 echo "project_path = $project_path"
 echo "webservices_path = $webservices_dir"
 
+__setup_user=$( whoami )
+
 if [ $# -lt 1 ] ; then
     usage
     exit 0
 fi
 
-while getopts ":abciprov" opt; do
+while getopts ":abcikprsovx" opt; do
     case $opt in
         a)
-            echo 'Complete SATNET installation...'
-            echo 'Installing Debian packages...'
             echo 'This process is not unattended, user interaction is required.'
             echo 'Press any key to continue...'
             read
+
+            echo 'Installing Debian packages...'
             install_packages
-            echo 'Configuring PostgreSQL...'
+            clear && echo '>>>>>>> Configuring PostgreSQL...'
             configure_postgresql
-            echo 'Configuring virtualenv...'
-            configure_root            
+            clear && echo '>>>>>>> Configuring Crontab...'
+            configure_crontab
+            clear && echo '>>>>>>> Configuring virtualenv...'
+            configure_root
+            clear && echo '>>>>>>> Creating secrets...'
+            create_secrets
+            clear && echo '>>>>>>> Configuring Apache...'
+            configure_apache
             echo 'DONE'
             exit 1
             ;;
@@ -281,6 +421,11 @@ while getopts ":abciprov" opt; do
             install_packages
             echo 'DONE'
             ;;
+        k)
+            echo 'Creating keys and certificates for Apache...'
+            create_apache_keys
+            echo 'DONE'
+            ;;
         p)
             echo 'Configuring PostgreSQL...'
             configure_postgresql
@@ -293,6 +438,12 @@ while getopts ":abciprov" opt; do
             echo 'DONE'
             exit 1;
             ;;
+        s)
+            echo 'Creating <secrets>...'
+            create_secrets
+            echo 'DONE'
+            exit 1;
+            ;;
         o)
             echo 'Configuring Crontab...'
             configure_crontab
@@ -302,6 +453,12 @@ while getopts ":abciprov" opt; do
         v)
             echo 'Configuring virtualenv...'
             configure_root
+            echo 'DONE'
+            exit 1;
+            ;;
+        x)
+            echo 'Configuring Apache...'
+            configure_apache
             echo 'DONE'
             exit 1;
             ;;

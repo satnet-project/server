@@ -71,7 +71,7 @@ def confirm_selections(groundstation_id, slot_identifiers):
     JRPC method that changes the state of the OperationalSlots provided to
     'RESERVED', notifying the postposal of the requested operation over the
     already selected slots.
-    :param groundstation_id: The identifier of the GroundStation making the
+    :param groundstation_id: The identifier of the GroundStation placing this
     request.
     :param slot_identifiers: The identifiers for all the requested
     OperationalSlots.

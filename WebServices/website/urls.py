@@ -33,7 +33,7 @@ urlpatterns = urls.patterns(
     # ### Command and Control Interface
     urls.url(
         r'^c2/',
-        views.redirect_home,
+        views.redirect_c2,
         name='c2_interface'
     ),
     urls.url(

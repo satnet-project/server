@@ -17,8 +17,84 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 
+from services.common import misc
 from services.configuration.models import channels
 from services.scheduling.models import operational
+
+
+class PassiveMessageManager(models.Manager):
+    """Manager for the passive messages.
+
+    This manager handles the operations over the PassiveMessage table in the
+    database.
+    """
+
+    def create(self, gs_channel_id, gs_timestamp, doppler_shift, message):
+        """Creates the object in the database.
+        Creates the object in the database with the data provided and including
+        the current UTC timestamp as the timestamp of the moment at which this
+        message was received in the server.
+        :param gs_channel_id: Identifier of the channel of the GroundStation
+                                that retrieved this message.
+        :param gs_timestamp: Timestamp of the moment at which this message was
+                                received at the GroundStation.
+        :param doppler_shift: Doppler shift during the reception of the message.
+        :param message: Binary message to be stored in the database.
+        """
+        return super(PassiveMessageManager, self).create(
+            groundstation_channel=channels.GroundStationChannel.objects.get(
+                identifier=gs_channel_id
+            ),
+            groundstation_timestamp=gs_timestamp,
+            reception_timestamp=misc.get_utc_timestamp(),
+            doppler_shift=doppler_shift,
+            #message=message
+        )
+
+
+class PassiveMessage(models.Model):
+    """Message model class for received out-of-operations messages.
+
+    This class models the messages to be sent from Ground Stations to the
+    network with the data passively received from satellites. This means that
+    no remote operation has to be scheduled for the data to be received.
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    objects = PassiveMessageManager()
+
+    groundstation_channel = models.ForeignKey(
+        channels.GroundStationChannel,
+        verbose_name='GroundStationChannel that tx/rx this message'
+    )
+
+    retrieved = models.BooleanField(
+        'Flag that indicates whether the message has already been retrieved '
+        'by a remote user.',
+        default=False
+    )
+
+    doppler_shift = models.FloatField(
+        'Doppler shift during the reception of the message.'
+    )
+
+    groundstation_timestamp = models.IntegerField(
+        'Timestamp that indicates the moment at which this message was '
+        'received at the Ground Station.'
+    )
+
+    reception_timestamp = models.IntegerField(
+        'Timestamp that indicates the moment when this message was received at'
+        'the server.'
+    )
+    transmission_timestamp = models.IntegerField(
+        'Timestamp that indicates the moment when this message was '
+        'transmitted to the receiver',
+        default=0
+    )
+
+    message = models.BinaryField('Message raw data')
 
 
 class Message(models.Model):

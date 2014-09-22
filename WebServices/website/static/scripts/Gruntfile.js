@@ -1,5 +1,5 @@
-"""
-   Copyright 2014 Xabier Crespo Álvarez
+/*
+   Copyright 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -12,17 +12,19 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+*/
 
-:Author:
-    Xabier Crespo Álvarez (xabicrespog@gmail.com)
-"""
-__author__ = 'xabicrespog@gmail.com'
-
-
-"""
-	According to the Django documentation this variable is used 
-	to provide cryptographic signing, and should be set to a unique, 
-	unpredictable value.
-"""
-
-SECRET_KEY = 'y!b^adlkfjpf980qwef[pof9ejqwfoijqasfqwepf9q0jw'     # fake key
+module.exports = function(grunt) {
+  grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
+    taskName: {
+        qunit: {
+            all: ['tests/*.html']
+        }
+    }
+  });
+  // load up your plugins
+  grunt.loadNpmTasks('grunt-contrib-qunit');
+  // register one or more task lists (you should ALWAYS have a "default" task list)
+  grunt.registerTask('default', ['qunit']);
+};

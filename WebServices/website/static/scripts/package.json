@@ -1,0 +1,24 @@
+{
+  "name": "satellite.tracker.js",
+  "version": "0.0.1",
+  "description": "JavaScript-based satellite tracker using Leaflet and OpenStreetMaps.",
+  "main": "simulator.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "satellite",
+    "tracker",
+    "cubesats",
+    "amateur"
+  ],
+  "author": "rtubiopa@calpoly.edu",
+  "license": "Apache v2",
+  "dependencies": {
+    "bower": "^1.3.10",
+    "grunt": "^0.4.5",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-qunit": "^0.5.2",
+    "grunt-contrib-watch": "^0.6.1"
+  }
+}

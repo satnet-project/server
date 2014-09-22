@@ -30,26 +30,22 @@
     <link rel="stylesheet" href="{% static 'css/toolbar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/tables.css' %}"  />
 
-    <link rel="stylesheet" href="{% static 'prime-ui/css/jquery-ui.css' %}" />
-    <link rel="stylesheet" href="{% static 'prime-ui/css/prime-ui-min.css' %}" />
-    <link rel="stylesheet" href="{% static 'prime-ui/css/theme.css' %}" />
-
-    <script type="text/javascript" 
-            src="{% static 'prime-ui/scripts/jquery-2.0.3.min.js' %}" >
-        </script>
-    <script type="text/javascript"
-            src="{% static 'prime-ui/scripts/jquery-ui.min.js' %}" >
-        </script>
-    <script type="text/javascript"
-            src="{% static 'prime-ui/scripts/primeui-1.0-min.js' %}" >
-        </script>
-
-    {% block head %}
-    {% endblock %}
-
     <style type='text/css'>
         .mark-div { border: 1px dashed white; }
     </style>
+
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/jquery/dist/jquery.min.js' %}" >
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/jquery-jsonrpcclient/jquery.jsonrpcclient.js' %}" >
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/satnet-jrpc.js' %}" >
+    </script>
+
+    {% block head %}
+    {% endblock %}
 
 </head>
 <body>
@@ -122,7 +118,12 @@
             
 {% endblock %}
         </div>
-        
+
+        <div id='toolbar_extra'>
+{% block toolbar_extra %}
+{% endblock %}
+        </div>
+
         <div id='toolbar_footer'>
         </div>
 

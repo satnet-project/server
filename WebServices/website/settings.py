@@ -77,9 +77,6 @@ STATICFILES_DIRS = (
     os.path.join(
         os.path.dirname(__file__), '..', 'website', 'static'
     ),
-    os.path.join(
-        os.path.dirname(__file__), '..', 'website', 'static', 'prime-ui'
-    ),
 )
 
 # List of finder classes that know how to find static files in

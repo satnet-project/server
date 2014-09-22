@@ -283,6 +283,21 @@ class GroundStation(models.Model):
         if changes:
             self.save()
 
+    def has_channel(self, gs_channel_id):
+        """Checker method.
+
+        This method checks whether this GroundStation has the given Channel
+        or not associated with it.
+        :param gs_channel_id: identifier of the Channel of the GroundStation
+                                whose ownership to this segment is to be
+                                checked.
+        :return: 'True' if the channel is associated with this GroundStation.
+        """
+        return self.channels\
+            .filter(enabled=True)\
+            .filter(identifier=gs_channel_id)\
+            .exists()
+
     def __unicode__(self):
         """
         Prints in a unicode string the most remarkable data for this

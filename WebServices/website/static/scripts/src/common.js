@@ -232,3 +232,33 @@ function validate_textarea(textarea_id, regex) {
 }
 
 function supressEnterKey() { return ( event.keyCode || event.which ) != 13; }
+
+/*
+/////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////// GEOLOCATION
+/////////////////////////////////////////////////////////////////////////////
+ */
+
+/**
+ * This function transforms a Location string "lat, long" into an array with
+ * ['lat', 'long'] values.
+ * @param location The Location string with the geographical information.
+ * @return The array with the latitude and longitude parameters as separate
+ *          elements.
+ */
+function Location2LatLongArray(location){
+    return location.split(',');
+}
+
+/**
+ * This function encapsulates the usage of a remote service for the geolocation
+ * of a given IP address.
+ * @param response_cb The callback that will handle the response obtained from
+ *                      the remote service as a JSON-P formatted value.
+ * @param error_cb The callback that handles a possible error during the
+ *                  communication with the server.
+ */
+function getLocation(response_cb, error_cb){
+    $.get("http://ipinfo.io", response_cb, "jsonp")
+        .fail(error_cb);
+}
