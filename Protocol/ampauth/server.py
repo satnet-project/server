@@ -104,6 +104,7 @@ class CredReceiver(AMP, TimeoutMixin):
             'Active connections: ' + str(len(self.factory.active_connections) / 2))
         self.setTimeout(None)  # Cancel the pending timeout
         self.transport.loseConnection()
+        super(CredReceiver, self).connectionLost(reason)
 
     def passwordLogin(self, sUsername, sPassword):
         """
@@ -126,6 +127,7 @@ class CredReceiver(AMP, TimeoutMixin):
             # If the next two lines were removed, only the authentication
             # server would have that information.
             avatar.factory = self.factory
+            avatar.credProto = self
             avatar.sUsername = sUsername
             self.factory.active_protocols[sUsername] = avatar
             log.msg('Connection made')

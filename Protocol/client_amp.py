@@ -75,12 +75,18 @@ class ClientProtocol(AMP):
 
     def vNotifyMsg(self, sMsg):
         log.msg("--------- Notify Message ---------")
-        log.msg(sMsg)                
+        log.msg(sMsg)
+        self.callRemote(EndRemote)                
         return {}
     NotifyMsg.responder(vNotifyMsg)
 
-    def vNotifySlotEnd(self, iSlotId):
-        print "NotifySlotEnd"
+    def vNotifySlotEnd(self, iReason):
+        log.msg("--------- Notify Slot End ---------")
+        if iReason == NotifySlotEnd.SLOT_END:
+            log.msg("Disconnection because the slot has ended")
+        elif iReason == NotifySlotEnd.REMOTE_DISCONNECTED:
+            log.msg("Disconnection because the remote client has been disconnected")
+
         return {}
     NotifySlotEnd.responder(vNotifySlotEnd)
 
