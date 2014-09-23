@@ -72,8 +72,8 @@ create_apache_keys()
 }
 
 __satnet_apache_conf='/etc/apache2/sites-available/satnet_tls.conf'
-__apache_user='satnet'
-__apache_group='satnet'
+__apache_user='www-data'
+__apache_group='www-data'
 __apache_redirect_url='https://localhost:8443'
 __apache_server_name='localhost'
 __apache_server_admin='satnet.calpoly@gmail.com'
@@ -141,8 +141,10 @@ configure_apache()
     create_apache_keys
 
     sudo a2enmod gnutls
+    sudo a2enmod wsgi
     sudo a2dismod ssl
     sudo a2ensite satnet_tls
+    sudo a2dissite 000-default
     sudo a2dissite default
     sudo a2dissite default-ssl
     sudo service apache2 reload
@@ -362,8 +364,6 @@ webservices_static_dir="$webservices_public_html_dir/static"
 echo "script_path = $script_path"
 echo "project_path = $project_path"
 echo "webservices_path = $webservices_dir"
-
-__setup_user=$( whoami )
 
 if [ $# -lt 1 ] ; then
     usage
