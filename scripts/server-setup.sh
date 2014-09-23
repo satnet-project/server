@@ -143,7 +143,8 @@ configure_apache()
     sudo a2enmod gnutls
     sudo a2enmod wsgi
     sudo a2dismod ssl
-    sudo a2ensite satnet_tls
+    sudo a2ensite satnet_tls        # ubuntu compatible
+    sudo a2ensite satnet_tls.conf   # debian compatible
     sudo a2dissite 000-default
     sudo a2dissite default
     sudo a2dissite default-ssl
