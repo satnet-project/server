@@ -107,10 +107,10 @@ configure_apache()
     echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
-    echo "    WSGIDaemonProcess satnet user=$__apache_user python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
-    echo "        WSGIProcessGroup $__apache_group" | sudo tee -a $__satnet_apache_conf
+    echo "        WSGIProcessGroup satnet" | sudo tee -a $__satnet_apache_conf
     echo '	      <IfVersion < 2.3 >' | sudo tee -a $__satnet_apache_conf
     echo '        	Order deny,allow' | sudo tee -a $__satnet_apache_conf
     echo '        	Allow from all' | sudo tee -a $__satnet_apache_conf
