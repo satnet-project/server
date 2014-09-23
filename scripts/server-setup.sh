@@ -71,7 +71,7 @@ create_apache_keys()
     sudo chmod -R o-w $APACHE_2_CERTIFICATES_DIR
 }
 
-__satnet_apache_conf='/etc/apache2/sites-available/satnet_tls'
+__satnet_apache_conf='/etc/apache2/sites-available/satnet_tls.conf'
 __apache_user='satnet'
 __apache_group='satnet'
 __apache_redirect_url='https://localhost:8443'
