@@ -20,5 +20,8 @@
     "grunt-cli": "^0.1.13",
     "grunt-contrib-qunit": "^0.5.2",
     "grunt-contrib-watch": "^0.6.1"
+  },
+  "devDependencies": {
+    "phantomjs": "^1.9.9"
   }
 }

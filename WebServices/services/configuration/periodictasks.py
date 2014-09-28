@@ -48,6 +48,6 @@ def clean_slots():
     old_slots = availability.AvailabilitySlot.objects.filter(
         end__lte=misc.get_today_utc()
     )
-    logger.info('> About to delete ' + len(old_slots) + ' slots.')
+    logger.info('> About to delete ' + str(len(old_slots)) + ' slots.')
     old_slots.delete()
     logger.info('> Deleted!')

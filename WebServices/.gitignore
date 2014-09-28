@@ -1,5 +1,6 @@
 .idea
 .venv
+.__venv
 setup.sh
 logs
 public_html
