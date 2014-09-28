@@ -71,9 +71,9 @@ create_apache_keys()
     sudo chmod -R o-w $APACHE_2_CERTIFICATES_DIR
 }
 
-__satnet_apache_conf='/etc/apache2/sites-available/satnet_tls'
-__apache_user='satnet'
-__apache_group='satnet'
+__satnet_apache_conf='/etc/apache2/sites-available/satnet_tls.conf'
+__apache_user='www-data'
+__apache_group='www-data'
 __apache_redirect_url='https://localhost:8443'
 __apache_server_name='localhost'
 __apache_server_admin='satnet.calpoly@gmail.com'
@@ -107,10 +107,10 @@ configure_apache()
     echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
-    echo "    WSGIDaemonProcess satnet user=$__apache_user python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
-    echo "        WSGIProcessGroup $__apache_group" | sudo tee -a $__satnet_apache_conf
+    echo "        WSGIProcessGroup satnet" | sudo tee -a $__satnet_apache_conf
     echo '	      <IfVersion < 2.3 >' | sudo tee -a $__satnet_apache_conf
     echo '        	Order deny,allow' | sudo tee -a $__satnet_apache_conf
     echo '        	Allow from all' | sudo tee -a $__satnet_apache_conf
@@ -141,8 +141,11 @@ configure_apache()
     create_apache_keys
 
     sudo a2enmod gnutls
+    sudo a2enmod wsgi
     sudo a2dismod ssl
-    sudo a2ensite satnet_tls
+    sudo a2ensite satnet_tls        # ubuntu compatible
+    sudo a2ensite satnet_tls.conf   # debian compatible
+    sudo a2dissite 000-default
     sudo a2dissite default
     sudo a2dissite default-ssl
     sudo service apache2 reload
@@ -362,8 +365,6 @@ webservices_static_dir="$webservices_public_html_dir/static"
 echo "script_path = $script_path"
 echo "project_path = $project_path"
 echo "webservices_path = $webservices_dir"
-
-__setup_user=$( whoami )
 
 if [ $# -lt 1 ] ; then
     usage
