@@ -65,6 +65,7 @@ class CredReceiver(AMP, TimeoutMixin):
     logout = None
     sUsername = 'NOT_AUTHENTICATED'
     iTimeOut = 300  # seconds
+    iSlotEndCallId = None
 
     def connectionMade(self):
         self.setTimeout(self.iTimeOut)
@@ -85,18 +86,8 @@ class CredReceiver(AMP, TimeoutMixin):
         if self.sUsername != 'NOT_AUTHENTICATED':
             # Remove from active protocols
             self.factory.active_protocols.pop(self.sUsername)
-            # If the client is still in active_connections (only true when he
-            # was in a remote connection and he was disconnected in the first
-            # place)
-            if self.sUsername in self.factory.active_connections:
-                # Notify the remote client about this disconnection. The notification is
-                # sent through the SATNETServer instance
-                self.factory.active_protocols[
-                    self.factory.active_connections[self.sUsername]].vRemoteClientDisconnected()
-                # Remove active connection
-                self.factory.active_connections.pop(
-                    self.factory.active_connections[self.sUsername])
-                self.factory.active_connections.pop(self.sUsername)
+            if self.iSlotEndCallId is not None:
+                self.iSlotEndCallId.cancel()
         log.err(reason.getErrorMessage())
         log.msg('Active clients: ' + str(len(self.factory.active_protocols)))
         # divided by 2 because the dictionary is doubly linked

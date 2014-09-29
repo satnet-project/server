@@ -25,6 +25,7 @@ __author__ = 'xabicrespog@gmail.com'
 import os
 import sys
 import logging
+from datetime import datetime
 sys.path.append(os.path.dirname(os.getcwd()) + "/WebServices")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
@@ -39,6 +40,7 @@ from ampauth.credentials import *
 from ampauth.server import *
 from errors import *
 
+from services.common import misc
 from services.scheduling.models import operational
 from services.configuration.models.channels import SpacecraftChannel
 
@@ -76,6 +78,23 @@ class SATNETServer(AMP):
         log.msg(self.sUsername + ' session timeout reset')
         self.resetTimeout()
         super(SATNETServer, self).dataReceived(data)
+  
+    def vCreateConnection(self, iSlotEnd, iSlotId, remoteUsr, localUsr):
+        slot_remaining_time = int(
+            (iSlotEnd - misc.localize_datetime_utc(datetime.utcnow())).total_seconds())
+        slot_remaining_time = 1000
+        log.msg('Slot remaining time: ' + str(slot_remaining_time))
+        self.credProto.iSlotEndCallId = reactor.callLater(
+            slot_remaining_time, self.vSlotEnd, iSlotId)        
+        if str(remoteUsr) not in self.factory.active_protocols:
+            log.msg('Remote user ' + remoteUsr + ' not connected yet')
+            return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
+        else:
+            log.msg('Remote user is ' + remoteUsr)
+            self.factory.active_connections[remoteUsr] = localUsr
+            self.factory.active_connections[remoteUsr] = remoteUsr
+            self.factory.active_protocols[remoteUsr].callRemote(
+                NotifyConnection, sClientId=str(localUsr))
 
     def iStartRemote(self, iSlotId):
         log.msg("(" + self.sUsername + ") --------- Start Remote ---------")
@@ -110,40 +129,34 @@ class SATNETServer(AMP):
                 return {'iResult': StartRemote.CLIENTS_COINCIDE}
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
-                self.gs_user = self.sUsername
-                if str(sc_user) not in self.factory.active_protocols:
-                    log.msg('Remote user not connected yet')
-                    return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
-                else:
-                    log.msg('Remote user is ' + sc_user)
-                    self.factory.active_connections[gs_user] = sc_user
-                    self.factory.active_connections[sc_user] = gs_user
-                    self.factory.active_protocols[sc_user].callRemote(
-                        NotifyConnection, sClientId=str(gs_user))
+                #self.gs_user = self.sUsername
+                self.vCreateConnection(slot[0].end, iSlotId, sc_user, gs_user)
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
-                self.sc_user = self.sUsername
-                if str(gs_user) not in self.factory.active_protocols:
-                    log.msg('Remote user ' + gs_user + ' not connected yet')
-                    return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
-                else:
-                    log.msg('Remote user is ' + gs_user)
-                    self.factory.active_connections[gs_user] = sc_user
-                    self.factory.active_connections[sc_user] = gs_user
-                    self.factory.active_protocols[gs_user].callRemote(
-                        NotifyConnection, sClientId=str(sc_user))
+                self.vCreateConnection(slot[0].end, iSlotId, gs_user, sc_user)
 
             return {'iResult': iSlotId}
     StartRemote.responder(iStartRemote)
 
     def vEndRemote(self):
         log.msg("(" + self.sUsername + ") --------- End Remote ---------")
-        # Disconnect both users (need to be done from the CredReceiver instance)
-        self.factory.active_protocols[self.factory.active_connections[
-            self.sUsername]].callRemote(NotifySlotEnd, iReason=NotifySlotEnd.REMOTE_DISCONNECTED)
+        # Disconnect both users (need to be done from the CredReceiver
+        # instance)
         self.credProto.transport.loseConnection()
-        self.factory.active_protocols[self.factory.active_connections[
-            self.sUsername]].credProto.transport.loseConnection()
+        # If the client is still in active_connections (only true when he
+        # was in a remote connection and he was disconnected in the first
+        # place)
+        if self.sUsername in self.factory.active_connections:
+            # Notify the remote client about this disconnection. The notification is
+            # sent through the SATNETServer instance
+            self.factory.active_protocols[self.factory.active_connections[
+                self.sUsername]].callRemote(NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED)
+            # Close connection f
+            self.factory.active_protocols[self.factory.active_connections[
+                self.sUsername]].credProto.transport.loseConnection()
+            # Remove active connection
+            self.factory.active_connections.pop(
+                self.factory.active_connections[self.sUsername])
 
         return {}
     EndRemote.responder(vEndRemote)
@@ -154,6 +167,9 @@ class SATNETServer(AMP):
             log.msg('Connection not available. Call StartRemote command first')
             raise SlotErrorNotification(
                 'Connection not available. Call StartRemote command first.')
+        elif self.sUsername not in self.factory.active_connections:
+            self.callRemote(
+                NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED)
         else:
             self.factory.active_protocols[self.factory.active_connections[
                 self.sUsername]].callRemote(NotifyMsg, sMsg=sMsg)
@@ -161,9 +177,12 @@ class SATNETServer(AMP):
         return {}
     SendMsg.responder(vSendMsg)
 
-    def vRemoteClientDisconnected(self):
-        self.callRemote(NotifyError, sDescription='Remote client ' +
-                        str(self.factory.active_connections[self.sUsername]) + ' was disconnected')
+    def vSlotEnd(self, iSlotId):
+        log.msg("(" + self.sUsername + ") Slot " + str(iSlotId) + ' has finished')
+        self.callRemote(NotifyEvent, iEvent=NotifyEvent.SLOT_END)
+        # Remove the timer ID reference to avoid it to be canceled
+        # a second time when the client disconnects
+        self.credProto.iSlotEndCallId = None
 
 
 def main():
