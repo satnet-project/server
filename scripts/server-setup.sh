@@ -1,23 +1,24 @@
 #!/bin/bash
 
+################################################################################
 # Copyright 2013 Ricardo Tubio-Pardavila (rtpardavila@gmail.com)
-
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
 # (at your option) any later version.
-
+#
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
-
+#
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
+#
 ################################################################################
-# Autor: rtpardavila[at]gmail.com
-# Autor: xabicrespog[at]gmail.com
+# Author: rtpardavila[at]gmail.com
+# Author: xabicrespog[at]gmail.com
 # Description: configures a Debian server for the SATNet project.
 ################################################################################
 
@@ -107,7 +108,7 @@ configure_apache()
     echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
-    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.__venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
     echo "        WSGIProcessGroup satnet" | sudo tee -a $__satnet_apache_conf
@@ -251,8 +252,8 @@ configure_root()
         exit -1
     }
 
-    create_secrets
-    
+    [[ ! -d "$webservices_secrets_dir" ]] && create_secrets
+
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
     source $webservices_venv_activate
@@ -351,7 +352,7 @@ webservices_secrets_init="$webservices_secrets_dir/__init__.py"
 webservices_secrets_auth="$webservices_secrets_dir/auth.py"
 webservices_secrets_database="$webservices_secrets_dir/database.py"
 webservices_secrets_email="$webservices_secrets_dir/email.py"
-webservices_venv_dir="$webservices_dir/.__venv"
+webservices_venv_dir="$webservices_dir/.venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"
 webservices_public_html_dir="$webservices_dir/public_html"

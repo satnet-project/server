@@ -28,7 +28,8 @@
     "jquery-jsonrpcclient": "Textalk/jquery.jsonrpcclient.js#~0.6.1",
     "jquery": "~2.1.1",
     "leaflet-dist": "~0.7.2",
-    "angular": "~1.2.25"
+    "angular": "~1.2.25",
+    "angular-leaflet-directive": "~0.7.8"
   },
   "devDependencies": {
     "qunit": "~1.15.0"
