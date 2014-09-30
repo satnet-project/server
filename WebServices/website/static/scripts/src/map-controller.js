@@ -16,53 +16,55 @@
  * Created by rtubio on 1/31/14.
  */
 
+var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
+var DEFAULT_LNG = -8.9330;
+var DEFAULT_ZOOM = 12;
+var USER_ZOOM = 6;
+
 /**
  * This function centers the map at the given [lat, long] coordinates
  * with the specified zoom level.
- * @param $scope
+ * @param map Leaflet map.
  * @param lat Latitude (coordinates).
  * @param lng Longitude (coordinates).
  * @param zoom Level of zoom.
  */
-function centerMap ($scope, lat, lng, zoom) {
-    angular.extend($scope, { center: { lat: lat, lng: lng, zoom: zoom } });
+function centerMap (map, lat, lng, zoom) {
+    map.setView(new L.LatLng(lat, lng), zoom);
 }
 
 /**
  * This function locates the map at the location of the IP that the
  * client uses for this connection.
  */
-function locateUser ($scope, $log) {
+function locateUser ($log, map) {
     $.get("http://ipinfo.io",
         function (data) {
             var ll = data['loc'].split(',');
             $log.info('User located at = ' + ll);
-            centerMap($scope, ll[0], ll[1], MapController._DEFAULT_ZOOM);
+            centerMap(map, ll[0], ll[1], USER_ZOOM);
         }, 'jsonp')
     .fail(
-        function(data) {
+        function() {
             $log.warn('Could not locate user');
-            centerMap($scope,
-                MapController._DEFAULT_LAT, MapController._DEFAULT_LON,
-                MapController._DEFAULT_ZOOM
-            );
+            centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
         }
     );
 }
 
-/**
- * Constructor for the MapController object.
- * @param $scope
- * @param $log
- * @constructor
- */
-function MapController($scope, $log) {
-    this._DEFAULT_LAT = 42.6000;
-    this._DEFAULT_LON = -8.9330;
-    this._DEFAULT_ZOOM = 10;
-    locateUser($scope, $log);
-}
-
 var app = angular
     .module("satellite.tracker.js", ['leaflet-directive'])
-    .controller("MapController", MapController);
+    .controller("MapController", [
+        "$scope", "$log", "leafletData", function($scope, $log, leafletData) {
+            angular.extend($scope, {
+                center: {
+                    lat: DEFAULT_LAT,
+                    lng: DEFAULT_LNG,
+                    zoom: DEFAULT_ZOOM
+                }
+            });
+            leafletData.getMap().then(function(map) {
+                locateUser($log, map);
+            });
+        }
+    ]);
