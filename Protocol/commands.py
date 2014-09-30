@@ -35,7 +35,8 @@ class StartRemote(amp.Command):
     errors = {
         SlotErrorNotification: 'SLOT_ERROR_NOTIFICATION'}    
     """
-    Invoked when a client wants to connect to an N-server.
+    Invoked when a client wants to connect to an N-server. This shall be called
+    right after invoking login method.
     
     :param iSlotId:
         ID number of the slot which should have been previously reserved through
@@ -69,7 +70,8 @@ class SendMsg(amp.Command):
     arguments = [('sMsg', amp.String())]
     requiresAnswer = False
     """
-    Invoked when a client wants to send a message to a remote entity.
+    Invoked when a client wants to send a message to a remote entity. To use it, the 
+    command StartRemote shall be invoked first.
     
     :param bMsg:
         Array containing the message
@@ -83,18 +85,28 @@ by a N-server.
 """
 
 
-class NotifyError(amp.Command):
-    arguments = [('sDescription', amp.String())]
+class NotifyEvent(amp.Command):
+    arguments = [('iEvent', amp.Integer())]
     requiresAnswer = False
     """
-    Used to informed a client about an error in the network.
+    Used to inform a client about an event in the network. There are three cases:
+        1. REMOTE_DISCONNECTED: notifies when the remote client has been disconnected
+        and it is not receiving the messages.
+        2. SLOT_END: Notifies both clients about the slot end
+        3. END_REMOTE: Notifies a client that the remote has finished the connection
     
-    :param sDescription:
-
-    :type sDescription:
-        string
+    :param iEvent:
+        Code indicating the error. At this moment the command is invoked only 
+        when a client is trying to send a message but the remote lost the connection.
+    :type iEvent:
+        integer
     """
-
+    #Remote user not connected
+    REMOTE_DISCONNECTED = -1
+    #Both MCC and GSS belong to the same client
+    SLOT_END = -2
+    #Remote client finished connection
+    END_REMOTE = -3
 
 class NotifyConnection(amp.Command):
     arguments = [('sClientId', amp.String())]
@@ -120,20 +132,3 @@ class NotifyMsg(amp.Command):
     :type bMsg:
         bytearray
     """
-
-
-class NotifySlotEnd(amp.Command):
-    arguments = [('iReason', amp.Integer())]
-    requiresAnswer = False
-    """
-    Notifies to a client the end of the operations slot.
-    
-    :param iSlotId:
-        Slot identification number
-    :type iSlotId:
-        int
-    """
-    #Both MCC and GSS belong to the same client
-    SLOT_END = -1
-    #Remote user not connected yet
-    REMOTE_DISCONNECTED = -2

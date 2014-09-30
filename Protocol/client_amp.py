@@ -60,12 +60,6 @@ class ClientProtocol(AMP):
         log.err(reason)
         super(ClientProtocol, self).connectionLost(reason)
 
-    def vNotifyError(self, sDescription):
-        log.err("--------- Notify Error ---------")
-        log.err(sDescription)
-        return {}
-    NotifyError.responder(vNotifyError)
-
     def vNotifyConnection(self, sClientId):
         log.msg("--------- Notify Connection ---------")        
         log.msg(sClientId + " has just connected to the server")
@@ -80,15 +74,17 @@ class ClientProtocol(AMP):
         return {}
     NotifyMsg.responder(vNotifyMsg)
 
-    def vNotifySlotEnd(self, iReason):
+    def vNotifyEvent(self, iEvent):
         log.msg("--------- Notify Slot End ---------")
-        if iReason == NotifySlotEnd.SLOT_END:
+        if iEvent == NotifyEvent.SLOT_END:
             log.msg("Disconnection because the slot has ended")
-        elif iReason == NotifySlotEnd.REMOTE_DISCONNECTED:
+        elif iEvent == NotifyEvent.REMOTE_DISCONNECTED:
+            log.msg("Remote client has lost the connection")
+        elif iEvent == NotifyEvent.END_REMOTE:
             log.msg("Disconnection because the remote client has been disconnected")
 
         return {}
-    NotifySlotEnd.responder(vNotifySlotEnd)
+    NotifyEvent.responder(vNotifyEvent)
 
 
 class Client():
