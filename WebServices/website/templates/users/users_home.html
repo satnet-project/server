@@ -16,8 +16,6 @@
    limitations under the License.
 {% endcomment %}
 
-{% load i18n %}
-
 {% block content %}
     {% include 'users/users_index.html' %}
 {% endblock %}
@@ -28,7 +26,7 @@
 {% block toolbar_content %}
 {% if request.user.is_authenticated %}
     <hr />
-    <div><a id='button_c2c' class='toolbar_button'
+    <div id='button_divx'><a id='button_c2c' class='toolbar_button'
             href="{% url 'c2_interface' %}">
             C2 Interface
     </a></div>
