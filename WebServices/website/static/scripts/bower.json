@@ -29,7 +29,8 @@
     "jquery": "~2.1.1",
     "leaflet-dist": "~0.7.2",
     "angular": "~1.2.25",
-    "angular-leaflet-directive": "~0.7.8"
+    "angular-leaflet-directive": "~0.7.8",
+    "jquery-ui": "~1.11.1"
   },
   "devDependencies": {
     "qunit": "~1.15.0"

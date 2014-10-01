@@ -25,6 +25,9 @@
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css'%}" />
 
     <script type="text/javascript"
+            src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
+        </script>
+    <script type="text/javascript"
         src="{% static 'scripts/bower_components/leaflet-dist/leaflet.js'%}">
         </script>
     <script type="text/javascript"
@@ -38,7 +41,14 @@
         src="{% static 'scripts/src/map-controller.js'%}">
         </script>
 
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#toolbar").toggle('slide', { direction: 'left' }, 500);
+        });
+    </script>
+
 {% endblock %}
+
 {% block content %}
 
     {% verbatim %}
