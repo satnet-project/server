@@ -52,19 +52,22 @@ function locateUser ($log, map) {
     );
 }
 
+// This is the main controller for the map.
 var app = angular
     .module("satellite.tracker.js", ['leaflet-directive'])
     .controller("MapController", [
-        "$scope", "$log", "leafletData", function($scope, $log, leafletData) {
+        "$scope", "$log", "$http", "leafletData",
+        function($scope, $log, $http, leafletData) {
             angular.extend($scope, {
                 center: {
-                    lat: DEFAULT_LAT,
-                    lng: DEFAULT_LNG,
-                    zoom: DEFAULT_ZOOM
+                    lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
                 }
             });
             leafletData.getMap().then(function(map) {
                 locateUser($log, map);
             });
+            $scope.init = function() {
+                $scope._simulator = new Simulator($log, $http);
+            };
         }
     ]);

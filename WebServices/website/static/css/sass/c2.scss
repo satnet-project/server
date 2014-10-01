@@ -1,0 +1,86 @@
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+
+$bg_color: #2F3236;
+$fg_color: #A6A6A6;
+$area_h: 250px;
+$area_w: 325px;
+$area_corner: 5px;
+$separator_h: 2px;
+$title_h: 35px;
+$content_h: $area_h - $title_h;
+$min_area_h: $title_h + $separator_h - $area_h;
+
+.n-area {
+  position: absolute;
+  bottom: -$area_corner;
+  right: -$area_corner;
+  width: $area_w;
+  height: $area_h;
+  opacity: 0.95;
+  line-height: 40px;
+  border-radius: $area_corner;
+  background-color: $bg_color;
+  color: $fg_color;
+  transition: bottom 300ms ease-in-out 125ms;
+}
+
+.n-area-title {
+  font-size: 12px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: solid $fg_color $separator_h;
+  height: $title_h;
+}
+
+.n-area-title a {
+  cursor:pointer;
+}
+
+#n-area-toggle {
+  position: relative;
+  visibility: hidden;
+}
+#n-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-aligh: center;
+}
+
+#n-area-toggle + div label:after {
+  content: "notification area (hide)";
+}
+#n-area-toggle:checked + div label:after {
+  content: "notification (show)";
+}
+#n-area-toggle:checked ~ .n-area {
+  bottom: $min_area_h;
+}
+
+.n-area-content {
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  padding: 3px 15px;
+  width: 100%;
+  height: $content_h;
+}
+
+.n-area-content a {
+  overflow-x: hidden;
+  overflow-y: scroll;
+  font-family: sans-serif;
+  font-size: 65%;
+}
