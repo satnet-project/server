@@ -46,13 +46,18 @@ class StartRemote(amp.Command):
 
     :returns iResult:
         Raises an error if the slot is not available yet or if it isn't assigned to 
-        the calling client. Otherwise, returns a code indicating whether that the remote
-        client is not connected or if the remote client is the same as the calling client.
+        the calling client. Otherwise, it may return one of the following codes:
+
+        (0) REMOTE_READY: the remote client is already connected to the server
+        (-1) CLIENTS_COINCIDE: the remote client is the same as the calling client
+        (-2) REMOTE_NOT_CONNECTED: indicates if the the remote client is not connected
 
         In case that any of the previous cases are detected, the slotId is returned.
     :rtype:
         int or L{SlotNotAvailable}
     """
+    #Remote client ready
+    REMOTE_READY = 0
     #Both MCC and GSS belong to the same client
     CLIENTS_COINCIDE = -1
     #Remote user not connected yet
@@ -86,20 +91,29 @@ by a N-server.
 
 
 class NotifyEvent(amp.Command):
-    arguments = [('iEvent', amp.Integer())]
+    arguments = [('iEvent', amp.Integer()),
+    ('sDetails', amp.String(optional=True))]
     requiresAnswer = False
     """
-    Used to inform a client about an event in the network. There are three cases:
-        1. REMOTE_DISCONNECTED: notifies when the remote client has been disconnected
-        and it is not receiving the messages.
-        2. SLOT_END: Notifies both clients about the slot end
-        3. END_REMOTE: Notifies a client that the remote has finished the connection
+    Used to inform a client about an event in the network. 
     
     :param iEvent:
-        Code indicating the error. At this moment the command is invoked only 
-        when a client is trying to send a message but the remote lost the connection.
+        Code indicating the event.There are three cases:
+
+        (-1) REMOTE_DISCONNECTED: notifies when the remote client has been disconnected
+        and it is not receiving the messages.
+        (-2) SLOT_END: notifies both clients about the slot end
+        (-3) END_REMOTE: notifies a client that the remote has finished the connection
+        (-4) REMOTE_CONNECTED: notifies a client when the remote has just connected
     :type iEvent:
-        integer
+        int
+
+    :param sDetails:
+        Details of the event. If it is REMOTE_CONNECTED this parameter is equal to 
+        the username of the remote client. Otherwise the parameter is None
+
+    :type sDetails:
+        String or None        
     """
     #Remote user not connected
     REMOTE_DISCONNECTED = -1
@@ -107,18 +121,8 @@ class NotifyEvent(amp.Command):
     SLOT_END = -2
     #Remote client finished connection
     END_REMOTE = -3
-
-class NotifyConnection(amp.Command):
-    arguments = [('sClientId', amp.String())]
-    requiresAnswer = False
-    """
-    Notifies to a client when the remote client connects to the N-server.
-    
-    :param sClientId:
-        Remote client username
-    :type sClientId:
-        string
-    """
+    #Remote client finished connection
+    REMOTE_CONNECTED = -4
 
 
 class NotifyMsg(amp.Command):

@@ -60,28 +60,23 @@ class ClientProtocol(AMP):
         log.err(reason)
         super(ClientProtocol, self).connectionLost(reason)
 
-    def vNotifyConnection(self, sClientId):
-        log.msg("--------- Notify Connection ---------")        
-        log.msg(sClientId + " has just connected to the server")
-        self.callRemote(SendMsg, sMsg='ola tubío')
-        return {}
-    NotifyConnection.responder(vNotifyConnection)
-
     def vNotifyMsg(self, sMsg):
-        log.msg("--------- Notify Message ---------")
+        log.msg("(" + self.USERNAME + ") --------- Notify Message ---------")
         log.msg(sMsg)
         self.callRemote(EndRemote)                
         return {}
     NotifyMsg.responder(vNotifyMsg)
 
-    def vNotifyEvent(self, iEvent):
-        log.msg("--------- Notify Slot End ---------")
+    def vNotifyEvent(self, iEvent, sDetails):
+        log.msg("(" + self.USERNAME + ") --------- Notify Event ---------")
         if iEvent == NotifyEvent.SLOT_END:
             log.msg("Disconnection because the slot has ended")
         elif iEvent == NotifyEvent.REMOTE_DISCONNECTED:
             log.msg("Remote client has lost the connection")
         elif iEvent == NotifyEvent.END_REMOTE:
             log.msg("Disconnection because the remote client has been disconnected")
+        elif iEvent == NotifyEvent.REMOTE_CONNECTED:
+            log.msg("The remote client has just connected")
 
         return {}
     NotifyEvent.responder(vNotifyEvent)
