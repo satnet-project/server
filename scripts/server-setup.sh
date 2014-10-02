@@ -37,6 +37,11 @@ install_packages()
     sudo apt-get install binutils libproj-dev gdal-bin
     sudo apt-get install build-essential libssl-dev libffi-dev
 
+    # TODO :: Nodejs, bower and grunt install
+    sudo apt-get install ruby rubygem-integration
+    sudo gem install sass
+    sudo gem install compass
+
     sudo apt-get clean
 
     pip install virtualenvwrapper

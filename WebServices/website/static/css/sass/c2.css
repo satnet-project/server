@@ -14,7 +14,7 @@
 .n-area {
   position: absolute;
   bottom: -5px;
-  right: -5px;
+  left: -5px;
   width: 325px;
   height: 250px;
   opacity: 0.95;

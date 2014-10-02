@@ -25,7 +25,7 @@ $min_area_h: $title_h + $separator_h - $area_h;
 .n-area {
   position: absolute;
   bottom: -$area_corner;
-  right: -$area_corner;
+  left: -$area_corner;
   width: $area_w;
   height: $area_h;
   opacity: 0.95;
