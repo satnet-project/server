@@ -21,6 +21,7 @@ $separator_h: 2px;
 $title_h: 35px;
 $content_h: $area_h - $title_h;
 $min_area_h: $title_h + $separator_h - $area_h;
+$log_items_margin_left: $area_corner + 10px;
 
 .n-area {
   position: absolute;
@@ -56,14 +57,14 @@ $min_area_h: $title_h + $separator_h - $area_h;
   position: relative;
   cursor: pointer;
   display: block;
-  text-aligh: center;
+  text-align: center;
 }
 
 #n-area-toggle + div label:after {
-  content: "notification area (hide)";
+  content: "notification area (^)";
 }
 #n-area-toggle:checked + div label:after {
-  content: "notification (show)";
+  content: "notification area (^)";
 }
 #n-area-toggle:checked ~ .n-area {
   bottom: $min_area_h;
@@ -74,13 +75,15 @@ $min_area_h: $title_h + $separator_h - $area_h;
   display: inline-block;
   vertical-align: top;
   padding: 3px 15px;
-  width: 100%;
+  width: 90%;
   height: $content_h;
-}
-
-.n-area-content a {
   overflow-x: hidden;
-  overflow-y: scroll;
+  overflow-y: hidden;
   font-family: sans-serif;
   font-size: 65%;
+}
+
+.n-area-list {
+  line-height: 1.5em;
+  padding-left: $log_items_margin_left;
 }

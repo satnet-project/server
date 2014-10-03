@@ -38,7 +38,7 @@ function centerMap (map, lat, lng, zoom) {
  * client uses for this connection.
  */
 function locateUser ($log, map) {
-    $.get("http://ipinfo.io",
+    $.get('http://ipinfo.io',
         function (data) {
             var ll = data['loc'].split(',');
             $log.info('User located at = ' + ll);
@@ -52,91 +52,36 @@ function locateUser ($log, map) {
     );
 }
 
-var LOG_EV_LOG = 'log';
-var LOG_EV_INFO = 'info';
-var LOG_EV_ERROR = 'error';
-var LOG_EV_WARN = 'warning';
-
-/**
- * Creates the object that represents a LOG event.
- * @param arguments arguments[0] is the description of the event.
- * @returns {{level: string, message: *}}
- */
-function createLogEv(arguments) {
-    return {
-        level: LOG_EV_LOG,
-        message: arguments[0]
-    };
-}
-
-/**
- * Creates the object that represents an INFO event.
- * @param arguments arguments[0] is the description of the event.
- * @returns {{level: string, message: *}}
- */
-function createInfoEv(arguments) {
-    return {
-        level: LOG_EV_INFO,
-        message: arguments[0]
-    };
-}
-
-/**
- * Creates the object that represents an ERROR event.
- * @param arguments arguments[0] is the description of the event.
- * @returns {{level: string, message: *}}
- */
-function createErrorEv(arguments) {
-    return {
-        level: LOG_EV_ERROR,
-        message: arguments[0]
-    };
-}
-
-/**
- * Creates the object that represents a WARNING event.
- * @param arguments arguments[0] is the description of the event.
- * @returns {{level: string, message: *}}
- */
-function createWarnEv(arguments) {
-    return {
-        level: LOG_EV_WARN,
-        message: arguments[0]
-    };
-}
-
 // This is the main controller for the map.
-var app = angular
-    .module('satellite.tracker.js', ['leaflet-directive'])
-    .factory('areaLogger', function ($delegate) {
-        return function(){
+var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
+
+    app.config(function($provide) {
+        $provide.decorator('$log', function($delegate, logExtension) {
+            return logExtension($delegate);
+        });
+    });
+
+    app.factory("logExtension", function() {
+        return function($delegate){
             return  {
                 log: function () {
                     console.log('[log] ' + arguments[0]);
-                    //$rootScope.$broadcast('log_event', createLogEv(arguments));
                 },
                 info: function () {
                     console.info('[info] ' + arguments[0]);
-                    //$rootScope.$broadcast('log_event', createInfoEv(arguments));
                 },
                 error: function () {
                     console.error('[error] ' + arguments[0]);
-                    //$rootScope.$broadcast('log_event', createErrorEv(arguments));
                 },
                 warn: function () {
                     console.warn('[warning] ' + arguments[0]);
-                    //$rootScope.$broadcast('log_event', createWarnEv(arguments));
                 }
-            };
+            }
         };
-    })
-    .config(['$provide', function ($provide) {
-        $provide.decorator('$log', function ($delegate, areaLogger) {
-            return areaLogger($delegate);
-        })
-    }])
-    .controller("MapController", [
-        "$scope", "$log", "$http", "leafletData",
+    });
+
+    app.controller('MapController', [
+        '$scope', '$log', '$http', 'leafletData',
         function($scope, $log, $http, leafletData) {
             angular.extend($scope, {
                 center: {
