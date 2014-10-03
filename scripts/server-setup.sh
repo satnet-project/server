@@ -41,6 +41,8 @@ install_packages()
     sudo apt-get install ruby rubygem-integration
     sudo gem install sass
     sudo gem install compass
+    
+    sudo apt-get install yui-compressor
 
     sudo apt-get clean
 

@@ -21,7 +21,7 @@ $separator_h: 2px;
 $title_h: 35px;
 $content_h: $area_h - $title_h;
 $min_area_h: $title_h + $separator_h - $area_h;
-$log_items_margin_left: $area_corner + 10px;
+$log_items_margin_left: $area_corner + 7px;
 
 .n-area {
   position: absolute;
@@ -38,7 +38,7 @@ $log_items_margin_left: $area_corner + 10px;
 }
 
 .n-area-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   text-align: center;
   border-bottom: solid $fg_color $separator_h;
@@ -80,10 +80,18 @@ $log_items_margin_left: $area_corner + 10px;
   overflow-x: hidden;
   overflow-y: hidden;
   font-family: sans-serif;
-  font-size: 65%;
+  font-size: 75%;
 }
 
 .n-area-list {
+
+  list-style: none;
   line-height: 1.5em;
   padding-left: $log_items_margin_left;
+  vertical-align: middle;
+
+  li p:before {
+    content: '$: ';
+  }
+
 }

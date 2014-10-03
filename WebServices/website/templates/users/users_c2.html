@@ -58,24 +58,23 @@
 
     {% verbatim %}
 
-        <div ng-app="satellite.tracker.js">
+        <div ng-app='satellite.tracker.js'>
 
-            <div ng-controller="MapController" ng-init="init()" >
-                <leaflet center="center"
-                        style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+            <div ng-controller='MapController' ng-init='init()' >
+                <leaflet center='center'
+                        style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
                 </leaflet>
             </div>
 
             <input type="checkbox" name="n-area-toggle" id="n-area-toggle" />
 
-            <div class="n-area">
-                <div class="n-area-title">
-                    <label for="n-area-toggle"></label>
+            <div class='n-area'>
+                <div class='n-area-title'>
+                    <label for='n-area-toggle'></label>
                 </div>
-                <div class="n-area-content">
+                <div ng-controller='' class='n-area-content'>
                     <ul class='n-area-list'>
-                        <li>log...</li>
-                        <li>log...</li>
+                        <li><p></p></li>
                     </ul>
                 </div>
             </div>

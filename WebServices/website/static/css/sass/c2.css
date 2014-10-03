@@ -25,7 +25,7 @@
   transition: bottom 300ms ease-in-out 125ms; }
 
 .n-area-title {
-  font-size: 12px;
+  font-size: 14px;
   font-weight: bold;
   text-align: center;
   border-bottom: solid #A6A6A6 2px;
@@ -63,10 +63,14 @@
   overflow-x: hidden;
   overflow-y: hidden;
   font-family: sans-serif;
-  font-size: 65%; }
+  font-size: 75%; }
 
 .n-area-list {
+  list-style: none;
   line-height: 1.5em;
-  padding-left: 15px; }
+  padding-left: 12px;
+  vertical-align: middle; }
+  .n-area-list li p:before {
+    content: '$: '; }
 
 /*# sourceMappingURL=c2.css.map */
