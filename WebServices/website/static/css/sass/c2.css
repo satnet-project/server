@@ -30,9 +30,8 @@
   text-align: center;
   border-bottom: solid #A6A6A6 2px;
   height: 35px; }
-
-.n-area-title a {
-  cursor: pointer; }
+  .n-area-title a {
+    cursor: pointer; }
 
 #n-area-toggle {
   position: relative;

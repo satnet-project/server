@@ -23,6 +23,10 @@ $content_h: $area_h - $title_h;
 $min_area_h: $title_h + $separator_h - $area_h;
 $log_items_margin_left: $area_corner + 7px;
 
+.leafleat-map {
+
+}
+
 .n-area {
   position: absolute;
   bottom: -$area_corner;
@@ -43,10 +47,11 @@ $log_items_margin_left: $area_corner + 7px;
   text-align: center;
   border-bottom: solid $fg_color $separator_h;
   height: $title_h;
-}
 
-.n-area-title a {
-  cursor:pointer;
+  a {
+    cursor:pointer;
+  }
+
 }
 
 #n-area-toggle {

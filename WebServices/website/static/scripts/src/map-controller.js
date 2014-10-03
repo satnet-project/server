@@ -56,28 +56,22 @@ function locateUser ($log, map) {
 var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
 
     app.config(function($provide) {
-        $provide.decorator('$log', function($delegate, logExtension) {
-            return logExtension($delegate);
-        });
-    });
-
-    app.factory("logExtension", function() {
-        return function($delegate){
+        $provide.decorator('$log', function($delegate) {
             return  {
                 log: function () {
-                    console.log('[log] ' + arguments[0]);
+                    $delegate.log.apply(null, ['[log] ' + arguments[0]]);
                 },
                 info: function () {
-                    console.info('[info] ' + arguments[0]);
+                    $delegate.info.apply(null, ['[info] ' + arguments[0]]);
                 },
                 error: function () {
-                    console.error('[error] ' + arguments[0]);
+                    $delegate.error.apply(null, ['[error] ' + arguments[0]]);
                 },
                 warn: function () {
-                    console.warn('[warning] ' + arguments[0]);
+                    $delegate.info.apply(null, ['[warn] ' + arguments[0]]);
                 }
             }
-        };
+        });
     });
 
     app.controller('MapController', [
@@ -94,5 +88,11 @@ var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
             $scope.init = function() {
                 $scope._simulator = new Simulator($log, $http);
             };
+        }
+    ]);
+
+    app.controller('NotificationAreaController', ['$scope', '$log',
+        function($scope, $log) {
+            // Include here the listeners to the broadcasted log messages.
         }
     ]);

@@ -24,7 +24,7 @@
     <link rel="stylesheet"
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css'%}" />
     <link rel="stylesheet"
-        href="{% static 'css/sass/c2.css'%}" />
+        href="{% static 'css/sass/c2.min.css'%}" />
 
     <script type="text/javascript"
         src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
@@ -68,11 +68,11 @@
 
             <input type="checkbox" name="n-area-toggle" id="n-area-toggle" />
 
-            <div class='n-area'>
+            <div ng-controller='NotificationAreaController' class='n-area'>
                 <div class='n-area-title'>
                     <label for='n-area-toggle'></label>
                 </div>
-                <div ng-controller='' class='n-area-content'>
+                <div class='n-area-content'>
                     <ul class='n-area-list'>
                         <li><p></p></li>
                     </ul>
