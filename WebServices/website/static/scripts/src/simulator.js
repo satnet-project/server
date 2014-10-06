@@ -34,4 +34,7 @@ function Simulator($log, $http) {
  */
 Simulator.prototype._loadData = function () {
     this._log.info('[simulator] Loading remote data...');
+
+
+
 }
