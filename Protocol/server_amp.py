@@ -82,7 +82,7 @@ class SATNETServer(AMP):
     def vCreateConnection(self, iSlotEnd, iSlotId, remoteUsr, localUsr):
         slot_remaining_time = int(
             (iSlotEnd - misc.localize_datetime_utc(datetime.utcnow())).total_seconds())
-        slot_remaining_time = 1000
+        #slot_remaining_time = 1000
         log.msg('Slot remaining time: ' + str(slot_remaining_time))
         # self.credProto.iSlotEndCallId = reactor.callLater(
         #    slot_remaining_time, self.vSlotEnd, iSlotId)
