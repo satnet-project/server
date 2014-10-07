@@ -154,19 +154,13 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # ### django-allauth
     'allauth',
     'allauth.account',
-    # ### django-session-security
     'session_security',
-    # ### mapping!
     'leaflet',
-    # ### periodical task scheduling
     'periodically',
-    # ### rpc4django (must appear before RPC implementors)
     'rpc4django',
-
-    # ### django extensions
+    'rest_framework',
     'django_extensions',
 
     # ### developed applications
