@@ -22,7 +22,7 @@ from services.configuration.rest.serializers import segments as \
     segment_serializers
 
 
-class GroundSegmentList(generics.ListAPIView):
+class ListGroundStationsView(generics.ListAPIView):
     """
     View for handling the invocation of the list of ground stations for a
     given user.
@@ -37,5 +37,5 @@ class GroundSegmentList(generics.ListAPIView):
         """
         Overrides the default queryset method.
         """
-        queryset = super(GroundSegmentList, self).get_queryset()
-        return queryset.filter(user__username=self.kwargs.get('username'))
+        queryset = super(ListGroundStationsView, self).get_queryset()
+        return queryset.filter(user__username=self.request.user)

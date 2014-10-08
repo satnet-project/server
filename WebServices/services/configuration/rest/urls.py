@@ -16,12 +16,15 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
+from django.contrib.auth import decorators
 
 from services.configuration.rest.views import segments as segment_views
 
 urlpatterns = urls.patterns('',
-    urls.url(r'^(?P<username>[0-9a-zA-Z_-]+)/groundstations$',
-        segment_views.GroundSegmentList.as_view(),
-        name='rest-gs-list'
+    urls.url(r'^groundstations$',
+        decorators.login_required(
+            segment_views.ListGroundStationsView.as_view()
+        ),
+        name='rest-cfg-gs-list'
     )
 )
