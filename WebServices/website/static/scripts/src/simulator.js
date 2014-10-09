@@ -20,9 +20,9 @@
  * Basic Simulator's constructor.
  * @constructor
  */
-function Simulator($log, $http) {
+function Simulator($log, listGroundStations) {
     this._log = $log;
-    this._http = $http;
+    this._listGroundStations = listGroundStations;
     this._log.info('Loading simulator...');
     this._loadData();
 }
@@ -33,8 +33,9 @@ function Simulator($log, $http) {
  * @private
  */
 Simulator.prototype._loadData = function () {
+
     this._log.info('[simulator] Loading remote data...');
+    var gs_list = this._listGroundStations.query();
+    this._log.info('Ground Stations = ' + gs_list);
 
-
-
-}
+};

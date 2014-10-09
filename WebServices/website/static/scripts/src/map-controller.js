@@ -53,7 +53,9 @@ function locateUser ($log, map) {
 }
 
 // This is the main controller for the map.
-var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
+var app = angular.module('satellite.tracker.js', [
+    'leaflet-directive', 'ngResource'
+]);
 
     app.config(function($provide) {
         $provide.decorator('$log', function($delegate) {
@@ -74,9 +76,13 @@ var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
         });
     });
 
+    app.factory('listGroundStations', function($resource) {
+        return $resource('/configuration/groundstations', {});
+    });
+
     app.controller('MapController', [
-        '$scope', '$log', '$http', 'leafletData',
-        function($scope, $log, $http, leafletData) {
+        '$scope', '$log', '$resource', 'leafletData', 'listGroundStations',
+        function($scope, $log, $resource, leafletData, listGroundStations) {
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
@@ -86,7 +92,7 @@ var app = angular.module('satellite.tracker.js', ['leaflet-directive']);
                 locateUser($log, map);
             });
             $scope.init = function() {
-                $scope._simulator = new Simulator($log, $http);
+                $scope._simulator = new Simulator($log, listGroundStations);
             };
         }
     ]);
