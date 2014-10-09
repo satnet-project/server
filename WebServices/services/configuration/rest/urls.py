@@ -26,5 +26,11 @@ urlpatterns = urls.patterns('',
             segment_views.ListGroundStationsView.as_view()
         ),
         name='rest-cfg-gs-list'
+    ),
+    urls.url(r'^spacecraft',
+        decorators.login_required(
+            segment_views.ListSpacecraftView.as_view()
+        ),
+        name='rest-cfg-sc-list'
     )
 )

@@ -23,21 +23,18 @@ $content_h: $area_h - $title_h;
 $min_area_h: $title_h + $separator_h - $area_h;
 $log_items_margin_left: $area_corner + 7px;
 
-.leafleat-map {
-
-}
-
+// Notification Area
 .n-area {
-  position: absolute;
-  bottom: -$area_corner;
-  left: -$area_corner;
   width: $area_w;
   height: $area_h;
-  opacity: 0.95;
+  opacity: 0.9;
   line-height: 40px;
   border-radius: $area_corner;
   background-color: $bg_color;
   color: $fg_color;
+  position: absolute;
+  bottom: -$area_corner;
+  left: -$area_corner;
   transition: bottom 300ms ease-in-out 125ms;
 }
 
@@ -66,10 +63,10 @@ $log_items_margin_left: $area_corner + 7px;
 }
 
 #n-area-toggle + div label:after {
-  content: "notification area (^)";
+  content: "notification area";
 }
 #n-area-toggle:checked + div label:after {
-  content: "notification area (^)";
+  content: "notification area";
 }
 #n-area-toggle:checked ~ .n-area {
   bottom: $min_area_h;
@@ -99,4 +96,62 @@ $log_items_margin_left: $area_corner + 7px;
     content: '$: ';
   }
 
+}
+
+/**/
+// Ground Station Area
+.gs-area {
+  width: $area_w;
+  height: $area_h;
+  opacity: 0.9;
+  line-height: 40px;
+  border-radius: $area_corner;
+  background-color: darkred;
+  color: $fg_color;
+  position: absolute;
+  top: 0;
+  left: 10px;
+  transition: bottom 300ms ease-in-out 125ms;
+}
+
+
+.gs-area-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  border-bottom: solid $fg_color $separator_h;
+  height: $title_h;
+
+  a {
+    cursor:pointer;
+  }
+
+}
+
+#gs-area-toggle {
+  position: relative;
+  visibility: hidden;
+}
+#gs-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+
+#gs-area-toggle + div label:after { content: "ground stations"; }
+#gs-area-toggle:checked + div label:after { content: "ground stations"; }
+#gs-area-toggle:checked ~ .n-area { bottom: $min_area_h; }
+
+.gs-area-content {
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  padding: 3px 15px;
+  width: 90%;
+  height: $content_h;
+  overflow-x: hidden;
+  overflow-y: hidden;
+  font-family: sans-serif;
+  font-size: 75%;
 }

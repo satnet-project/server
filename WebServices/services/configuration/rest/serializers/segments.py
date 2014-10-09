@@ -39,3 +39,23 @@ class GroundStationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = segment_models.GroundStation
+
+
+class SpacecraftSerializer(serializers.ModelSerializer):
+    """
+    This class serializes a Spacecraft object for the REST framework.
+    """
+    user = account_serializers.UserProfileSerializer(required=False)
+
+    def get_validation_exclusions(self, **kwargs):
+        """
+        Method that returns the fields to be excluded from the validation
+        process. For this model, the field 'user' should be excluded.
+        :param **kwargs: additional parameters.
+        """
+        exclusions = super(SpacecraftSerializer, self)\
+            .get_validation_exclusions()
+        return exclusions + ['user']
+
+    class Meta:
+        model = segment_models.Spacecraft

@@ -102,3 +102,9 @@ var app = angular.module('satellite.tracker.js', [
             // Include here the listeners to the broadcasted log messages.
         }
     ]);
+
+    app.controller('GSAreaController', ['$scope', '$log',
+        function($scope, $log) {
+            // Include here the listeners to the broadcasted log messages.
+        }
+    ]);

@@ -21,10 +21,12 @@
  * @constructor
  */
 function Simulator($log, listGroundStations) {
+
     this._log = $log;
     this._listGroundStations = listGroundStations;
-    this._log.info('Loading simulator...');
+
     this._loadData();
+
 }
 
 /**
@@ -35,7 +37,10 @@ function Simulator($log, listGroundStations) {
 Simulator.prototype._loadData = function () {
 
     this._log.info('[simulator] Loading remote data...');
-    var gs_list = this._listGroundStations.query();
-    this._log.info('Ground Stations = ' + gs_list);
+
+    this._gs_list = this._listGroundStations.query();
+    this._log.info(
+            '[simulator] Ground Stations registered = ' + this._gs_list.length
+    );
 
 };

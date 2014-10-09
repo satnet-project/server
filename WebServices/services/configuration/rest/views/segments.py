@@ -39,3 +39,22 @@ class ListGroundStationsView(generics.ListAPIView):
         """
         queryset = super(ListGroundStationsView, self).get_queryset()
         return queryset.filter(user__username=self.request.user)
+
+
+class ListSpacecraftView(generics.ListAPIView):
+    """
+    View for handling the invocation of the list of spacecraft for a given
+    user.
+    """
+    model = segment_models.Spacecraft
+    serializer_class = segment_serializers.SpacecraftSerializer
+    permission_classes = [
+        permissions.AllowAny
+    ]
+
+    def get_queryset(self):
+        """
+        Overrides the default queryset method.
+        """
+        queryset = super(ListSpacecraftView, self).get_queryset()
+        return queryset.filter(user__username=self.request.user)
