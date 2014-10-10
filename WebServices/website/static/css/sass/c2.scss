@@ -17,16 +17,11 @@ $fg_color: #A6A6A6;
 $opacity: 0.8;
 $area_h: 275px;
 $area_w: 450px;
-$gs_area_w: 175px;
-$gs_area_left: 300px;
-$sc_area_w: $gs_area_w;
-$sc_area_left: $gs_area_left + $gs_area_w + 10px;
 $area_corner: 5px;
 $separator_h: 2px;
 $title_h: 35px;
 $content_h: $area_h - $title_h;
 $min_area_h: $title_h - $area_h + $separator_h;
-$min_gs_area_top: -$area_corner - $content_h + $separator_h + 7px;
 $log_items_margin_left: $area_corner + 7px;
 
 // Base styles...
@@ -134,9 +129,15 @@ $log_items_margin_left: $area_corner + 7px;
 //////////////////////////////////////////////////////////// Ground Station Area
 ////////////////////////////////////////////////////////////////////////////////
 
+$gs_area_h: 275px;
+$gs_area_w: 175px;
+$gs_area_left: 300px;
+$min_gs_area_top: -$area_corner - $content_h + $separator_h + 7px;
+$gs_min_h: $title_h + 12px;
+
 .gs-area { @extend .base-area;
+  min-height: $gs_area_h;
   width: $gs_area_w;
-  height: $area_h;
   position: absolute;
   top: -$area_corner;
   left: $gs_area_left;
@@ -169,9 +170,12 @@ $log_items_margin_left: $area_corner + 7px;
 //////////////////////////////////////////////////////////////// Spacecraft Area
 ////////////////////////////////////////////////////////////////////////////////
 
+$sc_area_w: $gs_area_w;
+$sc_area_left: $gs_area_left + $gs_area_w + 10px;
+
 .sc-area { @extend .base-area;
+  min-height: $gs_area_h;
   width: $sc_area_w;
-  height: $area_h;
   position: absolute;
   top: -$area_corner;
   left: $sc_area_left;

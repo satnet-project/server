@@ -95,8 +95,8 @@
     cursor: pointer; }
 
 .gs-area {
+  min-height: 275px;
   width: 175px;
-  height: 275px;
   position: absolute;
   top: -5px;
   left: 300px;
@@ -130,8 +130,8 @@
   height: 193px; }
 
 .sc-area {
+  min-height: 275px;
   width: 175px;
-  height: 275px;
   position: absolute;
   top: -5px;
   left: 485px;
