@@ -11,27 +11,44 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
-.n-area {
-  width: 325px;
-  height: 250px;
-  opacity: 0.9;
+.base-area, .n-area, .gs-area, .sc-area {
+  opacity: 0.8;
   line-height: 40px;
   border-radius: 5px;
   background-color: #2F3236;
-  color: #A6A6A6;
+  font-size: 60%;
+  color: #A6A6A6; }
+
+.base-area-title, .n-area-title, .gs-area-title {
+  font-weight: bold;
+  font-size: 105%;
+  text-align: center;
+  vertical-align: middle;
+  height: 35px; }
+  .base-area-title a, .n-area-title a, .gs-area-title a {
+    cursor: pointer; }
+
+.base-area-content, .n-area-content, .gs-area-content {
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  padding: 3px 15px;
+  width: 90%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: sans-serif;
+  font-size: 95%; }
+
+.n-area {
+  width: 450px;
+  height: 275px;
   position: absolute;
   bottom: -5px;
   left: -5px;
   transition: bottom 300ms ease-in-out 125ms; }
 
 .n-area-title {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  border-bottom: solid #A6A6A6 2px;
-  height: 35px; }
-  .n-area-title a {
-    cursor: pointer; }
+  border-bottom: solid #A6A6A6 2px; }
 
 #n-area-toggle {
   position: relative;
@@ -50,50 +67,43 @@
   content: "notification area"; }
 
 #n-area-toggle:checked ~ .n-area {
-  bottom: -213px; }
+  bottom: -238px; }
 
 .n-area-content {
-  text-align: left;
-  display: inline-block;
-  vertical-align: top;
-  padding: 3px 15px;
-  width: 90%;
-  height: 215px;
   overflow-x: hidden;
-  overflow-y: hidden;
-  font-family: sans-serif;
-  font-size: 75%; }
+  overflow-y: auto;
+  height: 240px; }
 
 .n-area-list {
   list-style: none;
-  line-height: 1.5em;
+  line-height: 0.95em;
   padding-left: 12px;
   vertical-align: middle; }
-  .n-area-list li p:before {
-    content: '$: '; }
+  .n-area-list li div {
+    display: inline-block;
+    border-radius: 5px;
+    padding: 2px; }
+    .n-area-list li div p {
+      font-weight: bolder;
+      font-size: 105%; }
+    .n-area-list li div span {
+      padding-left: 3em;
+      text-wrap: normal; }
+  .n-area-list li div:hover {
+    color: white;
+    opacity: 0.5;
+    cursor: pointer; }
 
-/**/
 .gs-area {
-  width: 325px;
-  height: 250px;
-  opacity: 0.9;
-  line-height: 40px;
-  border-radius: 5px;
-  background-color: darkred;
-  color: #A6A6A6;
+  width: 175px;
+  height: 275px;
   position: absolute;
-  top: 0;
-  left: 10px;
-  transition: bottom 300ms ease-in-out 125ms; }
+  top: -5px;
+  left: 300px;
+  transition: top 300ms ease-in-out 125ms; }
 
 .gs-area-title {
-  font-size: 14px;
-  font-weight: bold;
-  text-align: center;
-  border-bottom: solid #A6A6A6 2px;
-  height: 35px; }
-  .gs-area-title a {
-    cursor: pointer; }
+  border-top: solid #A6A6A6 2px; }
 
 #gs-area-toggle {
   position: relative;
@@ -111,19 +121,39 @@
 #gs-area-toggle:checked + div label:after {
   content: "ground stations"; }
 
-#gs-area-toggle:checked ~ .n-area {
-  bottom: -213px; }
+#gs-area-toggle:checked ~ .gs-area {
+  top: -236px; }
 
 .gs-area-content {
-  text-align: left;
-  display: inline-block;
-  vertical-align: top;
-  padding: 3px 15px;
-  width: 90%;
-  height: 215px;
   overflow-x: hidden;
-  overflow-y: hidden;
-  font-family: sans-serif;
-  font-size: 75%; }
+  overflow-y: auto;
+  height: 193px; }
+
+.sc-area {
+  width: 175px;
+  height: 275px;
+  position: absolute;
+  top: -5px;
+  left: 485px;
+  transition: top 300ms ease-in-out 125ms; }
+
+#sc-area-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#sc-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#sc-area-toggle + div label:after {
+  content: "spacecraft"; }
+
+#sc-area-toggle:checked + div label:after {
+  content: "spacecraft"; }
+
+#sc-area-toggle:checked ~ .sc-area {
+  top: -236px; }
 
 /*# sourceMappingURL=c2.css.map */

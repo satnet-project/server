@@ -20,6 +20,7 @@ var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
 var DEFAULT_ZOOM = 12;
 var USER_ZOOM = 6;
+var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
 
 /**
  * This function centers the map at the given [lat, long] coordinates
@@ -41,12 +42,12 @@ function locateUser ($log, map) {
     $.get('http://ipinfo.io',
         function (data) {
             var ll = data['loc'].split(',');
-            $log.info('User located at = ' + ll);
+            $log.info('[map-controller] User located at = ' + ll);
             centerMap(map, ll[0], ll[1], USER_ZOOM);
         }, 'jsonp')
     .fail(
         function() {
-            $log.warn('Could not locate user');
+            $log.warn('[map-controller] Could not locate user');
             centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
         }
     );
@@ -59,26 +60,59 @@ var app = angular.module('satellite.tracker.js', [
 
     app.config(function($provide) {
         $provide.decorator('$log', function($delegate) {
+            var rScope = null;
             return  {
+                setScope: function(scope) {
+                    rScope = scope;
+                },
                 log: function () {
                     $delegate.log.apply(null, ['[log] ' + arguments[0]]);
+                    rScope.$broadcast('logEvent', arguments[0]);
                 },
                 info: function () {
                     $delegate.info.apply(null, ['[info] ' + arguments[0]]);
+                    rScope.$broadcast('infoEvent', arguments[0]);
                 },
                 error: function () {
                     $delegate.error.apply(null, ['[error] ' + arguments[0]]);
+                    rScope.$broadcast('errEvent', arguments[0]);
                 },
                 warn: function () {
                     $delegate.info.apply(null, ['[warn] ' + arguments[0]]);
+                    rScope.$broadcast('warnEvent', arguments[0]);
                 }
             }
         });
     });
-
     app.factory('listGroundStations', function($resource) {
         return $resource('/configuration/groundstations', {});
     });
+
+    app.run(function($rootScope, $log) { $log.setScope($rootScope); })
+    app.controller('NotificationAreaController', ['$scope', '$filter',
+        function($scope, $filter) {
+            $scope.eventLog = [];
+            $scope.$on('infoEvent', function(event, message) {
+                $scope.eventLog.push({
+                    'type': event['name'],
+                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                    'msg':  message
+                });
+            });
+        }
+    ]);
+
+    app.controller('GSAreaController', ['$scope', '$log',
+        function($scope, $log) {
+            // Include here the listeners to the broadcasted log messages.
+        }
+    ]);
+
+    app.controller('SCAreaController', ['$scope', '$log',
+        function($scope, $log) {
+            // Include here the listeners to the broadcasted log messages.
+        }
+    ]);
 
     app.controller('MapController', [
         '$scope', '$log', '$resource', 'leafletData', 'listGroundStations',
@@ -94,17 +128,5 @@ var app = angular.module('satellite.tracker.js', [
             $scope.init = function() {
                 $scope._simulator = new Simulator($log, listGroundStations);
             };
-        }
-    ]);
-
-    app.controller('NotificationAreaController', ['$scope', '$log',
-        function($scope, $log) {
-            // Include here the listeners to the broadcasted log messages.
-        }
-    ]);
-
-    app.controller('GSAreaController', ['$scope', '$log',
-        function($scope, $log) {
-            // Include here the listeners to the broadcasted log messages.
         }
     ]);
