@@ -22,7 +22,12 @@
 {% block head %}
 
     <link rel="stylesheet"
-        href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css'%}" />
+        href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
+    <link rel="stylesheet"
+          href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" >
+    </link>
+        <!-- href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" /> -->
+
     <link rel="stylesheet"
         href="{% static 'css/sass/c2.css'%}" />
 
@@ -41,6 +46,13 @@
     <script type="text/javascript"
         src="{% static 'scripts/bower_components/angular-resource/angular-resource.min.js' %}">
     </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
+    </script>
+    <script type="text/javascript"
+        src='https://raw.github.com/angular-ui/bootstrap/gh-pages/ui-bootstrap-tpls-0.2.0.min.js'>
+    </script>
+        <!-- src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}"> -->
 
     <script type="text/javascript"
         src="{% static 'scripts/src/simulator.js'%}">
@@ -61,14 +73,49 @@
 
     {% verbatim %}
 
-        <div ng-app='satellite.tracker.js'>
+    <div ng-app='satellite.tracker.js'>
 
-            <div ng-controller='MapController' ng-init='init()' >
-                <leaflet center='center'
-                        style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
-                </leaflet>
-            </div>
+        <div ng-controller='MapController' ng-init='init()' >
+            <leaflet center='center'
+                     style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
+            </leaflet>
+        </div>
 
+<!-- Single button -->
+<div class='btn-group' dropdown is-open="status.isopen">
+    <button type='button' class='btn btn-primary dropdown-toggle' ng-disabled="disabled">
+        <p>Ground Stations</p><span class='caret'></span>
+    </button>
+    <ul class='dropdown-menu' role='menu'>
+        <li><a href='#'>Action</a>
+        </li>
+        <li><a href='#'>Another action</a>
+        </li>
+        <li><a href='#'>Something else here</a>
+        </li>
+        <li class='divider'></li>
+        <li> <a href='#' style='font-weight: bold;'>(+) ground station</a>
+
+        </li>
+    </ul>
+</div>
+<div class='btn-group' dropdown is-open="status.isopen">
+    <button type='button' class='btn btn-primary dropdown-toggle' ng-disabled="disabled">
+        <p>Spacecraft</p><span class='caret'></span>
+    </button>
+        <ul class='dropdown-menu' role='menu'>
+            <li><a href='#'>Action</a>
+            </li>
+            <li><a href='#'>Another action</a>
+            </li>
+            <li><a href='#'>Something else here</a>
+            </li>
+            <li class='divider'></li>
+            <li> <a href='#' style='font-weight: bold;'>(+) spacecraft</a></li>
+        </ul>
+</div>
+
+            <!--
             <div>
             <input type='checkbox' name='gs-area-toggle' id='gs-area-toggle' />
             <div ng-controller="GSAreaController" class='gs-area'>
@@ -96,6 +143,7 @@
                 </div>
             </div>
             </div>
+            -->
 
             <div>
             <input type='checkbox' name='n-area-toggle' id='n-area-toggle' />

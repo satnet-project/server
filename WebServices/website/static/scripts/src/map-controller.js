@@ -55,7 +55,7 @@ function locateUser ($log, map) {
 
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
-    'leaflet-directive', 'ngResource'
+    'leaflet-directive', 'ngResource', 'ui.bootstrap'
 ]);
 
     app.config(function($provide) {

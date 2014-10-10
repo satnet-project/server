@@ -24,6 +24,27 @@ $content_h: $area_h - $title_h;
 $min_area_h: $title_h - $area_h + $separator_h;
 $log_items_margin_left: $area_corner + 7px;
 
+.my-btn {
+  background: $bg_color;
+  border-radius: $area_corner;
+  border-color: $bg_color;
+  opacity: $opacity;
+}
+
+$left-margin: 100px;
+$my-btn-max-width: 150px;
+
+.my-gs-btn-grp {
+  position: absolute;
+  top: -$area_corner;
+  left: $left-margin;
+  //max-width: $my-btn-max-width;
+}
+
+.my-sc-btn-grp { @extend .my-gs-btn-grp;
+  left: $left-margin + $my-btn-max-width + 10px;
+}
+
 // Base styles...
 .base-area {
   opacity: $opacity;
@@ -192,3 +213,5 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 #sc-area-toggle + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked ~ .sc-area { top: $min_gs_area_top; }
+
+
