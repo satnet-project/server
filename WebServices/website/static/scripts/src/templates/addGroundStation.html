@@ -1,15 +1,18 @@
 <div class='modal-header'>
     <h3 class='modal-title'>Add new Ground Station</h3>
 </div>
+
 <div class='modal-body' style='display: inline-block'>
-    <div style='width: 50%;'>
-        <input type='text' name='username' ng-model='username'
-                required ng-pattern="/^id_[0-9]+$/"/>
+    <div style='display: inline-block; width: 50%;'>
+        <label for='identifier'>Identifier</label>
+        <input type='text' name='identifier' ng-model='gsIdentifier'
+               required ng-pattern="/^[a-zA-Z0-9]{5,8}$/"/>
     </div>
     <div style='width: 50%;'>
 
     </div>
 </div>
+
 <div class='modal-footer'>
     <button class='btn btn-primary' ng-click="ok()">(ok)</button>
     <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
