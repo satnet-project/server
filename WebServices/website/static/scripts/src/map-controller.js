@@ -93,7 +93,7 @@ var app = angular.module('satellite.tracker.js', [
         function($scope, $filter) {
             $scope.eventLog = [];
             $scope.$on('infoEvent', function(event, message) {
-                $scope.eventLog.push({
+                $scope.eventLog.unshift({
                     'type': event['name'],
                     'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
                     'msg':  message
@@ -108,7 +108,7 @@ var app = angular.module('satellite.tracker.js', [
             var modalInstance = $modal.open({
                 templateUrl: '/static/scripts/src/templates/addGroundStation.html',
                 controller: 'addGroundStationCtrl',
-                size: 'lg',
+                backdrop: false, // clickin' outside does not close the modal
                 resolve: {
                     items: function () {
                         return $scope.items;
@@ -118,9 +118,16 @@ var app = angular.module('satellite.tracker.js', [
         }
     });
 
-    app.controller('addGroundStationCtrl', ['$scope', '$log',
-        function($scope, $log) {
-
+    app.controller('addGroundStationCtrl', ['$scope', '$log', '$modalInstance',
+        function($scope, $log, $modalInstance) {
+            $scope.ok = function() {
+                $log.info('[map-controller] New ground station...');
+                $modalInstance.close();
+            };
+            $scope.cancel = function() {
+                $log.info('[map-controller] Canceling...');
+                $modalInstance.close();
+            };
         }
     ]);
 

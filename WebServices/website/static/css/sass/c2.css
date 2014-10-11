@@ -12,9 +12,9 @@
    See the License for the specific language governing permissions and
    limitations under the License. */
 .my-dd-btn, .my-exit-btn {
-  background: #2F3236;
+  background: #293542;
   border-radius: 5px;
-  border-color: #2F3236;
+  border-color: #293542;
   opacity: 0.8; }
 
 .my-exit-btn {
@@ -35,8 +35,8 @@
   opacity: 0.8;
   line-height: 40px;
   border-radius: 5px;
-  background-color: #2F3236;
-  font-size: 60%;
+  background-color: #293542;
+  font-size: 10pt;
   color: #A6A6A6; }
 
 .base-area-title, .n-area-title, .gs-area-title {
@@ -53,14 +53,14 @@
   display: inline-block;
   vertical-align: top;
   padding: 3px 15px;
-  width: 90%;
+  width: 95%;
   overflow-x: hidden;
   overflow-y: auto;
   font-family: sans-serif;
   font-size: 95%; }
 
 .n-area {
-  width: 450px;
+  width: 550px;
   height: 275px;
   position: absolute;
   bottom: -5px;
@@ -102,12 +102,15 @@
   .n-area-list li div {
     display: inline-block;
     border-radius: 5px;
-    padding: 2px; }
+    padding: 2px 1px 2px 1px;
+    line-height: 1em; }
     .n-area-list li div p {
       font-weight: bolder;
-      font-size: 105%; }
+      font-size: 100%;
+      padding: 3px; }
     .n-area-list li div span {
-      padding-left: 3em;
+      padding: 3px 1em 1em 3em;
+      font-size: 85%;
       text-wrap: normal; }
   .n-area-list li div:hover {
     color: white;
