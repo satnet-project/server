@@ -24,10 +24,7 @@
     <link rel="stylesheet"
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
     <link rel="stylesheet"
-          href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.1/css/bootstrap-combined.min.css" >
-    </link>
-        <!-- href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" /> -->
-
+            href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
     <link rel="stylesheet"
         href="{% static 'css/sass/c2.css'%}" />
 
@@ -50,9 +47,8 @@
         src="{% static 'scripts/bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
     </script>
     <script type="text/javascript"
-        src='https://raw.github.com/angular-ui/bootstrap/gh-pages/ui-bootstrap-tpls-0.2.0.min.js'>
+        src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
     </script>
-        <!-- src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}"> -->
 
     <script type="text/javascript"
         src="{% static 'scripts/src/simulator.js'%}">
@@ -81,40 +77,40 @@
             </leaflet>
         </div>
 
-<!-- Single button -->
-<div class='btn-group' dropdown is-open="status.isopen">
-    <button type='button' class='btn btn-primary dropdown-toggle' ng-disabled="disabled">
-        <p>Ground Stations</p><span class='caret'></span>
-    </button>
-    <ul class='dropdown-menu' role='menu'>
-        <li><a href='#'>Action</a>
-        </li>
-        <li><a href='#'>Another action</a>
-        </li>
-        <li><a href='#'>Something else here</a>
-        </li>
-        <li class='divider'></li>
-        <li> <a href='#' style='font-weight: bold;'>(+) ground station</a>
 
-        </li>
-    </ul>
-</div>
-<div class='btn-group' dropdown is-open="status.isopen">
-    <button type='button' class='btn btn-primary dropdown-toggle' ng-disabled="disabled">
-        <p>Spacecraft</p><span class='caret'></span>
-    </button>
+<div class='left-menu'>
+    <div class='btn-group my-exit-btn-grp'>
+        <button type='button' class='btn btn-primary my-exit-btn'>
+            <p>(exit)</p>
+        </button>
+    </div>
+
+    <!-- Single button -->
+    <div class='btn-group my-gs-btn-grp' dropdown is-open="status.isopen"
+            ng-controller='GSMenuController'>
+        <button type='button' class='btn btn-primary dropdown-toggle my-dd-btn'
+                ng-click="open('lg')">
+            <p>Ground Stations</p><span class='caret'></span>
+        </button>
         <ul class='dropdown-menu' role='menu'>
-            <li><a href='#'>Action</a>
+            <li class='divider'></li>
+            <li> <a href='#' ng-click="addGroundStation()"
+                    style='font-weight: bold;'>
+                (+) ground station</a>
             </li>
-            <li><a href='#'>Another action</a>
-            </li>
-            <li><a href='#'>Something else here</a>
-            </li>
+        </ul>
+    </div>
+    <div class='btn-group my-sc-btn-grp' dropdown is-open="status.isopen">
+        <button type='button' class='btn btn-primary dropdown-toggle my-dd-btn'
+                ng-disabled="disabled">
+            <p>Spacecraft</p><span class='caret'></span>
+        </button>
+        <ul class='dropdown-menu' role='menu'>
             <li class='divider'></li>
             <li> <a href='#' style='font-weight: bold;'>(+) spacecraft</a></li>
         </ul>
+    </div>
 </div>
-
             <!--
             <div>
             <input type='checkbox' name='gs-area-toggle' id='gs-area-toggle' />

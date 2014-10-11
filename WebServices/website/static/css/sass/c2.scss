@@ -24,25 +24,30 @@ $content_h: $area_h - $title_h;
 $min_area_h: $title_h - $area_h + $separator_h;
 $log_items_margin_left: $area_corner + 7px;
 
-.my-btn {
+.my-dd-btn {
   background: $bg_color;
   border-radius: $area_corner;
   border-color: $bg_color;
   opacity: $opacity;
 }
 
-$left-margin: 100px;
-$my-btn-max-width: 150px;
-
-.my-gs-btn-grp {
-  position: absolute;
-  top: -$area_corner;
-  left: $left-margin;
-  //max-width: $my-btn-max-width;
+.my-exit-btn { @extend .my-dd-btn;
+  background: darkred;
+  border-color: darkred;
+  font-weight: bolder;
+  vertical-align: middle;
+  padding: 5px;
+  padding-top: 15px;
+  top: -5px;
 }
 
-.my-sc-btn-grp { @extend .my-gs-btn-grp;
-  left: $left-margin + $my-btn-max-width + 10px;
+$left-margin: 100px;
+$my-btn-max-width: 125px;
+
+.left-menu {
+  position: absolute;
+  top: 0;
+  left: $left-margin;
 }
 
 // Base styles...

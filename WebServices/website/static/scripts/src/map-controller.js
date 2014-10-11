@@ -102,15 +102,35 @@ var app = angular.module('satellite.tracker.js', [
         }
     ]);
 
+    app.controller('GSMenuController', function($scope, $log, $modal) {
+        $log.info('[map-controller] Adding GS modal...')
+        $scope.addGroundStation = function() {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/addGroundStation.html',
+                controller: 'addGroundStationCtrl',
+                size: 'lg',
+                resolve: {
+                    items: function () {
+                        return $scope.items;
+                    }
+                }
+            });
+        }
+    });
+
+    app.controller('addGroundStationCtrl', ['$scope', '$log',
+        function($scope, $log) {
+
+        }
+    ]);
+
     app.controller('GSAreaController', ['$scope', '$log',
         function($scope, $log) {
-            // Include here the listeners to the broadcasted log messages.
         }
     ]);
 
     app.controller('SCAreaController', ['$scope', '$log',
         function($scope, $log) {
-            // Include here the listeners to the broadcasted log messages.
         }
     ]);
 
