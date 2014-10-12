@@ -1,15 +1,40 @@
 <div class='modal-header'>
-    <h3 class='modal-title'>Add new Ground Station</h3>
+    <h3 class='modal-title'>Add Ground Station</h3>
 </div>
 
-<div class='modal-body' style='display: inline-block'>
-    <div style='display: inline-block; width: 50%;'>
-        <label for='identifier'>Identifier</label>
-        <input type='text' name='identifier' ng-model='gsIdentifier'
-               required ng-pattern="/^[a-zA-Z0-9]{5,8}$/"/>
+<div class='modal-body'
+     style='display: inline-block;'>
+    <div style='float: left; width: 200px;'>
+        <form><fieldset>
+            <label for='identifier'>Identifier</label>
+            <input type='text' name='identifier' ng-model='gsIdentifier'
+                   style='width: 95%'
+                   required ng-pattern="/^[a-zA-Z0-9.\-_]{5,8}/" />
+            <label for='callsign'>Callsign</label>
+            <input type='text' name='callsign' ng-model='gsCallsign'
+                   style='width: 95%'
+                   required ng-pattern="/^[a-zA-Z0-9]{3,8}$/" />
+            <label for='elevation'>Min. Antenna Elevation</label>
+            <input type='number' name='elevation' ng-model='gsElevation'
+                   step="0.01" min="0" max="90" value="15"
+                   style='width: 95%'
+                   required />
+            <hr>
+    <!-- -->
+            <label for='add_gs_lat'>Latitude</label>
+            <input type='text' name='add_gs_lat' readonly
+                   ng-model="markers.gsMarker.lat" style='width: 95%;' />
+            <!-- -->
+            <label for='add_gs_lng'>Longitude</label>
+            <input type='text' name='add_gs_lng' readonly
+                   ng-model="markers.gsMarker.lng" style='width: 95%;' />
+    <!-- -->
+        </fieldset></form>
     </div>
-    <div style='width: 50%;'>
-
+    <div>
+        <leaflet markers='markers' center='center'
+                 style='width: 375px; height: 375px;'>
+            </leaflet>
     </div>
 </div>
 

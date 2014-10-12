@@ -20,7 +20,8 @@ var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
 var DEFAULT_ZOOM = 12;
 var USER_ZOOM = 6;
-var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
+//var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
+var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
 
 /**
  * This function centers the map at the given [lat, long] coordinates
@@ -39,18 +40,17 @@ function centerMap (map, lat, lng, zoom) {
  * client uses for this connection.
  */
 function locateUser ($log, map) {
-    $.get('http://ipinfo.io',
-        function (data) {
-            var ll = data['loc'].split(',');
-            $log.info('[map-controller] User located at = ' + ll);
-            centerMap(map, ll[0], ll[1], USER_ZOOM);
-        }, 'jsonp')
-    .fail(
-        function() {
-            $log.warn('[map-controller] Could not locate user');
-            centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
-        }
-    );
+
+    $.get('http://ipinfo.io', function (data) {
+        var ll = data['loc'].split(',');
+        $log.info('[map-ctrl] User located at = ' + ll);
+        centerMap(map, ll[0], ll[1], USER_ZOOM);
+    }, 'jsonp')
+    .fail( function() {
+        $log.warn('[map-ctrl] Could not locate user');
+        centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
+    });
+
 }
 
 // This is the main controller for the map.
@@ -88,7 +88,8 @@ var app = angular.module('satellite.tracker.js', [
         return $resource('/configuration/groundstations', {});
     });
 
-    app.run(function($rootScope, $log) { $log.setScope($rootScope); })
+    app.run(function($rootScope, $log) { $log.setScope($rootScope); });
+
     app.controller('NotificationAreaController', ['$scope', '$filter',
         function($scope, $filter) {
             $scope.eventLog = [];
@@ -99,35 +100,6 @@ var app = angular.module('satellite.tracker.js', [
                     'msg':  message
                 });
             });
-        }
-    ]);
-
-    app.controller('GSMenuController', function($scope, $log, $modal) {
-        $log.info('[map-controller] Adding GS modal...')
-        $scope.addGroundStation = function() {
-            var modalInstance = $modal.open({
-                templateUrl: '/static/scripts/src/templates/addGroundStation.html',
-                controller: 'addGroundStationCtrl',
-                backdrop: false, // clickin' outside does not close the modal
-                resolve: {
-                    items: function () {
-                        return $scope.items;
-                    }
-                }
-            });
-        }
-    });
-
-    app.controller('addGroundStationCtrl', ['$scope', '$log', '$modalInstance',
-        function($scope, $log, $modalInstance) {
-            $scope.ok = function() {
-                $log.info('[map-controller] New ground station...');
-                $modalInstance.close();
-            };
-            $scope.cancel = function() {
-                $log.info('[map-controller] Canceling...');
-                $modalInstance.close();
-            };
         }
     ]);
 
@@ -155,5 +127,56 @@ var app = angular.module('satellite.tracker.js', [
             $scope.init = function() {
                 $scope._simulator = new Simulator($log, listGroundStations);
             };
+        }
+    ]);
+
+    app.controller('GSMenuController', [
+        '$scope', '$log', '$modal',
+        function($scope, $log, $modal) {
+            $log.info('[map-ctrl] Adding GS modal...');
+            $scope.addGroundStation = function() {
+                var modalInstance = $modal.open({
+                    templateUrl: '/static/scripts/src/templates/addGroundStation.html',
+                    controller: 'AddGSModalCtrl',
+                    backdrop: 'false' // clickin' outside does not close the modal
+                });
+            }
+        }
+    ]);
+
+    app.controller('AddGSModalCtrl', [
+        '$scope', '$log', '$modalInstance', 'leafletData',
+        function($scope, $log, $modalInstance, leafletData) {
+            angular.extend($scope, {
+                center: {
+                    lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
+                },
+                markers: {
+                    gsMarker: {
+                        lat: DEFAULT_LAT,
+                        lng: DEFAULT_LNG,
+                        message: "Place your GS!",
+                        focus: true,
+                        draggable: true
+                    }
+                }
+            });
+            leafletData.getMap().then(function(map) {
+                $log.info('[map-ctrl] Defining modal map...');
+                locateUser($log, map);
+            });
+            $scope.ok = function() {
+                $log.info('[map-ctrl] New ground station...');
+                $modalInstance.close();
+            };
+            $scope.cancel = function() {
+                $log.info('[map-ctrl] Canceling...');
+                $modalInstance.close();
+            };
+            $scope.$on('leafletDirectiveMarker.dragend', function(event) {
+                var lat = $scope.markers.gsMarker.lat;
+                var lng = $scope.markers.gsMarker.lng;
+                $log.info('[map-ctrl] Dragged to (' + lat + ', ' + lng + ')');
+            });
         }
     ]);

@@ -21,7 +21,7 @@ $bg_color: $karbon;
 $fg_color: #A6A6A6;
 $opacity: 0.8;
 $area_h: 275px;
-$area_w: 550px;
+$area_w: 650px;
 $area_corner: 5px;
 
 .my-dd-btn {
@@ -36,8 +36,7 @@ $area_corner: 5px;
   border-color: darkred;
   font-weight: bolder;
   vertical-align: middle;
-  padding: 5px;
-  padding-top: 15px;
+  padding: 15px 5px 5px 5px;
   top: -5px;
 }
 
@@ -143,7 +142,7 @@ $log_items_margin_left: $area_corner + 7px;
 
     p {
       font-weight: bolder;
-      font-size: 100%;
+      font-size: 80%;
       padding: 3px;
     }
 
@@ -230,5 +229,3 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 #sc-area-toggle + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked ~ .sc-area { top: $min_gs_area_top; }
-
-
