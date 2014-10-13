@@ -21,33 +21,36 @@
 
 {% block head %}
 
-    <link rel="stylesheet"
+    <link rel='stylesheet'
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
-    <link rel="stylesheet"
+    <link rel='stylesheet'
             href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
-    <link rel="stylesheet"
+    <link rel='stylesheet'
         href="{% static 'css/sass/c2.css'%}" />
 
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/leaflet-dist/leaflet.js'%}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/angular/angular.js'%}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.min.js'%}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/angular-resource/angular-resource.min.js' %}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
     </script>
-    <script type="text/javascript"
+    <script type='text/javascript'
         src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/ng-remote-validate/release/ngRemoteValidate.min.js' %}">
     </script>
 
     <script type="text/javascript"
@@ -67,15 +70,13 @@
 
 {% block content %}
 
-    {% verbatim %}
+{% verbatim %}
+<div ng-app='satellite.tracker.js'>
 
-    <div ng-app='satellite.tracker.js'>
-
-        <div ng-controller='MapController' ng-init='init()' >
-            <leaflet center='center'
-                     style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
+    <div ng-controller='MapController' ng-init='init()' >
+        <leaflet center='center' style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
             </leaflet>
-        </div>
+    </div>
 
 <div class='left-menu'>
 
@@ -143,32 +144,29 @@
             </div>
             -->
 
-            <div>
-            <input type='checkbox' name='n-area-toggle' id='n-area-toggle' />
-            <div ng-controller="NotificationAreaController" class='n-area'>
-                <div class='n-area-title'>
-                    <label for='n-area-toggle'></label>
-                </div>
-                <div class='n-area-content'>
-                    <ul class='n-area-list'>
-                        <li ng-repeat="e in eventLog">
-                            <div>
-                                <div><p class="{{ e.type }}">
-                                    [{{ e.type }}@{{ e.timestamp }}]
-                                </p></div>
-                                <div><span class="{{ e.type }}">
-                                    {{ e.msg }}
-                                </span></div>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-            </div>
-
+<div>
+    <input type='checkbox' name='n-area-toggle' id='n-area-toggle' />
+    <div ng-controller="NotificationAreaController" class='n-area'>
+        <div class='n-area-title'>
+            <label for='n-area-toggle'></label>
         </div>
+        <div class='n-area-content'>
+            <ul class='n-area-list'>
+                <li ng-repeat="e in eventLog">
+                <div>
+                    <div><p class="{{ e.type }}">
+                        [{{ e.type }}@{{ e.timestamp }}]
+                    </p></div>
+                    <div><span class="{{ e.type }}">{{ e.msg }}</span></div>
+                </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
 
-    {% endverbatim %}
+</div>
+{% endverbatim %}
 
 {% endblock %}
 

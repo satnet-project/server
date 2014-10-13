@@ -2,34 +2,57 @@
     <h3 class='modal-title'>Add Ground Station</h3>
 </div>
 
+<!--
+&& gsForm.identifier.$error.ngRemoteValidate
+                       ng-remote-validate='/configuration/groundstations/valid_id'
+                       ng-remote-throttle="200"
+                       ng-remote-method="GET"
+-->
+
 <div class='modal-body'
      style='display: inline-block;'>
     <div style='float: left; width: 200px;'>
-        <form><fieldset>
-            <label for='identifier'>Identifier</label>
-            <input type='text' name='identifier' ng-model='gsIdentifier'
-                   style='width: 95%'
-                   required ng-pattern="/^[a-zA-Z0-9.\-_]{5,8}/" />
-            <label for='callsign'>Callsign</label>
-            <input type='text' name='callsign' ng-model='gsCallsign'
-                   style='width: 95%'
-                   required ng-pattern="/^[a-zA-Z0-9]{3,8}$/" />
-            <label for='elevation'>Min. Antenna Elevation</label>
-            <input type='number' name='elevation' ng-model='gsElevation'
-                   step="0.01" min="0" max="90" value="15"
-                   style='width: 95%'
-                   required />
+        <form name='gsForm'>
+            <div class='control-group'
+                    ng-class="{ 'has-error':
+                        gsForm.identifier.$invalid &&
+                        gsForm.identifier.$dirty &&
+                        gsForm.identifier.$error.ngRemoteValidate
+                    }">
+                <label class='control-label' for='identifier'>Identifier</label>
+                <input type='text' name='identifier'
+                       class='form-control' style='width: 95%'
+                       ng-model='identifier'
+                       ng-remote-validate='/configuration/groundstations/valid_id'
+                       ng-remote-throttle='200'
+                       ng-remote-method='GET'
+                       ng-pattern='/^[a-zA-Z0-9.\-_]{5,8}/'
+                       required />
+            </div>
+            <div class='control-group'
+                    ng-class="{ 'has-error': gsForm.callsign.$invalid &&
+                    gsForm.callsign.$dirty }">
+                <label class='control-label' for='callsign'>Callsign</label>
+                <input type='text' name='callsign' ng-model='callsign'
+                       class='form-control' style='width: 95%'
+                       ng-pattern="/^[a-zA-Z0-9]{3,8}$/" required/>
+            </div>
+            <div class='control-group'
+                    ng-class="{ 'has-error': gsForm.elevation.$invalid &&
+                    gsForm.elevation.$dirty }">
+                <label class='control-label' for='elevation'>Min. Antenna Elevation</label>
+                <input type='number' name='elevation' ng-model='elevation'
+                       class='form-control' style='width: 95%'
+                       step="0.01" min="0" max="90" value="15" required />
+            </div>
             <hr>
-    <!-- -->
             <label for='add_gs_lat'>Latitude</label>
             <input type='text' name='add_gs_lat' readonly
                    ng-model="markers.gsMarker.lat" style='width: 95%;' />
-            <!-- -->
             <label for='add_gs_lng'>Longitude</label>
             <input type='text' name='add_gs_lng' readonly
                    ng-model="markers.gsMarker.lng" style='width: 95%;' />
-    <!-- -->
-        </fieldset></form>
+        </form>
     </div>
     <div>
         <leaflet markers='markers' center='center'

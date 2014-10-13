@@ -19,6 +19,7 @@
 var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
 var DEFAULT_ZOOM = 12;
+var DEFAULT_GS_ELEVATION = 15.0;
 var USER_ZOOM = 6;
 //var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
 var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
@@ -55,7 +56,7 @@ function locateUser ($log, map) {
 
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
-    'leaflet-directive', 'ngResource', 'ui.bootstrap'
+    'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation'
 ]);
 
     app.config(function($provide) {
@@ -138,7 +139,7 @@ var app = angular.module('satellite.tracker.js', [
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addGroundStation.html',
                     controller: 'AddGSModalCtrl',
-                    backdrop: 'false' // clickin' outside does not close the modal
+                    backdrop: 'false'
                 });
             }
         }
@@ -147,6 +148,11 @@ var app = angular.module('satellite.tracker.js', [
     app.controller('AddGSModalCtrl', [
         '$scope', '$log', '$modalInstance', 'leafletData',
         function($scope, $log, $modalInstance, leafletData) {
+            // data models
+            $scope.identifier = '';
+            $scope.callsign = '';
+            $scope.elevation = DEFAULT_GS_ELEVATION;
+            // map initialization
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
@@ -165,6 +171,7 @@ var app = angular.module('satellite.tracker.js', [
                 $log.info('[map-ctrl] Defining modal map...');
                 locateUser($log, map);
             });
+            // modal buttons
             $scope.ok = function() {
                 $log.info('[map-ctrl] New ground station...');
                 $modalInstance.close();
@@ -173,10 +180,5 @@ var app = angular.module('satellite.tracker.js', [
                 $log.info('[map-ctrl] Canceling...');
                 $modalInstance.close();
             };
-            $scope.$on('leafletDirectiveMarker.dragend', function(event) {
-                var lat = $scope.markers.gsMarker.lat;
-                var lng = $scope.markers.gsMarker.lng;
-                $log.info('[map-ctrl] Dragged to (' + lat + ', ' + lng + ')');
-            });
         }
     ]);
