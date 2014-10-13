@@ -18,7 +18,7 @@
 
 var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
-var DEFAULT_ZOOM = 12;
+var DEFAULT_ZOOM = 6;
 var DEFAULT_GS_ELEVATION = 15.0;
 var USER_ZOOM = 6;
 //var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
@@ -39,13 +39,23 @@ function centerMap (map, lat, lng, zoom) {
 /**
  * This function locates the map at the location of the IP that the
  * client uses for this connection.
+ * @param $log AngularJS logger object.
+ * @param map The map where the user position is to be located.
+ * @param marker OPTIONAL parameter with a reference to a marker object that is
+ *                  suppose to hold current user's position.
  */
-function locateUser ($log, map) {
+function locateUser ($log, map, marker) {
 
     $.get('http://ipinfo.io', function (data) {
+
         var ll = data['loc'].split(',');
+        var lat = parseFloat(ll[0]);
+        var lng = parseFloat(ll[1]);
+
         $log.info('[map-ctrl] User located at = ' + ll);
-        centerMap(map, ll[0], ll[1], USER_ZOOM);
+        centerMap(map, lat, lng, USER_ZOOM);
+        if ( marker != null ) { marker.lat = lat; marker.lng = lng; }
+
     }, 'jsonp')
     .fail( function() {
         $log.warn('[map-ctrl] Could not locate user');
@@ -53,6 +63,10 @@ function locateUser ($log, map) {
     });
 
 }
+
+////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////// Main Application Module
+////////////////////////////////////////////////////////////////////////////////
 
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
@@ -86,7 +100,7 @@ var app = angular.module('satellite.tracker.js', [
         });
     });
     app.factory('listGroundStations', function($resource) {
-        return $resource('/configuration/groundstations', {});
+        return $resource('/configuration/rest/groundstations/list', {});
     });
 
     app.run(function($rootScope, $log) { $log.setScope($rootScope); });
@@ -123,7 +137,7 @@ var app = angular.module('satellite.tracker.js', [
                 }
             });
             leafletData.getMap().then(function(map) {
-                locateUser($log, map);
+                locateUser($log, map, null);
             });
             $scope.init = function() {
                 $scope._simulator = new Simulator($log, listGroundStations);
@@ -139,7 +153,7 @@ var app = angular.module('satellite.tracker.js', [
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addGroundStation.html',
                     controller: 'AddGSModalCtrl',
-                    backdrop: 'false'
+                    backdrop: 'static'
                 });
             }
         }
@@ -161,22 +175,21 @@ var app = angular.module('satellite.tracker.js', [
                     gsMarker: {
                         lat: DEFAULT_LAT,
                         lng: DEFAULT_LNG,
-                        message: "Place your GS!",
+                        message: "Move me!",
                         focus: true,
                         draggable: true
                     }
                 }
             });
             leafletData.getMap().then(function(map) {
-                $log.info('[map-ctrl] Defining modal map...');
-                locateUser($log, map);
+                locateUser($log, map, $scope.markers.gsMarker);
             });
             // modal buttons
-            $scope.ok = function() {
+            $scope.ok = function () {
                 $log.info('[map-ctrl] New ground station...');
                 $modalInstance.close();
             };
-            $scope.cancel = function() {
+            $scope.cancel = function () {
                 $log.info('[map-ctrl] Canceling...');
                 $modalInstance.close();
             };

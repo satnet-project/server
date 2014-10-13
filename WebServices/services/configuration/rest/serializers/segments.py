@@ -25,6 +25,9 @@ class GroundStationSerializer(serializers.ModelSerializer):
     """
     This class serializes a GroundStation object for the REST framework.
     """
+    class Meta:
+        model = segment_models.GroundStation
+
     user = account_serializers.UserProfileSerializer(required=False)
 
     def get_validation_exclusions(self, **kwargs):
@@ -37,14 +40,14 @@ class GroundStationSerializer(serializers.ModelSerializer):
             .get_validation_exclusions()
         return exclusions + ['user']
 
-    class Meta:
-        model = segment_models.GroundStation
-
 
 class SpacecraftSerializer(serializers.ModelSerializer):
     """
     This class serializes a Spacecraft object for the REST framework.
     """
+    class Meta:
+        model = segment_models.Spacecraft
+
     user = account_serializers.UserProfileSerializer(required=False)
 
     def get_validation_exclusions(self, **kwargs):
@@ -56,6 +59,3 @@ class SpacecraftSerializer(serializers.ModelSerializer):
         exclusions = super(SpacecraftSerializer, self)\
             .get_validation_exclusions()
         return exclusions + ['user']
-
-    class Meta:
-        model = segment_models.Spacecraft

@@ -46,6 +46,24 @@ urlpatterns = urls.patterns(
         r'^accounts/',
         urls.include('allauth.urls')
     ),
+
+    # ### Django REST framework (api)
+    urls.url(
+        r'^api-auth/',
+        urls.include('rest_framework.urls', namespace='rest_framework')
+    ),
+
+    # ### AJAX, configuration service
+    urls.url(
+        r'configuration/ajax/',
+        urls.include('services.configuration.ajax.urls')
+    ),
+    # ### REST, configuration service
+    urls.url(
+        r'^configuration/rest/',
+        urls.include('services.configuration.rest.urls')
+    ),
+
     # ### JSON-Rpc API
     urls.url(
         r'^jrpc/$',
@@ -60,16 +78,6 @@ urlpatterns = urls.patterns(
     urls.url(
         r'^admin/',
         urls.include(admin.site.urls)
-    ),
+    )
 
-    # ### Django REST framework (api)
-    urls.url(
-        r'^api-auth/',
-        urls.include('rest_framework.urls', namespace='rest_framework')
-    ),
-    # ### REST, configuration service
-    urls.url(
-        r'^configuration/',
-        urls.include('services.configuration.rest.urls')
-    ),
 )
