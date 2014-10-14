@@ -34,8 +34,6 @@ def groundstation_valid_id(request):
     :param request: The GET HTTP request.
     :return: '{ isValid: "true/false", value: "$GET.value" }
     """
-    logger.info(__name__ + ',  (AJAX), GET parameters = ')
-
     requested_id = request.GET['value']
     if not requested_id:
         raise exceptions.BadRequest("'value' not found as a GET parameter.")

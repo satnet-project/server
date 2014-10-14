@@ -22,20 +22,14 @@ from services.configuration.rest.views import segments as segment_views
 
 urlpatterns = urls.patterns('',
     # ###################################################### ### GROUND STATIONS
-    urls.url(r'^groundstations/$',
+    urls.url(r'^groundstations$',
         decorators.login_required(
             segment_views.ListGroundStationsView.as_view()
         ),
         name='rest-cfg-gs-list'
     ),
-    urls.url(r'^groundstations/(?P<gs_id>[a-zA-Z0-9.\-_]{5,8})/$',
-        decorators.login_required(
-            segment_views.AddGroundStationsView.as_view()
-        ),
-        name='rest-cfg-gs-detail'
-    ),
     # ########################################################### ### SPACECRAFT
-    urls.url(r'^spacecraft/list$',
+    urls.url(r'^spacecraft$',
         decorators.login_required(
             segment_views.ListSpacecraftView.as_view()
         ),

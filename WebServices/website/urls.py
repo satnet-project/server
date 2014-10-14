@@ -55,12 +55,12 @@ urlpatterns = urls.patterns(
 
     # ### AJAX, configuration service
     urls.url(
-        r'configuration/ajax/',
+        r'configuration/',
         urls.include('services.configuration.ajax.urls')
     ),
     # ### REST, configuration service
     urls.url(
-        r'^configuration/rest/',
+        r'^configuration/',
         urls.include('services.configuration.rest.urls')
     ),
 

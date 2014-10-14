@@ -15,30 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from rest_framework import generics, permissions, views
+from rest_framework import generics, permissions
 
-from services.common import misc
 from services.configuration.models import segments as segment_models
 from services.configuration.rest.serializers import segments as \
     segment_serializers
-
-
-class AddGroundStationsView(generics.CreateAPIView):
-    """
-    View for creating a new GroundStation
-    """
-    model = segment_models.GroundStation
-    serializer_class = segment_serializers.GroundStationSerializer
-    permission_classes = [
-        permissions.AllowAny
-    ]
-
-    def get_queryset(self):
-        """
-        Overrides the default queryset method.
-        """
-        queryset = super(ListGroundStationsView, self).get_queryset()
-        return queryset.filter(user__username=self.request.user)
 
 
 class ListGroundStationsView(generics.ListAPIView):

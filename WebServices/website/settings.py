@@ -310,3 +310,5 @@ PASSWORD_COMPLEXITY = {
     "LOWER":  1,
     "DIGITS": 1
 }
+
+APPEND_SLASH = False

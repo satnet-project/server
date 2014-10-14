@@ -12,8 +12,8 @@
                        for='identifier'>Identifier</label>
                 <input type='text' name='identifier'
                        class='form-control' style='width: 95%'
-                       ng-model='identifier'
-                       ng-remote-validate='/configuration/ajax/groundstations/valid_id'
+                       ng-model="gs.identifier"
+                       ng-remote-validate='/configuration/groundstations/valid_id'
                        ng-remote-throttle='200'
                        ng-remote-method='GET'
                        ng-pattern='/^[a-zA-Z0-9.\-_]{5,8}/'
@@ -23,7 +23,8 @@
                     ng-class="{ 'has-error': gsForm.callsign.$invalid }">
                 <label class='control-label'
                        for='callsign'>Callsign</label>
-                <input type='text' name='callsign' ng-model='callsign'
+                <input type='text' name='callsign'
+                       ng-model="gs.callsign"
                        class='form-control' style='width: 95%'
                        ng-pattern='/^[a-zA-Z0-9]{3,8}$/' required/>
             </div>
@@ -31,9 +32,10 @@
                     ng-class="{ 'has-error': gsForm.elevation.$invalid }">
                 <label class='control-label'
                        for='elevation'>Min. Antenna Elevation</label>
-                <input type='number' name='elevation' ng-model='elevation'
+                <input type='number' name='elevation'
+                       ng-model="gs.elevation"
                        class='form-control' style='width: 95%'
-                       step='0.01' min='0' max='90' value='15' required />
+                       step='0.01' min='0' max='90' required />
             </div>
             <hr>
             <label for='add_gs_lat'>Latitude</label>

@@ -70,7 +70,8 @@ function locateUser ($log, map, marker) {
 
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
-    'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation'
+    'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation',
+    'ngCookies'
 ]);
 
     app.config(function($provide) {
@@ -99,11 +100,15 @@ var app = angular.module('satellite.tracker.js', [
             }
         });
     });
-    app.factory('listGroundStations', function($resource) {
-        return $resource('/configuration/rest/groundstations/list', {});
+
+    app.factory('restGS', function($resource) {
+        return $resource('/configuration/groundstations/');
     });
 
-    app.run(function($rootScope, $log) { $log.setScope($rootScope); });
+    app.run(function($rootScope, $log, $http, $cookies) {
+        $log.setScope($rootScope);
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    });
 
     app.controller('NotificationAreaController', ['$scope', '$filter',
         function($scope, $filter) {
@@ -129,8 +134,8 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('MapController', [
-        '$scope', '$log', '$resource', 'leafletData', 'listGroundStations',
-        function($scope, $log, $resource, leafletData, listGroundStations) {
+        '$scope', '$log', '$resource', 'leafletData', 'restGS',
+        function($scope, $log, $resource, leafletData, restGS) {
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
@@ -139,9 +144,6 @@ var app = angular.module('satellite.tracker.js', [
             leafletData.getMap().then(function(map) {
                 locateUser($log, map, null);
             });
-            $scope.init = function() {
-                $scope._simulator = new Simulator($log, listGroundStations);
-            };
         }
     ]);
 
@@ -160,12 +162,14 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('AddGSModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'leafletData',
-        function($scope, $log, $modalInstance, leafletData) {
+        '$scope', '$log', '$modalInstance', 'leafletData', 'restGS',
+        function($scope, $log, $modalInstance, leafletData, restGS) {
+            $scope._rest_gs = restGS;
             // data models
-            $scope.identifier = '';
-            $scope.callsign = '';
-            $scope.elevation = DEFAULT_GS_ELEVATION;
+            $scope.gs = {};
+            $scope.gs.identifier = '';
+            $scope.gs.callsign = '';
+            $scope.gs.elevation = DEFAULT_GS_ELEVATION;
             // map initialization
             angular.extend($scope, {
                 center: {
@@ -186,7 +190,20 @@ var app = angular.module('satellite.tracker.js', [
             });
             // modal buttons
             $scope.ok = function () {
-                $log.info('[map-ctrl] New ground station...');
+                var new_gs_cfg = {
+                    'identifier'    : $scope.gs.identifier,
+                    'callsign'      : $scope.gs.callsign,
+                    'elevation'     : $scope.gs.elevation,
+                    'latitude'      : $scope.markers.gsMarker.lat,
+                    'longitude'     : $scope.markers.gsMarker.lng
+                };
+                $log.info('[map-ctrl] New GS, cfg = '
+                    + JSON.stringify(new_gs_cfg));
+
+                $scope._rest_gs.save(new_gs_cfg);
+                //var new_gs = new resource_gs(new_gs_cfg);
+                //new_gs.$save();
+
                 $modalInstance.close();
             };
             $scope.cancel = function () {
