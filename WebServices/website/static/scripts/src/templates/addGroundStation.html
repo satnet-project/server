@@ -26,7 +26,8 @@
                 <input type='text' name='callsign'
                        ng-model="gs.callsign"
                        class='form-control' style='width: 95%'
-                       ng-pattern='/^[a-zA-Z0-9]{3,8}$/' required/>
+                       ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
+                       required/>
             </div>
             <div class='control-group'
                     ng-class="{ 'has-error': gsForm.elevation.$invalid }">

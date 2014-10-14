@@ -71,10 +71,10 @@ function locateUser ($log, map, marker) {
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
     'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation',
-    'ngCookies'
+    'ngCookies', 'jsonrpc'
 ]);
 
-    app.config(function($provide) {
+    app.config(function($provide, jsonrpcProvider) {
         $provide.decorator('$log', function($delegate) {
             var rScope = null;
             return  {
@@ -99,6 +99,7 @@ var app = angular.module('satellite.tracker.js', [
                 }
             }
         });
+        jsonrpcProvider.setBasePath('http://localhost:8000/jrpc/');
     });
 
     app.factory('restGS', function($resource) {
@@ -108,6 +109,12 @@ var app = angular.module('satellite.tracker.js', [
     app.run(function($rootScope, $log, $http, $cookies) {
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    });
+
+    app.service('satnetRPC', function(jsonrpc) {
+        var gs_service = jsonrpc.newService('configuration');
+        this.listGS = gs_service.createMethod('gs.list');
+        this.addGS = gs_service.createMethod('gs.create');
     });
 
     app.controller('NotificationAreaController', ['$scope', '$filter',
@@ -162,9 +169,8 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('AddGSModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'leafletData', 'restGS',
-        function($scope, $log, $modalInstance, leafletData, restGS) {
-            $scope._rest_gs = restGS;
+        '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
+        function($scope, $log, $modalInstance, leafletData, satnetRPC) {
             // data models
             $scope.gs = {};
             $scope.gs.identifier = '';
@@ -190,19 +196,21 @@ var app = angular.module('satellite.tracker.js', [
             });
             // modal buttons
             $scope.ok = function () {
-                var new_gs_cfg = {
-                    'identifier'    : $scope.gs.identifier,
-                    'callsign'      : $scope.gs.callsign,
-                    'elevation'     : $scope.gs.elevation,
-                    'latitude'      : $scope.markers.gsMarker.lat,
-                    'longitude'     : $scope.markers.gsMarker.lng
-                };
+                var new_gs_cfg = [
+                    $scope.gs.identifier,
+                    $scope.gs.callsign,
+                    $scope.gs.elevation.toFixed(2),
+                    $scope.markers.gsMarker.lat.toFixed(6),
+                    $scope.markers.gsMarker.lng.toFixed(6)
+                ];
                 $log.info('[map-ctrl] New GS, cfg = '
                     + JSON.stringify(new_gs_cfg));
 
-                $scope._rest_gs.save(new_gs_cfg);
-                //var new_gs = new resource_gs(new_gs_cfg);
-                //new_gs.$save();
+                satnetRPC.addGS(new_gs_cfg).success(function (data) {
+                    $log.info('[map-ctrl] GS successfully added, id = ', data);
+                }).error(function (error) {
+                    $log.error('[map-ctrl] Could not add GS, reason = ', error);
+                });
 
                 $modalInstance.close();
             };

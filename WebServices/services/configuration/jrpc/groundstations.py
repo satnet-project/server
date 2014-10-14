@@ -17,9 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 
+from services.common import misc
 from services.configuration.jrpc import serialization
 from services.configuration.models import segments
 
+import logging
+
+logger = logging.getLogger('jrpc')
 
 @rpcmethod(
     name='configuration.gs.list',
@@ -42,6 +46,33 @@ def list_groundstations(**kwargs):
     ).all()
     return [str(g.identifier) for g in gs_objects]
 
+
+@rpcmethod(
+    name='configuration.gs.create',
+    signature=['String', 'String', 'String', 'String', 'String'],
+    login_required=True
+)
+def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
+    """
+    JRPC method.
+
+    Creates a new ground station with the given configuration.
+    """
+    logger.info('configuration.gs.create: new GS, identifier = ' + identifier)
+    request = kwargs.get('request', None)
+    username = request.user.username
+    print '################## username = ' + str(username)
+
+    return serialization.serialize_gs_configuration(
+        segments.GroundStation.objects.create(
+            username=username,
+            latitude=latitude,
+            longitude=longitude,
+            identifier=identifier,
+            callsign=callsign,
+            contact_elevation=elevation
+        )
+    )
 
 @rpcmethod(
     name='configuration.gs.getConfiguration',
@@ -68,7 +99,7 @@ def set_configuration(ground_station_id, configuration):
     """
     JRPC method.
 
-    Returns the configuration for the given ground station.
+    Sets the configuration for the given ground station.
     """
     callsign, contact_elevation, latitude, longitude =\
         serialization.deserialize_gs_configuration(configuration)

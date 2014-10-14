@@ -139,17 +139,25 @@ class GroundStationsManager(models.Manager):
     contents of the GroundStationConfiguration database models.
     """
 
-    def create(self, latitude, longitude, altitude=None, **kwargs):
+    def create(self, username, latitude, longitude, altitude=None, **kwargs):
         """
-        Method for creating a new GroundStation. This method has to be
-        overwritten for incorporating some automatic calculations to be
-        carried out by the server instead than by requesting more information
-        from the user.
-        :return The just-created object.
+        Method that creates a new GroundStation object using the given user as
+        the owner of this new segment.
+        :param username: The string with the name of the user.
+        :param latitude: Ground Station's latitude.
+        :param longitude: Ground Station's Longitude.
+        :param altitude: Ground Station's Altitude.
+        :param kwargs: Additional parameters.
+        :return: The just created GroundStation object.
         """
+        user = account_models.UserProfile.objects.get(username=username)
+        if user is None:
+            raise Exception('User <' + username + '> could not be found.')
+
         if altitude is None:
             altitude = gis.get_altitude(latitude, longitude)[0]
         return super(GroundStationsManager, self).create(
+            user=user,
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
