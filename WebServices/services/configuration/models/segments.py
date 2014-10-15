@@ -24,6 +24,10 @@ from services.accounts import models as account_models
 from services.common import gis
 from services.configuration.models import channels
 
+import logging
+
+logger = logging.getLogger('models.segments')
+
 
 class SpacecraftManager(models.Manager):
     """
@@ -139,28 +143,42 @@ class GroundStationsManager(models.Manager):
     contents of the GroundStationConfiguration database models.
     """
 
-    def create(self, username, latitude, longitude, altitude=None, **kwargs):
+    def create(
+            self, latitude, longitude, altitude=None, username=None, **kwargs
+    ):
         """
         Method that creates a new GroundStation object using the given user as
         the owner of this new segment.
-        :param username: The string with the name of the user.
+        TODO IARU region has to be defined yet...
         :param latitude: Ground Station's latitude.
         :param longitude: Ground Station's Longitude.
         :param altitude: Ground Station's Altitude.
         :param kwargs: Additional parameters.
         :return: The just created GroundStation object.
         """
-        user = account_models.UserProfile.objects.get(username=username)
-        if user is None:
-            raise Exception('User <' + username + '> could not be found.')
+        if not username is None:
+            user = account_models.UserProfile.objects.get(username=username)
+            if user is None:
+                raise Exception('User <' + username + '> could not be found.')
 
+        print '>>>>>>>>>>>>>> A'
         if altitude is None:
             altitude = gis.get_altitude(latitude, longitude)[0]
+        logger.info('# ### altitude = ' + str(altitude))
+
+        print '>>>>>>>>>>>>>> B'
+        results = gis.get_region(latitude, longitude)
+        print '>>>>>>>>>>>>>> B1'
+        print '# ### results = ' + str(results)
+        country = results[0]
+
+        print '>>>>>>>>>>>>>> C'
         return super(GroundStationsManager, self).create(
-            user=user,
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
+            country=country,
+            IARU_region=0,
             **kwargs
         )
 

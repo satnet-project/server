@@ -43,11 +43,38 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     return latitude, longitude
 
 
+__G_API_GEOCODE_URL__ = 'http://maps.googleapis.com/maps/api/geocode/'
+__G_API_GEOCODE_OUTPUT__ = ['json', 'xml']
+
+
+def get_region(latitude, longitude):
+    """
+    This method returns the formatted name of the country to which this
+    position belongs to.
+    :param latitude: The latitude for the given point.
+    :param longitude: The longitude for the given point.
+    :return: (country-long, country-short, region-long, region-short).
+    """
+    # noinspection PyDeprecation
+    url = __G_API_GEOCODE_URL__\
+          +__G_API_GEOCODE_OUTPUT__[0]\
+          + '?latlng='\
+          + str(latitude) + ',' + str(longitude)\
+          + '&sensor=true'
+
+    r = json.loads(
+        urllib2.urlopen(
+
+        ).read()
+    )
+
+    return r['results'][0]['address_components'][6]['long_name'],\
+        r['results'][0]['address_components'][6]['short_name'],\
+        r['results'][0]['address_components'][5]['long_name'], \
+        r['results'][0]['address_components'][5]['short_name']
+
 ___G_API_ALTITUDE_URL__ = 'http://maps.googleapis.com/maps/api/elevation/'
-___G_API_ALTITUDE_OUTPUT__ = [
-    'json',
-    'xml'
-]
+___G_API_ALTITUDE_OUTPUT__ = ['json', 'xml']
 
 
 def get_altitude(latitude, longitude):

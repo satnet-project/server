@@ -58,11 +58,6 @@ urlpatterns = urls.patterns(
         r'configuration/',
         urls.include('services.configuration.ajax.urls')
     ),
-    # ### REST, configuration service
-    urls.url(
-        r'^configuration/',
-        urls.include('services.configuration.rest.urls')
-    ),
 
     # ### JSON-Rpc API
     urls.url(

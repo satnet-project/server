@@ -58,21 +58,29 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
 
     Creates a new ground station with the given configuration.
     """
+    print 'XXXXXXXXXXXXXXXXXXXX 1'
     logger.info('configuration.gs.create: new GS, identifier = ' + identifier)
+
     request = kwargs.get('request', None)
     username = request.user.username
-    print '################## username = ' + str(username)
 
-    return serialization.serialize_gs_configuration(
-        segments.GroundStation.objects.create(
-            username=username,
-            latitude=latitude,
-            longitude=longitude,
-            identifier=identifier,
-            callsign=callsign,
-            contact_elevation=elevation
-        )
+    print 'XXXXXXXXXXXXXXXXXXXX 2'
+
+    gs = segments.GroundStation.objects.create(
+        latitude=latitude,
+        longitude=longitude,
+        identifier=identifier,
+        callsign=callsign,
+        contact_elevation=elevation,
+        username=username
     )
+
+    print 'XXXXXXXXXXXXXXXXXXXX 3'
+
+    return {
+        serialization.GS_ID_K: str(gs.identifier)
+    }
+
 
 @rpcmethod(
     name='configuration.gs.getConfiguration',

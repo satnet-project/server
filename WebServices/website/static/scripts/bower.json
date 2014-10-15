@@ -27,9 +27,8 @@
   "dependencies": {
     "jquery": "~2.1.1",
     "jquery-ui": "~1.11.1",
-    "jquery-jsonrpcclient": "Textalk/jquery.jsonrpcclient.js#~0.6.1",
     "leaflet-dist": "~0.7.2",
-    "angular": "~1.2.5",
+    "angular": "~1.3.0",
     "angular-leaflet-directive": "~0.7.8",
     "angular-resource": "~1.2.26",
     "angular-ui-bootstrap-bower": "0.10.0",

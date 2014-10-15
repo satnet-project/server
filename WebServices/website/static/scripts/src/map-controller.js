@@ -51,15 +51,19 @@ function locateUser ($log, map, marker) {
         var ll = data['loc'].split(',');
         var lat = parseFloat(ll[0]);
         var lng = parseFloat(ll[1]);
-
         $log.info('[map-ctrl] User located at = ' + ll);
         centerMap(map, lat, lng, USER_ZOOM);
         if ( marker != null ) { marker.lat = lat; marker.lng = lng; }
 
     }, 'jsonp')
     .fail( function() {
+
         $log.warn('[map-ctrl] Could not locate user');
         centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
+        if ( marker != null ) {
+            marker.lat = DEFAULT_LAT; marker.lng = DEFAULT_LNG;
+        }
+
     });
 
 }

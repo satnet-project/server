@@ -24,6 +24,7 @@ from pytz import utc as pytz_utc
 from services.common import testing as db_tools, simulation
 from services.scheduling.models import tle
 
+
 class TestSimulation(TestCase):
     """
     Validation of the simulation module..
@@ -40,7 +41,7 @@ class TestSimulation(TestCase):
         self.__gs_1_id = 'uvigo'
         self.__gs_1_ch_1_id = 'qpsk-gs-1'
         self.__sc_1_id = 'xatcobe-sc'
-        self.__sc_1_tle_id = 'XATCOBEO'
+        self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'qpsk-sc-1'
         self.__sc_1_ch_1_f = 437000000
 

@@ -17,10 +17,31 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
 
-from services.common.gis import get_altitude
+from services.common.gis import get_altitude, get_region
 
 
 class TestGis(TestCase):
+
+    def test_get_region(self):
+        """
+        Tests the usage of the Google Web Service for retrieving the altitude
+        associated with the coordinates of a given point.
+        """
+        location_1 = (42.6000, -8.9333)
+        expected_country = 'ES'
+        expected_region = 'GA'
+        (actual_country_l, actual_country_s, actual_region_l, actual_region_s)\
+            = get_region(location_1[0], location_1[1])
+        self.assertEquals(
+            expected_country, actual_country_s,
+            'Altitudes differ, expected = ' + str(expected_country)
+            + ', actual = ' + str(actual_country_s)
+        )
+        self.assertEquals(
+            expected_region, actual_region_s,
+            'Resolutions differ, expected = ' + str(expected_region)
+            + ', actual = ' + str(actual_region_s)
+        )
 
     def test_get_altitude(self):
         """
