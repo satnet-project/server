@@ -18,6 +18,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 import json
 import urllib2
 
+from services.common import misc
+
 __SLO_LAT__ = 35.347099
 __SLO_LON__ = -120.455299
 __GEOIP_URL__ = 'http://www.geoplugin.net/json.gp?ip='
@@ -45,6 +47,19 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
 
 __G_API_GEOCODE_URL__ = 'http://maps.googleapis.com/maps/api/geocode/'
 __G_API_GEOCODE_OUTPUT__ = ['json', 'xml']
+__G_API_ADDRESS_COUNTRY_AREA__ = 'country'
+__G_API_ADDRESS_REGION_AREA__ = 'administrative_area_level_1'
+__G_API_RESULTS_ARRAY__ = 'results'
+__G_API_ADDRESS_ITEM__ = 0
+__G_API_ADDRESS_ARRAY__ = 'address_components'
+__G_API_TYPES_ARRAY__ = 'types'
+__G_API_LONG_NAME__ = 'long_name'
+__G_API_SHORT_NAME__ = 'short_name'
+
+COUNTRY_LONG_NAME = 'country-l'
+COUNTRY_SHORT_NAME = 'country-s'
+REGION_SHORT_NAME = 'region-s'
+REGION_LONG_NAME = 'region-l'
 
 
 def get_region(latitude, longitude):
@@ -53,25 +68,46 @@ def get_region(latitude, longitude):
     position belongs to.
     :param latitude: The latitude for the given point.
     :param longitude: The longitude for the given point.
-    :return: (country-long, country-short, region-long, region-short).
+    :return: {country-long, country-short, region-long, region-short}.
     """
     # noinspection PyDeprecation
-    url = __G_API_GEOCODE_URL__\
-          +__G_API_GEOCODE_OUTPUT__[0]\
-          + '?latlng='\
-          + str(latitude) + ',' + str(longitude)\
-          + '&sensor=true'
+    service_url = __G_API_GEOCODE_URL__\
+        + __G_API_GEOCODE_OUTPUT__[0]\
+        + '?latlng='\
+        + str(latitude) + ',' + str(longitude)\
+        + '&sensor=true'
 
-    r = json.loads(
-        urllib2.urlopen(
+    r = json.loads(urllib2.urlopen(service_url).read())
 
-        ).read()
-    )
+    address_list = r[__G_API_RESULTS_ARRAY__]\
+                    [__G_API_ADDRESS_ITEM__]\
+                    [__G_API_ADDRESS_ARRAY__]
 
-    return r['results'][0]['address_components'][6]['long_name'],\
-        r['results'][0]['address_components'][6]['short_name'],\
-        r['results'][0]['address_components'][5]['long_name'], \
-        r['results'][0]['address_components'][5]['short_name']
+    country_l, country_s, region_l, region_s = '', '', '', ''
+    country_found = False
+    region_found = False
+
+    for a in address_list:
+        for t in a[__G_API_TYPES_ARRAY__]:
+            if t == __G_API_ADDRESS_COUNTRY_AREA__:
+                country_l = a[__G_API_LONG_NAME__]
+                country_s = a[__G_API_SHORT_NAME__]
+                country_found = True
+            if t == __G_API_ADDRESS_REGION_AREA__:
+                region_l = a[__G_API_LONG_NAME__]
+                region_s = a[__G_API_SHORT_NAME__]
+                region_found = True
+
+    if not country_found and not region_found:
+        raise Exception('Could not finde country and region information.')
+
+    return {
+        COUNTRY_LONG_NAME: country_l,
+        COUNTRY_SHORT_NAME: country_s,
+        REGION_LONG_NAME: region_l,
+        REGION_SHORT_NAME: region_s
+    }
+
 
 ___G_API_ALTITUDE_URL__ = 'http://maps.googleapis.com/maps/api/elevation/'
 ___G_API_ALTITUDE_OUTPUT__ = ['json', 'xml']

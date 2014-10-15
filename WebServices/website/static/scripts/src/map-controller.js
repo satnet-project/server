@@ -211,6 +211,7 @@ var app = angular.module('satellite.tracker.js', [
                     + JSON.stringify(new_gs_cfg));
 
                 satnetRPC.addGS(new_gs_cfg).success(function (data) {
+                    $log.info('data = ' + JSON.stringify(data));
                     $log.info('[map-ctrl] GS successfully added, id = ', data);
                 }).error(function (error) {
                     $log.error('[map-ctrl] Could not add GS, reason = ', error);

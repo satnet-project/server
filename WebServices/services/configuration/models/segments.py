@@ -156,29 +156,25 @@ class GroundStationsManager(models.Manager):
         :param kwargs: Additional parameters.
         :return: The just created GroundStation object.
         """
+        user = None
         if not username is None:
             user = account_models.UserProfile.objects.get(username=username)
             if user is None:
                 raise Exception('User <' + username + '> could not be found.')
 
-        print '>>>>>>>>>>>>>> A'
         if altitude is None:
             altitude = gis.get_altitude(latitude, longitude)[0]
         logger.info('# ### altitude = ' + str(altitude))
 
-        print '>>>>>>>>>>>>>> B'
         results = gis.get_region(latitude, longitude)
-        print '>>>>>>>>>>>>>> B1'
-        print '# ### results = ' + str(results)
-        country = results[0]
 
-        print '>>>>>>>>>>>>>> C'
         return super(GroundStationsManager, self).create(
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
-            country=country,
+            country=results[gis.COUNTRY_SHORT_NAME],
             IARU_region=0,
+            user=user,
             **kwargs
         )
 
