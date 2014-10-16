@@ -1,0 +1,62 @@
+<div class='modal-header'>
+    <h3 class='modal-title'>Edit Ground Station</h3>
+</div>
+
+<div class='modal-body'
+     style='display: inline-block;'>
+    <div style='float: left; width: 200px;'>
+        <form name='gsForm'>
+            <div class='control-group'
+                    ng-class="{ 'has-error': gsForm.identifier.$invalid }">
+                <label class='control-label'
+                       for='identifier'>Identifier</label>
+                <input type='text' name='identifier'
+                       class='form-control' style='width: 95%'
+                       ng-model="gs.identifier"
+                       ng-remote-validate='/configuration/groundstations/valid_id'
+                       ng-remote-throttle='200'
+                       ng-remote-method='GET'
+                       ng-pattern='/^[a-zA-Z0-9.\-_]{5,8}/'
+                       required />
+            </div>
+            <div class='control-group'
+                    ng-class="{ 'has-error': gsForm.callsign.$invalid }">
+                <label class='control-label'
+                       for='callsign'>Callsign</label>
+                <input type='text' name='callsign'
+                       ng-model="gs.callsign"
+                       class='form-control' style='width: 95%'
+                       ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
+                       required/>
+            </div>
+            <div class='control-group'
+                    ng-class="{ 'has-error': gsForm.elevation.$invalid }">
+                <label class='control-label'
+                       for='elevation'>Min. Antenna Elevation</label>
+                <input type='number' name='elevation'
+                       ng-model="gs.elevation"
+                       class='form-control' style='width: 95%'
+                       step='0.01' min='0' max='90' required />
+            </div>
+            <hr>
+            <label for='add_gs_lat'>Latitude</label>
+            <input type='text' name='add_gs_lat' readonly
+                   ng-model="markers.gsMarker.lat" style='width: 95%;' />
+            <label for='add_gs_lng'>Longitude</label>
+            <input type='text' name='add_gs_lng' readonly
+                   ng-model="markers.gsMarker.lng" style='width: 95%;' />
+        </form>
+    </div>
+    <div>
+        <leaflet markers='markers' center='center'
+                 style='width: 375px; height: 375px;'>
+            </leaflet>
+    </div>
+</div>
+
+<div class='modal-footer'>
+    <button class='btn btn-primary'
+            ng-click="update()" ng-disabled="gsForm.$invalid">(update)</button>
+    <button class='btn btn-warning'
+            ng-click="cancel()">(cancel)</button>
+</div>

@@ -105,7 +105,8 @@
         </button>
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="g in gsIdentifiers">
-                <a class='my-menu-item' href='#' >{{ g }}</a>
+                <a class='my-menu-item' href='#'
+                   ng-click="editGroundStation()">{{ g }}</a>
             </li>
             <li class='divider'></li>
             <li>

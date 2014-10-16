@@ -20,7 +20,7 @@ var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
 var DEFAULT_ZOOM = 6;
 var DEFAULT_GS_ELEVATION = 15.0;
-var USER_ZOOM = 6;
+var USER_ZOOM = 8;
 //var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
 var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
 
@@ -98,7 +98,7 @@ var app = angular.module('satellite.tracker.js', [
                     rScope.$broadcast('errEvent', arguments[0]);
                 },
                 warn: function () {
-                    $delegate.info.apply(null, ['[warn] ' + arguments[0]]);
+                    $delegate.warn.apply(null, ['[warn] ' + arguments[0]]);
                     rScope.$broadcast('warnEvent', arguments[0]);
                 }
             }
@@ -165,13 +165,14 @@ var app = angular.module('satellite.tracker.js', [
                 });
             };
             $scope.refreshGSList = function() {
-                $log.info('[satnet-jrpc] Listing available ground stations...');
                 $scope.gsIdentifiers = [];
-                satnetRPC.listGS().success(function(data) {
+                satnetRPC.listGS()
+                .success(function(data) {
                     $log.info('[satnet-jrpc] GroundStations found = '
-                        + JSON.stringify(data));
+                            + JSON.stringify(data));
                     $scope.gsIdentifiers = data.slice(0);
-                }).error(function(error) {
+                })
+                .error(function(error) {
                     $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
                         + JSON.stringify(error));
                 });
@@ -184,11 +185,13 @@ var app = angular.module('satellite.tracker.js', [
     app.controller('AddGSModalCtrl', [
         '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
         function($scope, $log, $modalInstance, leafletData, satnetRPC) {
+
             // data models
             $scope.gs = {};
             $scope.gs.identifier = '';
             $scope.gs.callsign = '';
             $scope.gs.elevation = DEFAULT_GS_ELEVATION;
+
             // map initialization
             angular.extend($scope, {
                 center: {
@@ -207,6 +210,7 @@ var app = angular.module('satellite.tracker.js', [
             leafletData.getMap().then(function(map) {
                 locateUser($log, map, $scope.markers.gsMarker);
             });
+
             // modal buttons
             $scope.ok = function () {
                 var new_gs_cfg = [
