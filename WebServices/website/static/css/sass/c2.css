@@ -30,6 +30,14 @@
   top: 0;
   left: 100px; }
 
+.my-menu-item {
+  color: #293542;
+  text-align: center; }
+
+.my-menu-action {
+  font-weight: bold;
+  text-align: right; }
+
 .base-area, .n-area, .gs-area, .sc-area {
   opacity: 0.8;
   line-height: 40px;

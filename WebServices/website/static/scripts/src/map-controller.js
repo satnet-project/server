@@ -106,10 +106,6 @@ var app = angular.module('satellite.tracker.js', [
         jsonrpcProvider.setBasePath('http://localhost:8000/jrpc/');
     });
 
-    app.factory('restGS', function($resource) {
-        return $resource('/configuration/groundstations/');
-    });
-
     app.run(function($rootScope, $log, $http, $cookies) {
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
@@ -145,8 +141,8 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('MapController', [
-        '$scope', '$log', '$resource', 'leafletData', 'restGS',
-        function($scope, $log, $resource, leafletData, restGS) {
+        '$scope', '$log', '$resource', 'leafletData',
+        function($scope, $log, $resource, leafletData) {
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
@@ -159,16 +155,29 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('GSMenuController', [
-        '$scope', '$log', '$modal',
-        function($scope, $log, $modal) {
-            $log.info('[map-ctrl] Adding GS modal...');
+        '$scope', '$log', '$modal', 'satnetRPC',
+        function($scope, $log, $modal, satnetRPC) {
             $scope.addGroundStation = function() {
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addGroundStation.html',
                     controller: 'AddGSModalCtrl',
                     backdrop: 'static'
                 });
-            }
+            };
+            $scope.refreshGSList = function() {
+                $log.info('[satnet-jrpc] Listing available ground stations...');
+                $scope.gsIdentifiers = [];
+                satnetRPC.listGS().success(function(data) {
+                    $log.info('[satnet-jrpc] GroundStations found = '
+                        + JSON.stringify(data));
+                    $scope.gsIdentifiers = data.slice(0);
+                }).error(function(error) {
+                    $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
+                        + JSON.stringify(error));
+                });
+            };
+            // Initialization of the GroundStations list...
+            $scope.refreshGSList();
         }
     ]);
 
@@ -207,14 +216,15 @@ var app = angular.module('satellite.tracker.js', [
                     $scope.markers.gsMarker.lat.toFixed(6),
                     $scope.markers.gsMarker.lng.toFixed(6)
                 ];
-                $log.info('[map-ctrl] New GS, cfg = '
-                    + JSON.stringify(new_gs_cfg));
-
+                $log.info('[map-ctrl] Invoking JSON-RPC...');
                 satnetRPC.addGS(new_gs_cfg).success(function (data) {
-                    $log.info('data = ' + JSON.stringify(data));
-                    $log.info('[map-ctrl] GS successfully added, id = ', data);
+                    $log.info('[map-ctrl] GS successfully added, id = '
+                        + data['groundstation_id']
+                    );
                 }).error(function (error) {
-                    $log.error('[map-ctrl] Could not add GS, reason = ', error);
+                    $log.error('[map-ctrl] Could not add GS, reason = '
+                        + JSON.stringify(error)
+                    );
                 });
 
                 $modalInstance.close();
