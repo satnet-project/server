@@ -37,6 +37,7 @@
     "angular-cookies": "~1.3.0",
     "angular-jsonrpc": "~0.1.3",
     "angular-uuid": "~0.1.0",
+    "angular-data": "~1.0.1"
   },
   "devDependencies": {
     "qunit": "~1.15.0"

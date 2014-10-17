@@ -61,9 +61,12 @@
     <script type="text/javascript"
         src="{% static 'scripts/bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
     </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/angular-data/dist/angular-data.min.js' %}">
+    </script>
 
     <script type="text/javascript"
-        src="{% static 'scripts/src/simulator.js'%}">
+            src="{% static 'scripts/src/simulator.js'%}">
     </script>
     <script type="text/javascript"
         src="{% static 'scripts/src/map-controller.js'%}">
@@ -89,14 +92,15 @@
 
 <div class='left-menu'>
 
-    <div class='btn-group my-exit-btn-grp'>
-        <button type='button' class='btn btn-primary my-exit-btn'>
-            <p>(exit)</p>
+    <div class='btn-group my-exit-btn-grp' ng-controller="ExitMenuController">
+        <button type='button' class='btn btn-primary my-exit-btn'
+                onclick="location.href='/'"  ng-click="home()">
+            <a style="color: white;">(exit)</a>
         </button>
     </div>
 
     <!-- Single button -->
-    <div class='btn-group my-gs-btn-grp' dropdown is-open="status.isopen"
+    <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
             ng-controller="GSMenuController">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn'
@@ -106,7 +110,7 @@
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="g in gsIdentifiers">
                 <a class='my-menu-item' href='#'
-                   ng-click="editGroundStation()">{{ g }}</a>
+                   ng-click="editGroundStation()" gs-id="{{ g }}">{{ g }}</a>
             </li>
             <li class='divider'></li>
             <li>
@@ -115,7 +119,7 @@
             </li>
         </ul>
     </div>
-    <div class='btn-group my-sc-btn-grp' dropdown is-open="status.isopen">
+    <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown>
         <button type='button' class='btn btn-primary dropdown-toggle my-dd-btn'
                 ng-disabled="disabled">
             <p>Spacecraft</p><span class='caret'></span>

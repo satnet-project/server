@@ -18,8 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import json
 import urllib2
 
-from services.common import misc
-
 __SLO_LAT__ = 35.347099
 __SLO_LON__ = -120.455299
 __GEOIP_URL__ = 'http://www.geoplugin.net/json.gp?ip='
@@ -99,7 +97,7 @@ def get_region(latitude, longitude):
                 region_found = True
 
     if not country_found and not region_found:
-        raise Exception('Could not finde country and region information.')
+        raise Exception('Could not find country and region information.')
 
     return {
         COUNTRY_LONG_NAME: country_l,

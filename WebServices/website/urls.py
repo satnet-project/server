@@ -24,17 +24,23 @@ admin.autodiscover()
 
 urlpatterns = urls.patterns(
     '',
+
+    # ### ######################################################################
+    # ### ################################################## OVERRIDEN MAIN URLS
+    # ### ######################################################################
+
     urls.url(
-        r'^$',
-        views.redirect_login,
-        name='index'
+        r'^$', views.redirect_login, name='index'
     ),
     # ### Command and Control Interface
     urls.url(
-        r'^c2/',
-        views.redirect_c2,
-        name='c2_interface'
+        r'^c2/', views.redirect_c2, name='c2_interface'
     ),
+
+    # ### ######################################################################
+    # ### ############################################ ACCOUNTS AND REGISTRATION
+    # ### ######################################################################
+
     # ### for overriding default 'accounts' urls from
     # django-registration
     urls.url(
@@ -47,23 +53,35 @@ urlpatterns = urls.patterns(
         urls.include('allauth.urls')
     ),
 
+    # ### ######################################################################
+    # ### ########################################## REST, AJAX, JRPC INTERFACES
+    # ### ######################################################################
+
     # ### Django REST framework (api)
     urls.url(
         r'^api-auth/',
         urls.include('rest_framework.urls', namespace='rest_framework')
     ),
-
     # ### AJAX, configuration service
     urls.url(
         r'configuration/',
         urls.include('services.configuration.ajax.urls')
     ),
-
+    # ### REST, configuration service
+    urls.url(
+        r'configuration/',
+        urls.include('services.configuration.rest.urls')
+    ),
     # ### JSON-Rpc API
     urls.url(
         r'^jrpc/$',
         'rpc4django.views.serve_rpc_request'
     ),
+
+    # ### ######################################################################
+    # ### ################################################################# MISC
+    # ### ######################################################################
+
     # ### django-session-security
     urls.url(
         r'session_security/',

@@ -75,10 +75,10 @@ function locateUser ($log, map, marker) {
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
     'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation',
-    'ngCookies', 'jsonrpc'
+    'ngCookies', 'jsonrpc', 'angular-data.DS'
 ]);
 
-    app.config(function($provide, jsonrpcProvider) {
+    app.config(function($provide) {
         $provide.decorator('$log', function($delegate) {
             var rScope = null;
             return  {
@@ -103,18 +103,30 @@ var app = angular.module('satellite.tracker.js', [
                 }
             }
         });
-        jsonrpcProvider.setBasePath('http://localhost:8000/jrpc/');
     });
 
-    app.run(function($rootScope, $log, $http, $cookies) {
-        $log.setScope($rootScope);
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    app.factory('GroundStations', function(DS) {
+        return DS.defineResource({
+            name: 'groundstations',
+            idAttribute: 'pk',
+            endpoint: 'groundstations',
+            baseUrl: '/configuration'
+        });
     });
 
-    app.service('satnetRPC', function(jsonrpc) {
-        var gs_service = jsonrpc.newService('configuration');
+    app.service('satnetRPC', function(jsonrpc, $location) {
+        var rpc_path = ''
+            + $location.protocol() + "://"
+            + $location.host() + ':' + $location.port()
+            + '/jrpc/';
+        var gs_service = jsonrpc.newService('configuration', rpc_path);
         this.listGS = gs_service.createMethod('gs.list');
         this.addGS = gs_service.createMethod('gs.create');
+    });
+
+    app.run(function($rootScope, $log, $http, $cookies){
+        $log.setScope($rootScope);
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
     });
 
     app.controller('NotificationAreaController', ['$scope', '$filter',
@@ -131,13 +143,11 @@ var app = angular.module('satellite.tracker.js', [
     ]);
 
     app.controller('GSAreaController', ['$scope', '$log',
-        function($scope, $log) {
-        }
+        function($scope, $log) {}
     ]);
 
     app.controller('SCAreaController', ['$scope', '$log',
-        function($scope, $log) {
-        }
+        function($scope, $log) {}
     ]);
 
     app.controller('MapController', [
@@ -182,9 +192,15 @@ var app = angular.module('satellite.tracker.js', [
         }
     ]);
 
+    app.controller('ExitMenuController', [
+        '$scope', '$log', function($scope, $log) {
+            $scope.home = function () { $log.info('Exiting...'); };
+        }
+    ]);
+
     app.controller('AddGSModalCtrl', [
         '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
-        function($scope, $log, $modalInstance, leafletData, satnetRPC) {
+        function ($scope, $log, $modalInstance, leafletData, satnetRPC) {
 
             // data models
             $scope.gs = {};

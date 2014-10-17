@@ -164,7 +164,6 @@ class GroundStationsManager(models.Manager):
 
         if altitude is None:
             altitude = gis.get_altitude(latitude, longitude)[0]
-        logger.info('# ### altitude = ' + str(altitude))
 
         results = gis.get_region(latitude, longitude)
 
