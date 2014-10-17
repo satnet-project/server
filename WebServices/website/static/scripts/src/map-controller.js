@@ -75,7 +75,7 @@ function locateUser ($log, map, marker) {
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
     'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation',
-    'ngCookies', 'jsonrpc', 'angular-data.DS'
+    'ngCookies', 'jsonrpc'
 ]);
 
     app.config(function($provide) {
@@ -102,15 +102,6 @@ var app = angular.module('satellite.tracker.js', [
                     rScope.$broadcast('warnEvent', arguments[0]);
                 }
             }
-        });
-    });
-
-    app.factory('GroundStations', function(DS) {
-        return DS.defineResource({
-            name: 'groundstations',
-            idAttribute: 'pk',
-            endpoint: 'groundstations',
-            baseUrl: '/configuration'
         });
     });
 
@@ -176,13 +167,12 @@ var app = angular.module('satellite.tracker.js', [
             };
             $scope.refreshGSList = function() {
                 $scope.gsIdentifiers = [];
-                satnetRPC.listGS()
-                .success(function(data) {
+                var rpc_call = satnetRPC.listGS().success(function(data) {
                     $log.info('[satnet-jrpc] GroundStations found = '
-                            + JSON.stringify(data));
+                        + JSON.stringify(data));
                     $scope.gsIdentifiers = data.slice(0);
-                })
-                .error(function(error) {
+                });
+                rpc_call.error(function(error) {
                     $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
                         + JSON.stringify(error));
                 });

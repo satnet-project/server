@@ -61,9 +61,6 @@
     <script type="text/javascript"
         src="{% static 'scripts/bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
     </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/bower_components/angular-data/dist/angular-data.min.js' %}">
-    </script>
 
     <script type="text/javascript"
             src="{% static 'scripts/src/simulator.js'%}">
@@ -103,7 +100,7 @@
     <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
             ng-controller="GSMenuController">
         <button type='button'
-                class='btn btn-primary dropdown-toggle my-dd-btn'
+                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshGSList()">
             <p>Ground Stations</p><span class='caret'></span>
         </button>
@@ -120,7 +117,8 @@
         </ul>
     </div>
     <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown>
-        <button type='button' class='btn btn-primary dropdown-toggle my-dd-btn'
+        <button type='button'
+                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-disabled="disabled">
             <p>Spacecraft</p><span class='caret'></span>
         </button>
