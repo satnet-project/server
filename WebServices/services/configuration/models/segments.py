@@ -144,7 +144,8 @@ class GroundStationsManager(models.Manager):
     """
 
     def create(
-            self, latitude, longitude, altitude=None, username=None, **kwargs
+            self, latitude, longitude, altitude=None, username=None, user= None, 
+            IARU_region=0, **kwargs
     ):
         """
         Method that creates a new GroundStation object using the given user as
@@ -156,7 +157,6 @@ class GroundStationsManager(models.Manager):
         :param kwargs: Additional parameters.
         :return: The just created GroundStation object.
         """
-        user = None
         if not username is None:
             user = account_models.UserProfile.objects.get(username=username)
             if user is None:
@@ -172,7 +172,7 @@ class GroundStationsManager(models.Manager):
             longitude=longitude,
             altitude=altitude,
             country=results[gis.COUNTRY_SHORT_NAME],
-            IARU_region=0,
+            IARU_region=IARU_region,
             user=user,
             **kwargs
         )
