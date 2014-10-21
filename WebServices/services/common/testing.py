@@ -159,7 +159,6 @@ def create_gs(
         latitude=33.9333,
         longitude=-118.3880,
         altitude=20,
-        country=None,
         iaru_region=1
 ):
 
@@ -177,7 +176,6 @@ def create_gs(
         longitude=longitude,
         latitude=latitude,
         altitude=altitude,
-        country=country,
         IARU_region=iaru_region
     )
 

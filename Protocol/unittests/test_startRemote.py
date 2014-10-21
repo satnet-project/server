@@ -70,11 +70,13 @@ class ClientProtocolTest(ClientProtocol):
         elif iEvent == NotifyEvent.REMOTE_DISCONNECTED:
             log.msg("Remote client has lost the connection")
         elif iEvent == NotifyEvent.END_REMOTE:
-            log.msg("Disconnection because the remote client has been disconnected")
+            log.msg(
+                "Disconnection because the remote client has been disconnected")
         elif iEvent == NotifyEvent.REMOTE_CONNECTED:
             log.msg("The remote client (" + sDetails + ") has just connected")
 
-        self.factory.onEventReceived = self.factory.onEventReceived.callback(iEvent)
+        self.factory.onEventReceived = self.factory.onEventReceived.callback(
+            iEvent)
         return {}
     NotifyEvent.responder(vNotifyEvent)
 
@@ -140,14 +142,16 @@ class TestMultipleClients(unittest.TestCase):
         2. Client A -> StartRemote (should return StartRemote.REMOTE_NOT_CONNECTED)
         3. Client B -> login
         4. Client B -> StartRemote (should return StartRemote.REMOTE_READY)
-        5. Client A -> notifyEvent (should receive NotifyEvent.REMOTE_CONNECTED)        
+        5. Client A -> notifyEvent (should receive NotifyEvent.REMOTE_CONNECTED)
         6. Client B -> sendMsg(__sMessageA2B)
         7. Client A -> notifyMsg (should receive __sMessageA2B)
         8. Client A -> sendMsg(__sMessageB2A)
         9. Client B -> notifyMsg (should receive __sMessageB2A)
         10. Client B -> endRemote()
-        11. Client A -> notifyEvent (should receive NotifyEvent.END_REMOTE)
+        11. Client A -> notifyEvent (should receive NotifyEvent.END_REMOTE). This last step
+        is not being checked due to dificulti
     """
+
 
     def test_1simultaneousUsers(self):
         __iSlotId = 1
@@ -175,7 +179,8 @@ class TestMultipleClients(unittest.TestCase):
             StartRemote, iSlotId=__iSlotId))
         d2.addCallback(
             lambda res: self.assertEqual(res['iResult'], StartRemote.REMOTE_READY))
-        self.factory1.onEventReceived.addCallback(lambda iEvent: self.assertEqual(iEvent, NotifyEvent.REMOTE_CONNECTED))
+        self.factory1.onEventReceived.addCallback(
+            lambda iEvent: self.assertEqual(iEvent, NotifyEvent.REMOTE_CONNECTED))
 
         d2.addCallback(lambda l: self.factory2.protoInstance.callRemote(
             SendMsg, sMsg=__sMessageA2B))
@@ -189,10 +194,10 @@ class TestMultipleClients(unittest.TestCase):
         self.factory2.onMessageReceived.addCallback(
             lambda sMsg: self.assertEqual(sMsg, __sMessageB2A))
 
-        d = defer.gatherResults([d2, self.factory2.onMessageReceived, self.factory1.onEventReceived])
-        #d.addCallback(lambda l: self.factory1.onEventReceived.addCallback(lambda iEvent: self.assertEqual(iEvent, NotifyEvent.END_REMOTE)))
-        d.addCallback(lambda l: self.factory2.protoInstance.callRemote(EndRemote))        
-        
+        d = defer.gatherResults(
+            [d2, self.factory2.onMessageReceived, self.factory1.onEventReceived])
+        d.addCallback(
+            lambda l: self.factory2.protoInstance.callRemote(EndRemote))
         
         return defer.gatherResults([d1, self.factory1.onMessageReceived, d, self.factory1.onEventReceived])
 
