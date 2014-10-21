@@ -97,7 +97,7 @@
 
     <!-- Single button -->
     <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="GSMenuController">
+            ng-controller="GSMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshGSList()">
@@ -124,7 +124,10 @@
         </button>
         <ul class='dropdown-menu' role='menu'>
             <li class='divider'></li>
-            <li><a href='#' class='my-menu-action'>(+) spacecraft</a></li>
+            <li>
+                <a href='#' class='my-menu-action'
+                   ng-click="addSpacecraft()">(+) spacecraft</a>
+            </li>
         </ul>
     </div>
 

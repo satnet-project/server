@@ -119,7 +119,10 @@ var app = angular.module('satellite.tracker.js', [
         this.deleteGS = cfg_service.createMethod('gs.delete');
         // Configuration methods (Spacecraft)
         this.listSC = cfg_service.createMethod('sc.list');
-        this.listSC = cfg_service.createMethod('sc.create');
+        this.addSC = cfg_service.createMethod('sc.create');
+        this.getSCCfg = cfg_service.createMethod('sc.getConfiguration');
+        this.setSCCfg = cfg_service.createMethod('sc.setConfiguration');
+        this.deleteSC = cfg_service.createMethod('sc.delete');
     });
 
     app.run(function($rootScope, $log, $http, $cookies){
@@ -162,7 +165,7 @@ var app = angular.module('satellite.tracker.js', [
         }
     ]);
 
-    app.controller('GSMenuController', [
+    app.controller('GSMenuCtrl', [
         '$scope', '$log', '$modal', 'satnetRPC',
         function($scope, $log, $modal, satnetRPC) {
             $scope.gsIds = [];
@@ -198,7 +201,7 @@ var app = angular.module('satellite.tracker.js', [
         }
     ]);
 
-    app.controller('SCMenuController', [
+    app.controller('SCMenuCtrl', [
         '$scope', '$log', '$modal', 'satnetRPC',
         function($scope, $log, $modal, satnetRPC) {
             $scope.scIds = [];
@@ -206,21 +209,20 @@ var app = angular.module('satellite.tracker.js', [
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
                     controller: 'AddSCModalCtrl',
-                    backdrop: 'static'
+                    backdrop: 'static',
+                    size: 'lg'
                 });
             };
-            /*
-            $scope.editSpacecraft = function(g) {
+            $scope.editSpacecraft = function(s) {
                 var modalInstance = $modal.open({
-                    templateUrl: '/static/scripts/src/templates/editGroundStation.html',
-                    controller: 'EditGSModalCtrl',
+                    templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
+                    controller: 'EditSCModalCtrl',
                     backdrop: 'static',
                     resolve: {
-                        groundstationId: function() { return(g); }
+                        spacecraft_id: function() { return(s); }
                     }
                 });
             };
-            */
             $scope.refreshSCList = function() {
                 var rpc_call = satnetRPC.listSC().success(function(data) {
                     $log.info('[satnet-jrpc] Spacecraft found = '
@@ -241,6 +243,10 @@ var app = angular.module('satellite.tracker.js', [
             $scope.home = function () { $log.info('Exiting...'); };
         }
     ]);
+
+////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////// GROUND STATIONS MODAL DIALOGS
+////////////////////////////////////////////////////////////////////////////////
 
     app.controller('AddGSModalCtrl', [
         '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
@@ -324,8 +330,8 @@ var app = angular.module('satellite.tracker.js', [
             }).error(function (error) {
                 $log.error(
                     '[map-ctrl] Could not load configuration for GS'
-                        + ', id = ' + groundstationId + ', error = '
-                        + JSON.stringify(error)
+                        + ', id = ' + groundstationId
+                        + ', error = ' + JSON.stringify(error)
                 );
             });
             $scope.update = function () {
@@ -338,15 +344,17 @@ var app = angular.module('satellite.tracker.js', [
                         $scope.markers.gsMarker.lng.toFixed(6)
                     ]
                 };
-                satnetRPC.setGSCfg([$scope.gs.identifier, new_gs_cfg]).success(function (data) {
+                satnetRPC.setGSCfg(
+                    [$scope.gs.identifier, new_gs_cfg]
+                ).success(function (data) {
                     $log.info('[map-ctrl] GS successfully configured, id = '
                         + data['groundstation_id']
                     );
                 }).error(function (error) {
                     $log.error(
                         '[map-ctrl] Could not set configuration for GS'
-                            + ', id = ' + groundstationId + ', error = '
-                            + JSON.stringify(error)
+                            + ', id = ' + groundstationId
+                            + ', error = ' + JSON.stringify(error)
                     );
                 });
                 $modalInstance.close();
@@ -387,7 +395,7 @@ var app = angular.module('satellite.tracker.js', [
                         + data['spacecraft_id']
                     );
                 }).error(function (error) {
-                    $log.error('[map-ctrl] Could not add GS, reason = '
+                    $log.error('[map-ctrl] Could not add SC, reason = '
                         + JSON.stringify(error)
                     );
                 });

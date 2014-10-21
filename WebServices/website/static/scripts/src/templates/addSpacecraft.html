@@ -4,8 +4,9 @@
 
 <div class='modal-body'
      style='display: inline-block;'>
-    <div style='float: left; width: 200px;'>
-        <form name='form'>
+     <form name='form'>
+        <div style="display: inline-block; padding: 20px;">
+        <div style='float: left; width: 250px;'>
             <div class='control-group'
                     ng-class="{ 'has-error': form.identifier.$invalid }">
                 <label class='control-label'
@@ -29,6 +30,8 @@
                        ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
                        required />
             </div>
+        </div>
+        <div class='my-tle-menu' >
             <div class='control-group'
                     ng-class="{ 'has-error': form.tleid.$invalid }">
                 <label class='control-label'
@@ -39,9 +42,9 @@
                        ng-pattern='/^[a-zA-Z0-9]{3,15}$/'
                        required />
             </div>
-
-        </form>
-    </div>
+        </div>
+        </div>
+    </form>
 </div>
 
 <div class='modal-footer'>
