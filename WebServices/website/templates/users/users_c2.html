@@ -25,8 +25,7 @@
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
     <link rel='stylesheet'
             href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
-    <link rel='stylesheet'
-        href="{% static 'css/sass/c2.css'%}" />
+    <link rel='stylesheet' href="{% static 'css/sass/c2.css'%}" />
 
     <script type='text/javascript'
         src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
@@ -89,7 +88,7 @@
 
 <div class='left-menu'>
 
-    <div class='btn-group my-exit-btn-grp' ng-controller="ExitMenuController">
+    <div class='btn-group my-exit-btn-grp' ng-controller="ExitMenuCtrl">
         <button type='button' class='btn btn-primary my-exit-btn'
                 onclick="location.href='/'"  ng-click="home()">
             <a style="color: white;">(exit)</a>
@@ -105,9 +104,9 @@
             <p>Ground Stations</p><span class='caret'></span>
         </button>
         <ul class='dropdown-menu' role='menu'>
-            <li ng-repeat="g in gsIdentifiers">
+            <li ng-repeat="g in gsIds">
                 <a class='my-menu-item' href='#'
-                   ng-click="editGroundStation()" gs-id="{{ g }}">{{ g }}</a>
+                   ng-click="editGroundStation(g)">{{ g }}</a>
             </li>
             <li class='divider'></li>
             <li>
@@ -116,7 +115,8 @@
             </li>
         </ul>
     </div>
-    <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown>
+    <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown
+            ng-controller="SCMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-disabled="disabled">

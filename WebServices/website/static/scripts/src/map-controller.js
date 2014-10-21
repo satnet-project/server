@@ -110,9 +110,16 @@ var app = angular.module('satellite.tracker.js', [
             + $location.protocol() + "://"
             + $location.host() + ':' + $location.port()
             + '/jrpc/';
-        var gs_service = jsonrpc.newService('configuration', rpc_path);
-        this.listGS = gs_service.createMethod('gs.list');
-        this.addGS = gs_service.createMethod('gs.create');
+        var cfg_service = jsonrpc.newService('configuration', rpc_path);
+        // Configuration methods (Ground Stations)
+        this.listGS = cfg_service.createMethod('gs.list');
+        this.addGS = cfg_service.createMethod('gs.create');
+        this.getGSCfg = cfg_service.createMethod('gs.getConfiguration');
+        this.setGSCfg = cfg_service.createMethod('gs.setConfiguration');
+        this.deleteGS = cfg_service.createMethod('gs.delete');
+        // Configuration methods (Spacecraft)
+        this.listSC = cfg_service.createMethod('sc.list');
+        this.listSC = cfg_service.createMethod('sc.create');
     });
 
     app.run(function($rootScope, $log, $http, $cookies){
@@ -158,6 +165,7 @@ var app = angular.module('satellite.tracker.js', [
     app.controller('GSMenuController', [
         '$scope', '$log', '$modal', 'satnetRPC',
         function($scope, $log, $modal, satnetRPC) {
+            $scope.gsIds = [];
             $scope.addGroundStation = function() {
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addGroundStation.html',
@@ -165,24 +173,70 @@ var app = angular.module('satellite.tracker.js', [
                     backdrop: 'static'
                 });
             };
+            $scope.editGroundStation = function(g) {
+                var modalInstance = $modal.open({
+                    templateUrl: '/static/scripts/src/templates/editGroundStation.html',
+                    controller: 'EditGSModalCtrl',
+                    backdrop: 'static',
+                    resolve: {
+                        groundstationId: function() { return(g); }
+                    }
+                });
+            };
             $scope.refreshGSList = function() {
-                $scope.gsIdentifiers = [];
                 var rpc_call = satnetRPC.listGS().success(function(data) {
                     $log.info('[satnet-jrpc] GroundStations found = '
                         + JSON.stringify(data));
-                    $scope.gsIdentifiers = data.slice(0);
+                    $scope.gsIds = data.slice(0);
                 });
                 rpc_call.error(function(error) {
                     $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
                         + JSON.stringify(error));
                 });
             };
-            // Initialization of the GroundStations list...
             $scope.refreshGSList();
         }
     ]);
 
-    app.controller('ExitMenuController', [
+    app.controller('SCMenuController', [
+        '$scope', '$log', '$modal', 'satnetRPC',
+        function($scope, $log, $modal, satnetRPC) {
+            $scope.scIds = [];
+            $scope.addSpacecraft = function() {
+                var modalInstance = $modal.open({
+                    templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
+                    controller: 'AddSCModalCtrl',
+                    backdrop: 'static'
+                });
+            };
+            /*
+            $scope.editSpacecraft = function(g) {
+                var modalInstance = $modal.open({
+                    templateUrl: '/static/scripts/src/templates/editGroundStation.html',
+                    controller: 'EditGSModalCtrl',
+                    backdrop: 'static',
+                    resolve: {
+                        groundstationId: function() { return(g); }
+                    }
+                });
+            };
+            */
+            $scope.refreshSCList = function() {
+                var rpc_call = satnetRPC.listSC().success(function(data) {
+                    $log.info('[satnet-jrpc] Spacecraft found = '
+                        + JSON.stringify(data));
+                    $scope.scIds = data.slice(0);
+                });
+                rpc_call.error(function(error) {
+                    $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
+                        + JSON.stringify(error));
+                });
+            };
+            $scope.refreshSCList();
+        }
+    ]);
+
+    app.controller('ExitMenuCtrl', [
         '$scope', '$log', function($scope, $log) {
             $scope.home = function () { $log.info('Exiting...'); };
         }
@@ -191,33 +245,24 @@ var app = angular.module('satellite.tracker.js', [
     app.controller('AddGSModalCtrl', [
         '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
         function ($scope, $log, $modalInstance, leafletData, satnetRPC) {
-
-            // data models
             $scope.gs = {};
             $scope.gs.identifier = '';
             $scope.gs.callsign = '';
             $scope.gs.elevation = DEFAULT_GS_ELEVATION;
-
-            // map initialization
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
                 },
                 markers: {
                     gsMarker: {
-                        lat: DEFAULT_LAT,
-                        lng: DEFAULT_LNG,
-                        message: "Move me!",
-                        focus: true,
-                        draggable: true
+                        lat: DEFAULT_LAT, lng: DEFAULT_LNG,
+                        message: "Move me!", focus: true, draggable: true
                     }
                 }
             });
             leafletData.getMap().then(function(map) {
                 locateUser($log, map, $scope.markers.gsMarker);
             });
-
-            // modal buttons
             $scope.ok = function () {
                 var new_gs_cfg = [
                     $scope.gs.identifier,
@@ -226,7 +271,6 @@ var app = angular.module('satellite.tracker.js', [
                     $scope.markers.gsMarker.lat.toFixed(6),
                     $scope.markers.gsMarker.lng.toFixed(6)
                 ];
-                $log.info('[map-ctrl] Invoking JSON-RPC...');
                 satnetRPC.addGS(new_gs_cfg).success(function (data) {
                     $log.info('[map-ctrl] GS successfully added, id = '
                         + data['groundstation_id']
@@ -239,9 +283,116 @@ var app = angular.module('satellite.tracker.js', [
 
                 $modalInstance.close();
             };
-            $scope.cancel = function () {
-                $log.info('[map-ctrl] Canceling...');
+            $scope.cancel = function () { $modalInstance.close(); };
+        }
+    ]);
+
+    app.controller('EditGSModalCtrl', [
+        '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
+        'groundstationId',
+        function (
+            $scope, $log, $modalInstance, leafletData, satnetRPC,
+            groundstationId
+        ) {
+            $scope.gs = {};
+            $scope.center = {
+                lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
+            };
+            $scope.markers = {};
+            satnetRPC.getGSCfg([groundstationId]).success(function(data) {
+                $log.info(
+                    '[map-ctrl] GS configuration retrieved: '
+                        + JSON.stringify(data)
+                );
+                $scope.gs.identifier = groundstationId;
+                $scope.gs.callsign = data['groundstation_callsign'];
+                $scope.gs.elevation = data['groundstation_elevation'];
+                angular.extend($scope, {
+                    center: {
+                        lat: data['groundstation_latlon'][0],
+                        lng: data['groundstation_latlon'][1],
+                        zoom: DEFAULT_ZOOM
+                    },
+                    markers: {
+                        gsMarker: {
+                            lat: data['groundstation_latlon'][0],
+                            lng: data['groundstation_latlon'][1],
+                            message: "Move me!", focus: true, draggable: true
+                        }
+                    }
+                });
+            }).error(function (error) {
+                $log.error(
+                    '[map-ctrl] Could not load configuration for GS'
+                        + ', id = ' + groundstationId + ', error = '
+                        + JSON.stringify(error)
+                );
+            });
+            $scope.update = function () {
+                var new_gs_cfg = {
+                    'groundstation_id': $scope.gs.identifier,
+                    'groundstation_callsign': $scope.gs.callsign,
+                    'groundstation_elevation': $scope.gs.elevation.toFixed(2),
+                    'groundstation_latlon': [
+                        $scope.markers.gsMarker.lat.toFixed(6),
+                        $scope.markers.gsMarker.lng.toFixed(6)
+                    ]
+                };
+                satnetRPC.setGSCfg([$scope.gs.identifier, new_gs_cfg]).success(function (data) {
+                    $log.info('[map-ctrl] GS successfully configured, id = '
+                        + data['groundstation_id']
+                    );
+                }).error(function (error) {
+                    $log.error(
+                        '[map-ctrl] Could not set configuration for GS'
+                            + ', id = ' + groundstationId + ', error = '
+                            + JSON.stringify(error)
+                    );
+                });
                 $modalInstance.close();
             };
+            $scope.cancel = function () { $modalInstance.close(); };
+            $scope.erase = function () {
+                if ( confirm('Delete this ground station?') == true ) {
+                    satnetRPC.deleteGS([groundstationId]);
+                    $log.info(
+                        '[map-ctrl] Ground station removed, id = '
+                            + groundstationId
+                    );
+                    $modalInstance.close();
+                }
+            };
+        }
+    ]);
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////// SPACECRAFT MODAL DIALOGS
+////////////////////////////////////////////////////////////////////////////////
+
+    app.controller('AddSCModalCtrl', [
+        '$scope', '$log', '$modalInstance', 'satnetRPC',
+        function ($scope, $log, $modalInstance, satnetRPC) {
+            $scope.sc = {};
+            $scope.sc.identifier = '';
+            $scope.sc.callsign = '';
+            $scope.sc.tleid = '';
+            $scope.ok = function () {
+                var new_sc_cfg = [
+                    $scope.sc.identifier,
+                    $scope.sc.callsign,
+                    $scope.sc.tleid
+                ];
+                satnetRPC.addSC(new_sc_cfg).success(function (data) {
+                    $log.info('[map-ctrl] SC successfully added, id = '
+                        + data['spacecraft_id']
+                    );
+                }).error(function (error) {
+                    $log.error('[map-ctrl] Could not add GS, reason = '
+                        + JSON.stringify(error)
+                    );
+                });
+                $modalInstance.close();
+            };
+            $scope.cancel = function () { $modalInstance.close(); };
         }
     ]);

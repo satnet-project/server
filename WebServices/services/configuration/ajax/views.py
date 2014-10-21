@@ -43,3 +43,22 @@ def groundstation_valid_id(request):
     ).exists()
 
     return { 'isValid': is_valid, 'value': requested_id }
+
+@decorators.json_view
+@auth_decorators.login_required
+def spacecraft_valid_id(request):
+    """
+    AJAX method for checking whether a given identifier is in use or not within
+    the database.
+    :param request: The GET HTTP request.
+    :return: '{ isValid: "true/false", value: "$GET.value" }
+    """
+    requested_id = request.GET['value']
+    if not requested_id:
+        raise exceptions.BadRequest("'value' not found as a GET parameter.")
+
+    is_valid = not segments.Spacecraft.objects.filter(
+        identifier=requested_id
+    ).exists()
+
+    return { 'isValid': is_valid, 'value': requested_id }

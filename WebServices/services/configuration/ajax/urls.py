@@ -24,4 +24,8 @@ urlpatterns = urls.patterns('',
         views.groundstation_valid_id,
         name='ajax-cfg-gs-valid-id'
     ),
+    urls.url(r'^spacecraft/valid_id$',
+        views.spacecraft_valid_id,
+        name='ajax-cfg-sc-valid-id'
+    ),
 )

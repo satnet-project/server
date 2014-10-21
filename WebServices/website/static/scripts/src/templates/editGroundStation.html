@@ -5,22 +5,17 @@
 <div class='modal-body'
      style='display: inline-block;'>
     <div style='float: left; width: 200px;'>
-        <form name='gsForm'>
+        <form name="form">
             <div class='control-group'
-                    ng-class="{ 'has-error': gsForm.identifier.$invalid }">
+                    ng-class="{ 'has-error': form.identifier.$invalid }">
                 <label class='control-label'
                        for='identifier'>Identifier</label>
                 <input type='text' name='identifier'
                        class='form-control' style='width: 95%'
-                       ng-model="gs.identifier"
-                       ng-remote-validate='/configuration/groundstations/valid_id'
-                       ng-remote-throttle='200'
-                       ng-remote-method='GET'
-                       ng-pattern='/^[a-zA-Z0-9.\-_]{5,8}/'
-                       required />
+                       ng-model="gs.identifier" readonly />
             </div>
             <div class='control-group'
-                    ng-class="{ 'has-error': gsForm.callsign.$invalid }">
+                    ng-class="{ 'has-error': form.callsign.$invalid }">
                 <label class='control-label'
                        for='callsign'>Callsign</label>
                 <input type='text' name='callsign'
@@ -30,7 +25,7 @@
                        required/>
             </div>
             <div class='control-group'
-                    ng-class="{ 'has-error': gsForm.elevation.$invalid }">
+                    ng-class="{ 'has-error': form.elevation.$invalid }">
                 <label class='control-label'
                        for='elevation'>Min. Antenna Elevation</label>
                 <input type='number' name='elevation'
@@ -55,8 +50,8 @@
 </div>
 
 <div class='modal-footer'>
-    <button class='btn btn-primary'
-            ng-click="update()" ng-disabled="gsForm.$invalid">(update)</button>
-    <button class='btn btn-warning'
-            ng-click="cancel()">(cancel)</button>
+    <button class='btn btn-primary' ng-click="update()"
+            ng-disabled="form.$pristine || form.$invalid">(update)</button>
+    <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
+    <button class='btn btn-danger' ng-click="erase()">(remove)</button>
 </div>
