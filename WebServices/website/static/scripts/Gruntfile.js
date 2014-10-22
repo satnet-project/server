@@ -18,7 +18,15 @@ module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
     qunit: {
-	all: ['tests/*.html']
+	    all:
+        {
+            options: {
+                urls: ['tests/index.html'],
+                '--web-security' : false,
+                '--local-to-remote-url-access' : true,
+                '--ignore-ssl-errors' : true
+            }
+        }
     }
   });
   // load up your plugins
