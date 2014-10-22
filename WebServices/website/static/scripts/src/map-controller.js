@@ -74,8 +74,10 @@ function locateUser ($log, map, marker) {
 
 // This is the main controller for the map.
 var app = angular.module('satellite.tracker.js', [
-    'leaflet-directive', 'ngResource', 'ui.bootstrap', 'remoteValidation',
-    'ngCookies', 'jsonrpc'
+    'leaflet-directive',
+    'ui.bootstrap', 'nya.bootstrap.select',
+    'ngResource', 'ngCookies',
+    'remoteValidation', 'jsonrpc'
 ]);
 
     app.config(function($provide) {
@@ -103,6 +105,13 @@ var app = angular.module('satellite.tracker.js', [
                 }
             }
         });
+    });
+
+    app.service('celestrak', function($http) {
+        this.readTLEs = function(subsection) {
+            var uri = __CELESTRAK_RESOURCES[subsection];
+            return $http.get(uri);
+        };
     });
 
     app.service('satnetRPC', function(jsonrpc, $location) {
@@ -188,8 +197,6 @@ var app = angular.module('satellite.tracker.js', [
             };
             $scope.refreshGSList = function() {
                 var rpc_call = satnetRPC.listGS().success(function(data) {
-                    $log.info('[satnet-jrpc] GroundStations found = '
-                        + JSON.stringify(data));
                     $scope.gsIds = data.slice(0);
                 });
                 rpc_call.error(function(error) {
@@ -225,8 +232,6 @@ var app = angular.module('satellite.tracker.js', [
             };
             $scope.refreshSCList = function() {
                 var rpc_call = satnetRPC.listSC().success(function(data) {
-                    $log.info('[satnet-jrpc] Spacecraft found = '
-                        + JSON.stringify(data));
                     $scope.scIds = data.slice(0);
                 });
                 rpc_call.error(function(error) {
@@ -378,12 +383,24 @@ var app = angular.module('satellite.tracker.js', [
 ////////////////////////////////////////////////////////////////////////////////
 
     app.controller('AddSCModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'satnetRPC',
-        function ($scope, $log, $modalInstance, satnetRPC) {
-            $scope.sc = {};
-            $scope.sc.identifier = '';
-            $scope.sc.callsign = '';
-            $scope.sc.tleid = '';
+        '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak',
+        function ($scope, $log, $modalInstance, satnetRPC, celestrak) {
+
+            $scope.tlegroups = __CELESTRAK_SELECT_SECTIONS;
+            $scope.tles = [];
+
+            $scope.sc = {
+                identifier: '',
+                callsign: '',
+                tlegroup: '',
+                tleid: ''
+            };
+
+            $scope.watch('sc.tlegroup', function(newVal, oldVal) {
+                console.log('new_tlegroup = ' + newVal);
+                if ( newVal == oldVal ) { return; }
+                //celestrak.readTLEs(newValue);
+            });
             $scope.ok = function () {
                 var new_sc_cfg = [
                     $scope.sc.identifier,

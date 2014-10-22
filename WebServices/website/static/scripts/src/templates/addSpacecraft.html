@@ -2,8 +2,7 @@
     <h3 class='modal-title'>Add Spacecraft</h3>
 </div>
 
-<div class='modal-body'
-     style='display: inline-block;'>
+<div class='modal-body' style='display: inline-block;'>
      <form name='form'>
         <div style="display: inline-block; padding: 20px;">
         <div style='float: left; width: 250px;'>
@@ -33,14 +32,17 @@
         </div>
         <div class='my-tle-menu' >
             <div class='control-group'
-                    ng-class="{ 'has-error': form.tleid.$invalid }">
-                <label class='control-label'
-                       for='callsign'>TLE Id</label>
-                <input type='text' name='tleid'
-                       ng-model="sc.tleid"
-                       class='form-control' style='width: 95%'
-                       ng-pattern='/^[a-zA-Z0-9]{3,15}$/'
-                       required />
+                    ng-class="{ 'has-error': form.tleid.$pristine }">
+                <label class='control-label' for='tlegroup'>TLE Group (Celestrak)</label>
+                <select name='tlegroup'
+                        ng-model="sc.tlegroup"
+                        ng-options="t.subsection group by t.section for t in tlegroups" >
+                </select>
+                <label class='control-label' for='tleid'>TLE Identifier</label>
+                <select class='nya-selectpicker' name='tleid'
+                        ng-model="sc.tleid"
+                        ng-options="t.id for t in tles" >
+                </select>
             </div>
         </div>
         </div>

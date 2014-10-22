@@ -25,6 +25,9 @@
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
     <link rel='stylesheet'
             href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
+    <link rel='stylesheet'
+            href="{% static 'scripts/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}" />
+
     <link rel='stylesheet' href="{% static 'css/sass/c2.css'%}" />
 
     <script type='text/javascript'
@@ -51,6 +54,12 @@
     <script type='text/javascript'
         src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
     </script>
+    <script type='text/javascript'
+        src="{% static 'scripts/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}">
+    </script>
+    <script type='text/javascript'
+        src="{% static 'scripts/bower_components/nya-bootstrap-select/src/nya-bootstrap-select.js' %}">
+    </script>
     <script type="text/javascript"
         src="{% static 'scripts/bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}">
     </script>
@@ -63,6 +72,9 @@
 
     <script type="text/javascript"
             src="{% static 'scripts/src/simulator.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/tle-reader.js'%}">
     </script>
     <script type="text/javascript"
         src="{% static 'scripts/src/map-controller.js'%}">
@@ -119,10 +131,14 @@
             ng-controller="SCMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
-                ng-disabled="disabled">
+                ng-click="refreshSCList()">
             <p>Spacecraft</p><span class='caret'></span>
         </button>
         <ul class='dropdown-menu' role='menu'>
+            <li ng-repeat="s in scIds">
+                <a class='my-menu-item' href='#'
+                   ng-click="editSpacecraft(s)">{{ s }}</a>
+            </li>
             <li class='divider'></li>
             <li>
                 <a href='#' class='my-menu-action'
