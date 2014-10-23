@@ -16,8 +16,10 @@
  * Created by rtubio on 1/31/14.
  */
 
+// DEFAULT values for the applications
 var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
+var DEFAULT_TLE_GROUP = '(select option)';
 var DEFAULT_ZOOM = 6;
 var DEFAULT_GS_ELEVATION = 15.0;
 var USER_ZOOM = 8;
@@ -108,9 +110,10 @@ var app = angular.module('satellite.tracker.js', [
     });
 
     app.service('celestrak', function($http) {
-        this.readTLEs = function(subsection) {
+        this.readTLE = function(subsection) {
             var uri = __CELESTRAK_RESOURCES[subsection];
-            return $http.get(uri);
+            var corss_uri = getCORSSURL(uri);
+            return $http.get(corss_uri);
         };
     });
 
@@ -226,7 +229,7 @@ var app = angular.module('satellite.tracker.js', [
                     controller: 'EditSCModalCtrl',
                     backdrop: 'static',
                     resolve: {
-                        spacecraft_id: function() { return(s); }
+                        spacecraftId: function() { return(s); }
                     }
                 });
             };
@@ -341,7 +344,7 @@ var app = angular.module('satellite.tracker.js', [
             });
             $scope.update = function () {
                 var new_gs_cfg = {
-                    'groundstation_id': $scope.gs.identifier,
+                    'groundstation_id': groundstationId,
                     'groundstation_callsign': $scope.gs.callsign,
                     'groundstation_elevation': $scope.gs.elevation.toFixed(2),
                     'groundstation_latlon': [
@@ -350,10 +353,11 @@ var app = angular.module('satellite.tracker.js', [
                     ]
                 };
                 satnetRPC.setGSCfg(
-                    [$scope.gs.identifier, new_gs_cfg]
+                    [groundstationId, new_gs_cfg]
                 ).success(function (data) {
-                    $log.info('[map-ctrl] GS successfully configured, id = '
-                        + data['groundstation_id']
+                    $log.info(
+                        '[map-ctrl] GS successfully configured'
+                            + ', id = ' + groundstationId
                     );
                 }).error(function (error) {
                     $log.error(
@@ -369,8 +373,8 @@ var app = angular.module('satellite.tracker.js', [
                 if ( confirm('Delete this ground station?') == true ) {
                     satnetRPC.deleteGS([groundstationId]);
                     $log.info(
-                        '[map-ctrl] Ground station removed, id = '
-                            + groundstationId
+                        '[map-ctrl] Ground station removed'
+                            + ', id = ' + groundstationId
                     );
                     $modalInstance.close();
                 }
@@ -386,9 +390,6 @@ var app = angular.module('satellite.tracker.js', [
         '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak',
         function ($scope, $log, $modalInstance, satnetRPC, celestrak) {
 
-            $scope.tlegroups = __CELESTRAK_SELECT_SECTIONS;
-            $scope.tles = [];
-
             $scope.sc = {
                 identifier: '',
                 callsign: '',
@@ -396,16 +397,37 @@ var app = angular.module('satellite.tracker.js', [
                 tleid: ''
             };
 
-            $scope.watch('sc.tlegroup', function(newVal, oldVal) {
-                console.log('new_tlegroup = ' + newVal);
-                if ( newVal == oldVal ) { return; }
-                //celestrak.readTLEs(newValue);
-            });
+            $scope.tlegroups = __CELESTRAK_SELECT_SECTIONS;
+            $scope.tles = [];
+
+            $scope.initTles = function(defaultOption) {
+                $scope.tles = celestrak.readTLE(defaultOption)
+                    .success(function(data) {
+                        $scope.tles = readTLEs(data).slice(0);
+                    }).error(function (data) {
+                        var error_msg = '[celestrak] Error, resource = '
+                                            + JSON.stringify(value);
+                        $log.warn(error_msg);
+                        throw error_msg;
+                    });
+                $scope.sc.tlegroup = defaultOption;
+            };
+            $scope.groupChanged = function (value) {
+                $scope.tles = celestrak.readTLE(value['subsection'])
+                    .success(function (data) {
+                        $scope.tles = readTLEs(data).slice(0);
+                    }).error(function (data) {
+                        var error_msg = '[celestrak] Error, resource = '
+                                            + JSON.stringify(value);
+                        $log.warn(error_msg);
+                        throw error_msg;
+                    });
+            };
             $scope.ok = function () {
                 var new_sc_cfg = [
                     $scope.sc.identifier,
                     $scope.sc.callsign,
-                    $scope.sc.tleid
+                    $scope.sc.tleid['id']
                 ];
                 satnetRPC.addSC(new_sc_cfg).success(function (data) {
                     $log.info('[map-ctrl] SC successfully added, id = '
@@ -419,5 +441,99 @@ var app = angular.module('satellite.tracker.js', [
                 $modalInstance.close();
             };
             $scope.cancel = function () { $modalInstance.close(); };
+        }
+    ]);
+
+    app.controller('EditSCModalCtrl', [
+        '$scope', '$log', '$modalInstance',
+        'satnetRPC', 'celestrak', 'spacecraftId',
+        function (
+            $scope, $log, $modalInstance,
+            satnetRPC, celestrak, spacecraftId
+        ) {
+
+            $scope.sc = {
+                identifier: spacecraftId,
+                callsign: '',
+                tlegroup: '',
+                tleid: '',
+                saved_tleid: ''
+            };
+
+            $log.info('Editing sc = ' + spacecraftId);
+
+            $scope.tlegroups = __CELESTRAK_SELECT_SECTIONS;
+            $scope.tles = [];
+
+            satnetRPC.getSCCfg([spacecraftId]).success(function(data) {
+                $log.info(
+                    '[map-ctrl] SC configuration retrieved: '
+                        + JSON.stringify(data)
+                );
+                $scope.sc.identifier = spacecraftId;
+                $scope.sc.callsign = data['spacecraft_callsign'];
+                $scope.sc.saved_tleid = data['spacecraft_tle_id'];
+
+            }).error(function (error) {
+                $log.error(
+                    '[map-ctrl] Could not load configuration for SC'
+                        + ', id = ' + spacecraftId
+                        + ', error = ' + JSON.stringify(error)
+                );
+            });
+
+            $scope.initTles = function(defaultOption) {
+                $scope.tles = celestrak.readTLE(defaultOption)
+                    .success(function(data) {
+                        $scope.tles = readTLEs(data).slice(0);
+                    }).error(function (data) {
+                        var error_msg = '[celestrak] Error, resource = '
+                                            + JSON.stringify(value);
+                        $log.warn(error_msg);
+                        throw error_msg;
+                    });
+                $scope.sc.tlegroup = defaultOption;
+            };
+            $scope.groupChanged = function (value) {
+                $scope.tles = celestrak.readTLE(value['subsection'])
+                    .success(function (data) {
+                        $scope.tles = readTLEs(data).slice(0);
+                    }).error(function (data) {
+                        var error_msg = '[celestrak] Error, resource = '
+                                            + JSON.stringify(value);
+                        $log.warn(error_msg);
+                        throw error_msg;
+                    });
+            };
+            $scope.update = function () {
+                var new_sc_cfg = {
+                    'spacecraft_id': spacecraftId,
+                    'spacecraft_callsign': $scope.sc.callsign,
+                    'spacecraft_tle_id': $scope.sc.tleid['id']
+                };
+                satnetRPC.setSCCfg([spacecraftId, new_sc_cfg])
+                    .success(function (data) {
+                        $log.info('[map-ctrl] SC successfully updated, id = '
+                            + spacecraftId
+                        );
+                    })
+                    .error(function (error) {
+                        $log.error('[map-ctrl] Could not update SC, reason = '
+                            + JSON.stringify(error)
+                        );
+                    });
+                $modalInstance.close();
+            };
+            $scope.cancel = function () { $modalInstance.close(); };
+            $scope.erase = function () {
+                if ( confirm('Delete this spacecraft?') == true ) {
+                    satnetRPC.deleteSC([spacecraftId]);
+                    $log.info(
+                        '[map-ctrl] Spacecraft removed'
+                            + ', id = ' + spacecraftId
+                    );
+                    $modalInstance.close();
+                }
+            };
         }
     ]);

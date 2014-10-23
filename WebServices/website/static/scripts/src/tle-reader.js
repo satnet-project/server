@@ -169,7 +169,7 @@ TLEReader = function($log, $http, subsection) {
  * Callback executed after the TLE resource had been retrieved from the server.
  * @param data The data to be processed.
  */
-TLEReader.prototype.tleReaderCb = function(data) {
+function readTLEs(data) {
 
     if ( data == null ) { throw 'No data retrieved from server...'; }
 
@@ -181,19 +181,21 @@ TLEReader.prototype.tleReaderCb = function(data) {
 
         var l_i = lines[i].trim();
 
-        if ( ( i % 3 ) == 0 ) { s_info['tle_id'] = l_i; }
+        if ( ( i % 3 ) == 0 ) { s_info['id'] = l_i; }
         if ( ( i % 3 ) == 1 ) { s_info['line_1'] = l_i; }
         if ( ( i % 3 ) == 2 ) {
-            s_info['line_2'] = l_i;
-            s_array.push(jQuery.extend({}, s_info));
+            s_array.push({
+                'id': s_info['id'],
+                'line_1': s_info['line_1'],
+                'line_2': l_i
+            });
         }
 
     }
 
-    this._satellites = jQuery.extend([], s_array);
     return s_array;
 
-};
+}
 
 /**
  * Satellites array getter.
@@ -211,7 +213,7 @@ TLEReader.prototype.getSatellites = function () { return this._satellites; };
 TLEReader.prototype.readTLE = function(url) {
     console.info('>>> Loading info from = ' + url);
     this._http.get(url)
-        .success(this.tleReaderCb)
+        .success(readTLEs)
         .error(function(data) {
             throw 'Cannot retrieve resource = ' + url + ', reason = ' + data;
         });

@@ -262,3 +262,18 @@ function getLocation(response_cb, error_cb){
     $.get("http://ipinfo.io", response_cb, "jsonp")
         .fail(error_cb);
 }
+
+// Proxy to get rid of the CORS restrictions.
+var __CORSS_PROXY = 'http://www.corsproxy.com/';
+// Get rid of this part of the URI to use with corsproxy
+var __CORSS_PROXY_HTTP = 'http://';
+
+/**
+ * Returns a URL modified to be used directly with the corsproxy.com service.
+ * @param url The URL to be modified.
+ * @returns {string} The ready-to-use URL.
+ */
+function getCORSSURL(url) {
+    var corrected_url = url.replace(__CORSS_PROXY_HTTP, '');
+    return(__CORSS_PROXY + corrected_url);
+}

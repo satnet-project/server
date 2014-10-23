@@ -74,6 +74,9 @@
             src="{% static 'scripts/src/simulator.js'%}">
     </script>
     <script type="text/javascript"
+            src="{% static 'scripts/src/common.js'%}">
+    </script>
+    <script type="text/javascript"
         src="{% static 'scripts/src/tle-reader.js'%}">
     </script>
     <script type="text/javascript"
@@ -122,8 +125,7 @@
             </li>
             <li class='divider'></li>
             <li>
-                <a href='#' class='my-menu-action'
-                   ng-click="addGroundStation()">(+) ground station</a>
+                <a href='#' ng-click="addGroundStation()">(+) ground station</a>
             </li>
         </ul>
     </div>
@@ -141,8 +143,7 @@
             </li>
             <li class='divider'></li>
             <li>
-                <a href='#' class='my-menu-action'
-                   ng-click="addSpacecraft()">(+) spacecraft</a>
+                <a href='#' ng-click="addSpacecraft()">(+) spacecraft</a>
             </li>
         </ul>
     </div>

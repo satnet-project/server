@@ -17,8 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 
+from services.accounts import models as account_models
 from services.configuration.jrpc import serialization as jrpc_serial
-from services.configuration.models.segments import Spacecraft
+from services.configuration.models import segments
 
 
 @rpcmethod(
@@ -37,10 +38,46 @@ def list_spacecraft(**kwargs):
     # 1) user must be obtained from the request, since this has already been
     #       validated by the authentication backend
     http_request = kwargs.get('request', None)
-    spacecraft = Spacecraft.objects.filter(
+    spacecraft = segments.Spacecraft.objects.filter(
         user=http_request.user
     ).all()
-    return [str(g.identifier) for g in spacecraft]
+    return [str(s.identifier) for s in spacecraft]
+
+
+@rpcmethod(
+    name='configuration.sc.create',
+    signature=['String', 'String', 'String'],
+    login_required=True
+)
+def create(identifier, callsign, tle_id, **kwargs):
+    """
+    JRPC method.
+
+    Creates a new ground station with the given configuration.
+    """
+
+    request = kwargs.get('request', None)
+    if request is None:
+        return
+    username = request.user.username
+
+    if username is None:
+        raise Exception('Could not find <username> within HTTP request.')
+
+    user = account_models.UserProfile.objects.get(username=username)
+    if user is None:
+        raise Exception('User <' + username + '> could not be found.')
+
+    sc = segments.Spacecraft.objects.create(
+        user=user,
+        identifier=identifier,
+        callsign=callsign,
+        tle_id=tle_id
+    )
+
+    return {
+        jrpc_serial.SC_ID_K: str(sc.identifier)
+    }
 
 
 @rpcmethod(
@@ -55,7 +92,7 @@ def get_configuration(spacecraft_id):
     Returns the configuration for the given Spacecraft.
     """
     return jrpc_serial.serialize_sc_configuration(
-        Spacecraft.objects.get(identifier=spacecraft_id)
+        segments.Spacecraft.objects.get(identifier=spacecraft_id)
     )
 
 
@@ -71,7 +108,7 @@ def set_configuration(spacecraft_id, configuration):
     Returns the configuration for the given Spacecraft.
     """
     callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
-    sc = Spacecraft.objects.get(identifier=spacecraft_id)
+    sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
     sc.update(callsign=callsign, tle_id=tle_id)
     return True
 
@@ -88,7 +125,7 @@ def list_channels(spacecraft_id):
     Returns the channels for the given Spacecraft.
     """
     return jrpc_serial.serialize_channels(
-        Spacecraft.objects.get(
+        segments.Spacecraft.objects.get(
             identifier=spacecraft_id
         ).channels.all()
     )
@@ -106,5 +143,5 @@ def delete(spacecraft_id):
     Deletes the ground station identified by the given Spacecraft. It
     also deletes all channels associated to this ground station.
     """
-    Spacecraft.objects.get(identifier=spacecraft_id).delete()
+    segments.Spacecraft.objects.get(identifier=spacecraft_id).delete()
     return True
