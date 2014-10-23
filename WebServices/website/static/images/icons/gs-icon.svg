@@ -1,0 +1,31 @@
+<!--
+   Copyright 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+-->
+<svg version='1.1' xmlns="http://www.w3.org/2000/svg"
+    name='gs-icon' preserveAspectRatio='xMinYMin'
+    width='150px' height='150px' style='opacity:0.85;'>
+
+    <circle cx='50%' cy='50%' r='47%'
+        stroke-width='6%' stroke='black'
+        style='fill:#0F3E62;'
+    />
+
+    <text x='50%' y='60%'
+            font-family='sans-serif' font-size='400%'
+            font-weight='bold'
+            fill='white'
+            text-anchor='middle'>gs</text>
+
+</svg>
