@@ -39,7 +39,7 @@ class TestTle(TestCase):
         self.__sc_1_tle_id = 'XATCOBEOXX'
 
         self.__sc_2_id = 'sc-xatcobeo'
-        self.__sc_2_tle_id = 'XATCOBEO'
+        self.__sc_2_tle_id = 'HUMSAT-D'
 
         self.__band = db_tools.create_band()
         db_tools.init_tles_database()

@@ -1,5 +1,5 @@
 """
-   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+   Copyright 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -14,7 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-# It is necessary to import this module here for rpc4django to detect the RPC
-# methods.
-from services.scheduling.jrpc.views import spacecraft, groundstations

@@ -24,11 +24,12 @@ import logging
 
 from services.common import testing as db_tools, misc
 from services.configuration import signals
-from services.configuration.jrpc import channels as jrpc_chs
-from services.configuration.jrpc import rules as jrpc_rules
-from services.configuration.jrpc import serialization as jrp_cfg_serial
-from services.scheduling.jrpc import groundstations as jrpc_gs_scheduling
+from services.configuration.jrpc.serializers\
+    import serialization as jrp_cfg_serial
+from services.configuration.jrpc.views import channels as jrpc_chs
+from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational
+from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
 
 
 class JRPCGroundStationsSchedulingTest(test.TestCase):
@@ -45,7 +46,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
         self.__sc_1_id = 'xatcobeo-sc'
-        self.__sc_1_tle_id = 'XATCOBEO'
+        self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
             jrp_cfg_serial.FREQUENCY_K: '437000000',

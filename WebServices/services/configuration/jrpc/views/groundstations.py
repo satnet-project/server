@@ -13,13 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 
-from services.common import misc
-from services.configuration.jrpc import serialization
 from services.configuration.models import segments
+from services.configuration.jrpc.serializers import serialization
 
 import logging
 

@@ -22,11 +22,11 @@ from django import test
 
 from services.common import testing as db_tools, misc
 from services.common import serialization as common_serial
-from services.configuration.jrpc import groundstations as jrpc_gs
-from services.configuration.jrpc import rules as jrpc_rules
-from services.configuration.jrpc import serialization as jrpc_serial
-from services.configuration.jrpc import spacecraft as jrpc_sc
 from services.configuration.models import rules, segments
+from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.views import groundstations as jrpc_gs
+from services.configuration.jrpc.views import spacecraft as jrpc_sc
+from services.configuration.jrpc.views import rules as jrpc_rules
 
 
 class JRPCRulesTest(test.TestCase):
@@ -44,8 +44,8 @@ class JRPCRulesTest(test.TestCase):
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_callsign = 'GS1GSGS'
         self.__gs_1_contact_elevation = 10.30
-        self.__gs_1_longitude = 25.0
-        self.__gs_1_latitude = 40.0
+        self.__gs_1_longitude = -8.9330
+        self.__gs_1_latitude = 42.6000
         self.__gs_1_configuration = (
             self.__gs_1_callsign,
             10.3,
@@ -58,7 +58,7 @@ class JRPCRulesTest(test.TestCase):
 
         self.__sc_1_id = 'sc-xatcobeo'
         self.__sc_1_callsign = 'BABA00'
-        self.__sc_1_tle_id = unicode('XATCOBEO')
+        self.__sc_1_tle_id = unicode('HUMSAT-D')
         self.__sc_1_ch_1_id = 'xatcobeo-qpsk-1'
         self.__sc_1_ch_2_id = 'xatcobeo-gmsk-2'
         self.__sc_1_ch_1_f = 437000000
@@ -234,7 +234,7 @@ class JRPCRulesTest(test.TestCase):
         old_callsign = cfg[jrpc_serial.SC_CALLSIGN_K]
         old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
         cfg[jrpc_serial.SC_CALLSIGN_K] = 'CHANGED'
-        cfg[jrpc_serial.SC_TLE_ID_K] = 'XATCOBEO'
+        cfg[jrpc_serial.SC_TLE_ID_K] = 'HUMSAT-D'
         self.assertEquals(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             True,

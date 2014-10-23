@@ -22,8 +22,8 @@ from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 
 from services.common import testing as db_tools, misc
-from services.configuration.jrpc import serialization as jrpc_serial
-from services.configuration.jrpc import channels as jrpc_channels_if
+from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.views import channels as jrpc_channels_if
 
 
 class TestJRPCChannels(TestCase):

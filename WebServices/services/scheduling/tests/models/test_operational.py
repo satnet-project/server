@@ -23,9 +23,9 @@ import logging
 
 from services.common import testing as db_tools, misc, simulation
 from services.configuration import signals
-from services.configuration.jrpc import channels as jrpc_channels_if
-from services.configuration.jrpc import rules as jrpc_rules_if
-from services.configuration.jrpc import serialization as jrpc_keys
+from services.configuration.jrpc.serializers import serialization as jrpc_keys
+from services.configuration.jrpc.views import channels as jrpc_channels_if
+from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import rules, availability, channels
 from services.scheduling.models import operational
 
@@ -44,7 +44,7 @@ class OperationalModels(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
         self.__sc_1_id = 'xatcobeo-sc'
-        self.__sc_1_tle_id = 'XATCOBEO'
+        self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
             jrpc_keys.FREQUENCY_K: '437000000',

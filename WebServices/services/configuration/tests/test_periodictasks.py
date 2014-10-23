@@ -24,7 +24,7 @@ import logging
 from services.common import misc, testing as db_tools
 from services.configuration import periodictasks, signals
 from services.configuration.models import availability
-from services.configuration.jrpc import rules as jrpc_rules_if
+from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.scheduling.models import operational
 
 

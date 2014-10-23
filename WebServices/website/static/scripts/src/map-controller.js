@@ -19,7 +19,6 @@
 // DEFAULT values for the applications
 var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
 var DEFAULT_LNG = -8.9330;
-var DEFAULT_TLE_GROUP = '(select option)';
 var DEFAULT_ZOOM = 6;
 var DEFAULT_GS_ELEVATION = 15.0;
 var USER_ZOOM = 8;

@@ -24,8 +24,8 @@ from django.test.client import RequestFactory
 from services.accounts.models import UserProfile
 from services.common import misc, gis
 from services.common import serialization as common_serial
-from services.configuration.jrpc import serialization
 from services.configuration.models import bands, channels, segments
+from services.configuration.jrpc.serializers import serialization
 from services.scheduling.models import tle
 
 
@@ -91,7 +91,7 @@ def create_request(url='/test', user_profile=None):
 def create_sc(
     user_profile=None, identifier='sc-uvigo',
     callsign='BABA00',
-    tle_id='XATCOBEO'
+    tle_id='HUMSAT-D'
 ):
 
     username = 'testuser'

@@ -20,8 +20,8 @@ from django import test
 import logging
 
 from services.common import testing as db_tools, misc, simulation
-from services.configuration.jrpc import serialization as jrpc_keys
-from services.configuration.jrpc import rules as jrpc_rules
+from services.configuration.jrpc.serializers import serialization as jrpc_keys
+from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.models import rules
 
 

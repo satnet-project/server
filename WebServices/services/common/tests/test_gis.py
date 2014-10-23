@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
 
-from services.common.gis import get_altitude, get_region
+from services.common import gis
 
 
 class TestGis(TestCase):
@@ -30,17 +30,18 @@ class TestGis(TestCase):
         location_1 = (42.6000, -8.9333)
         expected_country = 'ES'
         expected_region = 'GA'
-        (actual_country_l, actual_country_s, actual_region_l, actual_region_s)\
-            = get_region(location_1[0], location_1[1])
+        result = gis.get_region(location_1[0], location_1[1])
+        actual_country = result[gis.COUNTRY_SHORT_NAME]
+        actual_region = result[gis.REGION_SHORT_NAME]
         self.assertEquals(
-            expected_country, actual_country_s,
+            expected_country, actual_country,
             'Altitudes differ, expected = ' + str(expected_country)
-            + ', actual = ' + str(actual_country_s)
+            + ', actual = ' + str(actual_country)
         )
         self.assertEquals(
-            expected_region, actual_region_s,
+            expected_region, actual_region,
             'Resolutions differ, expected = ' + str(expected_region)
-            + ', actual = ' + str(actual_region_s)
+            + ', actual = ' + str(actual_region)
         )
 
     def test_get_altitude(self):
@@ -51,7 +52,9 @@ class TestGis(TestCase):
         location_1 = (39.73915360, -104.98470340)
         expected_h_1 = 1608.637939453125
         expected_r_1 = 4.771975994110107
-        (actual_h_1, actual_r_1) = get_altitude(location_1[0], location_1[1])
+        (actual_h_1, actual_r_1) = gis.get_altitude(
+            location_1[0], location_1[1]
+        )
         self.assertEquals(
             expected_h_1, actual_h_1,
             'Altitudes differ, expected = ' + str(expected_h_1)

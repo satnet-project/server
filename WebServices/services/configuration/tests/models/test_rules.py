@@ -22,8 +22,8 @@ import logging
 
 from services.common import testing as db_tools, misc, simulation
 from services.configuration import signals
+from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import availability, rules
-from services.configuration.jrpc import rules as jrpc_rules_if
 
 
 class TestRules(test.TestCase):

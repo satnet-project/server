@@ -17,8 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 
-from services.configuration.jrpc import serialization
 from services.configuration.models import segments, bands, channels
+from services.configuration.jrpc.serializers import serialization
 
 
 @rpcmethod(

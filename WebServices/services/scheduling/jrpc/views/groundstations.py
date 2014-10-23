@@ -19,7 +19,7 @@ import rpc4django
 
 from services.configuration.models import segments
 from services.scheduling.models import operational
-from services.scheduling.jrpc import serialization
+from services.scheduling.jrpc.serializers import serialization
 
 
 @rpc4django.rpcmethod(
