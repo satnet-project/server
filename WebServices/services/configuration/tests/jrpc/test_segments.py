@@ -196,7 +196,7 @@ class JRPCRulesTest(test.TestCase):
 
         self.assertEquals(
             jrpc_gs.set_configuration(self.__gs_1_id, cfg),
-            True,
+            self.__gs_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
@@ -237,7 +237,7 @@ class JRPCRulesTest(test.TestCase):
         cfg[jrpc_serial.SC_TLE_ID_K] = 'HUMSAT-D'
         self.assertEquals(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
-            True,
+            self.__sc_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
@@ -250,7 +250,7 @@ class JRPCRulesTest(test.TestCase):
         cfg[jrpc_serial.SC_TLE_ID_K] = old_tle_id
         self.assertEquals(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
-            True,
+            self.__sc_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)

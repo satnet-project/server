@@ -110,7 +110,7 @@ def set_configuration(spacecraft_id, configuration):
     callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
     sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
     sc.update(callsign=callsign, tle_id=tle_id)
-    return True
+    return spacecraft_id
 
 
 @rpcmethod(
@@ -144,4 +144,4 @@ def delete(spacecraft_id):
     also deletes all channels associated to this ground station.
     """
     segments.Spacecraft.objects.get(identifier=spacecraft_id).delete()
-    return True
+    return spacecraft_id

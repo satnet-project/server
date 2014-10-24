@@ -48,14 +48,12 @@ function centerMap (map, lat, lng, zoom) {
 function locateUser ($log, map, marker) {
 
     $.get('http://ipinfo.io', function (data) {
-
         var ll = data['loc'].split(',');
         var lat = parseFloat(ll[0]);
         var lng = parseFloat(ll[1]);
         $log.info('[map-ctrl] User located at = ' + ll);
         centerMap(map, lat, lng, USER_ZOOM);
         if ( marker != null ) { marker.lat = lat; marker.lng = lng; }
-
     }, 'jsonp')
     .fail( function() {
 
@@ -64,7 +62,6 @@ function locateUser ($log, map, marker) {
         if ( marker != null ) {
             marker.lat = DEFAULT_LAT; marker.lng = DEFAULT_LNG;
         }
-
     });
 
 }
@@ -109,39 +106,156 @@ var app = angular.module('satellite.tracker.js', [
     });
 
     app.service('celestrak', function($http) {
-        this.readTLE = function(subsection) {
+        this.readTLE = function (subsection, successCb) {
             var uri = __CELESTRAK_RESOURCES[subsection];
             var corss_uri = getCORSSURL(uri);
-            return $http.get(corss_uri);
+            return $http.get(corss_uri).success(function (data) {
+                successCb(readTLEs(data));
+            }).error(function (data) {
+                throw '[celestrak] Error = ' + JSON.stringify(data);
+            });
         };
     });
 
-    app.service('satnetRPC', function(jsonrpc, $location) {
+    app.service('satnetRPC', function(jsonrpc, $location, $log) {
         var rpc_path = ''
             + $location.protocol() + "://"
             + $location.host() + ':' + $location.port()
             + '/jrpc/';
-        var cfg_service = jsonrpc.newService('configuration', rpc_path);
-        // Configuration methods (Ground Stations)
-        this.listGS = cfg_service.createMethod('gs.list');
-        this.addGS = cfg_service.createMethod('gs.create');
-        this.getGSCfg = cfg_service.createMethod('gs.getConfiguration');
-        this.setGSCfg = cfg_service.createMethod('gs.setConfiguration');
-        this.deleteGS = cfg_service.createMethod('gs.delete');
-        // Configuration methods (Spacecraft)
-        this.listSC = cfg_service.createMethod('sc.list');
-        this.addSC = cfg_service.createMethod('sc.create');
-        this.getSCCfg = cfg_service.createMethod('sc.getConfiguration');
-        this.setSCCfg = cfg_service.createMethod('sc.setConfiguration');
-        this.deleteSC = cfg_service.createMethod('sc.delete');
+        this._cfg_service = jsonrpc.newService('configuration', rpc_path);
+        this._services = {
+            // Configuration methods (Ground Stations)
+            'gs.list': this._cfg_service.createMethod('gs.list'),
+            'gs.add': this._cfg_service.createMethod('gs.create'),
+            'gs.get': this._cfg_service.createMethod('gs.getConfiguration'),
+            'gs.update': this._cfg_service.createMethod('gs.setConfiguration'),
+            'gs.delete': this._cfg_service.createMethod('gs.delete'),
+            // Configuration methods (Spacecraft)
+            'sc.list': this._cfg_service.createMethod('sc.list'),
+            'sc.add': this._cfg_service.createMethod('sc.create'),
+            'sc.get': this._cfg_service.createMethod('sc.getConfiguration'),
+            'sc.update': this._cfg_service.createMethod('sc.setConfiguration'),
+            'sc.delete': this._cfg_service.createMethod('sc.delete')
+        };
+        this._errorCb = function(data) {
+            $log.warn(
+                '[satnet-jrpc] Error calling \"satnetRPC\" = '
+                    + JSON.stringify(data)
+            );
+        };
+        this.call = function (service, paramArray, successCb, errorCb) {
+            if ( ! service in this._services ) {
+                throw '\"satnetRPC\" service not found, id = ' + service;
+            }
+            if ( errorCb == null ) { errorCb = this._errorCb; }
+            this._services[service](paramArray)
+                .success(successCb).error(errorCb);
+        };
     });
 
-    app.run(function($rootScope, $log, $http, $cookies){
+    app.service('gs', function($rootScope, $log) {
+        this._gsCfg = {};
+        this.create = function(data) {
+            var gs_id = data['groundstation_id'];
+            var ll = L.latLng(
+                data['groundstation_latlon'][0],
+                data['groundstation_latlon'][1]
+            );
+            var icon = L.icon({
+                iconUrl: '/static/images/icons/gs-icon.svg',
+                iconSize: [30, 30]
+            });
+            var caption = gs_id + '@' + data['groundstation_callsign'];
+            var m = L.marker(ll, { draggable: false, icon: icon })
+                                .bindLabel(caption, { noHide: true });
+            this._gsCfg[gs_id] = { marker: m, cfg: data };
+            return m;
+        };
+        this.remove = function(gs_id) {
+            if ( ! gs_id in this._gsCfg ) {
+                $log.warn('[markers] No marker for gs, id= ' + gs_id);
+                return;
+            }
+            $rootScope._map.removeLayer(this._gsCfg[gs_id]['marker']);
+            delete this._gsCfg[gs_id];
+        };
+        this.configure = function(data) {
+            var gs_id = data['groundstation_id'];
+            if ( ! gs_id in this._gsCfg ) {
+                $log.warn('[markers] No marker for gs, id= ' + gs_id);
+                return;
+            }
+            $log.info('gs_id = ' + gs_id);
+            // CALLSIGN DIRTY CHECKING...
+            var old_cs = this._gsCfg[gs_id].cfg['groundstation_callsign'];
+            var new_cs = data['groundstation_callsign'];
+            if ( new_cs != old_cs ) {
+                this.remove(gs_id);
+                this.create(data);
+            }
+            else {
+                // POSITION DIRTY CHECKING...
+                var ll_changed = false;
+                var new_lat = data['groundstation_latlon'][0];
+                var new_lon = data['groundstation_latlon'][1];
+                var old_lat = this._gsCfg[gs_id].cfg['groundstation_latlon'][0];
+                var old_lon = this._gsCfg[gs_id].cfg['groundstation_latlon'][1];
+                if ( new_lat != old_lat ) { ll_changed = true; }
+                if ( new_lon != old_lon ) { ll_changed = true; }
+                if ( ll_changed == true ) {
+                    var ll = L.latLng(new_lat, new_lon);
+                    this._gsCfg[gs_id].cfg['groundstation_latlon'][0] = new_lat;
+                    this._gsCfg[gs_id].cfg['groundstation_latlon'][1] = new_lon;
+                    this._gsCfg[gs_id].marker.setLatLng(ll);
+                }
+            }
+        };
+    });
+
+    app.service('xSatnetRPC', function($rootScope, satnetRPC, gs) {
+        this.addGSMarker = function(gs_id) {
+            satnetRPC.call('gs.get', [gs_id], function(data) {
+                gs.create(data).addTo($rootScope._map);
+            });
+        };
+        this.initGSMarkers = function() {
+            satnetRPC.call('gs.list', [], function(data) {
+                for ( var i = 0; i < data.length; i++ ) {
+                    satnetRPC.call('gs.get', [data[i]], function(data) {
+                        gs.create(data).addTo($rootScope._map);
+                    });
+                }
+            });
+        };
+        this.updateGSMarker = function(gs_id) {
+            satnetRPC.call('gs.get', [gs_id], function(data) {
+                gs.configure(data);
+            });
+        };
+    });
+
+    app.service('broadcaster', function($rootScope) {
+        this.__GS_ADDED_EVENT = 'gs.added';
+        this.__GS_REMOVED_EVENT = 'gs.removed';
+        this.__GS_UPDATED_EVENT = 'gs.updated';
+        this.gsAdded = function(gs_id) {
+            $rootScope.$broadcast(this.__GS_ADDED_EVENT, gs_id);
+        };
+        this.gsRemoved = function(gs_id) {
+            $rootScope.$broadcast(this.__GS_REMOVED_EVENT, gs_id);
+        };
+        this.gsUpdated = function(gs_id) {
+            $rootScope.$broadcast(this.__GS_UPDATED_EVENT, gs_id);
+        };
+    });
+
+    app.run(function($rootScope, $log, $http, $cookies, leafletData){
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+        leafletData.getMap().then(function(map) { $rootScope._map = map; });
     });
 
-    app.controller('NotificationAreaController', ['$scope', '$filter',
+    app.controller('NotificationAreaController',
         function($scope, $filter) {
             $scope.eventLog = [];
             $scope.$on('infoEvent', function(event, message) {
@@ -152,32 +266,38 @@ var app = angular.module('satellite.tracker.js', [
                 });
             });
         }
-    ]);
+    );
 
-    app.controller('GSAreaController', ['$scope', '$log',
-        function($scope, $log) {}
-    ]);
-
-    app.controller('SCAreaController', ['$scope', '$log',
-        function($scope, $log) {}
-    ]);
-
-    app.controller('MapController', [
-        '$scope', '$log', '$resource', 'leafletData',
-        function($scope, $log, $resource, leafletData) {
+    app.controller('MapController',
+        function(
+            $scope, $log,
+            leafletData, xSatnetRPC, broadcaster, gs
+        ) {
+            $scope.markers = [];
             angular.extend($scope, {
                 center: {
                     lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
-                }
+                },
+                defaults: { worldCopyJump: true }
             });
             leafletData.getMap().then(function(map) {
                 locateUser($log, map, null);
+                L.terminator({ fillOpacity: 0.125 }).addTo(map);
+                xSatnetRPC.initGSMarkers();
+            });
+            $scope.$on(broadcaster.__GS_ADDED_EVENT, function(event, gs_id) {
+                xSatnetRPC.addGSMarker(gs_id);
+            });
+            $scope.$on(broadcaster.__GS_REMOVED_EVENT, function(event, gs_id) {
+                gs.remove(gs_id);
+            });
+            $scope.$on(broadcaster.__GS_UPDATED_EVENT, function(event, gs_id) {
+                xSatnetRPC.updateGSMarker(gs_id);
             });
         }
-    ]);
+    );
 
-    app.controller('GSMenuCtrl', [
-        '$scope', '$log', '$modal', 'satnetRPC',
+    app.controller('GSMenuCtrl',
         function($scope, $log, $modal, satnetRPC) {
             $scope.gsIds = [];
             $scope.addGroundStation = function() {
@@ -190,74 +310,58 @@ var app = angular.module('satellite.tracker.js', [
             $scope.editGroundStation = function(g) {
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/editGroundStation.html',
-                    controller: 'EditGSModalCtrl',
-                    backdrop: 'static',
-                    resolve: {
-                        groundstationId: function() { return(g); }
-                    }
+                    controller: 'EditGSModalCtrl', backdrop: 'static',
+                    resolve: { groundstationId: function() { return(g); } }
                 });
             };
             $scope.refreshGSList = function() {
-                var rpc_call = satnetRPC.listGS().success(function(data) {
+                satnetRPC.call('gs.list', [], function(data) {
                     $scope.gsIds = data.slice(0);
-                });
-                rpc_call.error(function(error) {
-                    $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
-                        + JSON.stringify(error));
                 });
             };
             $scope.refreshGSList();
         }
-    ]);
+    );
 
-    app.controller('SCMenuCtrl', [
-        '$scope', '$log', '$modal', 'satnetRPC',
+    app.controller('SCMenuCtrl',
         function($scope, $log, $modal, satnetRPC) {
             $scope.scIds = [];
             $scope.addSpacecraft = function() {
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
-                    controller: 'AddSCModalCtrl',
-                    backdrop: 'static',
-                    size: 'lg'
+                    controller: 'AddSCModalCtrl', backdrop: 'static'
                 });
             };
             $scope.editSpacecraft = function(s) {
                 var modalInstance = $modal.open({
                     templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
-                    controller: 'EditSCModalCtrl',
-                    backdrop: 'static',
-                    resolve: {
-                        spacecraftId: function() { return(s); }
-                    }
+                    controller: 'EditSCModalCtrl', backdrop: 'static',
+                    resolve: { spacecraftId: function() { return(s); } }
                 });
             };
             $scope.refreshSCList = function() {
-                var rpc_call = satnetRPC.listSC().success(function(data) {
+                satnetRPC.call('sc.list', [], function(data) {
                     $scope.scIds = data.slice(0);
-                });
-                rpc_call.error(function(error) {
-                    $log.error('[satnet-jrpc] Error calling \"listGS()\" = '
-                        + JSON.stringify(error));
                 });
             };
             $scope.refreshSCList();
         }
-    ]);
+    );
 
-    app.controller('ExitMenuCtrl', [
-        '$scope', '$log', function($scope, $log) {
+    app.controller('ExitMenuCtrl',
+        function($scope, $log) {
             $scope.home = function () { $log.info('Exiting...'); };
         }
-    ]);
+    );
 
 ////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////// GROUND STATIONS MODAL DIALOGS
 ////////////////////////////////////////////////////////////////////////////////
 
-    app.controller('AddGSModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
-        function ($scope, $log, $modalInstance, leafletData, satnetRPC) {
+    app.controller('AddGSModalCtrl',
+        function (
+            $scope, $log, $modalInstance, leafletData, satnetRPC, broadcaster
+        ) {
             $scope.gs = {};
             $scope.gs.identifier = '';
             $scope.gs.callsign = '';
@@ -284,27 +388,21 @@ var app = angular.module('satellite.tracker.js', [
                     $scope.markers.gsMarker.lat.toFixed(6),
                     $scope.markers.gsMarker.lng.toFixed(6)
                 ];
-                satnetRPC.addGS(new_gs_cfg).success(function (data) {
-                    $log.info('[map-ctrl] GS successfully added, id = '
-                        + data['groundstation_id']
-                    );
-                }).error(function (error) {
-                    $log.error('[map-ctrl] Could not add GS, reason = '
-                        + JSON.stringify(error)
-                    );
+                satnetRPC.call('gs.add', new_gs_cfg, function (data) {
+                    var gs_id = data['groundstation_id'];
+                    $log.info('[map-ctrl] GS added, id = ' + gs_id);
+                    broadcaster.gsAdded(gs_id);
                 });
-
                 $modalInstance.close();
             };
             $scope.cancel = function () { $modalInstance.close(); };
         }
-    ]);
+    );
 
-    app.controller('EditGSModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'leafletData', 'satnetRPC',
-        'groundstationId',
+    app.controller('EditGSModalCtrl',
         function (
-            $scope, $log, $modalInstance, leafletData, satnetRPC,
+            $scope, $log, $modalInstance,
+            leafletData, satnetRPC, broadcaster,
             groundstationId
         ) {
             $scope.gs = {};
@@ -312,11 +410,7 @@ var app = angular.module('satellite.tracker.js', [
                 lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
             };
             $scope.markers = {};
-            satnetRPC.getGSCfg([groundstationId]).success(function(data) {
-                $log.info(
-                    '[map-ctrl] GS configuration retrieved: '
-                        + JSON.stringify(data)
-                );
+            satnetRPC.call('gs.get', [groundstationId], function(data) {
                 $scope.gs.identifier = groundstationId;
                 $scope.gs.callsign = data['groundstation_callsign'];
                 $scope.gs.elevation = data['groundstation_elevation'];
@@ -334,12 +428,6 @@ var app = angular.module('satellite.tracker.js', [
                         }
                     }
                 });
-            }).error(function (error) {
-                $log.error(
-                    '[map-ctrl] Could not load configuration for GS'
-                        + ', id = ' + groundstationId
-                        + ', error = ' + JSON.stringify(error)
-                );
             });
             $scope.update = function () {
                 var new_gs_cfg = {
@@ -351,44 +439,39 @@ var app = angular.module('satellite.tracker.js', [
                         $scope.markers.gsMarker.lng.toFixed(6)
                     ]
                 };
-                satnetRPC.setGSCfg(
-                    [groundstationId, new_gs_cfg]
-                ).success(function (data) {
-                    $log.info(
-                        '[map-ctrl] GS successfully configured'
-                            + ', id = ' + groundstationId
-                    );
-                }).error(function (error) {
-                    $log.error(
-                        '[map-ctrl] Could not set configuration for GS'
-                            + ', id = ' + groundstationId
-                            + ', error = ' + JSON.stringify(error)
-                    );
-                });
+                satnetRPC.call(
+                    'gs.update', [groundstationId, new_gs_cfg],
+                    function (data) {
+                        $log.info('[map-ctrl] GS updated, id = ' + data);
+                        broadcaster.gsUpdated(data);
+                    }
+                );
                 $modalInstance.close();
             };
             $scope.cancel = function () { $modalInstance.close(); };
             $scope.erase = function () {
                 if ( confirm('Delete this ground station?') == true ) {
-                    satnetRPC.deleteGS([groundstationId]);
-                    $log.info(
-                        '[map-ctrl] Ground station removed'
-                            + ', id = ' + groundstationId
+                    satnetRPC.call(
+                        'gs.delete', [groundstationId],
+                        function (data) {
+                            $log.info(
+                                '[map-ctrl] GS removed, id = ' + data
+                            );
+                            broadcaster.gsRemoved(data);
+                        }
                     );
                     $modalInstance.close();
                 }
             };
         }
-    ]);
+    );
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////// SPACECRAFT MODAL DIALOGS
 ////////////////////////////////////////////////////////////////////////////////
 
-    app.controller('AddSCModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak',
+    app.controller('AddSCModalCtrl',
         function ($scope, $log, $modalInstance, satnetRPC, celestrak) {
-
             $scope.sc = {
                 identifier: '',
                 callsign: '',
@@ -400,27 +483,19 @@ var app = angular.module('satellite.tracker.js', [
             $scope.tles = [];
 
             $scope.initTles = function(defaultOption) {
-                $scope.tles = celestrak.readTLE(defaultOption)
-                    .success(function(data) {
-                        $scope.tles = readTLEs(data).slice(0);
-                    }).error(function (data) {
-                        var error_msg = '[celestrak] Error, resource = '
-                                            + JSON.stringify(value);
-                        $log.warn(error_msg);
-                        throw error_msg;
-                    });
+                $scope.tles = celestrak.readTLE(
+                    value['subsection'], function (data) {
+                        $scope.tles = data.slice(0);
+                    }
+                );
                 $scope.sc.tlegroup = defaultOption;
             };
             $scope.groupChanged = function (value) {
-                $scope.tles = celestrak.readTLE(value['subsection'])
-                    .success(function (data) {
-                        $scope.tles = readTLEs(data).slice(0);
-                    }).error(function (data) {
-                        var error_msg = '[celestrak] Error, resource = '
-                                            + JSON.stringify(value);
-                        $log.warn(error_msg);
-                        throw error_msg;
-                    });
+                $scope.tles = celestrak.readTLE(
+                    value['subsection'], function (data) {
+                        $scope.tles = data.slice(0);
+                    }
+                );
             };
             $scope.ok = function () {
                 var new_sc_cfg = [
@@ -428,27 +503,20 @@ var app = angular.module('satellite.tracker.js', [
                     $scope.sc.callsign,
                     $scope.sc.tleid['id']
                 ];
-                satnetRPC.addSC(new_sc_cfg).success(function (data) {
-                    $log.info('[map-ctrl] SC successfully added, id = '
+                satnetRPC.call('sc.add', new_sc_cfg, function (data) {
+                    $log.info('[map-ctrl] SC added, id = '
                         + data['spacecraft_id']
-                    );
-                }).error(function (error) {
-                    $log.error('[map-ctrl] Could not add SC, reason = '
-                        + JSON.stringify(error)
                     );
                 });
                 $modalInstance.close();
             };
             $scope.cancel = function () { $modalInstance.close(); };
         }
-    ]);
+    );
 
-    app.controller('EditSCModalCtrl', [
-        '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'celestrak', 'spacecraftId',
+    app.controller('EditSCModalCtrl',
         function (
-            $scope, $log, $modalInstance,
-            satnetRPC, celestrak, spacecraftId
+            $scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId
         ) {
 
             $scope.sc = {
@@ -459,50 +527,29 @@ var app = angular.module('satellite.tracker.js', [
                 saved_tleid: ''
             };
 
-            $log.info('Editing sc = ' + spacecraftId);
-
             $scope.tlegroups = __CELESTRAK_SELECT_SECTIONS;
             $scope.tles = [];
 
-            satnetRPC.getSCCfg([spacecraftId]).success(function(data) {
-                $log.info(
-                    '[map-ctrl] SC configuration retrieved: '
-                        + JSON.stringify(data)
-                );
+            satnetRPC.call('sc.get', [spacecraftId], function(data) {
                 $scope.sc.identifier = spacecraftId;
                 $scope.sc.callsign = data['spacecraft_callsign'];
                 $scope.sc.saved_tleid = data['spacecraft_tle_id'];
-
-            }).error(function (error) {
-                $log.error(
-                    '[map-ctrl] Could not load configuration for SC'
-                        + ', id = ' + spacecraftId
-                        + ', error = ' + JSON.stringify(error)
-                );
             });
 
             $scope.initTles = function(defaultOption) {
-                $scope.tles = celestrak.readTLE(defaultOption)
-                    .success(function(data) {
-                        $scope.tles = readTLEs(data).slice(0);
-                    }).error(function (data) {
-                        var error_msg = '[celestrak] Error, resource = '
-                                            + JSON.stringify(value);
-                        $log.warn(error_msg);
-                        throw error_msg;
-                    });
+                $scope.tles = celestrak.readTLE(
+                    value['subsection'], function (data) {
+                        $scope.tles = data.slice(0);
+                    }
+                );
                 $scope.sc.tlegroup = defaultOption;
             };
             $scope.groupChanged = function (value) {
-                $scope.tles = celestrak.readTLE(value['subsection'])
-                    .success(function (data) {
-                        $scope.tles = readTLEs(data).slice(0);
-                    }).error(function (data) {
-                        var error_msg = '[celestrak] Error, resource = '
-                                            + JSON.stringify(value);
-                        $log.warn(error_msg);
-                        throw error_msg;
-                    });
+                $scope.tles = celestrak.readTLE(
+                    value['subsection'], function (data) {
+                        $scope.tles = data.slice(0);
+                    }
+                );
             };
             $scope.update = function () {
                 var new_sc_cfg = {
@@ -510,29 +557,23 @@ var app = angular.module('satellite.tracker.js', [
                     'spacecraft_callsign': $scope.sc.callsign,
                     'spacecraft_tle_id': $scope.sc.tleid['id']
                 };
-                satnetRPC.setSCCfg([spacecraftId, new_sc_cfg])
-                    .success(function (data) {
-                        $log.info('[map-ctrl] SC successfully updated, id = '
-                            + spacecraftId
-                        );
-                    })
-                    .error(function (error) {
-                        $log.error('[map-ctrl] Could not update SC, reason = '
-                            + JSON.stringify(error)
-                        );
-                    });
+                satnetRPC.call(
+                    'sc.update', [spacecraftId, new_sc_cfg], function (data) {
+                        $log.info('[map-ctrl] SC updated, id = ' + data);
+                    }
+                );
                 $modalInstance.close();
             };
             $scope.cancel = function () { $modalInstance.close(); };
             $scope.erase = function () {
                 if ( confirm('Delete this spacecraft?') == true ) {
-                    satnetRPC.deleteSC([spacecraftId]);
-                    $log.info(
-                        '[map-ctrl] Spacecraft removed'
-                            + ', id = ' + spacecraftId
-                    );
+                    satnetRPC.call('sc.delete', [spacecraftId], function(data) {
+                        $log.info(
+                            '[map-ctrl] Spacecraft removed, id = ' + data
+                        );
+                    });
                     $modalInstance.close();
                 }
             };
         }
-    ]);
+    );

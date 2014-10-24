@@ -112,7 +112,7 @@ def set_configuration(ground_station_id, configuration):
         callsign=callsign, contact_elevation=contact_elevation,
         latitude=latitude, longitude=longitude
     )
-    return True
+    return ground_station_id
 
 
 @rpcmethod(
@@ -147,4 +147,4 @@ def delete(ground_station_id):
     also deletes all channels associated to this ground station.
     """
     segments.GroundStation.objects.get(identifier=ground_station_id).delete()
-    return True
+    return ground_station_id

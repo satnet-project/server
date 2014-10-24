@@ -452,6 +452,7 @@ def serialize_sc_configuration(sc):
     :return: The serializable version of the object.
     """
     return {
+        SC_ID_K: sc.identifier,
         SC_CALLSIGN_K: sc.callsign,
         SC_TLE_ID_K: sc.tle_id,
     }
@@ -485,6 +486,7 @@ def serialize_gs_configuration(gs):
     :return: The serializable version of the object.
     """
     return {
+        GS_ID_K: gs.identifier,
         GS_CALLSIGN_K: gs.callsign,
         GS_ELEVATION_K: gs.contact_elevation,
         GS_LATLON_K: [gs.latitude, gs.longitude],
