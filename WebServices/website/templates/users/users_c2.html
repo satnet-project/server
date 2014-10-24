@@ -74,22 +74,44 @@
     <script type="text/javascript"
         src="{% static 'scripts/lib/L.Terminator.js' %}">
     </script>
+    <!-- -->
     <script type="text/javascript"
         src="{% static 'scripts/lib/leaflet.label.js' %}">
     </script>
     <link rel='stylesheet' href="{% static 'scripts/lib/leaflet.label.css' %}" />
+    <!-- -->
 
-    <script type="text/javascript"
-            src="{% static 'scripts/src/simulator.js'%}">
-    </script>
     <script type="text/javascript"
             src="{% static 'scripts/src/common.js'%}">
     </script>
+
     <script type="text/javascript"
-        src="{% static 'scripts/src/tle-reader.js'%}">
+        src="{% static 'scripts/src/services/satnet.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/map-controller.js'%}">
+        src="{% static 'scripts/src/services/celestrak.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/services/broadcaster.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/models/groundstation.js' %}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/models/x.groundstation.js' %}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/controllers/ui.map.controllers.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/controllers/ui.modalsc.controllers.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/controllers/ui.modalgs.controllers.js'%}">
+    </script>
+
+    <script type="text/javascript"
+        src="{% static 'scripts/src/satnet.ui.js' %}">
     </script>
 
     <script type="text/javascript">
@@ -103,7 +125,7 @@
 {% block content %}
 
 {% verbatim %}
-<div ng-app='satellite.tracker.js'>
+<div ng-app='satnet-ui'>
 
     <div ng-controller='MapController' ng-init='init()' >
         <leaflet center='center' markers='markers'
