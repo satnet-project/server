@@ -68,11 +68,18 @@ class SATNETServer(AMP):
     :type credProto:
         L{CredReceiver}
 
+    :ivar bGSuser:
+        Indicates if the current user is a GS user (True) or a SC user (false). If this
+        variable is None, it means that it has not been yet connected.
+    :type bGSuser:
+        L{boolean}
+
     """
 
     factory = None
     sUsername = ""
     credProto = None
+    bGSuser = None
 
     def dataReceived(self, data):
         log.msg(self.sUsername + ' session timeout reset')
@@ -82,10 +89,9 @@ class SATNETServer(AMP):
     def vCreateConnection(self, iSlotEnd, iSlotId, remoteUsr, localUsr):
         slot_remaining_time = int(
             (iSlotEnd - misc.localize_datetime_utc(datetime.utcnow())).total_seconds())
-        #slot_remaining_time = 1000
         log.msg('Slot remaining time: ' + str(slot_remaining_time))
-        # self.credProto.iSlotEndCallId = reactor.callLater(
-        #    slot_remaining_time, self.vSlotEnd, iSlotId)
+        self.credProto.iSlotEndCallId = reactor.callLater(
+           slot_remaining_time, self.vSlotEnd, iSlotId)
         if str(remoteUsr) not in self.factory.active_protocols:
             log.msg('Remote user ' + remoteUsr + ' not connected yet')
             return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
@@ -133,10 +139,11 @@ class SATNETServer(AMP):
                 return {'iResult': StartRemote.CLIENTS_COINCIDE}
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
-                #self.gs_user = self.sUsername
+                bGSuser = False
                 return self.vCreateConnection(slot[0].end, iSlotId, sc_user, gs_user)
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
+                bGSuser = True
                 return self.vCreateConnection(slot[0].end, iSlotId, gs_user, sc_user)
 
     StartRemote.responder(iStartRemote)
@@ -166,14 +173,25 @@ class SATNETServer(AMP):
 
     def vSendMsg(self, sMsg):
         log.msg("(" + self.sUsername + ") --------- Send Message ---------")
+        # If the client haven't started a connection via StartRemote command...
         if self.sUsername not in self.factory.active_protocols:
             log.msg('Connection not available. Call StartRemote command first')
             raise SlotErrorNotification(
                 'Connection not available. Call StartRemote command first.')
-        elif self.sUsername not in self.factory.active_connections:
+        # ... if the SC operator is not connected, sent messages will be saved 
+        # as passive messages...
+        elif self.sUsername not in self.factory.active_connections and bGSuser == True:
+            #TODO store messages in the DB
             self.callRemote(
                 NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)
+        # ... if the GS operator is not connected, the remote SC client will be
+        # notified to wait for the GS to connect...
+        elif self.sUsername not in self.factory.active_connections and bGSuser == False:
+            self.callRemote(
+                NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)            
+        # ... else, send the message to the remote and store it in the DB
         else:
+            #TODO store messages in the DB
             self.factory.active_protocols[self.factory.active_connections[
                 self.sUsername]].callRemote(NotifyMsg, sMsg=sMsg)
 
