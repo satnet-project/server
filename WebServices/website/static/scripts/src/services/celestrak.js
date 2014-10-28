@@ -1,5 +1,5 @@
 /**
- * Copyright 2014, 2014 Ricardo Tubio-Pardavila
+ * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
- * Created by rtubio on 1/31/14.
+ * Created by rtubio on 10/24/14.
  */
 
 // Base URL
@@ -143,29 +143,6 @@ var __CELESTRAK_SELECT_SECTIONS = [
 ];
 
 /**
- * Basic Simulator's constructor.
- * @constructor
- * @param $log AngularJS logger.
- * @param $http AngularJS http.
- * @param subsection The section of the CELESTRAK website to use for the TLE's.
- */
-TLEReader = function($log, $http, subsection) {
-
-    if ( $log == null ) { throw 'No $log object passed.'; }
-    if ( $http == null ) { throw 'No $http object passed.'; }
-
-    this._log = $log;
-    this._http = $http;
-
-    this._satellites = [];
-    this._subsection = subsection;
-    this._url = __CELESTRAK_RESOURCES[subsection];
-
-    this.readTLE(this._url);
-
-};
-
-/**
  * Callback executed after the TLE resource had been retrieved from the server.
  * @param data The data to be processed.
  */
@@ -197,24 +174,33 @@ function readTLEs(data) {
 
 }
 
-/**
- * Satellites array getter.
- * @returns {Array} Array with the two line elements for each satellite.
- */
-TLEReader.prototype.getSatellites = function () { return this._satellites; };
+/** Module definition (empty array is vital!). */
+angular.module('celestrak-services', []);
 
 /**
- * Method that reads the list of satellites (and their associated TLE's) using
- * the URL given in the constructor of the object. It creates an array of
- * objects, one per satellite, each of which has its identifier and the two
- * line elements as separate lines.
- * @private
+ * CELESTRAK service that permits retrieving the TLE's for the spacecraft from
+ * the information at celestrak.com. It uses a CORSS proxy to avoid that
+ * limitation.
  */
-TLEReader.prototype.readTLE = function(url) {
-    console.info('>>> Loading info from = ' + url);
-    this._http.get(url)
-        .success(readTLEs)
-        .error(function(data) {
-            throw 'Cannot retrieve resource = ' + url + ', reason = ' + data;
+angular.module('celestrak-services').service('celestrak', function($http) {
+
+    /**
+     * This function reads the TLE information for a given file (called
+     * subsection) stored at celestrak.com.
+     *
+     * @param subsection The file to be processed.
+     * @param successCb Callback for processing the TLE data structure as
+     *                  read from the remote file.
+     * @returns {*} (promise)
+     */
+    this.readTLE = function (subsection, successCb) {
+        var uri = __CELESTRAK_RESOURCES[subsection];
+        var corss_uri = getCORSSURL(uri);
+        return $http.get(corss_uri).success(function (data) {
+            successCb(readTLEs(data));
+        }).error(function (data) {
+            throw '[celestrak] Error = ' + JSON.stringify(data);
         });
-};
+    };
+
+});
