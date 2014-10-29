@@ -77,4 +77,20 @@ angular.module('satnet-services').service('satnetRPC', [
         this._services[service](paramArray).success(successCb).error(errorCb);
     };
 
+    /**
+     * Method for calling the remote service through JSON-RPC.
+     * @param service The name of the service, as per the internal services
+     *                  name definitions.
+     * @param paramArray The parameters for the service (as an array).
+     * @returns {*}
+     */
+    this.rCall = function(service, paramArray) {
+        if ( ! service in this._services ) {
+            throw '\"satnetRPC\" service not found, id = ' + service;
+        }
+        return this._services[service](paramArray).then(function(data) {
+            return data;
+        });
+    };
+
 }]);

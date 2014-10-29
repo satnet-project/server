@@ -38,19 +38,15 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
         $scope.tles = [];
 
         $scope.initTles = function(defaultOption) {
-            $scope.tles = celestrak.readTLE(
-                value['subsection'], function (data) {
-                    $scope.tles = data.slice(0);
-                }
-            );
+            celestrak.tleArray(value['subsection']).then(function(data) {
+                $scope.tles = data.slice(0);
+            });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            $scope.tles = celestrak.readTLE(
-                value['subsection'], function (data) {
-                    $scope.tles = data.slice(0);
-                }
-            );
+            celestrak.tleArray(value['subsection']).then(function(data) {
+                $scope.tles = data.slice(0);
+            });
         };
         $scope.ok = function () {
             var new_sc_cfg = [
@@ -94,19 +90,15 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
         });
 
         $scope.initTles = function(defaultOption) {
-            $scope.tles = celestrak.readTLE(
-                value['subsection'], function (data) {
-                    $scope.tles = data.slice(0);
-                }
-            );
+            celestrak.tleArray(value['subsection']).then(function(data) {
+                $scope.tles = data.slice(0);
+            });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            $scope.tles = celestrak.readTLE(
-                value['subsection'], function (data) {
-                    $scope.tles = data.slice(0);
-                }
-            );
+            celestrak.tleArray(value['subsection']).then(function(data) {
+                $scope.tles = data.slice(0);
+            });
         };
         $scope.update = function () {
             var new_sc_cfg = {

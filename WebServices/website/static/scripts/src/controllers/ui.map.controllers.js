@@ -20,17 +20,19 @@
 angular.module(
     'ui-map-controllers', [
         'leaflet-directive',
-        'broadcaster', 'groundstation-models', 'x-groundstation-models',
+        'broadcaster',
+        'groundstation-models', 'x-groundstation-models',
+        'spacecraft-models',
         'ui-modalsc-controllers'
     ]
 );
 
 angular.module('ui-map-controllers').controller('MapController', [
     '$scope', '$log',
-    'leafletData', 'broadcaster', 'gs', 'xgs',
+    'leafletData', 'broadcaster', 'gs', 'xgs', 'sc',
     function(
         $scope, $log,
-        leafletData, broadcaster, gs, xgs
+        leafletData, broadcaster, gs, xgs, sc
     ) {
         $scope.markers = [];
         angular.extend($scope, {
@@ -43,6 +45,9 @@ angular.module('ui-map-controllers').controller('MapController', [
             locateUser($log, map, null);
             L.terminator({ fillOpacity: 0.125 }).addTo(map);
             xgs.initGSMarkers();
+            sc.init().then(function(data) {
+                console.log('^^^^^ data = ' + JSON.stringify(data));
+            });
         });
         $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gs_id) {
             xgs.addGSMarker(gs_id);

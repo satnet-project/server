@@ -79,6 +79,9 @@
     </script>
     <link rel='stylesheet'
           href="{% static 'scripts/external_components/leaflet.label.css' %}" />
+    <script type="text/javascript"
+        src="{% static 'scripts/external_components/satellite.js' %}">
+    </script>
     <!-- -->
 
     <script type="text/javascript"
@@ -95,10 +98,16 @@
         src="{% static 'scripts/src/services/broadcaster.js'%}">
     </script>
     <script type="text/javascript"
+        src="{% static 'scripts/src/services/simulator.js'%}">
+    </script>
+    <script type="text/javascript"
         src="{% static 'scripts/src/models/groundstation.js' %}">
     </script>
     <script type="text/javascript"
         src="{% static 'scripts/src/models/x.groundstation.js' %}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/models/spacecraft.js'%}">
     </script>
     <script type="text/javascript"
         src="{% static 'scripts/src/controllers/ui.map.controllers.js'%}">

@@ -142,38 +142,6 @@ var __CELESTRAK_SELECT_SECTIONS = [
     { 'section': __CELESTRAK_SECTION_5, 'subsection': 'Other' }
 ];
 
-/**
- * Callback executed after the TLE resource had been retrieved from the server.
- * @param data The data to be processed.
- */
-function readTLEs(data) {
-
-    if ( data == null ) { throw 'No data retrieved from server...'; }
-
-    var lines = data.split('\r');
-    var s_array = [];
-    var s_info = {};
-
-    for (var i = 0; i < lines.length; i++ ) {
-
-        var l_i = lines[i].trim();
-
-        if ( ( i % 3 ) == 0 ) { s_info['id'] = l_i; }
-        if ( ( i % 3 ) == 1 ) { s_info['line_1'] = l_i; }
-        if ( ( i % 3 ) == 2 ) {
-            s_array.push({
-                'id': s_info['id'],
-                'line_1': s_info['line_1'],
-                'line_2': l_i
-            });
-        }
-
-    }
-
-    return s_array;
-
-}
-
 /** Module definition (empty array is vital!). */
 angular.module('celestrak-services', []);
 
@@ -187,20 +155,87 @@ angular.module('celestrak-services').service('celestrak', function($http) {
     /**
      * This function reads the TLE information for a given file (called
      * subsection) stored at celestrak.com.
-     *
      * @param subsection The file to be processed.
-     * @param successCb Callback for processing the TLE data structure as
-     *                  read from the remote file.
      * @returns {*} (promise)
      */
-    this.readTLE = function (subsection, successCb) {
+    this.tleFile = function (subsection) {
         var uri = __CELESTRAK_RESOURCES[subsection];
         var corss_uri = getCORSSURL(uri);
-        return $http.get(corss_uri).success(function (data) {
-            successCb(readTLEs(data));
-        }).error(function (data) {
-            throw '[celestrak] Error = ' + JSON.stringify(data);
+        return $http.get(corss_uri).then(function (data) { return data.data; });
+    };
+
+    /**
+     * This function reads all the TLE elements from a given file into an
+     * array containing TLE-like structures ({id, l1, l2}).
+     * @param subsection The file to be processed.
+     * @returns {Array} Array of structures following the format {id, l1, l2}.
+     */
+    this.tleArray = function (subsection) {
+
+        return this.tleFile(subsection).then(function(data) {
+
+            if ( data == null )
+                { throw 'No data retrieved from server...'; }
+
+            var lines = data.split('\r');
+            var s_array = [];
+            var s_info = {};
+
+            for ( var i = 0; i < lines.length; i++ ) {
+
+                var l_i = lines[i].trim();
+
+                if ( ( i % 3 ) == 0 ) { s_info['id'] = l_i; }
+                if ( ( i % 3 ) == 1 ) { s_info['line_1'] = l_i; }
+                if ( ( i % 3 ) == 2 ) {
+                    s_array.push({
+                        'id': s_info['id'],
+                        'line_1': s_info['line_1'],
+                        'line_2': l_i
+                    });
+                }
+
+            }
+            return s_array;
+
         });
+
+    };
+
+    /**
+     * This function searchs for the TLE object of the spacecraft identifier
+     * with the given TLE identifier string. If not found, an exception is
+     * thrown.
+     * @param tleId Identifier of the TLE object that is requested.
+     * @param subsection The subsection within the Celestrak database where to
+     *                      search for the TLE object.
+     * @returns {*} ($http promise) TLE object ({id, l1, l2}) if found.
+     * @private
+     */
+    this._tleObject = function (tleId, subsection) {
+        return this.tleArray(subsection).then(function(data) {
+            for ( var i = 0; i < data.length; i++ ) {
+                $log.info('i = ' + i + ', data = ' + JSON.stringify(data));
+                if ( data[i]['id'] == tleId ) { return data[i]; }
+            }
+        });
+    };
+
+    this.findTle = function (tleId) {
+
+        var defer = $q.defer();
+        var promises = [];
+
+        for ( var i = 0; i < __CELESTRAK_RESOURCES; i++ ) {
+            promises.push(this._tleObject(tleId, __CELESTRAK_RESOURCES[i]));
+        }
+
+        $q.all(promises).then(function(data) {
+            $log.info('data = ' + JSON.stringify(data));
+        });
+
+        return defer;
+
     };
 
 });

@@ -78,7 +78,7 @@ var app = angular.module('satnet-ui', [
     // level 1 services
     'celestrak-services', 'satnet-services', 'broadcaster',
     // level 2 services
-    'groundstation-models',
+    'groundstation-models', 'simulator',
     // level 3 services
     'x-groundstation-models',
     // level 4 (controllers),
@@ -91,6 +91,7 @@ angular.module('satnet-services');
 angular.module('broadcaster');
 // level 2 services
 angular.module('groundstation-models');
+angular.module('simulator');
 // level 3 services
 angular.module('x-groundstation-models');
 // level 4 controllers
@@ -150,6 +151,7 @@ app.controller('NotificationAreaController', [
             'msg':  message
         });
     };
+
     $scope.$on('logEvent', function(event, message) {
         $scope._logEvent(event, message);
     });
@@ -162,4 +164,5 @@ app.controller('NotificationAreaController', [
     $scope.$on('errEvent', function(event, message) {
         $scope._logEvent(event, message);
     });
+
 }]);
