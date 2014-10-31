@@ -16,141 +16,145 @@
  * Created by rtubio on 10/24/14.
  */
 
-// Base URL
-var __CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
-// Weather and Earth Resources
-var __CELESTRAK_SECTION_1 = 'Weather & Earth Resources';
-var __CELESTRAK_WEATHER = __CELESTRAK_URL_BASE + 'weather.txt';
-var __CELESTRAK_NOAA = __CELESTRAK_URL_BASE + 'noaa.txt';
-var __CELESTRAK_GOES = __CELESTRAK_URL_BASE + 'goes.txt';
-var __CELESTRAK_EARTH_RESOURCES = __CELESTRAK_URL_BASE + 'resource.txt';
-var __CELESTRAK_SARSAT = __CELESTRAK_URL_BASE + 'sarsat.txt';
-var __CELESTRAK_DISASTER_MONITORING = __CELESTRAK_URL_BASE + 'dmc.txt';
-var __CELESTRAK_TRACKING_DATA_RELAY = __CELESTRAK_URL_BASE + 'tdrss.txt';
-var __CELESTRAK_ARGOS = __CELESTRAK_URL_BASE + 'argos.txt';
-// Communications
-var __CELESTRAK_SECTION_2 = 'Communications';
-var __CELESTRAK_GEOSTATIONARY = __CELESTRAK_URL_BASE + 'geo.txt';
-var __CELESTRAK_INTELSAT = __CELESTRAK_URL_BASE + 'intelsat.txt';
-var __CELESTRAK_GORIZONT = __CELESTRAK_URL_BASE + 'gorizont.txt';
-var __CELESTRAK_RADUGA = __CELESTRAK_URL_BASE + 'raduga.txt';
-var __CELESTRAK_MOLNIYA = __CELESTRAK_URL_BASE + 'molniya.txt';
-var __CELESTRAK_IRIDIUM = __CELESTRAK_URL_BASE + 'iridium.txt';
-var __CELESTRAK_ORBCOMM = __CELESTRAK_URL_BASE + 'orbcomm.txt';
-var __CELESTRAK_GLOBALSTAR = __CELESTRAK_URL_BASE + 'globalstar.txt';
-var __CELESTRAK_AMATEUR_RADIO = __CELESTRAK_URL_BASE + 'amateur.txt';
-var __CELESTRAK_EXPERIMENTAL = __CELESTRAK_URL_BASE + 'x-comm.txt';
-var __CELESTRAK_COMMS_OTHER = __CELESTRAK_URL_BASE + 'other-comm.txt';
-// Navigation
-var __CELESTRAK_SECTION_3 = 'Navigation';
-var __CELESTRAK_GPS_OPERATIONAL = __CELESTRAK_URL_BASE + 'gps-ops.txt';
-var __CELESTRAK_GLONASS_OPERATIONAL = __CELESTRAK_URL_BASE + 'glo-ops.txt';
-var __CELESTRAK_GALILEO = __CELESTRAK_URL_BASE + 'galileo.txt';
-var __CELESTRAK_BEIDOU = __CELESTRAK_URL_BASE + 'beidou.txt';
-var __CELESTRAK_SATELLITE_AUGMENTATION = __CELESTRAK_URL_BASE + 'sbas.txt';
-var __CELESTRAK_NNSS = __CELESTRAK_URL_BASE + 'nnss.txt';
-var __CELESTRAK_RUSSIAN_LEO_NAVIGATION = __CELESTRAK_URL_BASE + 'musson.txt';
-// Scientific
-var __CELESTRAK_SECTION_4 = 'Scientific';
-var __CELESTRAK_SPACE_EARTH_SCIENCE = __CELESTRAK_URL_BASE + 'science.txt';
-var __CELESTRAK_GEODETIC = __CELESTRAK_URL_BASE + 'geodetic.txt';
-var __CELESTRAK_ENGINEERING = __CELESTRAK_URL_BASE + 'engineering.txt';
-var __CELESTRAK_EDUCATION = __CELESTRAK_URL_BASE + 'education.txt';
-// Miscellaneous
-var __CELESTRAK_SECTION_5 = 'Miscellaneous';
-var __CELESTRAK_MILITARY = __CELESTRAK_URL_BASE + 'military.txt';
-var __CELESTRAK_RADAR_CALLIBRATION = __CELESTRAK_URL_BASE + 'radar.txt';
-var __CELESTRAK_CUBESATS = __CELESTRAK_URL_BASE + 'cubesat.txt';
-var __CELESTRAK_OTHER = __CELESTRAK_URL_BASE + 'other.txt';
-// CELESTRAK resources within a structured data type...
-var __CELESTRAK_RESOURCES = {
-    'Weather': __CELESTRAK_WEATHER,
-    'NOAA': __CELESTRAK_NOAA,
-    'GOES': __CELESTRAK_GOES,
-    'Earth Resources': __CELESTRAK_EARTH_RESOURCES,
-    'SARSAT': __CELESTRAK_SARSAT,
-    'Disaster Monitoring': __CELESTRAK_DISASTER_MONITORING,
-    'Tracking & Data Relay': __CELESTRAK_TRACKING_DATA_RELAY,
-    'ARGOS': __CELESTRAK_ARGOS,
-    'Geostationary': __CELESTRAK_GEOSTATIONARY,
-    'Intelsat': __CELESTRAK_INTELSAT,
-    'Gorizont': __CELESTRAK_GORIZONT,
-    'Raduga': __CELESTRAK_RADUGA,
-    'Molniya': __CELESTRAK_MOLNIYA,
-    'Iridium': __CELESTRAK_IRIDIUM,
-    'Orbcomm': __CELESTRAK_ORBCOMM,
-    'Globalstar': __CELESTRAK_GLOBALSTAR,
-    'Amateur Radio': __CELESTRAK_AMATEUR_RADIO,
-    'Experimental': __CELESTRAK_EXPERIMENTAL,
-    'Others': __CELESTRAK_COMMS_OTHER,
-    'GPS Operational': __CELESTRAK_GPS_OPERATIONAL,
-    'Glonass Operational': __CELESTRAK_GLONASS_OPERATIONAL,
-    'Galileo': __CELESTRAK_GALILEO,
-    'Beidou': __CELESTRAK_BEIDOU,
-    'Satellite-based Augmentation System': __CELESTRAK_SATELLITE_AUGMENTATION,
-    'Navy Navigation Satellite System': __CELESTRAK_NNSS,
-    'Russian LEO Navigation': __CELESTRAK_RUSSIAN_LEO_NAVIGATION,
-    'Space & Earth Science': __CELESTRAK_SPACE_EARTH_SCIENCE,
-    'Geodetic': __CELESTRAK_GEODETIC,
-    'Engineering': __CELESTRAK_ENGINEERING,
-    'Education': __CELESTRAK_EDUCATION,
-    'Military': __CELESTRAK_MILITARY,
-    'Radar Callibration': __CELESTRAK_RADAR_CALLIBRATION,
-    'CubeSats': __CELESTRAK_CUBESATS,
-    'Other': __CELESTRAK_OTHER
-};
-
-var __CELESTRAK_SELECT_SECTIONS = [
-    /////////////////////////////////////////////////////////////////  SECTION 1
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'Weather' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'NOAA' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'GOES' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'Earth Resources' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'SARSAT' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'Disaster Monitoring' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'Tracking & Data Relay' },
-    { 'section': __CELESTRAK_SECTION_1, 'subsection': 'ARGOS' },
-    /////////////////////////////////////////////////////////////////  SECTION 2
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Geostationary' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Intelsat' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Gorizont' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Raduga' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Molniya' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Iridium' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Orbcomm' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Globalstar' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Amateur Radio' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Experimental' },
-    { 'section': __CELESTRAK_SECTION_2, 'subsection': 'Others' },
-    /////////////////////////////////////////////////////////////////  SECTION 3
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'GPS Operational' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Glonass Operational' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Galileo' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Beidou' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Satellite-based Augmentation System' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Navy Navigation Satellite System' },
-    { 'section': __CELESTRAK_SECTION_3, 'subsection': 'Russian LEO Navigation' },
-    /////////////////////////////////////////////////////////////////  SECTION 4
-    { 'section': __CELESTRAK_SECTION_4, 'subsection': 'Space & Earth Science' },
-    { 'section': __CELESTRAK_SECTION_4, 'subsection': 'Geodetic' },
-    { 'section': __CELESTRAK_SECTION_4, 'subsection': 'Engineering' },
-    { 'section': __CELESTRAK_SECTION_4, 'subsection': 'Education' },
-    /////////////////////////////////////////////////////////////////  SECTION 5
-    { 'section': __CELESTRAK_SECTION_5, 'subsection': 'Military' },
-    { 'section': __CELESTRAK_SECTION_5, 'subsection': 'Radar Callibration' },
-    { 'section': __CELESTRAK_SECTION_5, 'subsection': 'CubeSats' },
-    { 'section': __CELESTRAK_SECTION_5, 'subsection': 'Other' }
-];
-
 /** Module definition (empty array is vital!). */
-angular.module('celestrak-services', []);
+angular.module('celestrak-services', [ 'common' ]);
 
 /**
  * CELESTRAK service that permits retrieving the TLE's for the spacecraft from
  * the information at celestrak.com. It uses a CORSS proxy to avoid that
  * limitation.
  */
-angular.module('celestrak-services').service('celestrak', function($http) {
+angular.module('celestrak-services').service('celestrak', [
+    '$http', '$q', '$log', 'common',
+    function($http, $q, $log, common) {
+
+    'use strict';
+
+    // Base URL
+    this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
+    // Weather and Earth Resources
+    this.CELESTRAK_SECTION_1 = 'Weather & Earth Resources';
+    this.CELESTRAK_WEATHER = this.CELESTRAK_URL_BASE + 'weather.txt';
+    this.CELESTRAK_NOAA = this.CELESTRAK_URL_BASE + 'noaa.txt';
+    this.CELESTRAK_GOES = this.CELESTRAK_URL_BASE + 'goes.txt';
+    this.CELESTRAK_EARTH_RESOURCES = this.CELESTRAK_URL_BASE + 'resource.txt';
+    this.CELESTRAK_SARSAT = this.CELESTRAK_URL_BASE + 'sarsat.txt';
+    this.CELESTRAK_DISASTER_MONITORING = this.CELESTRAK_URL_BASE + 'dmc.txt';
+    this.CELESTRAK_TRACKING_DATA_RELAY = this.CELESTRAK_URL_BASE + 'tdrss.txt';
+    this.CELESTRAK_ARGOS = this.CELESTRAK_URL_BASE + 'argos.txt';
+    // Communications
+    this.CELESTRAK_SECTION_2 = 'Communications';
+    this.CELESTRAK_GEOSTATIONARY = this.CELESTRAK_URL_BASE + 'geo.txt';
+    this.CELESTRAK_INTELSAT = this.CELESTRAK_URL_BASE + 'intelsat.txt';
+    this.CELESTRAK_GORIZONT = this.CELESTRAK_URL_BASE + 'gorizont.txt';
+    this.CELESTRAK_RADUGA = this.CELESTRAK_URL_BASE + 'raduga.txt';
+    this.CELESTRAK_MOLNIYA = this.CELESTRAK_URL_BASE + 'molniya.txt';
+    this.CELESTRAK_IRIDIUM = this.CELESTRAK_URL_BASE + 'iridium.txt';
+    this.CELESTRAK_ORBCOMM = this.CELESTRAK_URL_BASE + 'orbcomm.txt';
+    this.CELESTRAK_GLOBALSTAR = this.CELESTRAK_URL_BASE + 'globalstar.txt';
+    this.CELESTRAK_AMATEUR_RADIO = this.CELESTRAK_URL_BASE + 'amateur.txt';
+    this.CELESTRAK_EXPERIMENTAL = this.CELESTRAK_URL_BASE + 'x-comm.txt';
+    this.CELESTRAK_COMMS_OTHER = this.CELESTRAK_URL_BASE + 'other-comm.txt';
+    // Navigation
+    this.CELESTRAK_SECTION_3 = 'Navigation';
+    this.CELESTRAK_GPS_OPERATIONAL = this.CELESTRAK_URL_BASE + 'gps-ops.txt';
+    this.CELESTRAK_GLONASS_OPERATIONAL = this.CELESTRAK_URL_BASE + 'glo-ops.txt';
+    this.CELESTRAK_GALILEO = this.CELESTRAK_URL_BASE + 'galileo.txt';
+    this.CELESTRAK_BEIDOU = this.CELESTRAK_URL_BASE + 'beidou.txt';
+    this.CELESTRAK_SATELLITE_AUGMENTATION = this.CELESTRAK_URL_BASE + 'sbas.txt';
+    this.CELESTRAK_NNSS = this.CELESTRAK_URL_BASE + 'nnss.txt';
+    this.CELESTRAK_RUSSIAN_LEO_NAVIGATION = this.CELESTRAK_URL_BASE + 'musson.txt';
+    // Scientific
+    this.CELESTRAK_SECTION_4 = 'Scientific';
+    this.CELESTRAK_SPACE_EARTH_SCIENCE = this.CELESTRAK_URL_BASE + 'science.txt';
+    this.CELESTRAK_GEODETIC = this.CELESTRAK_URL_BASE + 'geodetic.txt';
+    this.CELESTRAK_ENGINEERING = this.CELESTRAK_URL_BASE + 'engineering.txt';
+    this.CELESTRAK_EDUCATION = this.CELESTRAK_URL_BASE + 'education.txt';
+    // Miscellaneous
+    this.CELESTRAK_SECTION_5 = 'Miscellaneous';
+    this.CELESTRAK_MILITARY = this.CELESTRAK_URL_BASE + 'military.txt';
+    this.CELESTRAK_RADAR_CALLIBRATION = this.CELESTRAK_URL_BASE + 'radar.txt';
+    this.CELESTRAK_CUBESATS = this.CELESTRAK_URL_BASE + 'cubesat.txt';
+    this.CELESTRAK_OTHER = this.CELESTRAK_URL_BASE + 'other.txt';
+    // CELESTRAK resources within a structured data type...
+    this.CELESTRAK_RESOURCES = {
+        'Weather': this.CELESTRAK_WEATHER,
+        'NOAA': this.CELESTRAK_NOAA,
+        'GOES': this.CELESTRAK_GOES,
+        'Earth Resources': this.CELESTRAK_EARTH_RESOURCES,
+        'SARSAT': this.CELESTRAK_SARSAT,
+        'Disaster Monitoring': this.CELESTRAK_DISASTER_MONITORING,
+        'Tracking & Data Relay': this.CELESTRAK_TRACKING_DATA_RELAY,
+        'ARGOS': this.CELESTRAK_ARGOS,
+        'Geostationary': this.CELESTRAK_GEOSTATIONARY,
+        'Intelsat': this.CELESTRAK_INTELSAT,
+        'Gorizont': this.CELESTRAK_GORIZONT,
+        'Raduga': this.CELESTRAK_RADUGA,
+        'Molniya': this.CELESTRAK_MOLNIYA,
+        'Iridium': this.CELESTRAK_IRIDIUM,
+        'Orbcomm': this.CELESTRAK_ORBCOMM,
+        'Globalstar': this.CELESTRAK_GLOBALSTAR,
+        'Amateur Radio': this.CELESTRAK_AMATEUR_RADIO,
+        'Experimental': this.CELESTRAK_EXPERIMENTAL,
+        'Others': this.CELESTRAK_COMMS_OTHER,
+        'GPS Operational': this.CELESTRAK_GPS_OPERATIONAL,
+        'Glonass Operational': this.CELESTRAK_GLONASS_OPERATIONAL,
+        'Galileo': this.CELESTRAK_GALILEO,
+        'Beidou': this.CELESTRAK_BEIDOU,
+        'Satellite-based Augmentation System': this.CELESTRAK_SATELLITE_AUGMENTATION,
+        'Navy Navigation Satellite System': this.CELESTRAK_NNSS,
+        'Russian LEO Navigation': this.CELESTRAK_RUSSIAN_LEO_NAVIGATION,
+        'Space & Earth Science': this.CELESTRAK_SPACE_EARTH_SCIENCE,
+        'Geodetic': this.CELESTRAK_GEODETIC,
+        'Engineering': this.CELESTRAK_ENGINEERING,
+        'Education': this.CELESTRAK_EDUCATION,
+        'Military': this.CELESTRAK_MILITARY,
+        'Radar Callibration': this.CELESTRAK_RADAR_CALLIBRATION,
+        'CubeSats': this.CELESTRAK_CUBESATS,
+        'Other': this.CELESTRAK_OTHER
+    };
+
+    this.CELESTRAK_SELECT_SECTIONS = [
+        /////////////////////////////////////////////////////////////////  SECTION 1
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'Weather' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'NOAA' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'GOES' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'Earth Resources' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'SARSAT' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'Disaster Monitoring' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'Tracking & Data Relay' },
+        { 'section': this.CELESTRAK_SECTION_1, 'subsection': 'ARGOS' },
+        /////////////////////////////////////////////////////////////////  SECTION 2
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Geostationary' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Intelsat' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Gorizont' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Raduga' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Molniya' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Iridium' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Orbcomm' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Globalstar' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Amateur Radio' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Experimental' },
+        { 'section': this.CELESTRAK_SECTION_2, 'subsection': 'Others' },
+        /////////////////////////////////////////////////////////////////  SECTION 3
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'GPS Operational' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Glonass Operational' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Galileo' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Beidou' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Satellite-based Augmentation System' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Navy Navigation Satellite System' },
+        { 'section': this.CELESTRAK_SECTION_3, 'subsection': 'Russian LEO Navigation' },
+        /////////////////////////////////////////////////////////////////  SECTION 4
+        { 'section': this.CELESTRAK_SECTION_4, 'subsection': 'Space & Earth Science' },
+        { 'section': this.CELESTRAK_SECTION_4, 'subsection': 'Geodetic' },
+        { 'section': this.CELESTRAK_SECTION_4, 'subsection': 'Engineering' },
+        { 'section': this.CELESTRAK_SECTION_4, 'subsection': 'Education' },
+        /////////////////////////////////////////////////////////////////  SECTION 5
+        { 'section': this.CELESTRAK_SECTION_5, 'subsection': 'Military' },
+        { 'section': this.CELESTRAK_SECTION_5, 'subsection': 'Radar Callibration' },
+        { 'section': this.CELESTRAK_SECTION_5, 'subsection': 'CubeSats' },
+        { 'section': this.CELESTRAK_SECTION_5, 'subsection': 'Other' }
+    ];
 
     /**
      * This function reads the TLE information for a given file (called
@@ -159,9 +163,9 @@ angular.module('celestrak-services').service('celestrak', function($http) {
      * @returns {*} (promise)
      */
     this.tleFile = function (subsection) {
-        var uri = __CELESTRAK_RESOURCES[subsection];
-        var corss_uri = getCORSSURL(uri);
-        return $http.get(corss_uri).then(function (data) { return data.data; });
+        var uri = this.CELESTRAK_RESOURCES[subsection];
+        var cUri = common.getCORSSURL(uri);
+        return $http.get(cUri).then(function (data) { return data.data; });
     };
 
     /**
@@ -174,29 +178,29 @@ angular.module('celestrak-services').service('celestrak', function($http) {
 
         return this.tleFile(subsection).then(function(data) {
 
-            if ( data == null )
+            if ( data === null )
                 { throw 'No data retrieved from server...'; }
 
             var lines = data.split('\r');
-            var s_array = [];
-            var s_info = {};
+            var sArray = [];
+            var sInfo = {};
 
             for ( var i = 0; i < lines.length; i++ ) {
 
-                var l_i = lines[i].trim();
+                var line = lines[i].trim();
 
-                if ( ( i % 3 ) == 0 ) { s_info['id'] = l_i; }
-                if ( ( i % 3 ) == 1 ) { s_info['line_1'] = l_i; }
-                if ( ( i % 3 ) == 2 ) {
-                    s_array.push({
-                        'id': s_info['id'],
-                        'line_1': s_info['line_1'],
-                        'line_2': l_i
+                if ( ( i % 3 ) === 0 ) { sInfo.id = line; }
+                if ( ( i % 3 ) === 1 ) { sInfo.l1 = line; }
+                if ( ( i % 3 ) === 2 ) {
+                    sArray.push({
+                        'id': sInfo.id,
+                        'l1': sInfo.l1,
+                        'l2': line
                     });
                 }
 
             }
-            return s_array;
+            return sArray;
 
         });
 
@@ -216,7 +220,7 @@ angular.module('celestrak-services').service('celestrak', function($http) {
         return this.tleArray(subsection).then(function(data) {
             for ( var i = 0; i < data.length; i++ ) {
                 $log.info('i = ' + i + ', data = ' + JSON.stringify(data));
-                if ( data[i]['id'] == tleId ) { return data[i]; }
+                if ( data[i].id === tleId ) { return data[i]; }
             }
         });
     };
@@ -226,8 +230,8 @@ angular.module('celestrak-services').service('celestrak', function($http) {
         var defer = $q.defer();
         var promises = [];
 
-        for ( var i = 0; i < __CELESTRAK_RESOURCES; i++ ) {
-            promises.push(this._tleObject(tleId, __CELESTRAK_RESOURCES[i]));
+        for ( var i = 0; i < this.CELESTRAK_RESOURCES; i++ ) {
+            promises.push(this._tleObject(tleId, this.CELESTRAK_RESOURCES[i]));
         }
 
         $q.all(promises).then(function(data) {
@@ -238,4 +242,4 @@ angular.module('celestrak-services').service('celestrak', function($http) {
 
     };
 
-});
+}]);

@@ -25,6 +25,8 @@ angular.module('groundstation-models', [ 'satnet-services' ]);
  */
 angular.module('groundstation-models').service('gs', [
     '$rootScope', '$log', function($rootScope, $log) {
+        
+    'use strict';
 
     /**
      * Configuration structure for all the GroundStations.
@@ -40,12 +42,13 @@ angular.module('groundstation-models').service('gs', [
      * @returns {*} Leaflet.marker for this GroundStation.
      */
     this.create = function(data) {
-        var gs_id = data['groundstation_id'];
-        if ( gs_id in this._gsCfg ) {
-            $log.warn('[markers] Marker exists, id = ' + gs_id);
+        var gsId = data['groundstation_id'];
+        if ( gsId in this._gsCfg ) {
+            $log.warn('[markers] Marker exists, id = ' + gsId);
         }
         var ll = L.latLng(
-            data['groundstation_latlon'][0], data['groundstation_latlon'][1]
+            data['groundstation_latlon'][0],
+            data['groundstation_latlon'][1]
         );
         var icon = L.icon({
             iconUrl: '/static/images/icons/gs-icon.svg',
@@ -53,45 +56,45 @@ angular.module('groundstation-models').service('gs', [
             });
         var m = L.marker(
             ll, { draggable: false, icon: icon }
-        ).bindLabel(gs_id, { noHide: true });
-        this._gsCfg[gs_id] = { marker: m, cfg: data };
+        ).bindLabel(gsId, { noHide: true });
+        this._gsCfg[gsId] = { marker: m, cfg: data };
         return m;
     };
 
     /**
      * Removes a given GroundStation from the system, erasing its information
      * from the configuration structure and all related markers.
-     * @param gs_id The identifier of the GroundStation to be removed.
+     * @param gsId The identifier of the GroundStation to be removed.
      */
-    this.remove = function(gs_id) {
-        if ( ! gs_id in this._gsCfg ) {
-            $log.warn('[markers] No marker for gs, id= ' + gs_id);
+    this.remove = function(gsId) {
+        if ( ( gsId in this._gsCfg ) === false ) {
+            $log.warn('[markers] No marker for gs, id= ' + gsId);
             return;
         }
-        $rootScope._map.removeLayer(this._gsCfg[gs_id]['marker']);
-        delete this._gsCfg[gs_id];
+        $rootScope._map.removeLayer(this._gsCfg[gsId].marker);
+        delete this._gsCfg[gsId];
     };
 
     /**
      * Dirty check and update of the position of the GroundStation (both in
      * the configuration structure and in its marker).
-     * @param gs_id The identifier of the GroundStation.
+     * @param gsId The identifier of the GroundStation.
      * @param data The new configuration for the GroundStation.
      * @private
      */
-    this._latlngDirtyUpdate = function (gs_id, data) {
-        var ll_changed = false;
-        var new_lat = data['groundstation_latlon'][0];
-        var new_lon = data['groundstation_latlon'][1];
-        var old_lat = this._gsCfg[gs_id].cfg['groundstation_latlon'][0];
-        var old_lon = this._gsCfg[gs_id].cfg['groundstation_latlon'][1];
-        if ( new_lat != old_lat ) { ll_changed = true; }
-        if ( new_lon != old_lon ) { ll_changed = true; }
-        if ( ll_changed == true ) {
-            var ll = L.latLng(new_lat, new_lon);
-            this._gsCfg[gs_id].cfg['groundstation_latlon'][0] = new_lat;
-            this._gsCfg[gs_id].cfg['groundstation_latlon'][1] = new_lon;
-            this._gsCfg[gs_id].marker.setLatLng(ll);
+    this._latlngDirtyUpdate = function (gsId, data) {
+        var llChanged = false;
+        var newLat = data['groundstation_latlon'][0];
+        var newLng = data['groundstation_latlon'][1];
+        var oldLat = this._gsCfg[gsId].cfg['groundstation_latlon'][0];
+        var oldLng = this._gsCfg[gsId].cfg['groundstation_latlon'][1];
+        if ( newLat !== oldLat ) { llChanged = true; }
+        if ( newLng !== oldLng ) { llChanged = true; }
+        if ( llChanged === true ) {
+            var ll = L.latLng(newLat, newLng);
+            this._gsCfg[gsId].cfg['groundstation_latlon'][0] = newLat;
+            this._gsCfg[gsId].cfg['groundstation_latlon'][1] = newLng;
+            this._gsCfg[gsId].marker.setLatLng(ll);
         }
     };
 
@@ -101,19 +104,19 @@ angular.module('groundstation-models').service('gs', [
      * @param data Data structure as gathered from the JSON-RPC server.
      */
     this.configure = function(data) {
-        var gs_id = data['groundstation_id'];
-        if ( ! gs_id in this._gsCfg ) {
-            $log.warn('[markers] No marker for gs, id= ' + gs_id);
+        var gsId = data['groundstation_id'];
+        if ( ! gsId in this._gsCfg ) {
+            $log.warn('[markers] No marker for gs, id= ' + gsId);
             return;
         }
         // Callsign and minimum contact elevation are directly updated.
-        this._gsCfg[gs_id].cfg['groundstation_callsign']
+        this._gsCfg[gsId].cfg['groundstation_callsign']
             = data['groundstation_callsign'];
-        this._gsCfg[gs_id].cfg['groundstation_elevation']
+        this._gsCfg[gsId].cfg['groundstation_elevation']
             = data['groundstation_elevation'];
         // LAT/LNG dirty check + update only if necessary. This way,
         // unnecessary marker's redrawings are avoided.
-        this._latlngDirtyUpdate(gs_id, data);
+        this._latlngDirtyUpdate(gsId, data);
     };
 
 }]);

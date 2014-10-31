@@ -27,24 +27,26 @@ angular.module('satnet-services', []);
 angular.module('satnet-services').service('satnetRPC', [
     'jsonrpc', '$location', '$log', function(jsonrpc, $location, $log) {
 
-    var rpc_path = ''
-        + $location.protocol() + "://"
-        + $location.host() + ':' + $location.port()
-        + '/jrpc/';
-    this._cfg_service = jsonrpc.newService('configuration', rpc_path);
+    'use strict';
+
+    var rpc = '' +
+        $location.protocol() + '://' +
+        $location.host() + ':' + $location.port() +
+        '/jrpc/';
+    this._CfgService = jsonrpc.newService('configuration', rpc);
     this._services = {
         // Configuration methods (Ground Stations)
-        'gs.list': this._cfg_service.createMethod('gs.list'),
-        'gs.add': this._cfg_service.createMethod('gs.create'),
-        'gs.get': this._cfg_service.createMethod('gs.getConfiguration'),
-        'gs.update': this._cfg_service.createMethod('gs.setConfiguration'),
-        'gs.delete': this._cfg_service.createMethod('gs.delete'),
+        'gs.list': this._CfgService.createMethod('gs.list'),
+        'gs.add': this._CfgService.createMethod('gs.create'),
+        'gs.get': this._CfgService.createMethod('gs.getConfiguration'),
+        'gs.update': this._CfgService.createMethod('gs.setConfiguration'),
+        'gs.delete': this._CfgService.createMethod('gs.delete'),
          // Configuration methods (Spacecraft)
-        'sc.list': this._cfg_service.createMethod('sc.list'),
-        'sc.add': this._cfg_service.createMethod('sc.create'),
-        'sc.get': this._cfg_service.createMethod('sc.getConfiguration'),
-        'sc.update': this._cfg_service.createMethod('sc.setConfiguration'),
-        'sc.delete': this._cfg_service.createMethod('sc.delete')
+        'sc.list': this._CfgService.createMethod('sc.list'),
+        'sc.add': this._CfgService.createMethod('sc.create'),
+        'sc.get': this._CfgService.createMethod('sc.getConfiguration'),
+        'sc.update': this._CfgService.createMethod('sc.setConfiguration'),
+        'sc.delete': this._CfgService.createMethod('sc.delete')
     };
 
     /**
@@ -54,8 +56,8 @@ angular.module('satnet-services').service('satnetRPC', [
      */
     this._errorCb = function(data) {
         $log.warn(
-            '[satnet-jrpc] Error calling \"satnetRPC\" = '
-                + JSON.stringify(data)
+            '[satnet-jrpc] Error calling \"satnetRPC\" = ' +
+            JSON.stringify(data)
         );
     };
 
@@ -70,10 +72,10 @@ angular.module('satnet-services').service('satnetRPC', [
      *                  invokation of the service.
      */
     this.call = function (service, paramArray, successCb, errorCb) {
-        if ( ! service in this._services ) {
+        if ( ( service in this._services ) === false ) {
             throw '\"satnetRPC\" service not found, id = ' + service;
         }
-        if ( errorCb == null ) { errorCb = this._errorCb; }
+        if ( errorCb === null ) { errorCb = this._errorCb; }
         this._services[service](paramArray).success(successCb).error(errorCb);
     };
 
@@ -85,7 +87,7 @@ angular.module('satnet-services').service('satnetRPC', [
      * @returns {*}
      */
     this.rCall = function(service, paramArray) {
-        if ( ! service in this._services ) {
+        if ( ( service in this._services ) === false ) {
             throw '\"satnetRPC\" service not found, id = ' + service;
         }
         return this._services[service](paramArray).then(function(data) {

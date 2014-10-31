@@ -20,7 +20,7 @@
 angular.module(
     'ui-map-controllers', [
         'leaflet-directive',
-        'broadcaster',
+        'broadcaster', 'maps',
         'groundstation-models', 'x-groundstation-models',
         'spacecraft-models',
         'ui-modalsc-controllers'
@@ -29,34 +29,39 @@ angular.module(
 
 angular.module('ui-map-controllers').controller('MapController', [
     '$scope', '$log',
-    'leafletData', 'broadcaster', 'gs', 'xgs', 'sc',
+    'leafletData', 'broadcaster', 'gs', 'xgs', 'sc', 'maps',
     function(
         $scope, $log,
-        leafletData, broadcaster, gs, xgs, sc
+        leafletData, broadcaster, gs, xgs, sc, maps
     ) {
+        
+        'use strict';
+        
         $scope.markers = [];
         angular.extend($scope, {
             center: {
-                lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
+                lat: maps.DEFAULT_LAT,
+                lng: maps.DEFAULT_LNG,
+                zoom: maps.DEFAULT_ZOOM
             },
             defaults: { worldCopyJump: true }
         });
         leafletData.getMap().then(function(map) {
-            locateUser($log, map, null);
+            maps.locateUser($log, map, null);
             L.terminator({ fillOpacity: 0.125 }).addTo(map);
             xgs.initGSMarkers();
             sc.init().then(function(data) {
                 console.log('^^^^^ data = ' + JSON.stringify(data));
             });
         });
-        $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gs_id) {
-            xgs.addGSMarker(gs_id);
+        $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
+            xgs.addGSMarker(gsId);
         });
-        $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gs_id) {
-            gs.remove(gs_id);
+        $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gsId) {
+            gs.remove(gsId);
         });
-        $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gs_id) {
-            xgs.updateGSMarker(gs_id);
+        $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gsId) {
+            xgs.updateGSMarker(gsId);
         });
     }
 ]);
@@ -64,6 +69,9 @@ angular.module('ui-map-controllers').controller('MapController', [
 angular.module('ui-map-controllers').controller('GSMenuCtrl', [
     '$scope', '$log', '$modal', 'satnetRPC',
     function($scope, $log, $modal, satnetRPC) {
+        
+        'use strict';
+        
         $scope.gsIds = [];
         $scope.addGroundStation = function() {
             var modalInstance = $modal.open({
@@ -91,6 +99,9 @@ angular.module('ui-map-controllers').controller('GSMenuCtrl', [
 angular.module('ui-map-controllers').controller('SCMenuCtrl',
     [ '$scope', '$log', '$modal', 'satnetRPC',
     function($scope, $log, $modal, satnetRPC) {
+        
+        'use strict';
+        
         $scope.scIds = [];
         $scope.addSpacecraft = function() {
             var modalInstance = $modal.open({
@@ -117,6 +128,10 @@ angular.module('ui-map-controllers').controller('SCMenuCtrl',
 angular.module('ui-map-controllers').controller('ExitMenuCtrl', [
     '$scope', '$log',
     function($scope, $log) {
+        
+        'use strict';
+        
         $scope.home = function () { $log.info('Exiting...'); };
+        
     }
 ]);

@@ -28,12 +28,14 @@ angular.module(
 angular.module('x-groundstation-models').service('xgs', [
     '$rootScope', 'satnetRPC', 'gs', function($rootScope, satnetRPC, gs) {
 
+    'use strict';
+    
     /**
      * Adds a marker to a given GroundStation.
-     * @param gs_id Identifier of the GroundStation.
+     * @param gsId Identifier of the GroundStation.
      */
-    this.addGSMarker = function(gs_id) {
-        satnetRPC.call('gs.get', [gs_id], function(data) {
+    this.addGSMarker = function(gsId) {
+        satnetRPC.call('gs.get', [gsId], function(data) {
             gs.create(data).addTo($rootScope._map);
         });
     };
@@ -54,10 +56,10 @@ angular.module('x-groundstation-models').service('xgs', [
 
     /**
      * Updates the configuration for a given GroundStation.
-     * @param gs_id The identifier of the GroundStation.
+     * @param gsId The identifier of the GroundStation.
      */
-    this.updateGSMarker = function(gs_id) {
-        satnetRPC.call('gs.get', [gs_id], function(data) {
+    this.updateGSMarker = function(gsId) {
+        satnetRPC.call('gs.get', [gsId], function(data) {
             gs.configure(data);
         });
     };

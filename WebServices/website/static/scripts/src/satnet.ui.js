@@ -28,7 +28,7 @@ var app = angular.module('satnet-ui', [
     'ngResource', 'ngCookies',
     'remoteValidation', 'jsonrpc',
     // level 1 services
-    'celestrak-services', 'satnet-services', 'broadcaster', 'maps',
+    'celestrak-services', 'satnet-services', 'broadcaster',
     // level 2 services
     'groundstation-models', 'simulator',
     // level 3 services
@@ -41,7 +41,6 @@ var app = angular.module('satnet-ui', [
 angular.module('celestrak-services');
 angular.module('satnet-services');
 angular.module('broadcaster');
-angular.module('maps');
 // level 2 services
 angular.module('groundstation-models');
 angular.module('simulator');
@@ -93,7 +92,11 @@ app.run([
         
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        leafletData.getMap().then(function(map) { $rootScope._map = map; });
+        leafletData.getMap().then(function(map) {
+            $rootScope._map = map;
+            $console.log('ip = ' + json.ip);
+            L.GeoIP.centerMapOnPosition(map, json.ip);
+        });
     }
 ]);
 

@@ -80,14 +80,27 @@
     <link rel='stylesheet'
           href="{% static 'scripts/external_components/leaflet.label.css' %}" />
     <script type="text/javascript"
+        src="{% static 'scripts/external_components/leaflet.geoip.js' %}">
+    </script>
+    <script type="text/javascript"
         src="{% static 'scripts/external_components/satellite.js' %}">
     </script>
     <!-- -->
+
+    <script type="application/javascript"
+            src="http://jsonip.appspot.com/?callback=getip">
+    </script>
 
     <script type="text/javascript"
             src="{% static 'scripts/src/common.js'%}">
     </script>
 
+    <script type="text/javascript"
+        src="{% static 'scripts/src/services/common.js'%}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/services/maps.js'%}">
+    </script>
     <script type="text/javascript"
         src="{% static 'scripts/src/services/satnet.js'%}">
     </script>
