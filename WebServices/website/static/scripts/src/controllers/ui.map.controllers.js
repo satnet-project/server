@@ -20,20 +20,23 @@
 angular.module(
     'ui-map-controllers', [
         'leaflet-directive',
-        'broadcaster', 'maps',
+        'broadcaster',
         'groundstation-models', 'x-groundstation-models',
         'spacecraft-models',
         'ui-modalsc-controllers'
     ]
 );
 
-angular.module('ui-map-controllers').controller('MapController', [
-    '$scope', '$log',
-    'leafletData', 'broadcaster', 'gs', 'xgs', 'sc', 'maps',
-    function(
-        $scope, $log,
-        leafletData, broadcaster, gs, xgs, sc, maps
-    ) {
+angular.module('ui-map-controllers')
+    .constant()
+    .controller('MapController', [
+        '$scope', '$log',
+        'leafletData', 'broadcaster', 'gs', 'xgs', 'sc',
+        function(
+            $scope, $log,
+            leafletData, broadcaster, gs, xgs, sc
+        )
+    {
         
         'use strict';
         

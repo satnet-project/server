@@ -94,8 +94,7 @@ app.run([
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         leafletData.getMap().then(function(map) {
             $rootScope._map = map;
-            $console.log('ip = ' + json.ip);
-            L.GeoIP.centerMapOnPosition(map, json.ip);
+            L.GeoIP.centerMapOnPosition(map);
         });
     }
 ]);

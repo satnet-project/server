@@ -16,23 +16,24 @@
  * Created by rtubio on 10/24/14.
  */
 
-var DEFAULT_GS_ELEVATION = 15.0;
-
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-modalgs-controllers', [
         'leaflet-directive', 'ui.bootstrap', 'nya.bootstrap.select',
-        'satnet-services', 'broadcaster', 'maps'
+        'common', 'satnet-services', 'broadcaster'
     ]
 );
 
-angular.module('ui-modalgs-controllers').controller('AddGSModalCtrl', [
+angular.module('ui-modalgs-controllers')
+    .constant('DEFAULT_GS_ELEVATION', 15.0)
+    .controller('AddGSModalCtrl', [
     '$scope', '$log',
     '$modalInstance', 'leafletData',
-    'satnetRPC', 'broadcaster', 'maps',
+    'common', 'satnetRPC', 'broadcaster',
     function (
         $scope, $log, $modalInstance,
-        leafletData, satnetRPC, broadcaster, maps
+        leafletData, DEFAULT_GS_ELEVATION,
+        common, satnetRPC, broadcaster
     ) {
         'use strict';
         
@@ -40,24 +41,27 @@ angular.module('ui-modalgs-controllers').controller('AddGSModalCtrl', [
         $scope.gs.identifier = '';
         $scope.gs.callsign = '';
         $scope.gs.elevation = DEFAULT_GS_ELEVATION;
+        /*
         angular.extend($scope, {
             center: {
-                lat: maps.DEFAULT_LAT,
-                lng: maps.DEFAULT_LNG,
-                zoom: maps.DEFAULT_ZOOM
+                lat: DEFAULT_LAT,
+                lng: DEFAULT_LNG,
+                zoom: DEFAULT_ZOOM
             },
             markers: {
                 gsMarker: {
-                    lat: maps.DEFAULT_LAT,
-                    lng: maps.DEFAULT_LNG,
+                    lat: DEFAULT_LAT,
+                    lng: DEFAULT_LNG,
                     message: 'Move me!',
                     focus: true,
                     draggable: true
                 }
             }
         });
+        */
         leafletData.getMap().then(function(map) {
-            maps.locateUser($log, map, $scope.markers.gsMarker);
+            common.centerMap();
+            //maps.locateUser($log, map, $scope.markers.gsMarker);
         });
         $scope.ok = function () {
             var newGsCfg = [

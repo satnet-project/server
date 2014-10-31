@@ -17,12 +17,15 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('common', []);
+angular.module('common', [ 'leaflet-directive' ]);
 
 /**
  * Service used for broadcasting UI events in between controllers.
  */
-angular.module('common').service('common', [ function () {
+angular.module('common')
+    .constant('_ZOOM', 8)
+    .service('common', [ 'leafletData', '_ZOOM', function (leafletData, _ZOOM)
+{
 
     'use strict';
 
@@ -31,14 +34,22 @@ angular.module('common').service('common', [ function () {
      * client uses for this connection.
      */
      this.locateUser = function () {
-         return $.get('http://ipinfo.io', function (data) {
-             var ll = data.loc.split(',');
-             var lat = parseFloat(ll[0]);
-             var lng = parseFloat(ll[1]);
-             return [ lat, lng ];
-         }, 'jsonp');
+         return leafletData.getMap().then(function (map) { 
+             $.get('http://ipinfo.io', function (data) {
+                var ll = data.loc.split(',');
+                var lat = parseFloat(ll[0]);
+                var lng = parseFloat(ll[1]);
+                return { 'map': map, 'll': [ lat, lng ] };
+            }, 'jsonp');
+         });
     };
 
+    this.centerMap =  function () {
+        return this.locateUser().then(function(data) {
+            data.map.setView(new L.LatLng(data.ll[0], data.ll[1]), _ZOOM);
+        });
+    };
+    
     // Proxy to get rid of the CORS restrictions.
     this._CORSS_PROXY = 'http://www.corsproxy.com/';
     // Get rid of this part of the URI to use with corsproxy
