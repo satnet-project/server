@@ -45,8 +45,8 @@ angular.module('broadcaster')
          * new GroundStation.
          * @param gs_id The identifier of the GroundStation.
          */
-        this.gsAdded = function (gs_id) {
-            $rootScope.$broadcast(this.GS_ADDED_EVENT, gs_id);
+        this.gsAdded = function (gsId) {
+            $rootScope.$broadcast(this.GS_ADDED_EVENT, gsId);
         };
 
         /**
@@ -54,8 +54,8 @@ angular.module('broadcaster')
          * new GroundStation.
          * @param gs_id The identifier of the GroundStation.
          */
-        this.gsRemoved = function (gs_id) {
-            $rootScope.$broadcast(this.GS_REMOVED_EVENT, gs_id);
+        this.gsRemoved = function (gsId) {
+            $rootScope.$broadcast(this.GS_REMOVED_EVENT, gsId);
         };
 
         /**
@@ -63,8 +63,8 @@ angular.module('broadcaster')
          * new GroundStation.
          * @param gs_id The identifier of the GroundStation.
          */
-        this.gsUpdated = function (gs_id) {
-            $rootScope.$broadcast(this.GS_UPDATED_EVENT, gs_id);
+        this.gsUpdated = function (gsId) {
+            $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
         };
 
     }]);

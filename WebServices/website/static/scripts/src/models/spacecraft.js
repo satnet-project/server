@@ -23,10 +23,12 @@ angular.module('spacecraft-models', [ 'satnet-services' ]);
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
-angular.module('spacecraft-models').service('sc', [
-    '$rootScope', '$log', '$q', 'satnetRPC',
-    function($rootScope, $log, $q, satnetRPC) {
+angular.module('spacecraft-models')
+    .service('sc', [ '$rootScope', '$log', '$q', 'satnetRPC',
+                    function($rootScope, $log, $q, satnetRPC) {
 
+        'use strict';
+        
         /**
          * Configuration structure for all the Spacecraft.
          * @type { { id: { marker: m, cfg: data } } }
@@ -37,9 +39,9 @@ angular.module('spacecraft-models').service('sc', [
         this._readCfg = function(scId) {
             satnetRPC.rCall('sc.get', [scId]).then(
                 function(result) {
-                    var raw_cfg = result['data'];
-                    var sc_id = raw_cfg['spacecraft_id'];
-                    var sc_cfg = {};
+                    var rawCfg = result.data;
+                    var scId = rawCfg['spacecraft_id'];
+                    var scCfg = {};
                     var ll = L.latLng(42.6000, -8.9330);
                     var icon = L.icon({
                         iconUrl: '/static/images/icons/sc-icon.svg',
@@ -47,26 +49,26 @@ angular.module('spacecraft-models').service('sc', [
                     });
                     var m = L.marker(
                         ll, { draggable: false, icon: icon }
-                    ).bindLabel(sc_id, { noHide: true });
-                    return sc_cfg[sc_id] = {
+                    ).bindLabel(scId, { noHide: true });
+                    scCfg[scId] = {
                         'marker': m,
                         'config': {
-                            'tleid': raw_cfg['spacecraft_tleid'],
-                            'callsign': raw_cfg['spacecraft_callsign']
-                            }
+                            'tleid': rawCfg['spacecraft_tleid'],
+                            'callsign': rawCfg['spacecraft_callsign']
+                        }
                     };
+                    return scCfg;
                 }
-            )
+            );
         };
 
         this._readAll = function() {
             return satnetRPC.rCall('sc.list', []).then(function(result) {
-                console.log('XXXX data = ' + JSON.stringify(result));
-                return result['data'];
+                return result.data;
             });
         };
 
-        this._initList = function (list) {
+        this._readList = function (list) {
 
             var defer = $q.defer();
             var promises = [];
@@ -76,14 +78,14 @@ angular.module('spacecraft-models').service('sc', [
             }
 
             $q.all(promises).then(function(result) {
-                return result[0]['data'].slice(0);
+                return result[0].data.slice(0);
             });
 
-            return defer;
+            return defer.promise;
         };
 
         this.init = function() {
-            this._readAll().then(function(list) { return this._initList(list); })
+            this._readAll().then(this._readList);
         };
 
     }

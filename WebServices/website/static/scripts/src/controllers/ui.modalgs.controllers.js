@@ -16,51 +16,61 @@
  * Created by rtubio on 10/24/14.
  */
 
+var DEFAULT_GS_ELEVATION = 15.0;
+
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-modalgs-controllers', [
         'leaflet-directive', 'ui.bootstrap', 'nya.bootstrap.select',
-        'satnet-services', 'broadcaster'
+        'satnet-services', 'broadcaster', 'maps'
     ]
 );
 
 angular.module('ui-modalgs-controllers').controller('AddGSModalCtrl', [
     '$scope', '$log',
     '$modalInstance', 'leafletData',
-    'satnetRPC', 'broadcaster',
+    'satnetRPC', 'broadcaster', 'maps',
     function (
-        $scope, $log, $modalInstance, leafletData, satnetRPC, broadcaster
+        $scope, $log, $modalInstance,
+        leafletData, satnetRPC, broadcaster, maps
     ) {
+        'use strict';
+        
         $scope.gs = {};
         $scope.gs.identifier = '';
         $scope.gs.callsign = '';
         $scope.gs.elevation = DEFAULT_GS_ELEVATION;
         angular.extend($scope, {
             center: {
-                lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
+                lat: maps.DEFAULT_LAT,
+                lng: maps.DEFAULT_LNG,
+                zoom: maps.DEFAULT_ZOOM
             },
             markers: {
                 gsMarker: {
-                    lat: DEFAULT_LAT, lng: DEFAULT_LNG,
-                    message: "Move me!", focus: true, draggable: true
+                    lat: maps.DEFAULT_LAT,
+                    lng: maps.DEFAULT_LNG,
+                    message: 'Move me!',
+                    focus: true,
+                    draggable: true
                 }
             }
         });
         leafletData.getMap().then(function(map) {
-            locateUser($log, map, $scope.markers.gsMarker);
+            maps.locateUser($log, map, $scope.markers.gsMarker);
         });
         $scope.ok = function () {
-            var new_gs_cfg = [
+            var newGsCfg = [
                 $scope.gs.identifier,
                 $scope.gs.callsign,
                 $scope.gs.elevation.toFixed(2),
                 $scope.markers.gsMarker.lat.toFixed(6),
                 $scope.markers.gsMarker.lng.toFixed(6)
             ];
-            satnetRPC.call('gs.add', new_gs_cfg, function (data) {
-                var gs_id = data['groundstation_id'];
-                $log.info('[map-ctrl] GS added, id = ' + gs_id);
-                broadcaster.gsAdded(gs_id);
+            satnetRPC.call('gs.add', newGsCfg, function (data) {
+                var gsId = data['groundstation_id'];
+                $log.info('[map-ctrl] GS added, id = ' + gsId);
+                broadcaster.gsAdded(gsId);
             });
             $modalInstance.close();
         };
@@ -71,15 +81,20 @@ angular.module('ui-modalgs-controllers').controller('AddGSModalCtrl', [
 angular.module('ui-modalgs-controllers').controller('EditGSModalCtrl', [
    '$scope', '$log',
     '$modalInstance', 'leafletData',
-    'satnetRPC', 'broadcaster', 'groundstationId',
+    'satnetRPC', 'broadcaster', 'maps',
+    'groundstationId',
     function (
         $scope, $log, $modalInstance,
-        leafletData, satnetRPC, broadcaster,
+        leafletData, satnetRPC, broadcaster, maps,
         groundstationId
     ) {
+        'use strict';
+
         $scope.gs = {};
         $scope.center = {
-            lat: DEFAULT_LAT, lng: DEFAULT_LNG, zoom: DEFAULT_ZOOM
+            lat: maps.DEFAULT_LAT,
+            lng: maps.DEFAULT_LNG,
+            zoom: maps.DEFAULT_ZOOM
         };
         $scope.markers = {};
         satnetRPC.call('gs.get', [groundstationId], function(data) {
@@ -90,19 +105,20 @@ angular.module('ui-modalgs-controllers').controller('EditGSModalCtrl', [
                 center: {
                     lat: data['groundstation_latlon'][0],
                     lng: data['groundstation_latlon'][1],
-                    zoom: DEFAULT_ZOOM
+                    zoom: maps.DEFAULT_ZOOM
                 },
                 markers: {
                     gsMarker: {
                         lat: data['groundstation_latlon'][0],
                         lng: data['groundstation_latlon'][1],
-                        message: "Move me!", focus: true, draggable: true
+                        message: 'Move me!',
+                        focus: true, draggable: true
                     }
                 }
             });
         });
         $scope.update = function () {
-            var new_gs_cfg = {
+            var newGsCfg = {
                 'groundstation_id': groundstationId,
                 'groundstation_callsign': $scope.gs.callsign,
                 'groundstation_elevation': $scope.gs.elevation.toFixed(2),
@@ -111,7 +127,7 @@ angular.module('ui-modalgs-controllers').controller('EditGSModalCtrl', [
                     $scope.markers.gsMarker.lng.toFixed(6)
                 ]
             };
-            satnetRPC.call('gs.update', [groundstationId, new_gs_cfg],
+            satnetRPC.call('gs.update', [groundstationId, newGsCfg],
                 function (data) {
                     $log.info('[map-ctrl] GS updated, id = ' + data);
                     broadcaster.gsUpdated(data);
@@ -121,7 +137,7 @@ angular.module('ui-modalgs-controllers').controller('EditGSModalCtrl', [
         };
         $scope.cancel = function () { $modalInstance.close(); };
         $scope.erase = function () {
-            if ( confirm('Delete this ground station?') == true ) {
+            if ( confirm('Delete this ground station?') === true ) {
                 satnetRPC.call('gs.delete', [groundstationId], function (data) {
                     $log.info('[map-ctrl] GS removed, id = ' + data);
                     broadcaster.gsRemoved(data);
