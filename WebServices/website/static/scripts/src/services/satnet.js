@@ -25,7 +25,7 @@ angular.module('satnet-services', []);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$location', '$log', function(jsonrpc, $location, $log) {
+    'jsonrpc', '$q', '$location', '$log', function(jsonrpc, $q, $location, $log) {
 
     'use strict';
 
@@ -93,6 +93,36 @@ angular.module('satnet-services').service('satnetRPC', [
         }
         return this._services[service](paramArray).then(function(data) {
             return data;
+        });
+    };
+
+    /**
+     * Reads the configuration for all the GroundStation objects available
+     * in the server.
+     * @returns {$q} Promise that returns an array with the configuration
+     *               for each of the GroundStation objects.
+     */
+    this.readAllGSConfiguration = function() {
+        return this.rCall('gs.list', []).then(function (data) {
+            
+            var gss = data.data;
+            var d = $q.defer(), p = [];
+            
+            for ( var i = 0; i < gss.length; i++ ) {
+                p.push(this.rCall('gs.get', [gss[i]]));
+            }
+            
+            $q.all(p).then(function(results) {
+                var cfgs = [];
+                for ( var j = 0; j < results.length; j++ ) {
+                    $console.log('>>> cfg[' + j + '] = ' + JSON.stringify(results[j]));
+                    cfgs.push(results[j].data);
+                }
+                return cfgs;
+            });
+
+            return d.promise;
+
         });
     };
 

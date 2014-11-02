@@ -17,14 +17,15 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('groundstation-models', [ 'satnet-services' ]);
+angular.module('groundstation-models', [ 'satnet-services', 'map-services' ]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
 angular.module('groundstation-models').service('gs', [
-    '$rootScope', '$log', function($rootScope, $log) {
+    '$log', 'maps', function($log, maps)
+{
         
     'use strict';
 
@@ -35,17 +36,7 @@ angular.module('groundstation-models').service('gs', [
      */
     this._gsCfg = {};
 
-    /**
-     * Creates a new configuration object for the GroundStation based on the
-     * information contained in the data structure.
-     * @param data Information as retrieved through JSON-RPC from the server.
-     * @returns {*} Leaflet.marker for this GroundStation.
-     */
-    this.create = function(data) {
-        var gsId = data['groundstation_id'];
-        if ( gsId in this._gsCfg ) {
-            $log.warn('[markers] Marker exists, id = ' + gsId);
-        }
+    this._create = function(gsCfg) {
         var ll = L.latLng(
             data['groundstation_latlon'][0],
             data['groundstation_latlon'][1]
@@ -53,12 +44,28 @@ angular.module('groundstation-models').service('gs', [
         var icon = L.icon({
             iconUrl: '/static/images/icons/gs-icon.svg',
             iconSize: [30, 30]
-            });
+        });
         var m = L.marker(
             ll, { draggable: false, icon: icon }
         ).bindLabel(gsId, { noHide: true });
-        this._gsCfg[gsId] = { marker: m, cfg: data };
-        return m;
+        return { marker: m, cfg: data };
+    };
+    
+    /**
+     * Creates a new configuration object for the GroundStation based on the
+     * information contained in the data structure.
+     * @param data Information as retrieved through JSON-RPC from the server.
+     * @returns {*} Leaflet.marker for this GroundStation.
+     */
+    this.create = function(data) {
+        console.log('>>>> XXX');
+        var gsId = data['groundstation_id'];
+        var gsCfg = this._create(data);
+        this._gsCfg[gsId] = gsCfg;
+        return maps.getMapInfo().then(function(mapInfo) {
+            gsCfg.marker.addTo(mapInfo.map);
+            return gsCfg;
+        });
     };
 
     /**

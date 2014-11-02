@@ -28,6 +28,7 @@ var app = angular.module('satnet-ui', [
     'ngResource', 'ngCookies',
     'remoteValidation', 'jsonrpc',
     // level 1 services
+    'common', 'map-services',
     'celestrak-services', 'satnet-services', 'broadcaster',
     // level 2 services
     'groundstation-models', 'simulator',
@@ -38,6 +39,8 @@ var app = angular.module('satnet-ui', [
 ]);
 
 // level 1 services
+angular.module('common');
+angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
 angular.module('broadcaster');

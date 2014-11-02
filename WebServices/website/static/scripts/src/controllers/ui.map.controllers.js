@@ -20,7 +20,7 @@
 angular.module(
     'ui-map-controllers', [
         'leaflet-directive',
-        'broadcaster',
+        'broadcaster', 'map-services',
         'groundstation-models', 'x-groundstation-models',
         'spacecraft-models',
         'ui-modalsc-controllers'
@@ -33,11 +33,11 @@ angular.module('ui-map-controllers')
     .constant('_ZOOM', 8)
     .controller('MapController', [
         '$scope', '$log',
-        'leafletData', 'broadcaster', 'common', 'gs', 'xgs', 'sc',
+        'leafletData', 'broadcaster', 'maps', 'gs', 'xgs', 'sc',
         '_LAT', '_LNG', '_ZOOM',
         function(
             $scope, $log,
-            leafletData, broadcaster, common, gs, xgs, sc,
+            leafletData, broadcaster, maps, gs, xgs, sc,
             _LAT, _LNG, _ZOOM
         )
     {
@@ -50,14 +50,11 @@ angular.module('ui-map-controllers')
             center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
             markers: []
         });
-        common.initMap(true).then(function(data) {
+        maps.centerMap(true).then(function(data) {
             console.log('>>> data = ' + data);
-            /**
-            xgs.initGSMarkers();
-            sc.init().then(function(data) {
-                console.log('^^^^^ data = ' + JSON.stringify(data));
-            });
-            **/
+        });
+        xgs.initAll().then(function(data) {
+            console.log('>>> data = ' + data);
         });
 
         $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
