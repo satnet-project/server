@@ -28,35 +28,38 @@ angular.module(
 );
 
 angular.module('ui-map-controllers')
-    .constant()
+    .constant('_LAT', 32.630)
+    .constant('_LNG', 8.933)
+    .constant('_ZOOM', 8)
     .controller('MapController', [
         '$scope', '$log',
-        'leafletData', 'broadcaster', 'gs', 'xgs', 'sc',
+        'leafletData', 'broadcaster', 'common', 'gs', 'xgs', 'sc',
+        '_LAT', '_LNG', '_ZOOM',
         function(
             $scope, $log,
-            leafletData, broadcaster, gs, xgs, sc
+            leafletData, broadcaster, common, gs, xgs, sc,
+            _LAT, _LNG, _ZOOM
         )
     {
         
         'use strict';
         
-        $scope.markers = [];
+        //$scope.center = {};
+        console.log('>>> INITIALIZING MAIN MAP');
         angular.extend($scope, {
-            center: {
-                lat: maps.DEFAULT_LAT,
-                lng: maps.DEFAULT_LNG,
-                zoom: maps.DEFAULT_ZOOM
-            },
-            defaults: { worldCopyJump: true }
+            center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
+            markers: []
         });
-        leafletData.getMap().then(function(map) {
-            maps.locateUser($log, map, null);
-            L.terminator({ fillOpacity: 0.125 }).addTo(map);
+        common.initMap(true).then(function(data) {
+            console.log('>>> data = ' + data);
+            /**
             xgs.initGSMarkers();
             sc.init().then(function(data) {
                 console.log('^^^^^ data = ' + JSON.stringify(data));
             });
+            **/
         });
+
         $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
             xgs.addGSMarker(gsId);
         });

@@ -26,10 +26,23 @@ angular.module(
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', 'satnetRPC', 'gs', function($rootScope, satnetRPC, gs) {
+    '$rootScope', 'leafletData', 'satnetRPC', 'gs',
+    function($rootScope, leafletData, satnetRPC, gs)
+{
 
     'use strict';
     
+    /**
+     * Returns a reference to the main map for this $scope.
+     * @returns {Object} Leaflet map reference.
+     * @private
+     */
+    this._getMap = function () {
+        return leafletData.getMap().then(function (map) {
+            return { 'map': map };
+        });
+    };
+
     /**
      * Adds a marker to a given GroundStation.
      * @param gsId Identifier of the GroundStation.
@@ -43,16 +56,20 @@ angular.module('x-groundstation-models').service('xgs', [
     /**
      * Initializes the markers for all the GroundStations available at the
      * remote server.
-     */
+     *
     this.initGSMarkers = function() {
-        satnetRPC.call('gs.list', [], function(data) {
-            for ( var i = 0; i < data.length; i++ ) {
-                satnetRPC.call('gs.get', [data[i]], function(data) {
-                    gs.create(data).addTo($rootScope._map);
-                });
+        return this._initMap().then(function (mapData) {
+            return satnetRPC.rCall('gs.list', []).then(function(data) {
+                for ( var i = 0; i < data.length; i++ ) {
+                    satnetRPC.call('gs.get', [data[i]], function(data) {
+                        gs.create(data).addTo($rootScope._map);
+                    });
+                };
             }
+        });        
         });
     };
+    */
 
     /**
      * Updates the configuration for a given GroundStation.

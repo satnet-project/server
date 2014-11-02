@@ -70,6 +70,7 @@ angular.module('satnet-services').service('satnetRPC', [
      *                  invokation.
      * @param errorCb Callback called after an error during the remote
      *                  invokation of the service.
+     * @deprecated
      */
     this.call = function (service, paramArray, successCb, errorCb) {
         if ( ( service in this._services ) === false ) {

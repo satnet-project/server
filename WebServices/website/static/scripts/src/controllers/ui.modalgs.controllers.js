@@ -25,14 +25,14 @@ angular.module(
 );
 
 angular.module('ui-modalgs-controllers')
-    .constant('DEFAULT_GS_ELEVATION', 15.0)
+    .constant('_GS_ELEVATION', 15.0)
     .controller('AddGSModalCtrl', [
     '$scope', '$log',
-    '$modalInstance', 'leafletData',
+    '$modalInstance', 'leafletData', '_GS_ELEVATION', 
     'common', 'satnetRPC', 'broadcaster',
     function (
         $scope, $log, $modalInstance,
-        leafletData, DEFAULT_GS_ELEVATION,
+        leafletData, _GS_ELEVATION,
         common, satnetRPC, broadcaster
     ) {
         'use strict';
@@ -40,29 +40,8 @@ angular.module('ui-modalgs-controllers')
         $scope.gs = {};
         $scope.gs.identifier = '';
         $scope.gs.callsign = '';
-        $scope.gs.elevation = DEFAULT_GS_ELEVATION;
-        /*
-        angular.extend($scope, {
-            center: {
-                lat: DEFAULT_LAT,
-                lng: DEFAULT_LNG,
-                zoom: DEFAULT_ZOOM
-            },
-            markers: {
-                gsMarker: {
-                    lat: DEFAULT_LAT,
-                    lng: DEFAULT_LNG,
-                    message: 'Move me!',
-                    focus: true,
-                    draggable: true
-                }
-            }
-        });
-        */
-        leafletData.getMap().then(function(map) {
-            common.centerMap();
-            //maps.locateUser($log, map, $scope.markers.gsMarker);
-        });
+        $scope.gs.elevation = _GS_ELEVATION;
+
         $scope.ok = function () {
             var newGsCfg = [
                 $scope.gs.identifier,
@@ -95,12 +74,6 @@ angular.module('ui-modalgs-controllers').controller('EditGSModalCtrl', [
         'use strict';
 
         $scope.gs = {};
-        $scope.center = {
-            lat: maps.DEFAULT_LAT,
-            lng: maps.DEFAULT_LNG,
-            zoom: maps.DEFAULT_ZOOM
-        };
-        $scope.markers = {};
         satnetRPC.call('gs.get', [groundstationId], function(data) {
             $scope.gs.identifier = groundstationId;
             $scope.gs.callsign = data['groundstation_callsign'];

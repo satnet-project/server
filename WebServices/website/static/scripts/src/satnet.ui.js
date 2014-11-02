@@ -86,16 +86,14 @@ app.config(function($provide) {
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies', 'leafletData',
-    function($rootScope, $log, $http, $cookies, leafletData) {
+    '$rootScope', '$log', '$http', '$cookies',
+    function($rootScope, $log, $http, $cookies) {
+        
         'use strict';
         
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        leafletData.getMap().then(function(map) {
-            $rootScope._map = map;
-            L.GeoIP.centerMapOnPosition(map);
-        });
+        
     }
 ]);
 
