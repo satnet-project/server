@@ -22,7 +22,7 @@ angular.module(
         'leaflet-directive',
         'broadcaster', 'map-services',
         'groundstation-models', 'x-groundstation-models',
-        'spacecraft-models',
+        'spacecraft-models', 'x-spacecraft-models',
         'ui-modalsc-controllers'
     ]
 );
@@ -33,46 +33,52 @@ angular.module('ui-map-controllers')
     .constant('_ZOOM', 8)
     .controller('MapController', [
         '$scope', '$log',
-        'leafletData', 'broadcaster', 'maps', 'gs', 'xgs', 'sc',
+        'leafletData', 'broadcaster', 'maps',
+        'gs', 'xgs', 'sc', 'xsc',
         '_LAT', '_LNG', '_ZOOM',
         function(
             $scope, $log,
-            leafletData, broadcaster, maps, gs, xgs, sc,
+            leafletData, broadcaster, maps,
+            gs, xgs, sc, xsc,
             _LAT, _LNG, _ZOOM
         )
-    {
+{
         
-        'use strict';
-        
-        //$scope.center = {};
-        console.log('>>> INITIALIZING MAIN MAP');
-        angular.extend($scope, {
-            center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
-            markers: []
-        });
-        maps.createMainMap(true).then(function(data) {
-            $log.log('[map-controller] <' + maps.asString(data) + '>');
-        });
-        xgs.initAll().then(function(data) {
-            $log.log(
-                '[map-controller] Ground Stations = <' + gs.asString(data) + '>'
-            );
-        });
+    'use strict';
 
-        $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
-            console.log('@on-gs-added-event, gsId = ' + JSON.stringify(gsId));
-            xgs.addGSMarker(gsId);
-        });
-        $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gsId) {
-            console.log('@on-gs-removed-event, gsId = ' + JSON.stringify(gsId));
-            gs.remove(gsId);
-        });
-        $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gsId) {
-            console.log('@on-gs-updated-event, gsId = ' + JSON.stringify(gsId));
-            xgs.updateGSMarker(gsId);
-        });
-    }
-]);
+    angular.extend($scope, {
+        center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
+        markers: []
+    });
+    maps.createMainMap(true).then(function(data) {
+        $log.log('[map-controller] <' + maps.asString(data) + '>');
+    });
+
+    xgs.initAll().then(function(data) {
+        $log.log(
+            '[map-controller] Ground Stations = <' + gs.asString(data) + '>'
+        );
+    });
+    xsc.initAll().then(function () {
+        $log.log(
+            '[map-controller] Spacecraft = <' + sc.asString() + '>'
+        );    
+    });
+    
+    $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
+        console.log('@on-gs-added-event, gsId = ' + JSON.stringify(gsId));
+        xgs.addGSMarker(gsId);
+    });
+    $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gsId) {
+        console.log('@on-gs-removed-event, gsId = ' + JSON.stringify(gsId));
+        gs.remove(gsId);
+    });
+    $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gsId) {
+        console.log('@on-gs-updated-event, gsId = ' + JSON.stringify(gsId));
+        xgs.updateGSMarker(gsId);
+    });
+
+}]);
 
 angular.module('ui-map-controllers').controller('GSMenuCtrl', [
     '$scope', '$log', '$modal', 'satnetRPC',

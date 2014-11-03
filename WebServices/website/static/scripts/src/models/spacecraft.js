@@ -73,4 +73,37 @@ angular.module('spacecraft-models')
         });
     };
     
+    /**
+     * Initializes the internal variable with all the configuration structures
+     * using the given structure.
+     * @param {Object} cfgs All spacecraft configuration objects.
+     */
+    this.initAll = function(cfgs) {
+        for ( var i = 0; i < cfgs.length; i++ ) {
+            var c = cfgs[i];
+            this._scCfg[c.id] = {
+                cfg: c.cfg, tle: c.tle, marker: null
+            };
+        }
+        return cfgs;
+    };
+
+    /**
+     * Returns the information for all the spacecraft configurations hold as
+     * a human-readable string.
+     * @returns {String} Human-readable string.
+     */
+    this.asString = function() {
+        var buffer = '';
+        for ( var id in this._scCfg ) {
+            var c = this._scCfg[id];
+            var scBuffer = '["id: "' + c.id + ', ' +
+                '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
+                '"tle: "' + JSON.stringify(c.tle) + ', ' +
+                '"marker: "' + c.marker +  ']\n';
+            buffer = buffer + scBuffer;
+        }
+        return buffer;
+    };
+    
 }]);

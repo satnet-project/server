@@ -31,11 +31,14 @@ var app = angular.module('satnet-ui', [
     'common', 'map-services',
     'celestrak-services', 'satnet-services', 'broadcaster',
     // level 2 services
-    'groundstation-models', 'simulator',
+    'groundstation-models',
+    'spacecraft-models',
     // level 3 services
     'x-groundstation-models',
+    'x-spacecraft-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-modalsc-controllers', 'ui-modalgs-controllers'
+    'ui-map-controllers', 'ui-modalsc-controllers', 'ui-modalgs-controllers',
+    'simulator'
 ]);
 
 // level 1 services
@@ -46,9 +49,11 @@ angular.module('satnet-services');
 angular.module('broadcaster');
 // level 2 services
 angular.module('groundstation-models');
+angular.module('spacecraft-models');
 angular.module('simulator');
 // level 3 services
 angular.module('x-groundstation-models');
+angular.module('x-spacecraft-models');
 // level 4 controllers
 angular.module('ui-map-controllers');
 angular.module('ui-modalsc-controllers');

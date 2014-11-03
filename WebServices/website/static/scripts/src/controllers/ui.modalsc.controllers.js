@@ -41,13 +41,13 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
         $scope.tles = [];
 
         $scope.initTles = function(defaultOption) {
-            celestrak.tleArray(defaultOption).then(function(data) {
+            celestrak.getTleArray(defaultOption).then(function(data) {
                 $scope.tles = data.slice(0);
             });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            celestrak.tleArray(value.subsection).then(function(data) {
+            celestrak.getTleArray(value.subsection).then(function(data) {
                 $scope.tles = data.slice(0);
             });
         };
@@ -58,8 +58,8 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
                 $scope.sc.tleid.id
             ];
             satnetRPC.rCall('sc.add', newScCfg).then(function (data) {
-                $log.info('[map-ctrl] SC added, id = ' +
-                          data['spacecraft_id']
+                $log.info(
+                    '[map-ctrl] SC added, id = ' + data['spacecraft_id']
                 );
             });
             $modalInstance.close();
@@ -72,7 +72,9 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
     '$scope', '$log', '$modalInstance',
     'satnetRPC', 'celestrak', 'spacecraftId',
     function (
-        $scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId
+         $scope, $log, $modalInstance,
+         satnetRPC, celestrak,
+         spacecraftId
     ) {
         
         'use strict';
@@ -82,7 +84,7 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
             callsign: '',
             tlegroup: '',
             tleid: '',
-            savedTleid: ''
+            savedTleId: ''
         };
 
         $scope.tlegroups = celestrak.CELESTRAK_SELECT_SECTIONS;
@@ -91,17 +93,17 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
         satnetRPC.rCall('sc.get', [spacecraftId]).then(function (data) {
             $scope.sc.identifier = spacecraftId;
             $scope.sc.callsign = data['spacecraft_callsign'];
-            $scope.sc.savedTleid = data['spacecraft_tle_id'];
+            $scope.sc.savedTleId = data['spacecraft_tle_id'];
         });
 
         $scope.initTles = function(defaultOption) {
-            celestrak.tleArray(defaultOption).then(function(data) {
+            celestrak.getTleArray(defaultOption).then(function(data) {
                 $scope.tles = data.slice(0);
             });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            celestrak.tleArray(value.subsection).then(function(data) {
+            celestrak.getTleArray(value.subsection).then(function(data) {
                 $scope.tles = data.slice(0);
             });
         };
@@ -129,5 +131,6 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
                 $modalInstance.close();
             }
         };
+
     }
 ]);

@@ -73,19 +73,26 @@ angular.module('satnet-services').service('satnetRPC', [
         );
     };
 
+    /**
+     * Reads the complete configuration for a given spacecraft using the 
+     * Satnet and the Celestrak services.
+     * @param   {String} id Identifier of the spacecraft within the
+     *                      Satnet network.
+     * @returns {$q} Promise that returns the configuration object for this
+     *               spacecraft.
+     */
     this.readSCCfg = function(id) {
         return this.rCall('sc.get', [id]).then(function (cfg) {
             var tleId = cfg['spacecraft_tle_id'];
-            celestrak.findTle(tleId).then(function (tle) {
+            return celestrak.findTle(tleId).then(function (tleArray) {
                 return {
                     id: cfg['spacecraft_id'],
                     cfg: cfg,
                     tle: {
                         id: cfg['spacecraft_tle_id'],
-                        l1: tle.l1,
-                        l2: tle.l2
-                    },
-                    marker: null
+                        l1: tleArray[0].l1,
+                        l2: tleArray[0].l2
+                    }
                 };
             });
         });

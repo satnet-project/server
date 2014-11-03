@@ -27,8 +27,9 @@ angular.module(
  * eXtended GroundStation models. Services built on top of the satnetRPC
  * service and the basic GroundStation models.
  */
-angular.module('x-groundstation-models').service('xgs', [
-    '$q', 'leafletData', 'maps', 'satnetRPC', 'gs',
+angular.module('x-groundstation-models')
+    .service('xgs', [
+        '$q', 'leafletData', 'maps', 'satnetRPC', 'gs',
     function($q, leafletData, maps, satnetRPC, gs)
 {
 
@@ -76,11 +77,6 @@ angular.module('x-groundstation-models').service('xgs', [
                 return results;
             });
         });
-    };
-
-    this.remove = function (gsId) {
-        gs.remove(gsId);
-
     };
 
     /**

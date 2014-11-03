@@ -18,7 +18,7 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'satnet-services', 'celestrak-services', 'spacecraft-models'
+    'satnet-services', 'spacecraft-models'
 ]);
 
 /**
@@ -27,8 +27,8 @@ angular.module('x-spacecraft-models', [
  */
 angular.module('x-spacecraft-models')
     .service('xsc', [
-        '$log', '$q', 'satnetRPC', 'celestrak', 'sc',
-    function($log, $q, satnetRPC, celestrak)
+        '$log', '$q', 'satnetRPC', 'sc',
+    function($log, $q, satnetRPC, sc)
 {
 
     'use strict';
@@ -55,21 +55,9 @@ angular.module('x-spacecraft-models')
         });
     };
 
-    this._getAll = function() {
-        this._getAllCfgs().then(function (cfgs) {
-            var c = [];
-            angular.forEach (cfgs, function(cfg) {
-                c.push(cfg['spacecraft_id']);
-            });
-            return $q.all(celestrak.findTle(c));
-        });
-    };
-    
     this.initAll = function() {
-        this._readAll().then(function (cfgs) {
-            angular.forEach(cfgs, function(cfg) {
-                //celestrak.findTle(cfg['spacecraft_id']).then(tle)
-            });
+        return this.getAllCfgs().then(function (cfgs) {
+            return sc.initAll(cfgs);
         });
     };
 
