@@ -17,7 +17,9 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('groundstation-models', [ 'satnet-services', 'map-services' ]);
+angular.module('groundstation-models', [
+    'satnet-services', 'map-services'
+]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
@@ -36,10 +38,10 @@ angular.module('groundstation-models').service('gs', [
      */
     this._gsCfg = {};
 
-    this._create = function(gsCfg) {
+    this._create = function(gsId, gsCfg) {
         var ll = L.latLng(
-            data['groundstation_latlon'][0],
-            data['groundstation_latlon'][1]
+            gsCfg['groundstation_latlon'][0],
+            gsCfg['groundstation_latlon'][1]
         );
         var icon = L.icon({
             iconUrl: '/static/images/icons/gs-icon.svg',
@@ -48,7 +50,7 @@ angular.module('groundstation-models').service('gs', [
         var m = L.marker(
             ll, { draggable: false, icon: icon }
         ).bindLabel(gsId, { noHide: true });
-        return { marker: m, cfg: data };
+        return { marker: m, cfg: gsCfg };
     };
     
     /**
@@ -58,11 +60,10 @@ angular.module('groundstation-models').service('gs', [
      * @returns {*} Leaflet.marker for this GroundStation.
      */
     this.create = function(data) {
-        console.log('>>>> XXX');
         var gsId = data['groundstation_id'];
-        var gsCfg = this._create(data);
+        var gsCfg = this._create(gsId, data);
         this._gsCfg[gsId] = gsCfg;
-        return maps.getMapInfo().then(function(mapInfo) {
+        return maps.createMap().then(function(mapInfo) {
             gsCfg.marker.addTo(mapInfo.map);
             return gsCfg;
         });
@@ -78,10 +79,23 @@ angular.module('groundstation-models').service('gs', [
             $log.warn('[markers] No marker for gs, id= ' + gsId);
             return;
         }
-        $rootScope._map.removeLayer(this._gsCfg[gsId].marker);
-        delete this._gsCfg[gsId];
+        this.removeMarker(this._gsCfg[gsId]).then( function() {
+            delete this._gsCfg[gsId];
+            console.log('[gs-model] GS removed, id = ' + gsId);
+        });
     };
 
+    /**
+     * Removes the marker from the main map.
+     * @param   {Leaflet.Marker} marker Marker to be removed.
+     * @returns {$q} Promise that returns nothing.
+     */
+    this.removeMarker = function(marker) {
+        return maps.getMap().then(function (map){
+            map.removeLayer(marker);
+        });
+    };
+    
     /**
      * Dirty check and update of the position of the GroundStation (both in
      * the configuration structure and in its marker).
@@ -112,7 +126,8 @@ angular.module('groundstation-models').service('gs', [
      */
     this.configure = function(data) {
         var gsId = data['groundstation_id'];
-        if ( ! gsId in this._gsCfg ) {
+        console.log('@configure(' + gsId + ')');
+        if ( ! ( gsId in this._gsCfg ) ) {
             $log.warn('[markers] No marker for gs, id= ' + gsId);
             return;
         }
@@ -126,4 +141,21 @@ angular.module('groundstation-models').service('gs', [
         this._latlngDirtyUpdate(gsId, data);
     };
 
+    /**
+     * Returns a human-readable representation of all the configurationes saved
+     * in the main structure for the available GroundStation objects.
+     * @param {Object} Object holding the configuration for the GroundStations.
+     * @returns {String} Human-readable string.
+     */
+    this.asString = function(data) {
+        var buffer = '';
+        for ( var i = 0; i < data.length; i++ ) {
+            var gs = data[i];
+            var gsBuffer = '"id": ' + gs.cfg['groundstation_id'] + ', ' +
+                            '"cfg": ' + JSON.stringify(gs.cfg);
+            buffer += gsBuffer;
+        }
+        return buffer;
+    };
+    
 }]);

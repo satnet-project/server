@@ -21,11 +21,19 @@ angular.module('map-services', [ 'leaflet-directive', 'common' ]);
 
 angular.module('map-services')
     .constant('_T_OPACITY', 0.125)
-    .constant('_ZOOM', 8)
+    .constant('_ZOOM', 7)
+    .constant('_DETAIL_ZOOM', 10)
+    .constant('_DEFAULT_MOVEME', 'Drag me!')
     .service('maps', [
-        '$q', '$http', 'common', 'leafletData', '_ZOOM', '_T_OPACITY',
-        function ($q, $http, common, leafletData, _ZOOM, _T_OPACITY)
+        '$q', '$http', 'common', 'leafletData',
+        '_ZOOM', '_DETAIL_ZOOM', '_T_OPACITY', '_DEFAULT_MOVEME',
+        function (
+            $q, $http, common, leafletData,
+            _ZOOM, _DETAIL_ZOOM, _T_OPACITY, _DEFAULT_MOVEME
+        )
 {
+    
+    'use strict';
     
     /**
      * Returns the mapInfo structure for the rest of the chained
@@ -33,7 +41,7 @@ angular.module('map-services')
      * @returns {$q} Promise that returns the mapInfo structure with
      *               a reference to the Leaflet map object.
      */
-    this.getMapInfo = function () {
+    this.getMainMap = function () {
         return leafletData.getMap().then(function (map) {
             return { map: map };
         });
@@ -46,8 +54,8 @@ angular.module('map-services')
      * @returns {$q} Promise that returns the mapInfo object
      *               {map, terminator}.
      */
-    this.createMap = function (terminator) {
-        return this.getMapInfo().then(function (mapInfo) {
+    this.createTerminatorMap = function (terminator) {
+        return this.getMainMap().then(function (mapInfo) {
             var t = null;
             if ( terminator ) {
                 t = L.terminator({ fillOpacity: _T_OPACITY });
@@ -57,7 +65,7 @@ angular.module('map-services')
             return mapInfo;
         });
     };
-    
+
     /**
      * This promise returns a simple object with a reference to the
      * just created map.
@@ -66,15 +74,14 @@ angular.module('map-services')
      *               a reference to the Leaflet map and to the
      *               terminator overlaying line (if requested).
      */
-    this.centerMap = function (terminator) {
+    this.createMainMap = function (terminator) {
         
-        var d = $q.defer();
-        var promises = [
-            this.createMap(terminator),
+        var p = [
+            this.createTerminatorMap(terminator),
             common.getUserLocation()
         ];
         
-        $q.all(promises).then(function(results) {
+        return $q.all(p).then(function(results) {
             var ll = new L.LatLng(results[1].lat, results[1].lng);
             results[0].map.setView(ll, _ZOOM);
             return({
@@ -85,26 +92,53 @@ angular.module('map-services')
                 }
             });
         });
-
-        return d.promise;
         
     };
-    
+        
     /**
      * Initializes the map, centers it with the estimated position
      * of the user (GeoIP) and adds a "move-me" draggable marker.
+     * @param {L} map Reference to the Leaflet map.
+     * @param {String} message Message to be added to the marker.
      * @returns {$q} Promise that returns the 'mapData' structure with
      *               an additional marker.
      */
-    this.centerMoveMeMarker = function() {
-        return this.centerMap().then(function(data) {
-            data.marker = L.marker({
-                lat: data.ll[0], lng: data.ll[1],
-                message: 'Move me!',
-                focus: true, draggable: true
+    this.createMoveMeMap = function(map, message) {
+
+        if ( message === null ) { message = _DEFAULT_MOVEME; }
+        
+        return common.getUserLocation().then(function (location) {
+            var lat = location.lat, lng = location.lng;
+            var ll = new L.LatLng(lat, lng);
+            var marker = L.marker({
+                lat: lat, lng: lng,
+                message: message, focus: true, draggable: true
             });
-            data.marker.addTo(data.map);
-            return data;
+
+            map.setView(ll, _DETAIL_ZOOM);
+            marker.addTo(map);
+            
+            return({
+                map: map, marker: marker, center: {
+                    lat: location.lat, lng: location.lng
+                }
+            });
+
         });
+        
     };
+
+    /**
+     * Returns a string with the data from a MapInfo like structure.
+     * @param   {Object} mapInfo The structure to be printed out.
+     * @returns {String} Human-readable representation (string).
+     */
+    this.asString = function(mapInfo) {
+        return 'mapInfo = {' + 
+                '"center": ' + JSON.stringify(mapInfo.center) + ', ' +
+                '"terminator": ' + mapInfo.terminator + ', ' +
+                '"map": ' + mapInfo.map +
+            '}';
+    };
+    
 }]);

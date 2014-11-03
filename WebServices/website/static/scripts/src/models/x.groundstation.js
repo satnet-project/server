@@ -24,15 +24,41 @@ angular.module(
 );
 
 /**
- * eXtended GroundStation models. Services built on top of the satnetRPc
+ * eXtended GroundStation models. Services built on top of the satnetRPC
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    'leafletData', 'maps', 'satnetRPC', 'gs',
-    function(leafletData, maps, satnetRPC, gs)
+    '$q', 'leafletData', 'maps', 'satnetRPC', 'gs',
+    function($q, leafletData, maps, satnetRPC, gs)
 {
 
     'use strict';
+
+    /**
+     * Reads the configuration for all the GroundStation objects available
+     * in the server.
+     * @returns {$q} Promise that returns an array with the configuration
+     *               for each of the GroundStation objects.
+     */
+    this.readAllGSConfiguration = function() {
+        return satnetRPC.rCall('gs.list', []).then(function (gss) {
+            
+            var p = [];
+            
+            angular.forEach (gss, function(gs) {
+                p.push(satnetRPC.rCall('gs.get', [gs]));
+            });
+            
+            return $q.all(p).then(function(results) {
+                var cfgs = [];
+                for ( var j = 0; j < results.length; j++ ) {
+                    cfgs.push(results[j]);
+                }
+                return cfgs;
+            });
+
+        });
+    };
 
     /**
      * Initializes all the GroundStations reading the information from
@@ -41,20 +67,20 @@ angular.module('x-groundstation-models').service('xgs', [
      *               read.
      */
     this.initAll = function() {
-        console.log('%%%%');
-        return satnetRPC.readAllGSConfiguration().then(function(gsCfg) {
-            var d = $q.defer(), p = [];
-            console.log('...');
-            for ( var i = 0; i < gsCfg.length; i++ ) {
-                console.log('i = ' + i);
+        return this.readAllGSConfiguration().then(function (gsCfgs) {
+            var p = [];            
+            angular.forEach(gsCfgs, function(gsCfg) {
                 p.push(gs.create(gsCfg));
-            }
-            $q.all(p).then(function (results) {
-                console.log(' results = ' + JSON.stringify(results));
+            });
+            return $q.all(p).then(function (results) {
                 return results;
             });
-            return d.promise;
         });
+    };
+
+    this.remove = function (gsId) {
+        gs.remove(gsId);
+
     };
 
     /**
@@ -62,8 +88,9 @@ angular.module('x-groundstation-models').service('xgs', [
      * @param gsId The identifier of the GroundStation.
      */
     this.updateGSMarker = function(gsId) {
-        satnetRPC.call('gs.get', [gsId], function(data) {
+        satnetRPC.rCall('gs.get', [gsId]).then(function (data) {
             gs.configure(data);
         });
     };
+
 }]);

@@ -50,20 +50,25 @@ angular.module('ui-map-controllers')
             center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
             markers: []
         });
-        maps.centerMap(true).then(function(data) {
-            console.log('>>> data = ' + data);
+        maps.createMainMap(true).then(function(data) {
+            $log.log('[map-controller] <' + maps.asString(data) + '>');
         });
         xgs.initAll().then(function(data) {
-            console.log('>>> data = ' + data);
+            $log.log(
+                '[map-controller] Ground Stations = <' + gs.asString(data) + '>'
+            );
         });
 
         $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
+            console.log('@on-gs-added-event, gsId = ' + JSON.stringify(gsId));
             xgs.addGSMarker(gsId);
         });
         $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gsId) {
+            console.log('@on-gs-removed-event, gsId = ' + JSON.stringify(gsId));
             gs.remove(gsId);
         });
         $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gsId) {
+            console.log('@on-gs-updated-event, gsId = ' + JSON.stringify(gsId));
             xgs.updateGSMarker(gsId);
         });
     }
@@ -91,7 +96,7 @@ angular.module('ui-map-controllers').controller('GSMenuCtrl', [
             });
         };
         $scope.refreshGSList = function() {
-            satnetRPC.call('gs.list', [], function(data) {
+            satnetRPC.rCall('gs.list', []).then(function (data) {
                 $scope.gsIds = data.slice(0);
             });
         };
@@ -120,7 +125,7 @@ angular.module('ui-map-controllers').controller('SCMenuCtrl',
             });
         };
         $scope.refreshSCList = function() {
-            satnetRPC.call('sc.list', [], function(data) {
+            satnetRPC.rCall('sc.list', []).then(function (data) {
                 $scope.scIds = data.slice(0);
             });
         };
