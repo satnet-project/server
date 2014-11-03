@@ -17,76 +17,60 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('spacecraft-models', [ 'satnet-services' ]);
+angular.module('spacecraft-models', [ 'map-services' ]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
 angular.module('spacecraft-models')
-    .service('sc', [ '$rootScope', '$log', '$q', 'satnetRPC',
-                    function($rootScope, $log, $q, satnetRPC) {
-
-        'use strict';
-        
-        /**
-         * Configuration structure for all the Spacecraft.
-         * @type { { id: { marker: m, cfg: data } } }
-         * @private
-         */
-        this._scCfg = {};
-
-        this._readCfg = function(scId) {
-            satnetRPC.rCall('sc.get', [scId]).then(
-                function(result) {
-                    var rawCfg = result.data;
-                    var scId = rawCfg['spacecraft_id'];
-                    var scCfg = {};
-                    var ll = L.latLng(42.6000, -8.9330);
-                    var icon = L.icon({
-                        iconUrl: '/static/images/icons/sc-icon.svg',
-                        iconSize: [30, 30]
-                    });
-                    var m = L.marker(
-                        ll, { draggable: false, icon: icon }
-                    ).bindLabel(scId, { noHide: true });
-                    scCfg[scId] = {
-                        'marker': m,
-                        'config': {
-                            'tleid': rawCfg['spacecraft_tleid'],
-                            'callsign': rawCfg['spacecraft_callsign']
-                        }
-                    };
-                    return scCfg;
-                }
-            );
-        };
-
-        this._readAll = function() {
-            return satnetRPC.rCall('sc.list', []).then(function(result) {
-                return result.data;
-            });
-        };
-
-        this._readList = function (list) {
-
-            var defer = $q.defer();
-            var promises = [];
-
-            for ( var i = 0; i < list.length; i++ ) {
-                promises.push(this._readCfg(list[i]));
-            }
-
-            $q.all(promises).then(function(result) {
-                return result[0].data.slice(0);
-            });
-
-            return defer.promise;
-        };
-
-        this.init = function() {
-            this._readAll().then(this._readList);
-        };
-
-    }
-]);
+    .service('sc', [
+    '$log', 'maps',
+    function($log, maps)
+{
+    
+    'use strict';
+    
+    /**
+     * Configuration structure for all the Spacecraft.
+     * @type { { id: { marker: m, cfg: data } } }
+     * @private
+     */
+    this._scCfg = {};
+    
+    /**
+     * Creates a new entrance in the configuration structure.
+     * @param {String} id Identifier of the new Spacecraft.
+     * @param {Object} cfg Configuration object for the new Spacecraft.
+     * @returns {Object} Returns an object with the marker and the configuration.
+     */
+    this._create = function(id, cfg) {
+        var ll = L.latLng(
+        );
+        var icon = L.icon({
+            iconUrl: '/static/images/icons/sc-icon.svg',
+            iconSize: [30, 30]
+        });
+        var m = L.marker(
+            ll, { draggable: false, icon: icon }
+        ).bindLabel(id, { noHide: true });
+        return { marker: m, cfg: cfg };
+    };
+    
+    /**
+     * Creates a new configuration object for the Spacecraft based on the
+     * information contained in the data structure.
+     * @param data Information as retrieved through JSON-RPC from the server.
+     * @returns {$q} Promise that returns the configuration object for a spacecraft.
+     */
+    this.create = function(data) {
+        var id = data['spacecraft_id'];
+        var cfg = this._create(id, data);
+        this._scCfg[id] = cfg;
+        return maps.getMainMap().then(function(mapInfo) {
+            cfg.marker.addTo(mapInfo.map);
+            return cfg;
+        });
+    };
+    
+}]);

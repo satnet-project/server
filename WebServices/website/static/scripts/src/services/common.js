@@ -32,7 +32,7 @@ angular.module('common')
 
     // URL for the IPINFO service.
     this._IPINFO_URL = 'http://ipinfo.io/json';
-    
+
     /**
      * Retrieves the user location using an available Internet service.
      * @returns {$q} Promise that returns a { lat, lng } object.

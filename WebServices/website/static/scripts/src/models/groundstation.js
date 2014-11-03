@@ -17,9 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('groundstation-models', [
-    'satnet-services', 'map-services'
-]);
+angular.module('groundstation-models', [ 'map-services' ]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
@@ -38,6 +36,12 @@ angular.module('groundstation-models').service('gs', [
      */
     this._gsCfg = {};
 
+    /**
+     * Creates a new entrance in the configuration structure.
+     * @param   {String} gsId Identifier of the new GroundStation.
+     * @param   {Object} gsCfg Configuration object for the new GroundStation.
+     * @returns {Object} Returns an object with the marker and the configuration.
+     */
     this._create = function(gsId, gsCfg) {
         var ll = L.latLng(
             gsCfg['groundstation_latlon'][0],
@@ -63,7 +67,7 @@ angular.module('groundstation-models').service('gs', [
         var gsId = data['groundstation_id'];
         var gsCfg = this._create(gsId, data);
         this._gsCfg[gsId] = gsCfg;
-        return maps.createMap().then(function(mapInfo) {
+        return maps.getMainMap().then(function(mapInfo) {
             gsCfg.marker.addTo(mapInfo.map);
             return gsCfg;
         });

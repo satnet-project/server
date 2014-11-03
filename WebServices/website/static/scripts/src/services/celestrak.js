@@ -162,7 +162,7 @@ angular.module('celestrak-services').service('celestrak', [
      * @param subsection The file to be processed.
      * @returns {*} (promise)
      */
-    this.tleFile = function (subsection) {
+    this.getSubsectionFile = function (subsection) {
         var uri = this.CELESTRAK_RESOURCES[subsection];
         var cUri = common.getCORSSURL(uri);
         return $http.get(cUri).then(function (data) { return data.data; });
@@ -174,9 +174,9 @@ angular.module('celestrak-services').service('celestrak', [
      * @param subsection The file to be processed.
      * @returns {Array} Array of structures following the format {id, l1, l2}.
      */
-    this.tleArray = function (subsection) {
+    this.getTleArray = function (subsection) {
 
-        return this.tleFile(subsection).then(function(data) {
+        return this.getSubsectionFile(subsection).then(function(data) {
 
             if ( data === null )
                 { throw 'No data retrieved from server...'; }
@@ -217,7 +217,7 @@ angular.module('celestrak-services').service('celestrak', [
      * @private
      */
     this._tleObject = function (tleId, subsection) {
-        return this.tleArray(subsection).then(function(data) {
+        return this.getTleArray(subsection).then(function(data) {
             for ( var i = 0; i < data.length; i++ ) {
                 $log.info('i = ' + i + ', data = ' + JSON.stringify(data));
                 if ( data[i].id === tleId ) { return data[i]; }
@@ -225,20 +225,24 @@ angular.module('celestrak-services').service('celestrak', [
         });
     };
 
+    /**
+     * This function finds the TLE information for a given Spacecraft from 
+     * among all the available ones in the Celestrak database.
+     * @param   {String} tleId The identifier for the Spacecraft in the
+     *                         Celestrak database.
+     * @returns {$q} Promise that returns the TLE object.
+     */
     this.findTle = function (tleId) {
 
-        var defer = $q.defer();
         var promises = [];
 
         for ( var i = 0; i < this.CELESTRAK_RESOURCES; i++ ) {
             promises.push(this._tleObject(tleId, this.CELESTRAK_RESOURCES[i]));
         }
 
-        $q.all(promises).then(function(data) {
+        return $q.all(promises).then(function(data) {
             $log.info('data = ' + JSON.stringify(data));
         });
-
-        return defer;
 
     };
 
