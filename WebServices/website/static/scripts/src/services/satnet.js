@@ -17,7 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('satnet-services', []);
+angular.module('satnet-services', [ 'celestrak-services' ]);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network
@@ -25,8 +25,8 @@ angular.module('satnet-services', []);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$q', '$location', '$log',
-    function(jsonrpc, $q, $location, $log)
+    'jsonrpc', '$q', '$location', '$log', 'celestrak',
+    function(jsonrpc, $q, $location, $log, celestrak)
 {
 
     'use strict';
@@ -71,6 +71,24 @@ angular.module('satnet-services').service('satnetRPC', [
                 $log.warn(msg);
             }
         );
+    };
+
+    this.readSCCfg = function(id) {
+        return this.rCall('sc.get', [id]).then(function (cfg) {
+            var tleId = cfg['spacecraft_tle_id'];
+            celestrak.findTle(tleId).then(function (tle) {
+                return {
+                    id: cfg['spacecraft_id'],
+                    cfg: cfg,
+                    tle: {
+                        id: cfg['spacecraft_tle_id'],
+                        l1: tle.l1,
+                        l2: tle.l2
+                    },
+                    marker: null
+                };
+            });
+        });
     };
 
 }]);

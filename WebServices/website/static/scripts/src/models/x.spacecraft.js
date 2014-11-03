@@ -18,7 +18,7 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'satnet-services', 'spacecraft-models'
+    'satnet-services', 'celestrak-services', 'spacecraft-models'
 ]);
 
 /**
@@ -27,27 +27,24 @@ angular.module('x-spacecraft-models', [
  */
 angular.module('x-spacecraft-models')
     .service('xsc', [
-        '$log', '$q', 'satnetRPC',
-    function($log, $q, satnetRPC)
+        '$log', '$q', 'satnetRPC', 'celestrak', 'sc',
+    function($log, $q, satnetRPC, celestrak)
 {
 
     'use strict';
-        
+    
     /**
      * Reads the configuration for all the GroundStation objects available
      * in the server.
      * @returns {$q} Promise that returns an array with the configuration
      *               for each of the GroundStation objects.
      */
-    this._getAll = function() {
+    this.getAllCfgs = function() {
         return satnetRPC.rCall('sc.list', []).then(function (scs) {
-            
             var p = [];
-            
-            angular.forEach (scs, function(sc) {
-                p.push(satnetRPC.rCall('sc.get', [sc]));
+            angular.forEach (scs, function(scI) {
+                p.push(satnetRPC.readSCCfg(scI));
             });
-            
             return $q.all(p).then(function(results) {
                 var cfgs = [];
                 for ( var j = 0; j < results.length; j++ ) {
@@ -55,13 +52,24 @@ angular.module('x-spacecraft-models')
                 }
                 return cfgs;
             });
-
         });
     };
 
+    this._getAll = function() {
+        this._getAllCfgs().then(function (cfgs) {
+            var c = [];
+            angular.forEach (cfgs, function(cfg) {
+                c.push(cfg['spacecraft_id']);
+            });
+            return $q.all(celestrak.findTle(c));
+        });
+    };
+    
     this.initAll = function() {
         this._readAll().then(function (cfgs) {
-            
+            angular.forEach(cfgs, function(cfg) {
+                //celestrak.findTle(cfg['spacecraft_id']).then(tle)
+            });
         });
     };
 

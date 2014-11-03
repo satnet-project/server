@@ -76,70 +76,69 @@ angular.module('ui-map-controllers')
 
 angular.module('ui-map-controllers').controller('GSMenuCtrl', [
     '$scope', '$log', '$modal', 'satnetRPC',
-    function($scope, $log, $modal, satnetRPC) {
-        
-        'use strict';
-        
-        $scope.gsIds = [];
-        $scope.addGroundStation = function() {
-            var modalInstance = $modal.open({
-                templateUrl: '/static/scripts/src/templates/addGroundStation.html',
-                controller: 'AddGSModalCtrl',
-                backdrop: 'static'
-            });
-        };
-        $scope.editGroundStation = function(g) {
-            var modalInstance = $modal.open({
-                templateUrl: '/static/scripts/src/templates/editGroundStation.html',
-                controller: 'EditGSModalCtrl', backdrop: 'static',
-                resolve: { groundstationId: function() { return(g); } }
-            });
-        };
-        $scope.refreshGSList = function() {
-            satnetRPC.rCall('gs.list', []).then(function (data) {
-                $scope.gsIds = data.slice(0);
-            });
-        };
-        $scope.refreshGSList();
-    }
-]);
+    function($scope, $log, $modal, satnetRPC)
+{
 
-angular.module('ui-map-controllers').controller('SCMenuCtrl',
-    [ '$scope', '$log', '$modal', 'satnetRPC',
-    function($scope, $log, $modal, satnetRPC) {
+    'use strict';
+
+    $scope.gsIds = [];
+    $scope.addGroundStation = function() {
+        var modalInstance = $modal.open({
+            templateUrl: '/static/scripts/src/templates/addGroundStation.html',
+            controller: 'AddGSModalCtrl',
+            backdrop: 'static'
+        });
+    };
+    $scope.editGroundStation = function(g) {
+        var modalInstance = $modal.open({
+            templateUrl: '/static/scripts/src/templates/editGroundStation.html',
+            controller: 'EditGSModalCtrl', backdrop: 'static',
+            resolve: { groundstationId: function() { return(g); } }
+        });
+    };
+    $scope.refreshGSList = function() {
+        satnetRPC.rCall('gs.list', []).then(function (data) {
+            $scope.gsIds = data.slice(0);
+        });
+    };
+    $scope.refreshGSList();
+
+}]);
+
+angular.module('ui-map-controllers').controller('SCMenuCtrl', [
+    '$scope', '$log', '$modal', 'satnetRPC',
+        function($scope, $log, $modal, satnetRPC)
+{
         
-        'use strict';
+    'use strict';
         
-        $scope.scIds = [];
-        $scope.addSpacecraft = function() {
-            var modalInstance = $modal.open({
-                templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
-                controller: 'AddSCModalCtrl', backdrop: 'static'
-            });
-        };
-        $scope.editSpacecraft = function(s) {
-            var modalInstance = $modal.open({
-                templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
-                controller: 'EditSCModalCtrl', backdrop: 'static',
-                resolve: { spacecraftId: function() { return(s); } }
-            });
-        };
-        $scope.refreshSCList = function() {
-            satnetRPC.rCall('sc.list', []).then(function (data) {
-                $scope.scIds = data.slice(0);
-            });
-        };
-        $scope.refreshSCList();
-    }
-]);
+    $scope.scIds = [];
+    $scope.addSpacecraft = function() {
+        var modalInstance = $modal.open({
+            templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
+            controller: 'AddSCModalCtrl', backdrop: 'static'
+        });
+    };
+    $scope.editSpacecraft = function(s) {
+        var modalInstance = $modal.open({
+            templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
+            controller: 'EditSCModalCtrl', backdrop: 'static',
+            resolve: { spacecraftId: function() { return(s); } }
+        });
+    };
+    $scope.refreshSCList = function() {
+        satnetRPC.rCall('sc.list', []).then(function (data) {
+            $scope.scIds = data.slice(0);
+        });
+    };
+    $scope.refreshSCList();
+
+}]);
 
 angular.module('ui-map-controllers').controller('ExitMenuCtrl', [
     '$scope', '$log',
-    function($scope, $log) {
-        
-        'use strict';
-        
-        $scope.home = function () { $log.info('Exiting...'); };
-        
-    }
-]);
+        function($scope, $log)
+{        
+    'use strict';       
+    $scope.home = function () { $log.info('Exiting...'); };    
+}]);

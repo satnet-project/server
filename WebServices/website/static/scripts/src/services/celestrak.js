@@ -220,7 +220,7 @@ angular.module('celestrak-services').service('celestrak', [
         return this.getTleArray(subsection).then(function(data) {
             for ( var i = 0; i < data.length; i++ ) {
                 $log.info('i = ' + i + ', data = ' + JSON.stringify(data));
-                if ( data[i].id === tleId ) { return data[i]; }
+                if ( data[i].id === tleId ) { return data; }
             }
         });
     };
@@ -228,8 +228,7 @@ angular.module('celestrak-services').service('celestrak', [
     /**
      * This function finds the TLE information for a given Spacecraft from 
      * among all the available ones in the Celestrak database.
-     * @param   {String} tleId The identifier for the Spacecraft in the
-     *                         Celestrak database.
+     * @param   {String} tleId Spacecraft TLE identifier to be found.
      * @returns {$q} Promise that returns the TLE object.
      */
     this.findTle = function (tleId) {
@@ -242,6 +241,7 @@ angular.module('celestrak-services').service('celestrak', [
 
         return $q.all(promises).then(function(data) {
             $log.info('data = ' + JSON.stringify(data));
+            return data;
         });
 
     };
