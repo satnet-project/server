@@ -44,6 +44,9 @@ from services.common import misc
 from services.scheduling.models import operational
 from services.configuration.models.channels import SpacecraftChannel
 
+from services.communications import models as messages_models
+from services.configuration.models import segments
+
 
 class SATNETServer(AMP):
 
@@ -80,6 +83,7 @@ class SATNETServer(AMP):
     sUsername = ""
     credProto = None
     bGSuser = None
+    slot = None
 
     def dataReceived(self, data):
         log.msg(self.sUsername + ' session timeout reset')
@@ -108,25 +112,25 @@ class SATNETServer(AMP):
 
     def iStartRemote(self, iSlotId):
         log.msg("(" + self.sUsername + ") --------- Start Remote ---------")
-        slot = operational.OperationalSlot.objects.filter(id=iSlotId)
+        self.slot = operational.OperationalSlot.objects.filter(id=iSlotId)
         # If slot NOT operational yet...
-        if not slot:
+        if not self.slot:
             log.err('Slot ' + str(iSlotId) + ' not operational yet')
             raise SlotErrorNotification(
                 'Slot ' + str(iSlotId) + ' not operational yet')
         # ... if multiple slots have the same ID (never should happen)...
-        elif len(slot) > 1:
+        elif len(self.slot) > 1:
             log.err('Multiple slots with the same id: ' + str(iSlotId))
             raise SlotErrorNotification('Incorrect slot number')
         # ... if the ID is correct
         else:
             # If it is too soon to connect to this slot...
-            if slot[0].state != operational.STATE_RESERVED:
+            if self.slot[0].state != operational.STATE_RESERVED:
                 log.err('Slot has not been reserved yet')
                 raise SlotErrorNotification('Slot has not been reserved yet')
-            gs_user = slot[
+            gs_user = self.slot[
                 0].groundstation_channel.groundstation_set.all()[0].user.username
-            sc_user = slot[
+            sc_user = self.slot[
                 0].spacecraft_channel.spacecraft_set.all()[0].user.username
             # If this slot has not been assigned to this user...
             if gs_user != self.sUsername and sc_user != self.sUsername:
@@ -140,11 +144,11 @@ class SATNETServer(AMP):
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
                 bGSuser = False
-                return self.vCreateConnection(slot[0].end, iSlotId, sc_user, gs_user)
+                return self.vCreateConnection(self.slot[0].end, iSlotId, sc_user, gs_user)
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
                 bGSuser = True
-                return self.vCreateConnection(slot[0].end, iSlotId, gs_user, sc_user)
+                return self.vCreateConnection(self.slot[0].end, iSlotId, gs_user, sc_user)
 
     StartRemote.responder(iStartRemote)
 
@@ -171,7 +175,7 @@ class SATNETServer(AMP):
         return {}
     EndRemote.responder(vEndRemote)
 
-    def vSendMsg(self, sMsg):
+    def vSendMsg(self, sMsg, iDopplerShift, sTimestamp):
         log.msg("(" + self.sUsername + ") --------- Send Message ---------")
         # If the client haven't started a connection via StartRemote command...
         if self.sUsername not in self.factory.active_protocols:
@@ -181,7 +185,9 @@ class SATNETServer(AMP):
         # ... if the SC operator is not connected, sent messages will be saved 
         # as passive messages...
         elif self.sUsername not in self.factory.active_connections and bGSuser == True:
-            #TODO store messages in the DB
+            #TODO store passive messages in the DB
+            gs_channel_id = self.slot[0].gs-channel-id
+            store_passive_message(gs_channel_id, sTimestamp, iDopplerShift, sMsg)
             self.callRemote(
                 NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)
         # ... if the GS operator is not connected, the remote SC client will be
@@ -197,6 +203,37 @@ class SATNETServer(AMP):
 
         return {}
     SendMsg.responder(vSendMsg)
+
+    def store_passive_message(
+            gs_channel_id, timestamp,
+            doppler_shift, message
+    ):
+        """Stores a passive message from a Ground Station.
+
+        This method stores a message obtained in a passive manner (this is, without
+        requiring from any remote operation to be scheduled) by a given Ground
+        Station in the database.
+
+        :param groundstation_id: Identifier of the GroundStation.
+        :param gs_channel_id: Identifier of the receiving channel of the
+                                GroundStation.
+        :param timestamp: Moment of the reception of the message at the remote
+                            Ground Station (seconds since
+        :param doppler_shift: Doppler shift during the reception of the message.
+        :param message: The message to be stored.
+        :return: 'true' is returned whenever the message was correctly stored,
+                    otherwise, an exception is thrown.
+        """
+
+        if message is None:
+            raise Exception('No message included')
+
+        return models.PassiveMessage.objects.create(
+            gs_channel_id=gs_channel_id,
+            gs_timestamp=timestamp,
+            doppler_shift=doppler_shift,
+            message=message
+        )
 
     def vSlotEnd(self, iSlotId):
         log.msg(

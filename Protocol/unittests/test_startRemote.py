@@ -33,6 +33,9 @@ from client_amp import ClientProtocol
 from commands import *
 from errors import *
 
+import pytz
+import datetime
+
 """
 To perform correct end to end tests:
 1. The server must stop listening.
@@ -64,7 +67,7 @@ class ClientProtocolTest(ClientProtocol):
     NotifyMsg.responder(vNotifyMsg)
 
     def vNotifyEvent(self, iEvent, sDetails):
-        log.msg("(" + self.USERNAME + ") --------- Notify Event ---------")
+        log.msg("--------- Notify Event ---------")
         if iEvent == NotifyEvent.SLOT_END:
             log.msg("Disconnection because the slot has ended")
         elif iEvent == NotifyEvent.REMOTE_DISCONNECTED:
@@ -149,9 +152,8 @@ class TestMultipleClients(unittest.TestCase):
         9. Client B -> notifyMsg (should receive __sMessageB2A)
         10. Client B -> endRemote()
         11. Client A -> notifyEvent (should receive NotifyEvent.END_REMOTE). This last step
-        is not being checked due to dificulti
+        is not being checked due to dificulties with Twisted trial methods
     """
-
 
     def test_1simultaneousUsers(self):
         __iSlotId = 1
@@ -183,13 +185,13 @@ class TestMultipleClients(unittest.TestCase):
             lambda iEvent: self.assertEqual(iEvent, NotifyEvent.REMOTE_CONNECTED))
 
         d2.addCallback(lambda l: self.factory2.protoInstance.callRemote(
-            SendMsg, sMsg=__sMessageA2B))
+            SendMsg, sMsg=__sMessageA2B, iDopplerShift=0, sTimestamp=str(pytz.utc.localize(datetime.datetime.utcnow()))))
 
         self.factory1.onMessageReceived.addCallback(
             lambda sMsg: self.assertEqual(sMsg, __sMessageA2B))
 
         d1.addCallback(lambda l: self.factory1.protoInstance.callRemote(
-            SendMsg, sMsg=__sMessageB2A))
+            SendMsg, sMsg=__sMessageB2A, iDopplerShift=0, sTimestamp=str(pytz.utc.localize(datetime.datetime.utcnow()))))
 
         self.factory2.onMessageReceived.addCallback(
             lambda sMsg: self.assertEqual(sMsg, __sMessageB2A))
