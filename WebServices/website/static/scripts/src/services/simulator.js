@@ -18,24 +18,22 @@
 
 /** Module definition (empty array is vital!). */
 angular.module(
-    'simulator', [
-        'celestrak-services'
-    ]
+    'simulator', [ 'celestrak-services' ]
 );
 
 angular.module('simulator')
     .service('simulator', [ 'celestrak', function(celestrak) {
 
+        'use strict';
+        
         this.estimateTrack = function (scTleId) {
+            
             return celestrak.findTle(scTleId).then(function(data) {
                 console.log('> scTleId = ' + scTleId);
-                var sc = satellite.twoline2satrec(
-                    data['line_1'], data['line_2']
-                );
-                console.log(
-                    '> l1 = ' + data['line_1'] + ', l2 = ' + data['line_2']
-                );
+                var sc = satellite.twoline2satrec(data.l1, data.l2);
+                console.log('> l1 = ' + data.l1 + ', l2 = ' + data.l2);
             });
+            
         };
 
     }

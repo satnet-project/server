@@ -17,7 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('satnet-services', []);
+angular.module('satnet-services', [ 'celestrak-services' ]);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network
@@ -25,71 +25,69 @@ angular.module('satnet-services', []);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$location', '$log', function(jsonrpc, $location, $log) {
+    'jsonrpc', '$q', '$location', '$log', 'celestrak',
+    function(jsonrpc, $q, $location, $log, celestrak)
+{
 
-    var rpc_path = ''
-        + $location.protocol() + "://"
-        + $location.host() + ':' + $location.port()
-        + '/jrpc/';
-    this._cfg_service = jsonrpc.newService('configuration', rpc_path);
+    'use strict';
+
+    var rpc = '' +
+        $location.protocol() + '://' +
+        $location.host() + ':' + $location.port() +
+        '/jrpc/';
+    this._CfgService = jsonrpc.newService('configuration', rpc);
     this._services = {
         // Configuration methods (Ground Stations)
-        'gs.list': this._cfg_service.createMethod('gs.list'),
-        'gs.add': this._cfg_service.createMethod('gs.create'),
-        'gs.get': this._cfg_service.createMethod('gs.getConfiguration'),
-        'gs.update': this._cfg_service.createMethod('gs.setConfiguration'),
-        'gs.delete': this._cfg_service.createMethod('gs.delete'),
+        'gs.list': this._CfgService.createMethod('gs.list'),
+        'gs.add': this._CfgService.createMethod('gs.create'),
+        'gs.get': this._CfgService.createMethod('gs.getConfiguration'),
+        'gs.update': this._CfgService.createMethod('gs.setConfiguration'),
+        'gs.delete': this._CfgService.createMethod('gs.delete'),
          // Configuration methods (Spacecraft)
-        'sc.list': this._cfg_service.createMethod('sc.list'),
-        'sc.add': this._cfg_service.createMethod('sc.create'),
-        'sc.get': this._cfg_service.createMethod('sc.getConfiguration'),
-        'sc.update': this._cfg_service.createMethod('sc.setConfiguration'),
-        'sc.delete': this._cfg_service.createMethod('sc.delete')
-    };
-
-    /**
-     * Common error handler for all the JSON-RPC invocations.
-     * @param data The data that defines the error.
-     * @private
-     */
-    this._errorCb = function(data) {
-        $log.warn(
-            '[satnet-jrpc] Error calling \"satnetRPC\" = '
-                + JSON.stringify(data)
-        );
+        'sc.list': this._CfgService.createMethod('sc.list'),
+        'sc.add': this._CfgService.createMethod('sc.create'),
+        'sc.get': this._CfgService.createMethod('sc.getConfiguration'),
+        'sc.update': this._CfgService.createMethod('sc.setConfiguration'),
+        'sc.delete': this._CfgService.createMethod('sc.delete')
     };
 
     /**
      * Method for calling the remote service through JSON-RPC.
      * @param service The name of the service, as per the internal services
-     *                  name definitions.
-     * @param paramArray The parameters for the service (as an array).
-     * @param successCb Callback called after a successful remote service
-     *                  invokation.
-     * @param errorCb Callback called after an error during the remote
-     *                  invokation of the service.
-     */
-    this.call = function (service, paramArray, successCb, errorCb) {
-        if ( ! service in this._services ) {
-            throw '\"satnetRPC\" service not found, id = ' + service;
-        }
-        if ( errorCb == null ) { errorCb = this._errorCb; }
-        this._services[service](paramArray).success(successCb).error(errorCb);
-    };
-
-    /**
-     * Method for calling the remote service through JSON-RPC.
-     * @param service The name of the service, as per the internal services
-     *                  name definitions.
+     * name definitions.
      * @param paramArray The parameters for the service (as an array).
      * @returns {*}
      */
     this.rCall = function(service, paramArray) {
-        if ( ! service in this._services ) {
-            throw '\"satnetRPC\" service not found, id = ' + service;
+        if ( ( service in this._services ) === false ) {
+            throw '[satnetRPC] service not found, id = <' + service + '>';
         }
-        return this._services[service](paramArray).then(function(data) {
-            return data;
+        $log.log('[satnetRPC] Invoked service = <' + service + '>');
+        return this._services[service](paramArray).then(
+            function(data) { return data.data; },
+            function(error) {
+                var msg = '[satnetRPC] Error invoking = <' + service + '>' +
+                            ', description = <' + error + '>';
+                $log.warn(msg);
+            }
+        );
+    };
+
+    this.readSCCfg = function(id) {
+        return this.rCall('sc.get', [id]).then(function (cfg) {
+            var tleId = cfg['spacecraft_tle_id'];
+            celestrak.findTle(tleId).then(function (tle) {
+                return {
+                    id: cfg['spacecraft_id'],
+                    cfg: cfg,
+                    tle: {
+                        id: cfg['spacecraft_tle_id'],
+                        l1: tle.l1,
+                        l2: tle.l2
+                    },
+                    marker: null
+                };
+            });
         });
     };
 

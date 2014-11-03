@@ -16,55 +16,7 @@
  * Created by rtubio on 10/1/14.
  */
 
-// DEFAULT values for the applications
-var DEFAULT_LAT = 42.6000;    // lat, lon for Pobra (GZ/ES)
-var DEFAULT_LNG = -8.9330;
-var DEFAULT_ZOOM = 6;
-var DEFAULT_GS_ELEVATION = 15.0;
-var USER_ZOOM = 8;
-//var TIMESTAMP_FORMAT = 'yyyy-MM-dd-HH:mm:ss.sss';
 var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
-
-/**
- * This function centers the map at the given [lat, long] coordinates
- * with the specified zoom level.
- * @param map Leaflet map.
- * @param lat Latitude (coordinates).
- * @param lng Longitude (coordinates).
- * @param zoom Level of zoom.
- */
-function centerMap (map, lat, lng, zoom) {
-    map.setView(new L.LatLng(lat, lng), zoom);
-}
-
-/**
- * This function locates the map at the location of the IP that the
- * client uses for this connection.
- * @param $log AngularJS logger object.
- * @param map The map where the user position is to be located.
- * @param marker OPTIONAL parameter with a reference to a marker object that is
- *                  suppose to hold current user's position.
- */
-function locateUser ($log, map, marker) {
-
-    $.get('http://ipinfo.io', function (data) {
-        var ll = data['loc'].split(',');
-        var lat = parseFloat(ll[0]);
-        var lng = parseFloat(ll[1]);
-        $log.info('[map-ctrl] User located at = ' + ll);
-        centerMap(map, lat, lng, USER_ZOOM);
-        if ( marker != null ) { marker.lat = lat; marker.lng = lng; }
-    }, 'jsonp')
-    .fail( function() {
-
-        $log.warn('[map-ctrl] Could not locate user');
-        centerMap(map, DEFAULT_LAT, DEFAULT_LNG, DEFAULT_ZOOM);
-        if ( marker != null ) {
-            marker.lat = DEFAULT_LAT; marker.lng = DEFAULT_LNG;
-        }
-    });
-
-}
 
 ////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////// Main Application Module
@@ -76,6 +28,7 @@ var app = angular.module('satnet-ui', [
     'ngResource', 'ngCookies',
     'remoteValidation', 'jsonrpc',
     // level 1 services
+    'common', 'map-services',
     'celestrak-services', 'satnet-services', 'broadcaster',
     // level 2 services
     'groundstation-models', 'simulator',
@@ -86,6 +39,8 @@ var app = angular.module('satnet-ui', [
 ]);
 
 // level 1 services
+angular.module('common');
+angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
 angular.module('broadcaster');
@@ -104,6 +59,8 @@ angular.module('ui-modalgs-controllers');
  * messages as events that can be catched by other visualization UI controllers.
  */
 app.config(function($provide) {
+    'use strict';
+    
     $provide.decorator('$log', function($delegate) {
         var rScope = null;
         return  {
@@ -124,7 +81,7 @@ app.config(function($provide) {
                 $delegate.warn.apply(null, ['[warn] ' + arguments[0]]);
                 rScope.$broadcast('warnEvent', arguments[0]);
             }
-        }
+        };
     });
 });
 
@@ -132,21 +89,26 @@ app.config(function($provide) {
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies', 'leafletData',
-    function($rootScope, $log, $http, $cookies, leafletData) {
+    '$rootScope', '$log', '$http', '$cookies',
+    function($rootScope, $log, $http, $cookies) {
+        
+        'use strict';
+        
         $log.setScope($rootScope);
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
-        leafletData.getMap().then(function(map) { $rootScope._map = map; });
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        
     }
 ]);
 
 app.controller('NotificationAreaController', [
     '$scope', '$filter', function($scope, $filter) {
 
+    'use strict';
+        
     $scope.eventLog = [];
     $scope._logEvent = function (event, message) {
         $scope.eventLog.unshift({
-            'type': event['name'],
+            'type': event.name,
             'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
             'msg':  message
         });

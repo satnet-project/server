@@ -1,6 +1,7 @@
 .idea
 .venv
 .__venv
+*.komodoproject
 setup.sh
 logs
 public_html
