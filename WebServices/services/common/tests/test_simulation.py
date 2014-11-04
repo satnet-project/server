@@ -13,6 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.simulation.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
@@ -22,7 +24,6 @@ import logging
 from pytz import utc as pytz_utc
 
 from services.common import testing as db_tools, simulation
-from services.scheduling.models import tle
 
 
 class TestSimulation(TestCase):

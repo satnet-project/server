@@ -13,13 +13,15 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.simulation.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
 
 from services.configuration.models import availability, compatibility, channels
 from services.configuration.models import rules, segments
-from services.scheduling.models import operational, tle
+from services.scheduling.models import operational
 
 
 def connect_rules_2_availability():

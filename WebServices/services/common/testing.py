@@ -13,6 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.simulation.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
@@ -26,7 +28,6 @@ from services.common import misc, gis
 from services.common import serialization as common_serial
 from services.configuration.models import bands, channels, segments
 from services.configuration.jrpc.serializers import serialization
-from services.scheduling.models import tle
 
 
 def create_user(username='testuser', password='testuser.', email='test@test.test'):

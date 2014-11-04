@@ -23,7 +23,7 @@ import logging
 
 from services.common import misc, simulation
 from services.configuration.models import availability, channels, compatibility
-from services.scheduling.models import tle
+from services.simulation.models import tle
 
 logger = logging.getLogger('scheduling')
 

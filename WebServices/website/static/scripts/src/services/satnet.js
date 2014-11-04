@@ -92,7 +92,7 @@ angular.module('satnet-services').service('satnetRPC', [
                         id: cfg['spacecraft_tle_id'],
                         l1: tleArray[0].l1,
                         l2: tleArray[0].l2
-                    }
+                    },
                 };
             });
         });
