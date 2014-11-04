@@ -22,49 +22,51 @@ angular.module('broadcaster', []);
 /**
  * Service used for broadcasting UI events in between controllers.
  */
-angular.module('broadcaster')
-    .service('broadcaster', [ '$rootScope', function ($rootScope) {
+angular.module('broadcaster').service('broadcaster', [
+    '$rootScope',
+    function ($rootScope)
+{
 
-        'use strict';
+    'use strict';
         
-        /**
-         * @type {string} Identifier of the event.
-         */
-        this.GS_ADDED_EVENT = 'gs.added';
-        /**
-         * @type {string} Identifier of the event.
-         */
-        this.GS_REMOVED_EVENT = 'gs.removed';
-        /**
-         * @type {string} Identifier of the event.
-         */
-        this.GS_UPDATED_EVENT = 'gs.updated';
+    /**
+     * @type {string} Identifier of the event.
+     */
+    this.GS_ADDED_EVENT = 'gs.added';
+    /**
+     * @type {string} Identifier of the event.
+     */
+    this.GS_REMOVED_EVENT = 'gs.removed';
+    /**
+     * @type {string} Identifier of the event.
+     */
+    this.GS_UPDATED_EVENT = 'gs.updated';
 
-        /**
-         * Function that broadcasts the event associated with the creation of a 
-         * new GroundStation.
-         * @param gs_id The identifier of the GroundStation.
-         */
-        this.gsAdded = function (gsId) {
-            $rootScope.$broadcast(this.GS_ADDED_EVENT, gsId);
-        };
+    /**
+     * Function that broadcasts the event associated with the creation of a 
+     * new GroundStation.
+     * @param gs_id The identifier of the GroundStation.
+     */
+    this.gsAdded = function (gsId) {
+        $rootScope.$broadcast(this.GS_ADDED_EVENT, gsId);
+    };
 
-        /**
-         * Function that broadcasts the event associated with the removal of a 
-         * new GroundStation.
-         * @param gs_id The identifier of the GroundStation.
-         */
-        this.gsRemoved = function (gsId) {
-            $rootScope.$broadcast(this.GS_REMOVED_EVENT, gsId);
-        };
+    /**
+     * Function that broadcasts the event associated with the removal of a 
+     * new GroundStation.
+     * @param gs_id The identifier of the GroundStation.
+     */
+    this.gsRemoved = function (gsId) {
+        $rootScope.$broadcast(this.GS_REMOVED_EVENT, gsId);
+    };
 
-        /**
-         * Function that broadcasts the event associated with the update of 
-         * new GroundStation.
-         * @param gs_id The identifier of the GroundStation.
-         */
-        this.gsUpdated = function (gsId) {
-            $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
-        };
+    /**
+     * Function that broadcasts the event associated with the update of 
+     * new GroundStation.
+     * @param gs_id The identifier of the GroundStation.
+     */
+    this.gsUpdated = function (gsId) {
+        $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
+    };
 
-    }]);
+}]);

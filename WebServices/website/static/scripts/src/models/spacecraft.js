@@ -28,16 +28,16 @@ angular.module('spacecraft-models')
     '$log', 'maps',
     function($log, maps)
 {
-    
+
     'use strict';
-    
+
     /**
      * Configuration structure for all the Spacecraft.
      * @type { { id: { marker: m, cfg: data } } }
      * @private
      */
     this._scCfg = {};
-    
+
     /**
      * Creates a new entrance in the configuration structure.
      * @param {String} id Identifier of the new Spacecraft.
@@ -56,7 +56,7 @@ angular.module('spacecraft-models')
         ).bindLabel(id, { noHide: true });
         return { marker: m, cfg: cfg };
     };
-    
+
     /**
      * Creates a new configuration object for the Spacecraft based on the
      * information contained in the data structure.
@@ -72,7 +72,7 @@ angular.module('spacecraft-models')
             return cfg;
         });
     };
-    
+
     /**
      * Initializes the internal variable with all the configuration structures
      * using the given structure.
@@ -105,5 +105,5 @@ angular.module('spacecraft-models')
         }
         return buffer;
     };
-    
+
 }]);

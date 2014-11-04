@@ -25,14 +25,13 @@ angular.module('simulator')
     .service('simulator', [ 'celestrak', function(celestrak) {
 
         'use strict';
+
+        this._trackedSc = {};
         
-        this.estimateTrack = function (scTleId) {
+        this.trackSpacecraft = function (scCfg) {
             
-            return celestrak.findTle(scTleId).then(function(data) {
-                console.log('> scTleId = ' + scTleId);
-                var sc = satellite.twoline2satrec(data.l1, data.l2);
-                console.log('> l1 = ' + data.l1 + ', l2 = ' + data.l2);
-            });
+            
+            var sc = satellite.twoline2satrec(data.l1, data.l2);
             
         };
 
