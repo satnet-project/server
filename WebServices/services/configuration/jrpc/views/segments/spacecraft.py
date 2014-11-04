@@ -69,10 +69,10 @@ def create(identifier, callsign, tle_id, **kwargs):
         raise Exception('User <' + username + '> could not be found.')
 
     sc = segments.Spacecraft.objects.create(
+        tle_id,
         user=user,
         identifier=identifier,
         callsign=callsign,
-        tle_id=tle_id
     )
 
     return {

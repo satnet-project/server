@@ -22,9 +22,9 @@ import logging
 from urllib2 import urlopen as urllib2_urlopen
 
 from services.common import misc
-from services.configuration.models import segments
+from services.simulation.models import celestrak
 
-logger = logging.getLogger('scheduling')
+logger = logging.getLogger('simulation')
 
 
 class TwoLineElementsManager(models.Manager):
@@ -38,19 +38,11 @@ class TwoLineElementsManager(models.Manager):
         with the correspondent timestamp about the time of update. The line 0
         of the TLE is used as a identifier for the TLE itself.
         """
-        spacecraft = None
-
-        try:
-            spacecraft = segments.Spacecraft.objects.get(tle_id=l0)
-        except exceptions.ObjectDoesNotExist:
-            spacecraft = None
-
         return super(TwoLineElementsManager, self).create(
             timestamp=misc.get_utc_timestamp(),
             identifier=l0,
             first_line=l1,
             second_line=l2,
-            spacecraft=spacecraft
         )
 
     def create_or_update(self, l0, l1, l2):
@@ -143,6 +135,13 @@ class TwoLineElement(models.Model):
         'Timestamp with the update date for this TLE'
     )
 
+    source = models.CharField(
+        'String that indicates the source of this TLE',
+        max_length=100,
+        choices=celestrak.CelestrakDatabase.CELESTRAK_SECTIONS,
+        default=celestrak.CelestrakDatabase.CELESTRAK_CUBESATS
+    )
+
     identifier = models.CharField(
         'Identifier of the spacecraft that this TLE element models (line 0)',
         max_length=24,
@@ -155,13 +154,6 @@ class TwoLineElement(models.Model):
     second_line = models.CharField(
         'Second line of a given two-line element (line 2)',
         max_length=69
-    )
-
-    spacecraft = models.ForeignKey(
-        segments.Spacecraft,
-        null=True,
-        blank=True,
-        verbose_name='Spacecraft object that requires this TLE'
     )
 
     def update(self, l0, l1, l2):
@@ -185,19 +177,6 @@ class TwoLineElement(models.Model):
         if self.second_line != l2:
             self.second_line = l2
             changed_flag = True
-
-        try:
-
-            sc = segments.Spacecraft.objects.get(tle_id=l0)
-            if self.spacecraft.identifier != sc.identifier:
-                self.spacecraft = sc
-                changed_flag = True
-
-        except exceptions.ObjectDoesNotExist:
-
-            if self.spacecraft is not None:
-                self.spacecraft = None
-                changed_flag = True
 
         if changed_flag:
             self.timestamp = misc.get_utc_timestamp()

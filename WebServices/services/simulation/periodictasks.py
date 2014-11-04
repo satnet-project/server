@@ -21,7 +21,7 @@ from periodically import decorators
 from services.simulation.models import tle
 
 
-logger = logging.getLogger('scheduling')
+logger = logging.getLogger('simulation')
 
 
 @decorators.daily()

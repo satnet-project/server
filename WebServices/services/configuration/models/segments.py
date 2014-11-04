@@ -24,6 +24,8 @@ from services.accounts import models as account_models
 from services.common import gis
 from services.configuration.models import channels
 
+from services.simulation.models import tle as tle_models
+
 import logging
 
 logger = logging.getLogger('models.segments')
@@ -34,6 +36,33 @@ class SpacecraftManager(models.Manager):
     Manager that contains all the methods required for accessing to the
     contents of the SpacecraftConfiguration database models.
     """
+
+    def create(self, tle_id, **kwargs):
+        """
+        Overriden "create" that receives an identifier for a TLE, gets the
+        correspondent TLE object from within the CELESTRAK TLE database and
+        associates it with this new Spacecraft.
+        :param tle_id: Identifier of the TLE to be associated with this
+                        spacecraft.
+        :param kwargs: Arguments to be used for this spacecraft object.
+        :return: Spacecraft object reference.
+        """
+        return super(SpacecraftManager, self).create(
+            tle=tle_models.TwoLineElement.objects.get(identifier=tle_id),
+            **kwargs
+        )
+
+    def update(self, tle_id, **kwargs):
+        """
+
+        :param tle_id:
+        :param kwargs:
+        :return:
+        """
+        return super(SpacecraftManager, self).update(
+            tle=tle_models.TwoLineElement.objects.get(identifier=tle_id),
+            **kwargs
+        )
 
     def add_channel(
         self, sc_identifier=None, identifier=None,
@@ -105,7 +134,8 @@ class Spacecraft(models.Model):
         )]
     )
 
-    tle_id = models.CharField('TLE identifier', max_length=100)
+    # tle_id = models.CharField('TLE identifier', max_length=100)
+    tle = models.ForeignKey(tle_models.TwoLineElement)
     # Spacecraft channels
     channels = models.ManyToManyField(channels.SpacecraftChannel)
 

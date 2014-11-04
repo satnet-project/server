@@ -147,7 +147,7 @@ class OperationalSlotsManager(models.Manager):
         )
 
     def create_list(
-            self, groundstation_channel, spacecraft_channel, simulations
+        self, groundstation_channel, spacecraft_channel, simulations
     ):
         """
         Creates all the objects from the given list.
@@ -247,7 +247,7 @@ class OperationalSlotsManager(models.Manager):
         return result
 
     def update_state(
-            self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
+        self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
     ):
         """
         Updates the state of the OperationalSlots implementing the policy for
