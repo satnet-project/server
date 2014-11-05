@@ -23,7 +23,7 @@ import logging
 import pytz
 
 
-class TestMisc(test.TestCase):
+class TestSerialization(test.TestCase):
 
     def setUp(self):
 
@@ -64,13 +64,20 @@ class TestMisc(test.TestCase):
             expected = '1984-07-17T00:00:00-07:00'
         else:
             birthday = dt.replace(
-                year=1984, month=1, day=17,
+                year=1984, month=7, day=17,
                 hour=0, minute=0, second=0, microsecond=0
             )
             expected = '1984-07-17T00:00:00-08:00'
 
         actual = serialization.serialize_iso8601_date(birthday)
+
+        if self.__verbose_testing:
+            print 'e = ' + str(expected)
+            print 'a = ' + str(actual)
+
         self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
+
+        self.__verbose_testing = False
 
     def test_deserialize_iso8601_date(self):
         """
@@ -89,16 +96,22 @@ class TestMisc(test.TestCase):
                 hour=0, minute=0, second=0, microsecond=0
             )
         else:
-            in_param = '1984-01-17T00:00:00-08:00'
+            in_param = '1984-07-17T00:00:00-08:00'
             expected = datetime.datetime.now(
                 pytz.timezone('US/Pacific')
             ).replace(
-                year=1984, month=1, day=17,
+                year=1984, month=7, day=17,
                 hour=0, minute=0, second=0, microsecond=0
             )
 
         actual = serialization.deserialize_iso8601_date(in_param)
+
+        if self.__verbose_testing:
+            print 'e = ' + str(expected)
+            print 'a = ' + str(actual)
+
         self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
+        self.__verbose_testing = False
 
     def test_serialize_iso8601_time(self):
         """
@@ -106,7 +119,7 @@ class TestMisc(test.TestCase):
         ISO-8601 string with Date and TimeZone.
         """
         if self.__verbose_testing:
-            print '>>> test_serialize_iso8601_time:'
+            print '\n>>> test_serialize_iso8601_time:'
 
         dt = datetime.datetime.now(pytz.timezone('US/Pacific'))
 
@@ -117,6 +130,11 @@ class TestMisc(test.TestCase):
             expected = '00:00:00-08:00'
 
         actual = serialization.serialize_iso8601_time(midnight)
+
+        if self.__verbose_testing:
+            print 'e = ' + str(expected)
+            print 'a = ' + str(actual)
+
         self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
 
     def test_deserialize_iso8601_time(self):
@@ -125,16 +143,22 @@ class TestMisc(test.TestCase):
         datetime.datetime object.
         """
         if self.__verbose_testing:
-            print '>>> test_deserialize_iso8601_time:'
+            print '\n>>> test_deserialize_iso8601_time:'
 
         if datetime.datetime.now(pytz.timezone('US/Pacific')).tzname() == 'PDT':
             in_param = '01:00:00-07:00'
             expected = '08:00:00'
         else:
             in_param = '01:00:00-08:00'
-            expected = '08:00:00'
+            expected = '09:00:00'
 
         actual = serialization.deserialize_iso8601_time(in_param)
+
+        if self.__verbose_testing:
+            print 'e = ' + str(expected)
+            print 'a = ' + str(actual)
+
         self.assertEquals(
             actual.isoformat(), expected, 'Wrong ISO-8601 format.'
         )
+        self.__verbose_testing = False

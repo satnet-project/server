@@ -22,9 +22,9 @@ import logging
 from urllib2 import urlopen as urllib2_urlopen
 
 from services.common import misc
-from services.configuration.models import segments
+from services.simulation.models.celestrak import CelestrakDatabase as Celestrak
 
-logger = logging.getLogger('scheduling')
+logger = logging.getLogger('simulation')
 
 
 class TwoLineElementsManager(models.Manager):
@@ -32,28 +32,20 @@ class TwoLineElementsManager(models.Manager):
     Class that handles all actions related with the TLE database table.
     """
 
-    def create(self, l0, l1, l2):
+    def create(self, source, l0, l1, l2):
         """
         Overriden create method that adds a new entry in the TLE database
         with the correspondent timestamp about the time of update. The line 0
         of the TLE is used as a identifier for the TLE itself.
         """
-        spacecraft = None
-
-        try:
-            spacecraft = segments.Spacecraft.objects.get(tle_id=l0)
-        except exceptions.ObjectDoesNotExist:
-            spacecraft = None
-
         return super(TwoLineElementsManager, self).create(
             timestamp=misc.get_utc_timestamp(),
             identifier=l0,
             first_line=l1,
             second_line=l2,
-            spacecraft=spacecraft
         )
 
-    def create_or_update(self, l0, l1, l2):
+    def create_or_update(self, source, l0, l1, l2):
         """
         This method creates the new entry in the databse (in case it does not
         exist); otherwise, it updates the existing entry with the given data
@@ -65,20 +57,38 @@ class TwoLineElementsManager(models.Manager):
         """
         try:
             tle = self.get(identifier=l0)
-            tle.update(l0=l0, l1=l1, l2=l2)
+            tle.dirty_update(source=source, identifier=l0, l1=l1, l2=l2)
         except exceptions.ObjectDoesNotExist:
-            self.create(l0, l1, l2)
-
-    __NORAD_CUBESAT_TLE_URL = 'http://celestrak.com/NORAD/elements/cubesat.txt'
+            self.create(source, l0, l1, l2)
 
     @staticmethod
-    def load_tles(url_string=__NORAD_CUBESAT_TLE_URL):
+    def load_celestrak():
+
+        for s_tuple in Celestrak.CELESTRAK_SECTIONS:
+
+            section = s_tuple[0]
+            tle_info = s_tuple[1]
+
+            for (url, description) in tle_info:
+                TwoLineElementsManager.load_tles(section, url)
+
+    @staticmethod
+    def load_tles(
+        section=Celestrak.CELESTRAK_SECTION_5,
+        url_string=Celestrak.CELESTRAK_CUBESATS,
+        debug=False
+    ):
         """
         This method loads the TLE's in the database and updates them in
         accordance with the latest information gathered from NORAD's website.
         """
         l_n = 0
         l0, l1, l2 = '', '', ''
+
+        if debug:
+            logger.debug(
+                '@[load_tles], url_string = ' + str(url_string)
+            )
 
         for l_i in urllib2_urlopen(url_string):
 
@@ -87,43 +97,21 @@ class TwoLineElementsManager(models.Manager):
             if l_n % 3 == 1:
                 l1 = l_i.rstrip()
             if l_n % 3 == 2:
-                TwoLineElement.objects.create_or_update(l0, l1, l_i.rstrip())
+                l2 = l_i.rstrip()
+
+                if debug:
+                    logger.debug(
+                        '@[load_tles]: section = ' + str(section)
+                        + ', id = <' + str(l0) + '>'
+                        + ",\n\t l1 = <" + str(l1) + '>'
+                        + ",\n\t l2 = <" + str(l2) + '>'
+                    )
+
+                TwoLineElement.objects.create_or_update(
+                    source=section, l0=l0, l1=l1, l2=l2
+                )
 
             l_n += 1
-
-    @staticmethod
-    def spacecraft_added(sender, instance, **kwargs):
-        """
-        Callback handler for the signal coming from the Spacecraft table that
-        indicates that a new satellite has been added to the system.
-        """
-        try:
-            tle = TwoLineElement.objects.get(identifier=instance.tle_id)
-            tle.spacecraft = instance
-            tle.save()
-        except exceptions.ObjectDoesNotExist:
-            logger.warning(
-                'Cannot find spacecraft in database, sc.tle = ' + str(
-                    instance.tle_id
-                )
-            )
-
-    @staticmethod
-    def spacecraft_removed(sender, instance, **kwargs):
-        """
-        Callback handler for the signal coming from the Spacecraft table that
-        indicates that a new satellite has been removed from the system.
-        """
-        try:
-            tle = TwoLineElement.objects.get(identifier=instance.tle_id)
-            tle.spacecraft = None
-            tle.save()
-        except exceptions.ObjectDoesNotExist:
-            logger.warning(
-                'Cannot find spacecraft in database, sc.tle = ' + str(
-                    instance.tle_id
-                )
-            )
 
 
 class TwoLineElement(models.Model):
@@ -131,19 +119,27 @@ class TwoLineElement(models.Model):
     Class that models the TLE elements within the database.
     """
     class Meta:
-        app_label = 'scheduling'
+        app_label = 'simulation'
 
     objects = TwoLineElementsManager()
-
-    timestamp = models.BigIntegerField(
-        'Timestamp with the update date for this TLE'
-    )
 
     identifier = models.CharField(
         'Identifier of the spacecraft that this TLE element models (line 0)',
         max_length=24,
         unique=True
     )
+
+    timestamp = models.BigIntegerField(
+        'Timestamp with the update date for this TLE'
+    )
+
+    source = models.CharField(
+        'String that indicates the source of this TLE',
+        max_length=100,
+        choices=Celestrak.CELESTRAK_SECTIONS,
+        default=Celestrak.CELESTRAK_CUBESATS
+    )
+
     first_line = models.CharField(
         'First line of a given two-line element (line 1)',
         max_length=69
@@ -153,25 +149,19 @@ class TwoLineElement(models.Model):
         max_length=69
     )
 
-    spacecraft = models.ForeignKey(
-        segments.Spacecraft,
-        null=True,
-        blank=True,
-        verbose_name='Spacecraft object that requires this TLE'
-    )
-
-    def update(self, l0, l1, l2):
+    def dirty_update(self, source, identifier, l1, l2):
         """
         Updates the configuration for this TwoLineEelment with the data
         provided.
-        :param l0: The identification line of the TLE (line #0).
+        :param source: The source for this TLE.
+        :param identifier: The identification line of the TLE (line #0).
         :param l1: The first line of the TLE (line#1).
         :param l2: The second line of the TLE (line#2).
         """
         changed_flag = False
 
-        if self.identifier != l0:
-            self.identifier = l0
+        if self.identifier != identifier:
+            self.identifier = identifier
             changed_flag = True
 
         if self.first_line != l1:
@@ -182,18 +172,9 @@ class TwoLineElement(models.Model):
             self.second_line = l2
             changed_flag = True
 
-        try:
-
-            sc = segments.Spacecraft.objects.get(tle_id=l0)
-            if self.spacecraft.identifier != sc.identifier:
-                self.spacecraft = sc
-                changed_flag = True
-
-        except exceptions.ObjectDoesNotExist:
-
-            if self.spacecraft is not None:
-                self.spacecraft = None
-                changed_flag = True
+        if self.source != source:
+            self.source = source
+            changed_flag = True
 
         if changed_flag:
             self.timestamp = misc.get_utc_timestamp()

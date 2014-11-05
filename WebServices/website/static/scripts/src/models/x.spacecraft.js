@@ -18,21 +18,20 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'satnet-services', 'celestrak-services', 'spacecraft-models'
+    'satnet-services', 'spacecraft-models'
 ]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
-angular.module('x-spacecraft-models')
-    .service('xsc', [
-        '$log', '$q', 'satnetRPC', 'celestrak', 'sc',
-    function($log, $q, satnetRPC, celestrak)
+angular.module('x-spacecraft-models').service('xsc', [
+    '$log', '$q', 'satnetRPC', 'sc',
+    function($log, $q, satnetRPC, sc)
 {
 
     'use strict';
-    
+
     /**
      * Reads the configuration for all the GroundStation objects available
      * in the server.
@@ -55,21 +54,14 @@ angular.module('x-spacecraft-models')
         });
     };
 
-    this._getAll = function() {
-        this._getAllCfgs().then(function (cfgs) {
-            var c = [];
-            angular.forEach (cfgs, function(cfg) {
-                c.push(cfg['spacecraft_id']);
-            });
-            return $q.all(celestrak.findTle(c));
-        });
-    };
-    
+    /**
+     * Initializes all the configuration objects for the available
+     * spacecraft.
+     * @returns {[Object]} Array with the configuration objects.
+     */
     this.initAll = function() {
-        this._readAll().then(function (cfgs) {
-            angular.forEach(cfgs, function(cfg) {
-                //celestrak.findTle(cfg['spacecraft_id']).then(tle)
-            });
+        return this.getAllCfgs().then(function (cfgs) {
+            return sc.initAll(cfgs);
         });
     };
 

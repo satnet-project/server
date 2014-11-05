@@ -57,7 +57,6 @@ class SegmentCompatibilityTest(test.TestCase):
         )
 
         signals.connect_channels_2_compatibility()
-        signals.connect_segments_2_booking_tle()
 
     def test_compatibility_case_1(self):
         """

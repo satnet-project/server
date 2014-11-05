@@ -38,10 +38,12 @@
             <div class='control-group'
                     ng-class="{ 'has-error': form.tleid.$pristine }">
                 <label class='control-label' for='tleid'>
-                    <p>TLE Identifier</p>
-                    <span style='font-size: 75%;'>
-                        (Current: {{ sc.saved_tleid }})
-                    </span>
+                    <div style='display: inline-block'>
+                        <div style='float: left, padding: 20px;'><p>TLE Id</p></div>
+                        <div>
+                            <p style='font-size:70%'>(Current: {{ sc.savedTleId }})</p>
+                        </div>
+                    </div>
                 </label>
                 <select name='tleid' class='nya-selectpicker'
                         ng-model="sc.tleid"

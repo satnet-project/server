@@ -24,9 +24,9 @@ from services.common import testing as db_tools, misc
 from services.common import serialization as common_serial
 from services.configuration.models import rules, segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
-from services.configuration.jrpc.views import groundstations as jrpc_gs
-from services.configuration.jrpc.views import spacecraft as jrpc_sc
 from services.configuration.jrpc.views import rules as jrpc_rules
+from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
+from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
 
 
 class JRPCRulesTest(test.TestCase):

@@ -50,7 +50,6 @@ class TestPassiveCommunications(TestCase):
         signals.connect_channels_2_compatibility()
         signals.connect_compatibility_2_operational()
         signals.connect_rules_2_availability()
-        signals.connect_segments_2_booking_tle()
 
         db_tools.init_available()
         db_tools.init_tles_database()

@@ -13,13 +13,22 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from services.configuration.jrpc.views.segments import groundstations
-
 __author__ = 'rtubiopa@calpoly.edu'
 
-# It is necessary to import this module here for rpc4django to detect the RPC
-# methods.
-from services.configuration.jrpc.views import channels, rules
+import logging
+from periodically import decorators
 
-# It is also necessary to import the signals.
-from services.configuration import signals
+from services.simulation.models import tle
+
+
+logger = logging.getLogger('simulation')
+
+
+@decorators.daily()
+def update_tle_database():
+    """
+    Task to be executed periodically for cleaning up all users whose activation
+    key is expired and they did not complete still their registration process.
+    """
+    logger.info("Updating TLE database, daily task execution!")
+    tle.TwoLineElementsManager.load_tles()

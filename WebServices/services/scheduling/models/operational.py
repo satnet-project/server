@@ -23,7 +23,7 @@ import logging
 
 from services.common import misc, simulation
 from services.configuration.models import availability, channels, compatibility
-from services.scheduling.models import tle
+from services.simulation.models import tle
 
 logger = logging.getLogger('scheduling')
 
@@ -115,9 +115,7 @@ class OperationalSlotsManager(models.Manager):
         database.
         """
         simulator = self.get_simulator()
-        simulator.set_spacecraft(
-            tle.TwoLineElement.objects.get(identifier=spacecraft.tle_id)
-        )
+        simulator.set_spacecraft(spacecraft.tle)
 
     def create(
         self, groundstation_channel, spacecraft_channel,
@@ -147,7 +145,7 @@ class OperationalSlotsManager(models.Manager):
         )
 
     def create_list(
-            self, groundstation_channel, spacecraft_channel, simulations
+        self, groundstation_channel, spacecraft_channel, simulations
     ):
         """
         Creates all the objects from the given list.
@@ -247,7 +245,7 @@ class OperationalSlotsManager(models.Manager):
         return result
 
     def update_state(
-            self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
+        self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
     ):
         """
         Updates the state of the OperationalSlots implementing the policy for

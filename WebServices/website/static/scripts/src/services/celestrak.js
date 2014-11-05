@@ -216,11 +216,12 @@ angular.module('celestrak-services').service('celestrak', [
      * @returns {*} ($http promise) TLE object ({id, l1, l2}) if found.
      * @private
      */
-    this._tleObject = function (tleId, subsection) {
+    this.tleObject = function (tleId, subsection) {
         return this.getTleArray(subsection).then(function(data) {
             for ( var i = 0; i < data.length; i++ ) {
-                $log.info('i = ' + i + ', data = ' + JSON.stringify(data));
-                if ( data[i].id === tleId ) { return data; }
+                if ( data[i].id == tleId ) {
+                    return data[i];
+                }
             }
         });
     };
@@ -233,15 +234,18 @@ angular.module('celestrak-services').service('celestrak', [
      */
     this.findTle = function (tleId) {
 
-        var promises = [];
+        var p = [];
 
-        for ( var i = 0; i < this.CELESTRAK_RESOURCES; i++ ) {
-            promises.push(this._tleObject(tleId, this.CELESTRAK_RESOURCES[i]));
+        for ( var r in this.CELESTRAK_RESOURCES ) {
+            p.push(this.tleObject(tleId, r));
         }
 
-        return $q.all(promises).then(function(data) {
-            $log.info('data = ' + JSON.stringify(data));
-            return data;
+        return $q.all(p).then(function(results) {
+            var fResults = [];
+            angular.forEach(results, function(r) {
+                if ( r != null ) { fResults.push(r); }
+            });
+            return fResults;
         });
 
     };

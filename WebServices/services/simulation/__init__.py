@@ -14,20 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import logging
-from periodically import decorators
-
-from services.scheduling.models import tle
-
-logger = logging.getLogger('scheduling')
-
-
-@decorators.daily()
-def update_tle_database():
-    """
-    Task to be executed periodically for cleaning up all users whose activation
-    key is expired and they did not complete still their registration process.
-    """
-    logger.info("Updating TLE database, daily task execution!")
-    tle.TwoLineElementsManager.load_tles()

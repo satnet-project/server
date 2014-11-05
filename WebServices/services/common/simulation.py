@@ -226,7 +226,7 @@ class OrbitalSimulator(object):
         defined horizon.
         """
         if self._test_mode:
-            logger.warning('Simulator is in TESTING mode.')
+            #logger.warning('Simulator is in TESTING mode.')
             return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []

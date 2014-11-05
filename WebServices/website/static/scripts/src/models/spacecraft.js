@@ -28,16 +28,16 @@ angular.module('spacecraft-models')
     '$log', 'maps',
     function($log, maps)
 {
-    
+
     'use strict';
-    
+
     /**
      * Configuration structure for all the Spacecraft.
      * @type { { id: { marker: m, cfg: data } } }
      * @private
      */
     this._scCfg = {};
-    
+
     /**
      * Creates a new entrance in the configuration structure.
      * @param {String} id Identifier of the new Spacecraft.
@@ -56,7 +56,7 @@ angular.module('spacecraft-models')
         ).bindLabel(id, { noHide: true });
         return { marker: m, cfg: cfg };
     };
-    
+
     /**
      * Creates a new configuration object for the Spacecraft based on the
      * information contained in the data structure.
@@ -72,5 +72,38 @@ angular.module('spacecraft-models')
             return cfg;
         });
     };
-    
+
+    /**
+     * Initializes the internal variable with all the configuration structures
+     * using the given structure.
+     * @param {Object} cfgs All spacecraft configuration objects.
+     */
+    this.initAll = function(cfgs) {
+        for ( var i = 0; i < cfgs.length; i++ ) {
+            var c = cfgs[i];
+            this._scCfg[c.id] = {
+                cfg: c.cfg, tle: c.tle, marker: null
+            };
+        }
+        return cfgs;
+    };
+
+    /**
+     * Returns the information for all the spacecraft configurations hold as
+     * a human-readable string.
+     * @returns {String} Human-readable string.
+     */
+    this.asString = function() {
+        var buffer = '';
+        for ( var id in this._scCfg ) {
+            var c = this._scCfg[id];
+            var scBuffer = '["id: "' + c.id + ', ' +
+                '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
+                '"tle: "' + JSON.stringify(c.tle) + ', ' +
+                '"marker: "' + c.marker +  ']\n';
+            buffer = buffer + scBuffer;
+        }
+        return buffer;
+    };
+
 }]);
