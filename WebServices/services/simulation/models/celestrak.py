@@ -65,6 +65,43 @@ class CelestrakDatabase(object):
     CELESTRAK_CUBESATS = CELESTRAK_URL_BASE + 'cubesat.txt'
     CELESTRAK_OTHER = CELESTRAK_URL_BASE + 'other.txt'
 
+    CELESTRAK_RESOURCES = {
+        'Weather': CELESTRAK_WEATHER,
+        'NOAA': CELESTRAK_NOAA,
+        'GOES': CELESTRAK_GOES,
+        'Earth Resources': CELESTRAK_EARTH_RESOURCES,
+        'SARSAT': CELESTRAK_SARSAT,
+        'Disaster Monitoring': CELESTRAK_DISASTER_MONITORING,
+        'Tracking & Data Relay': CELESTRAK_TRACKING_DATA_RELAY,
+        'ARGOS': CELESTRAK_ARGOS,
+        'Geostationary': CELESTRAK_GEOSTATIONARY,
+        'Intelsat': CELESTRAK_INTELSAT,
+        'Gorizont': CELESTRAK_GORIZONT,
+        'Raduga': CELESTRAK_RADUGA,
+        'Molniya': CELESTRAK_MOLNIYA,
+        'Iridium': CELESTRAK_IRIDIUM,
+        'Orbcomm': CELESTRAK_ORBCOMM,
+        'Globalstar': CELESTRAK_GLOBALSTAR,
+        'Amateur Radio': CELESTRAK_AMATEUR_RADIO,
+        'Experimental': CELESTRAK_EXPERIMENTAL,
+        'Others': CELESTRAK_COMMS_OTHER,
+        'GPS Operational': CELESTRAK_GPS_OPERATIONAL,
+        'Glonass Operational': CELESTRAK_GLONASS_OPERATIONAL,
+        'Galileo': CELESTRAK_GALILEO,
+        'Beidou': CELESTRAK_BEIDOU,
+        'Satellite-based Augmentation System': CELESTRAK_SATELLITE_AUGMENTATION,
+        'Navy Navigation Satellite System': CELESTRAK_NNSS,
+        'Russian LEO Navigation': CELESTRAK_RUSSIAN_LEO_NAVIGATION,
+        'Space & Earth Science': CELESTRAK_SPACE_EARTH_SCIENCE,
+        'Geodetic': CELESTRAK_GEODETIC,
+        'Engineering': CELESTRAK_ENGINEERING,
+        'Education': CELESTRAK_EDUCATION,
+        'Military': CELESTRAK_MILITARY,
+        'Radar Callibration': CELESTRAK_RADAR_CALLIBRATION,
+        'CubeSats': CELESTRAK_CUBESATS,
+        'Other': CELESTRAK_OTHER
+    }
+    
     # Decodes the name of a section into the position of that section within
     # the array of available sections for the CELESTRAK database.
     CELESTRAK_SECTION_2_POSITION = {
@@ -132,3 +169,45 @@ class CelestrakDatabase(object):
             )
         )
     )
+
+    CELESTRAK_SELECT_SECTIONS = [
+        # ############################################################ SECTION 1
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'Weather' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'NOAA' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'GOES' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'Earth Resources' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'SARSAT' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'Disaster Monitoring' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'Tracking & Data Relay' },
+        { 'section': CELESTRAK_SECTION_1, 'subsection': 'ARGOS' },
+        # ############################################################ SECTION 2
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Geostationary' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Intelsat' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Gorizont' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Raduga' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Molniya' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Iridium' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Orbcomm' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Globalstar' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Amateur Radio' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Experimental' },
+        { 'section': CELESTRAK_SECTION_2, 'subsection': 'Others' },
+        # ############################################################ SECTION 3
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'GPS Operational' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Glonass Operational' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Galileo' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Beidou' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Satellite-based Augmentation System' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Navy Navigation Satellite System' },
+        { 'section': CELESTRAK_SECTION_3, 'subsection': 'Russian LEO Navigation' },
+        # ############################################################ SECTION 4
+        { 'section': CELESTRAK_SECTION_4, 'subsection': 'Space & Earth Science' },
+        { 'section': CELESTRAK_SECTION_4, 'subsection': 'Geodetic' },
+        { 'section': CELESTRAK_SECTION_4, 'subsection': 'Engineering' },
+        { 'section': CELESTRAK_SECTION_4, 'subsection': 'Education' },
+        # ############################################################ SECTION 5
+        { 'section': CELESTRAK_SECTION_5, 'subsection': 'Military' },
+        { 'section': CELESTRAK_SECTION_5, 'subsection': 'Radar Callibration' },
+        { 'section': CELESTRAK_SECTION_5, 'subsection': 'CubeSats' },
+        { 'section': CELESTRAK_SECTION_5, 'subsection': 'Other' }
+    ]

@@ -14,15 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import rpc4django
-
-
-@rpc4django.rpcmethod(
-    name='simulation.tle.celestrak.getSections',
-    signature=[],
-    login_required=True
-)
-def get_celestrak_sections():
-
-    pass
