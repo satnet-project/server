@@ -115,9 +115,7 @@ class OperationalSlotsManager(models.Manager):
         database.
         """
         simulator = self.get_simulator()
-        simulator.set_spacecraft(
-            tle.TwoLineElement.objects.get(identifier=spacecraft.tle_id)
-        )
+        simulator.set_spacecraft(spacecraft.tle)
 
     def create(
         self, groundstation_channel, spacecraft_channel,

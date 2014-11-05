@@ -75,16 +75,16 @@ class TestSimulation(TestCase):
         availability slot.
         """
         # ### TODO Understand inaccuracies in between PyEphem and GPredict
-        # ### TODO when the minimum contact elevation angle increases.
-        # ### TODO What is the influence of body.compute(observer) within the
+        # ### TODO when the minimum contact elevation angle increases,
+        # ### TODO what is the influence of body.compute(observer) within the
         # ### TODO simulation loop?
         if self.__verbose_testing:
             print '>>> test_calculate_pass_slot:'
 
         self.__simulator.set_groundstation(self.__gs_1)
-        self.__simulator.set_spacecraft(tle.TwoLineElement.objects.get(
-            identifier=self.__sc_1_tle_id
-        ))
+        self.__simulator.set_spacecraft(
+            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
+        )
 
         if self.__verbose_testing:
             print self.__simulator.__unicode__()

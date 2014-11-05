@@ -53,7 +53,7 @@ class CelestrakDatabase(object):
     CELESTRAK_NNSS = CELESTRAK_URL_BASE + 'nnss.txt'
     CELESTRAK_RUSSIAN_LEO_NAVIGATION = CELESTRAK_URL_BASE + 'musson.txt'
     # Scientific
-    CELESTRAK_SECTION_4 = 'Scientific';
+    CELESTRAK_SECTION_4 = 'Scientific'
     CELESTRAK_SPACE_EARTH_SCIENCE = CELESTRAK_URL_BASE + 'science.txt'
     CELESTRAK_GEODETIC = CELESTRAK_URL_BASE + 'geodetic.txt'
     CELESTRAK_ENGINEERING = CELESTRAK_URL_BASE + 'engineering.txt'
@@ -64,6 +64,16 @@ class CelestrakDatabase(object):
     CELESTRAK_RADAR_CALLIBRATION = CELESTRAK_URL_BASE + 'radar.txt'
     CELESTRAK_CUBESATS = CELESTRAK_URL_BASE + 'cubesat.txt'
     CELESTRAK_OTHER = CELESTRAK_URL_BASE + 'other.txt'
+
+    # Decodes the name of a section into the position of that section within
+    # the array of available sections for the CELESTRAK database.
+    CELESTRAK_SECTION_2_POSITION = {
+        CELESTRAK_SECTION_1: 0,
+        CELESTRAK_SECTION_2: 1,
+        CELESTRAK_SECTION_3: 2,
+        CELESTRAK_SECTION_4: 3,
+        CELESTRAK_SECTION_5: 4
+    }
 
     # All choices for the TLE database sources.
     CELESTRAK_SECTIONS = (

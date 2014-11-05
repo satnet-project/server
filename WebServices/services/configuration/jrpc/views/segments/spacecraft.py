@@ -109,7 +109,7 @@ def set_configuration(spacecraft_id, configuration):
     """
     callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
     sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
-    sc.update(callsign=callsign, tle_id=tle_id)
+    sc.dirty_update(callsign=callsign, tle_id=tle_id)
     return spacecraft_id
 
 

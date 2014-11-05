@@ -13,14 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from services.simulation.models import tle
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
 
 from services.configuration.models import availability, compatibility, channels
-from services.configuration.models import rules, segments
+from services.configuration.models import rules
 from services.scheduling.models import operational
 
 
@@ -81,22 +79,6 @@ def connect_channels_2_compatibility():
     )
 
 
-def connect_segments_2_booking_tle():
-    """
-    This function connects all the signals triggered during the
-    creation/save/removal of a segment (either a GroundStaiton or a
-    Spacecraft), with some callback functions at the NoradTLE models.
-    """
-    signals.post_save.connect(
-        tle.TwoLineElementsManager.spacecraft_added,
-        sender=segments.Spacecraft
-    )
-    signals.pre_delete.connect(
-        tle.TwoLineElementsManager.spacecraft_removed,
-        sender=segments.Spacecraft
-    )
-
-
 def connect_availability_2_operational():
     """
     This function connects all the signals triggered during the
@@ -139,4 +121,3 @@ connect_availability_2_operational()
 connect_channels_2_compatibility()
 connect_compatibility_2_operational()
 connect_rules_2_availability()
-connect_segments_2_booking_tle()

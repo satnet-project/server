@@ -135,7 +135,9 @@ def init_available():
 
 
 def init_tles_database():
-
+    """
+    Loads only the TLE's for the CubeSat section from celestrak.com.
+    """
     tle.TwoLineElementsManager.load_tles()
 
 

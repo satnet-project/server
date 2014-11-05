@@ -168,6 +168,7 @@ INSTALLED_APPS = (
     'services.configuration',
     'services.scheduling',
     'services.communications',
+    'services.simulation',
 
     # ### django-admin
     'django.contrib.admin',
@@ -243,6 +244,11 @@ LOGGING = {
             'propagate': True,
         },
         'scheduling': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'simulation': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

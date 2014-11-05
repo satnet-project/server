@@ -23,7 +23,6 @@ from django.db.models import signals
 from services.accounts import models as account_models
 from services.common import gis
 from services.configuration.models import channels
-
 from services.simulation.models import tle as tle_models
 
 import logging
@@ -113,7 +112,10 @@ class Spacecraft(models.Model):
 
     objects = SpacecraftManager()
 
-    user = models.ForeignKey(account_models.UserProfile)
+    user = models.ForeignKey(
+        account_models.UserProfile, verbose_name='Owner of the Spacecraft'
+    )
+
     identifier = models.CharField(
         'Identifier',
         max_length=30,
@@ -134,12 +136,15 @@ class Spacecraft(models.Model):
         )]
     )
 
-    # tle_id = models.CharField('TLE identifier', max_length=100)
-    tle = models.ForeignKey(tle_models.TwoLineElement)
+    tle = models.ForeignKey(
+        tle_models.TwoLineElement,
+        verbose_name='TLE object for this Spacecraft'
+    )
+
     # Spacecraft channels
     channels = models.ManyToManyField(channels.SpacecraftChannel)
 
-    def update(self, callsign=None, tle_id=None):
+    def dirty_update(self, callsign=None, tle_id=None):
         """
         Updates the configuration for the given GroundStation object. It is not
         necessary to provide all the parameters for this function, since only
@@ -150,8 +155,9 @@ class Spacecraft(models.Model):
         if callsign and self.callsign != callsign:
             self.callsign = callsign
             changes = True
-        if tle_id and self.tle_id != tle_id:
-            self.tle_id = tle_id
+
+        if tle_id and self.tle.identifier != tle_id:
+            self.tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
             changes = True
 
         if changes:
@@ -162,9 +168,7 @@ class Spacecraft(models.Model):
         Prints in a unicode string the most remarkable data for this
         spacecraft object.
         """
-        return ' >>> SC, id = ' + str(self.identifier) + ', tle_id = ' + str(
-            self.tle_id
-        )
+        return ' >>> SC, id = ' + str(self.identifier)
 
 
 class GroundStationsManager(models.Manager):

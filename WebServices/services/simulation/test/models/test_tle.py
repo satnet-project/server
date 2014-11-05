@@ -22,7 +22,6 @@ import logging
 import ephem
 
 from services.common import testing as db_tools
-from services.configuration import signals as cfg_signals
 from services.simulation.models import tle
 
 
@@ -42,13 +41,11 @@ class TestTle(TestCase):
         self.__sc_2_tle_id = 'HUMSAT-D'
 
         self.__band = db_tools.create_band()
-        db_tools.init_tles_database()
+        # (makes no sense) db_tools.init_tles_database()
         self.__user_profile = db_tools.create_user_profile()
 
         if not self.__verbose_testing:
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
-
-        cfg_signals.connect_segments_2_booking_tle()
 
     def test_load_tles(self):
         """
@@ -69,19 +66,29 @@ class TestTle(TestCase):
                 str(tle_i.second_line)
             )
 
-    def test_spacecraft_database_signaling(self):
+    def test_load_celestrak(self):
         """
-        This test is oriented to test the execution of the callbacks invoked
-        by the creation of a new Spacecraft object in the database.
+        Test for validating that all the TLE's from celestrak.com are loaded
+        correctly.
+        """
+        tle.TwoLineElementsManager.load_celestrak()
+
+        for tle_i in tle.TwoLineElement.objects.all():
+            ephem.readtle(
+                str(tle_i.identifier),
+                str(tle_i.first_line),
+                str(tle_i.second_line)
+            )
+
+    def test_spacecraft_database(self):
+        """
+        Tests the usage of the database by an external user.
         """
         if self.__verbose_testing:
-            print '>>> spacecraft_database_signaling'
+            print '>>> spacecraft_database'
 
-        self.__sc_1 = db_tools.create_sc(
-            user_profile=self.__user_profile,
-            identifier=self.__sc_1_id,
-            tle_id=self.__sc_1_tle_id
-        )
+        tle.TwoLineElementsManager.load_tles()
+
         try:
             tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
             self.fail(
@@ -92,11 +99,6 @@ class TestTle(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.__sc_2 = db_tools.create_sc(
-            user_profile=self.__user_profile,
-            identifier=self.__sc_2_id,
-            tle_id=self.__sc_2_tle_id
-        )
         tle_o = None
         try:
             tle_o = tle.TwoLineElement.objects.get(
@@ -108,57 +110,3 @@ class TestTle(TestCase):
                     self.__sc_2_tle_id
                 )
             )
-        self.assertNotEquals(
-            tle_o.spacecraft, None,
-            'No Spacecraft linked with this TLE!'
-        )
-        self.assertEquals(
-            tle_o.spacecraft.identifier, self.__sc_2_id,
-            'Wrong Spacecraft linked with this TLE! tle_o.sc.id = ' + str(
-                tle_o.spacecraft.identifier
-            ) + ', expected = ' + str(
-                self.__sc_2_id
-            )
-        )
-
-        db_tools.remove_sc(self.__sc_1_id)
-        tle_o = None
-        try:
-            tle_o = tle.TwoLineElement.objects.get(
-                identifier=self.__sc_2_tle_id
-            )
-        except ObjectDoesNotExist:
-            self.fail(
-                'Object should have been found!, tle_id = ' + str(
-                    self.__sc_2_tle_id
-                )
-            )
-        self.assertNotEquals(
-            tle_o.spacecraft.identifier,
-            None,
-            'No Spacecraft linked with this TLE!'
-        )
-        self.assertEquals(
-            tle_o.spacecraft.identifier,
-            self.__sc_2_id,
-            'Wrong Spacecraft linked with this TLE! sc_id = ' + str(
-                tle_o.spacecraft.identifier
-            ) + ', tle_id = ' + str(tle_o.identifier)
-        )
-
-        db_tools.remove_sc(self.__sc_2_id)
-        try:
-            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
-            self.fail(
-                'Object should NOT be found!, tle_id = ' + str(
-                    self.__sc_1_tle_id
-                )
-            )
-        except ObjectDoesNotExist:
-            pass
-
-    def test_update_slots(self):
-        """
-        Validates the whole process of slots update within the TLE database.
-        """
-        pass

@@ -454,7 +454,7 @@ def serialize_sc_configuration(sc):
     return {
         SC_ID_K: sc.identifier,
         SC_CALLSIGN_K: sc.callsign,
-        SC_TLE_ID_K: sc.tle_id,
+        SC_TLE_ID_K: sc.tle.identifier,
     }
 
 
