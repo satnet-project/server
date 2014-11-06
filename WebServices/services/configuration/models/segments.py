@@ -16,16 +16,15 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
-from django_countries import fields
 from django.db import models
 from django.db.models import signals
-
+from django_countries import fields
+import logging
 from services.accounts import models as account_models
 from services.common import gis
 from services.configuration.models import channels
 from services.simulation.models import tle as tle_models
-
-import logging
+from services.simulation.models import simulation as simulation_models
 
 logger = logging.getLogger('models.segments')
 
@@ -142,7 +141,16 @@ class Spacecraft(models.Model):
     )
 
     # Spacecraft channels
-    channels = models.ManyToManyField(channels.SpacecraftChannel)
+    channels = models.ManyToManyField(
+        channels.SpacecraftChannel,
+        verbose_name='Available spacecraft communications channels'
+    )
+    # GroundTracks for this spacecraft during the current simulation period
+    groundtracks = models.ForeignKey(
+        simulation_models.GroundTrack,
+        null=True,
+        verbose_name='Simulated spacecraft track'
+    )
 
     def dirty_update(self, callsign=None, tle_id=None):
         """

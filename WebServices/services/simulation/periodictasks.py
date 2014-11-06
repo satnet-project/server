@@ -17,9 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-
 from services.simulation.models import tle
-
 
 logger = logging.getLogger('simulation')
 

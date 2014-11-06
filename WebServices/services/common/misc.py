@@ -19,6 +19,7 @@ import datetime
 import pytz
 import sys
 import StringIO
+import unicodedata
 
 
 def print_list(l, name=None, output=sys.stdout):
@@ -94,6 +95,12 @@ def dict_2_string(d):
     print_dictionary(d, output=buff)
     return buff.getvalue()
 
+
+def unicode_2_string(unicode_string):
+
+    return unicodedata\
+        .normalize('NFKD', unicode_string)\
+        .encode('ascii', 'ignore')
 
 def get_now_utc(no_microseconds=True):
     """

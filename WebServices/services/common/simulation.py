@@ -18,10 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import ephem
 import logging
-
 from services.common import gis, misc
-#from services.scheduling.models import tle
-
 logger = logging.getLogger('common')
 
 
@@ -99,6 +96,18 @@ class OrbitalSimulator(object):
             dt = misc.get_today_utc()
         return dt.strftime("%Y/%m/%d %H:%M:%S")
 
+    @staticmethod
+    def dbtle_2_ephem_str(spacecraft_tle):
+        """
+        Converts into the proper format required by the Ephem objects the TLE
+        information contained in the database object.
+        :param spacecraft_tle: TLE object from the database.
+        :return: (name, line_1, line_2) in str format.
+        """
+        return misc.unicode_2_string(spacecraft_tle.identifier),\
+            misc.unicode_2_string(spacecraft_tle.first_line),\
+            misc.unicode_2_string(spacecraft_tle.second_line)
+
     def set_groundstation(self, groundstation):
         """
         Creates an PyEphem observer object with the data from a GroundStation
@@ -120,11 +129,8 @@ class OrbitalSimulator(object):
         method "get" of the <services.scheduling.models.TwoLineElement>.
         """
         self._tle = spacecraft_tle
-        self._body = OrbitalSimulator.create_spacecraft(
-            l0=self._tle.identifier,
-            l1=self._tle.first_line,
-            l2=self._tle.second_line
-        )
+        l0, l1, l2 = OrbitalSimulator.dbtle_2_ephem_str(spacecraft_tle)
+        self._body = OrbitalSimulator.create_spacecraft(l0, l1, l2)
 
     @staticmethod
     def create_spacecraft(l0, l1, l2):
@@ -139,7 +145,7 @@ class OrbitalSimulator(object):
         :raises: ObjectDoesNotExist in case there is no cush tle_id in the
         database.
         """
-        return ephem.readtle(str(l0), str(l1), str(l2))
+        return ephem.readtle(l0, l1, l2)
 
     @staticmethod
     def get_update_duration():
@@ -258,6 +264,42 @@ class OrbitalSimulator(object):
             )
 
         return pass_slots
+
+    def calculate_groundtrack(
+        self, spacecraft_tle,
+        start=None, end=None,
+        timestep=datetime.timedelta(minutes=1)
+    ):
+        """
+        Calculates the GroundTrack for the spacecraft with the given tle object.
+        :param spacecraft_tle:
+        :param timestep: time ellapsed for the calculation of two subsequent
+                            points in the ground track.
+        :return: Array where each element is { timestamp, latitude, longitude }.
+                    The first timestamp is "start" and the last one is
+                    "start+floor(duration/timestamp)*timestamp".
+        """
+        if (start is None) or (end is None):
+            (start, end) = self.get_simulation_window()
+
+        self.set_spacecraft(spacecraft_tle)
+
+        groundtrack = []
+        date_i = start
+
+        while date_i < end:
+
+            self._body.compute(date_i)
+
+            groundtrack.append({
+                'timestamp': date_i,
+                'lat': self._body.sublat,
+                'lng': self._body.sublong
+            })
+
+            date_i += timestep
+
+        return groundtrack
 
     def __unicode__(self):
 
