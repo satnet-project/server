@@ -32,28 +32,33 @@ from twisted.cred.credentials import UsernamePassword
 from ampauth.client import login
 from commands import *
 
-
-def connected(_ignored, proto):
-    d = proto.callRemote(StartRemote, iSlotId=1)
-    def printError(error):
-        print error
-    d.addErrback(printError)
-    log.err("Successful connection")
-
-def notConnected(failure):
-    log.err("Error during connection")
-    reactor.stop()
+import serial, getpass, sys, getopt
 
 
 class ClientProtocol(AMP):
-    USERNAME = 'crespo'
-    PASSWORD = 'cre.spo'
-    def connectionMade(self):
+    USERNAME = None
+    PASSWORD = None
+    SERIALPORT = None
+    ser = None
+
+    def user_login(self):
+
         d = login(self, UsernamePassword(self.USERNAME, self.PASSWORD))
         def connected(self, proto):
             proto.callRemote(StartRemote, iSlotId=1)
         d.addCallback(connected, self)
+        def notConnected(failure):
+            log.err("Error during connection")
+            reactor.stop()
         d.addErrback(notConnected)
+        def open_serial(self, proto):
+            proto.ser = serial.Serial(proto.SERIALPORT, 19200, timeout=1)
+            print proto.ser.name
+        d.addCallback(open_serial, self)
+        def serial_unavailable(failure):
+            log.err("Serial port not available")
+            reactor.stop()
+        d.addErrback(serial_unavailable)
         return d
 
     def connectionLost(self, reason):
@@ -82,9 +87,43 @@ class ClientProtocol(AMP):
     NotifyEvent.responder(vNotifyEvent)
 
 
-class Client():
-    def __init__(self):
+class Client():    
+    def __init__(self, argv):
         log.startLogging(sys.stdout)
+
+        USERNAME = None
+        PASSWORD = None
+        SERIALPORT = None
+
+        try:
+           opts, args = getopt.getopt(argv,"hu:p:s:",["username=","password=","serialport="])
+        except getopt.GetoptError:
+            log.msg('Incorrect script usage')
+            self.usage()
+            sys.exit(2)
+        for opt, arg in opts:
+            if opt == '-h':
+                self.usage()
+                sys.exit()
+            elif opt in ("-u", "--username"):
+                USERNAME = arg
+                log.msg('Username:', USERNAME)
+            elif opt in ("-p", "--password"):
+                PASSWORD = arg
+                log.msg('Password:', PASSWORD)                
+            elif opt in ("-s", "--serialport"):
+                SERIALPORT = arg
+                log.msg('Serial port:', SERIALPORT)
+
+        if USERNAME is None:
+            log.msg('Enter SATNET username: ')
+            USERNAME = raw_input()
+        if PASSWORD is None:
+            log.msg('Enter', self.USERNAME,' password: ')
+            PASSWORD = getpass.getpass()
+        if SERIALPORT is None:
+            log.msg('Select serial port: (e.g. /dev/ttyS1)')
+            SERIALPORT = raw_input()
 
         cert = ssl.Certificate.loadPEM(open('key/public.pem').read())
         options = ssl.optionsForClientTLS(u'humsat.org', cert)
@@ -93,13 +132,26 @@ class Client():
         endpoint = endpoints.SSL4ClientEndpoint(reactor, 'localhost', 1234,
                                                 options)
         d = endpoint.connect(factory)
-        def endPointConnected(clientAMP):
+        def connectionSuccessful(clientAMP, USERNAME, PASSWORD, SERIALPORT):
             self.proto = clientAMP
-            return clientAMP
-        d.addCallback(endPointConnected)        
-
+            clientAMP.USERNAME = USERNAME
+            clientAMP.PASSWORD = PASSWORD
+            clientAMP.SERIALPORT = SERIALPORT
+            clientAMP.user_login()
+            return clientAMP            
+        d.addCallback(connectionSuccessful, USERNAME, PASSWORD, SERIALPORT)        
+        def connectionError():
+            log.err('Connection could not be established')
+        d.addErrback(connectionError)            
         reactor.run()
 
+    def usage(self):
+        print "USAGE of client_amp.py"
+        print "Usage: python [-h] client_amp.py #Shows script help"
+        print "Usage: python [-u <username>] client_amp.py #Set SATNET username to login"
+        print "Usage: python [-p <password>] client_amp.py #Set SATNET user password to login"
+        print "Usage: python [-s <serialport>] client_amp.py #Set serial port to read data from"        
+        print "Example: python -u crespo -p cre.spo -s /dev/ttyS1"        
 
 if __name__ == '__main__':
-    c = Client()
+    c = Client(sys.argv[1:])

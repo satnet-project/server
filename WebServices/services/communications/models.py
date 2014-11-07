@@ -96,6 +96,36 @@ class PassiveMessage(models.Model):
 
     message = models.BinaryField('Message raw data')
 
+class MessageManager(models.Manager):
+    """TODO---------------------------
+    Manager for the passive messages.
+
+    This manager handles the operations over the PassiveMessage table in the
+    database.
+    """
+
+    def create(self, operational_slot, gs_channel, sc_channel, upwards, forwarded, tx_timestamp, message):
+        """Creates the object in the database.
+        Creates the object in the database with the data provided and including
+        the current UTC timestamp as the timestamp of the moment at which this
+        message was received in the server.
+        :param gs_channel_id: Identifier of the channel of the GroundStation
+                                that retrieved this message.
+        :param gs_timestamp: Timestamp of the moment at which this message was
+                                received at the GroundStation.
+        :param doppler_shift: Doppler shift during the reception of the message.
+        :param message: Binary message to be stored in the database.
+        """
+        return super(MessageManager, self).create(
+            operational_slot=operational_slot,
+            groundstation_channel=gs_channel,
+            spacecraft_channel=sc_channel,
+            upwards=upwards,
+            forwarded=forwarded,            
+            reception_timestamp=misc.get_utc_timestamp(),
+            transmission_timestamp=tx_timestamp,
+            message=message
+        )
 
 class Message(models.Model):
     """Message model class.
@@ -103,6 +133,9 @@ class Message(models.Model):
     This class includes all the information related with the relay of a
     message.
     """
+
+    objects = MessageManager()
+
     operational_slot = models.ForeignKey(
         operational.OperationalSlot,
         verbose_name='OperationalSlot during which the message was transmitted'
@@ -125,11 +158,11 @@ class Message(models.Model):
         'to the receiver'
     )
 
-    reception_timestamp = models.IntegerField(
+    reception_timestamp = models.BigIntegerField(
         'Timestamp that indicates the moment when this message was received at'
         'the server.'
     )
-    transmission_timestamp = models.IntegerField(
+    transmission_timestamp = models.BigIntegerField(
         'Timestamp that indicates the moment when this message was '
         'transmitted to the receiver'
     )

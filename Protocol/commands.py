@@ -74,7 +74,7 @@ class EndRemote(amp.Command):
 
 class SendMsg(amp.Command):
     arguments = [('sMsg', amp.String()),
-                 ('iDopplerShift', amp.Integer()), ('sTimestamp', amp.String())]
+                 ('iTimestamp', amp.Integer())]
     requiresAnswer = False
     """
     Invoked when a client wants to send a message to a remote entity. To use it, the 
@@ -88,10 +88,10 @@ class SendMsg(amp.Command):
         Integer indicating the Doppler shift in kHz
     :type iDopplerShift:
         L{int}
-    :param sTimestamp:
-        String indicating the UTC timestamp at reception
-    :type sTimestamp:
-        L{String}    
+    :param iTimestamp:
+        Integer indicating the UTC timestamp at reception
+    :type iTimestamp:
+        L{Integer}    
     """
 
 """

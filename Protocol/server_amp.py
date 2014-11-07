@@ -45,7 +45,6 @@ from services.scheduling.models import operational
 from services.configuration.models.channels import SpacecraftChannel
 
 from services.communications import models as messages_models
-from services.configuration.models import segments
 
 
 class SATNETServer(AMP):
@@ -95,7 +94,7 @@ class SATNETServer(AMP):
             (iSlotEnd - misc.localize_datetime_utc(datetime.utcnow())).total_seconds())
         log.msg('Slot remaining time: ' + str(slot_remaining_time))
         self.credProto.iSlotEndCallId = reactor.callLater(
-           slot_remaining_time, self.vSlotEnd, iSlotId)
+            slot_remaining_time, self.vSlotEnd, iSlotId)
         if str(remoteUsr) not in self.factory.active_protocols:
             log.msg('Remote user ' + remoteUsr + ' not connected yet')
             return {'iResult': StartRemote.REMOTE_NOT_CONNECTED}
@@ -143,11 +142,11 @@ class SATNETServer(AMP):
                 return {'iResult': StartRemote.CLIENTS_COINCIDE}
             #... if the remote client is the SC user...
             elif gs_user == self.sUsername:
-                bGSuser = False
+                self.bGSuser = False
                 return self.vCreateConnection(self.slot[0].end, iSlotId, sc_user, gs_user)
                 #... if the remote client is the GS user...
             elif sc_user == self.sUsername:
-                bGSuser = True
+                self.bGSuser = True
                 return self.vCreateConnection(self.slot[0].end, iSlotId, gs_user, sc_user)
 
     StartRemote.responder(iStartRemote)
@@ -165,7 +164,7 @@ class SATNETServer(AMP):
             # sent through the SATNETServer instance
             self.factory.active_protocols[self.factory.active_connections[
                 self.sUsername]].callRemote(NotifyEvent, iEvent=NotifyEvent.END_REMOTE, sDetails=None)
-            # Close connection f
+            # Close connection
             self.factory.active_protocols[self.factory.active_connections[
                 self.sUsername]].credProto.transport.loseConnection()
             # Remove active connection
@@ -175,65 +174,40 @@ class SATNETServer(AMP):
         return {}
     EndRemote.responder(vEndRemote)
 
-    def vSendMsg(self, sMsg, iDopplerShift, sTimestamp):
+    def vSendMsg(self, sMsg, iDopplerShift, iTimestamp):
         log.msg("(" + self.sUsername + ") --------- Send Message ---------")
         # If the client haven't started a connection via StartRemote command...
         if self.sUsername not in self.factory.active_protocols:
             log.msg('Connection not available. Call StartRemote command first')
             raise SlotErrorNotification(
                 'Connection not available. Call StartRemote command first.')
-        # ... if the SC operator is not connected, sent messages will be saved 
+        # ... if the SC operator is not connected, sent messages will be saved
         # as passive messages...
-        elif self.sUsername not in self.factory.active_connections and bGSuser == True:
-            #TODO store passive messages in the DB
-            gs_channel_id = self.slot[0].gs-channel-id
-            store_passive_message(gs_channel_id, sTimestamp, iDopplerShift, sMsg)
-            self.callRemote(
-                NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)
+        # elif self.sUsername not in self.factory.active_connections and bGSuser == True:
+        #    gs_channel_id = self.slot[0].groundstation_channel_id
+        #    vStoreMessage(gs_channel_id, sTimestamp, iDopplerShift, sMsg)
+        #    self.callRemote(
+        # NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)
+
         # ... if the GS operator is not connected, the remote SC client will be
         # notified to wait for the GS to connect...
-        elif self.sUsername not in self.factory.active_connections and bGSuser == False:
+        elif self.sUsername not in self.factory.active_connections and self.bGSuser == False:
             self.callRemote(
-                NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)            
+                NotifyEvent, iEvent=NotifyEvent.REMOTE_DISCONNECTED, sDetails=None)
         # ... else, send the message to the remote and store it in the DB
         else:
-            #TODO store messages in the DB
+            # send message to remote client
             self.factory.active_protocols[self.factory.active_connections[
-                self.sUsername]].callRemote(NotifyMsg, sMsg=sMsg)
+                self.sUsername]].callRemote(NotifyMsg, sMsg=sMsg)            
+            # store messages in the DB (as already forwarded)
+            gs_channel = self.slot[0].groundstation_channel
+            sc_channel = self.slot[0].spacecraft_channel
+            messages_models.Message.objects.create(operational_slot=self.slot[0], gs_channel=gs_channel, 
+                                                    sc_channel=sc_channel, upwards=self.bGSuser, forwarded=True,
+                                                    tx_timestamp=iTimestamp, message=sMsg)
 
         return {}
     SendMsg.responder(vSendMsg)
-
-    def store_passive_message(
-            gs_channel_id, timestamp,
-            doppler_shift, message
-    ):
-        """Stores a passive message from a Ground Station.
-
-        This method stores a message obtained in a passive manner (this is, without
-        requiring from any remote operation to be scheduled) by a given Ground
-        Station in the database.
-
-        :param groundstation_id: Identifier of the GroundStation.
-        :param gs_channel_id: Identifier of the receiving channel of the
-                                GroundStation.
-        :param timestamp: Moment of the reception of the message at the remote
-                            Ground Station (seconds since
-        :param doppler_shift: Doppler shift during the reception of the message.
-        :param message: The message to be stored.
-        :return: 'true' is returned whenever the message was correctly stored,
-                    otherwise, an exception is thrown.
-        """
-
-        if message is None:
-            raise Exception('No message included')
-
-        return models.PassiveMessage.objects.create(
-            gs_channel_id=gs_channel_id,
-            gs_timestamp=timestamp,
-            doppler_shift=doppler_shift,
-            message=message
-        )
 
     def vSlotEnd(self, iSlotId):
         log.msg(
