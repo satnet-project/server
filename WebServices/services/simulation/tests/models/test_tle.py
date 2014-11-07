@@ -30,20 +30,22 @@ class TestTle(TestCase):
 
     def setUp(self):
 
+        super(TestTle, self).setUp()
+
         self.__verbose_testing = False
+        self.__sc_1_id = 'sc-humsat'
+        self.__sc_1_tle_id = 'HUMSAT-D'
+        self.__user_profile = None
 
-        self.__sc_1_id = 'fake-xatcobeo'
-        self.__sc_1_tle_id = 'XATCOBEOXX'
-
-        self.__sc_2_id = 'sc-xatcobeo'
-        self.__sc_2_tle_id = 'HUMSAT-D'
+        self.__sc_2_id = 'fake-sat'
+        self.__sc_2_tle_id = 'XXX99X9X'
 
         self.__band = db_tools.create_band()
-        # (makes no sense) db_tools.init_tles_database()
+        db_tools.init_tles_database()
         self.__user_profile = db_tools.create_user_profile()
 
         if not self.__verbose_testing:
-            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_load_tles(self):
         """
@@ -88,10 +90,10 @@ class TestTle(TestCase):
         tle.TwoLineElementsManager.load_tles()
 
         try:
-            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
+            tle.TwoLineElement.objects.get(identifier=self.__sc_2_tle_id)
             self.fail(
-                'Object should NOT be found!, tle_id = ' + str(
-                    self.__sc_1_tle_id
+                'Object should have NOT been found!, tle_id = ' + str(
+                    self.__sc_2_tle_id
                 )
             )
         except ObjectDoesNotExist:
@@ -100,11 +102,11 @@ class TestTle(TestCase):
         tle_o = None
         try:
             tle_o = tle.TwoLineElement.objects.get(
-                identifier=self.__sc_2_tle_id
+                identifier=self.__sc_1_tle_id
             )
         except ObjectDoesNotExist:
             self.fail(
                 'Object should have been found!, tle_id = ' + str(
-                    self.__sc_2_tle_id
+                    self.__sc_1_tle_id
                 )
             )

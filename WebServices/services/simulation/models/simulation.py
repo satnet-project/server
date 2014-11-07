@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import datetime
 from django.db import models
 from djorm_pgarray import fields as pgarray_fields
 from services.common import simulation as simulator, misc
@@ -40,16 +41,60 @@ class GroundTrackManager(models.Manager):
             return GroundTrack.objects.get(tle=spacecraft_tle)
 
         gt = simulator.OrbitalSimulator().calculate_groundtrack(spacecraft_tle)
-        lat, lng, ts = GroundTrackManager.groundtrack_to_dbarray(gt)
+        ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(gt)
 
         return super(GroundTrackManager, self).create(
             tle=spacecraft_tle,
-            latitude=lat, longitude=lng, timestamp=ts
+            timestamp=ts, latitude=lat, longitude=lng
         )
 
-    def propagate(self):
+    @staticmethod
+    def remove_old(groundtrack):
+        """
+        Removes the old points of the groundtrack that are not applicable
+        anymore. The results are not saved to the database.
+        :param groundtrack: The groundtrack to be updated.
+        :return: The updated groundtrack object.
+        """
+        now_ts = misc.get_utc_timestamp(
+            misc.get_now_utc() + datetime.timedelta(seconds=1)
+        )
 
-        pass
+        ts_l = groundtrack.timestamp
+        la_l = groundtrack.latitude
+        lo_l = groundtrack.longitude
+        _2_remove = 0
+
+        for ts in ts_l:
+            if ts <= now_ts:
+                _2_remove = ts_l.index(ts) + 1
+            else:
+                break
+
+        groundtrack.timestamp = ts_l[_2_remove:]
+        groundtrack.latitude = la_l[_2_remove:]
+        groundtrack.longitude = lo_l[_2_remove:]
+
+        return groundtrack
+
+    @staticmethod
+    def append_new(groundtrack, new_ts, new_lat, new_lng):
+        """
+        Appends the new points to the existing groundtrack. It does not save
+        the results in the database.
+        :param groundtrack: The groundtrack to be updated.
+        :param new_lat: The array of new points to be appended.
+        :return: The updated groundtrack object.
+        """
+        ts_l = groundtrack.timestamp
+        la_l = groundtrack.latitude
+        lo_l = groundtrack.longitude
+
+        groundtrack.timestamp = ts_l + new_ts
+        groundtrack.latitude = la_l + new_lat
+        groundtrack.longitude = lo_l + new_lng
+
+        return groundtrack
 
     @staticmethod
     def groundtrack_to_dbarray(groundtrack):
@@ -68,13 +113,37 @@ class GroundTrackManager(models.Manager):
 
         for point in groundtrack:
 
-            latitudes.append(point['latitude'])
-            longitudes.append(point['longitude'])
             timestamps.append(
                 misc.get_utc_timestamp(point['timestamp'])
             )
+            latitudes.append(point['latitude'])
+            longitudes.append(point['longitude'])
 
-        return latitudes, longitudes, timestamps
+        return timestamps, latitudes, longitudes
+
+    def propagate_groundtracks(self):
+        """
+        """
+        os = simulator.OrbitalSimulator()
+        (start, end) = os.get_update_window()
+
+        for gt in self.all():
+
+            print '@INITIAL: gt.len = ' + str(len(gt.timestamp))
+            # 1) remove old groundtrack points
+            gt = GroundTrackManager.remove_old(gt)
+            print '@REMOVED: gt.len = ' + str(len(gt.timestamp))
+            # 2) new groundtrack points
+            ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(
+                os.calculate_groundtrack(
+                    spacecraft_tle=gt.tle, start=start, end=end
+                )
+            )
+            # 3) create and store updated groundtrack
+            gt = GroundTrackManager.append_new(gt, ts, lat, lng)
+            print '@APPEND: gt.len = ' + str(len(gt.timestamp))
+            # 4) the updated groundtrack is saved to the database.
+            gt.save()
 
 
 class GroundTrack(models.Model):
