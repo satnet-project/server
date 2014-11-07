@@ -13,14 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from services.common import testing as db_tools, serialization
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 from django import test
 import logging
 import pytz
+from services.common import serialization
+from services.common.testing import helpers as db_tools
 
 
 class TestSerialization(test.TestCase):

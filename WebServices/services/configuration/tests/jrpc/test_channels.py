@@ -21,12 +21,13 @@ import logging
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 
-from services.common import testing as db_tools, misc
+from services.common import misc
+from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import channels as jrpc_channels_if
 
 
-class TestJRPCChannels(TestCase):
+class JRPCChannelsTest(TestCase):
     """
     Class with the UNIT tests for JRPC methods concerning the access to the
     channels.

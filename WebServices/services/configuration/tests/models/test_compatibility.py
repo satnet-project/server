@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django import test
 import logging
 
-from services.common import testing as db_tools
+from services.common.testing import helpers as db_tools
 from services.configuration import signals
 from services.configuration.models import bands, compatibility
 

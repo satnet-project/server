@@ -15,19 +15,18 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
-from periodically import decorators
-from services.simulation.models import tle, simulation
-
-logger = logging.getLogger('simulation')
+import rpc4django
 
 
-@decorators.daily()
-def update_tle_database():
+@rpc4django.rpcmethod(
+    name='simulation.spacecraft.getGroundtrack',
+    signature=['String'],
+    login_required=True
+)
+def get_groundtrack(spacecraft_id):
+    """JRPC method.
+    Returns the latest points of the simulated groundtrack for this spacecraft.
+    :param spacecraft_id: Identifier of the spacecraft.
+    :return: Array of objects containing { timestamp, lat, lng }.
     """
-    Task to be executed periodically for cleaning up all users whose activation
-    key is expired and they did not complete still their registration process.
-    """
-    logger.info("Updating TLE database, daily task execution!")
-    tle.TwoLineElementsManager.load_tles()
-    simulation.GroundTrack.objects.propagate_groundtracks()
+    pass

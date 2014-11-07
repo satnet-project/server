@@ -16,7 +16,6 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
-
 from services.configuration.models import availability, compatibility, channels
 from services.configuration.models import rules
 from services.scheduling.models import operational

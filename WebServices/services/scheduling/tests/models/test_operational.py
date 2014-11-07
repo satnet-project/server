@@ -21,7 +21,8 @@ import datadiff
 import datetime
 import logging
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import misc, simulation
+from services.common.testing import helpers as db_tools
 from services.configuration import signals
 from services.configuration.jrpc.serializers import serialization as jrpc_keys
 from services.configuration.jrpc.views import channels as jrpc_channels_if

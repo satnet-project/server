@@ -19,7 +19,8 @@ import datetime
 from django import test
 import logging
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import misc, simulation
+from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as jrpc_keys
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.models import rules

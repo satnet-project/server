@@ -19,7 +19,6 @@ from django import dispatch
 from django.core import exceptions
 from django.db import models
 import logging
-
 from services.common import misc
 from services.configuration.models import channels
 

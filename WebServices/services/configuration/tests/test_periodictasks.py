@@ -21,7 +21,8 @@ import datadiff
 import datetime
 import logging
 
-from services.common import misc, testing as db_tools
+from services.common import misc
+from services.common.testing import helpers as db_tools
 from services.configuration import periodictasks, signals
 from services.configuration.models import availability
 from services.configuration.jrpc.views import rules as jrpc_rules_if

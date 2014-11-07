@@ -13,17 +13,16 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from services.simulation.models import tle
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
-
 from datetime import timedelta, datetime
 import logging
+import math
 from pytz import utc as pytz_utc
-
-from services.common import testing as db_tools, simulation
+from services.common import simulation
+from services.common.testing import helpers as db_tools
+from services.simulation.models import tle
 
 
 class TestSimulation(TestCase):
@@ -95,7 +94,32 @@ class TestSimulation(TestCase):
         )
 
         if self.__verbose_testing:
-
             print '# ### RESULTS:'
             for p in pass_slots:
                 print '[' + str(p[0]) + ', ' + str(p[1]) + ']'
+
+    def test_calculate_groundtrack(self):
+        """
+        Simple and easy test that calculates the groundtrack for a given
+        satellite and that validates that calculation by asserting the number
+        of expected points for that groundtrack.
+        """
+        if self.__verbose_testing:
+            print '>>> test_calculate_groundtrack:'
+
+        step = timedelta(minutes=1)
+        (start, end) = self.__simulator.get_simulation_window()
+
+        groundtrack = self.__simulator.calculate_groundtrack(
+            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            start=start, end=end, timestep=step
+        )
+
+        e_n_points = int(math.ceil(
+            (end - start).total_seconds()/step.total_seconds()
+        ))
+        self.assertEquals(
+            e_n_points, len(groundtrack),
+            'Number of points differs! e = ' + str(e_n_points)
+            + ', a = ' + str(len(groundtrack))
+        )

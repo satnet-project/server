@@ -17,10 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import exceptions
 from django.db import models
-
 import logging
 from urllib2 import urlopen as urllib2_urlopen
-
 from services.common import misc
 from services.simulation.models.celestrak import CelestrakDatabase as Celestrak
 
@@ -63,7 +61,9 @@ class TwoLineElementsManager(models.Manager):
 
     @staticmethod
     def load_celestrak():
-
+        """
+        Loads the TLE from all the accessible database from celestrak.com
+        """
         for s_tuple in Celestrak.CELESTRAK_SECTIONS:
 
             section = s_tuple[0]
