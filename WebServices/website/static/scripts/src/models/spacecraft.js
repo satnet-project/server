@@ -24,86 +24,86 @@ angular.module('spacecraft-models', [ 'map-services' ]);
  * GroundStations.
  */
 angular.module('spacecraft-models')
-    .service('sc', [
-    '$log', 'maps',
-    function($log, maps)
-{
+    .service('sc', [ 'maps', function (maps) {
 
-    'use strict';
+        'use strict';
 
-    /**
-     * Configuration structure for all the Spacecraft.
-     * @type { { id: { marker: m, cfg: data } } }
-     * @private
-     */
-    this._scCfg = {};
+        /**
+         * Configuration structure for all the Spacecraft.
+         * @type { { id: { marker: m, cfg: data } } }
+         * @private
+         */
+        this.scCfg = {};
 
-    /**
-     * Creates a new entrance in the configuration structure.
-     * @param {String} id Identifier of the new Spacecraft.
-     * @param {Object} cfg Configuration object for the new Spacecraft.
-     * @returns {Object} Returns an object with the marker and the configuration.
-     */
-    this._create = function(id, cfg) {
-        var ll = L.latLng(
-        );
-        var icon = L.icon({
-            iconUrl: '/static/images/icons/sc-icon.svg',
-            iconSize: [30, 30]
-        });
-        var m = L.marker(
-            ll, { draggable: false, icon: icon }
-        ).bindLabel(id, { noHide: true });
-        return { marker: m, cfg: cfg };
-    };
+        /**
+         * Creates a new entrance in the configuration structure.
+         * @param {String} id Identifier of the new Spacecraft.
+         * @param {Object} cfg Configuration object for the new Spacecraft.
+         * @returns {Object} Returns an object with the marker and the configuration.
+         */
+        this.create = function (id, cfg) {
+            var ll = L.latLng(),
+                icon = L.icon({
+                    iconUrl: '/static/images/icons/sc-icon.svg',
+                    iconSize: [30, 30]
+                }),
+                m = L.marker(
+                    ll,
+                    { draggable: false, icon: icon }
+                ).bindLabel(id, { noHide: true });
+            return { marker: m, cfg: cfg };
+        };
 
-    /**
-     * Creates a new configuration object for the Spacecraft based on the
-     * information contained in the data structure.
-     * @param data Information as retrieved through JSON-RPC from the server.
-     * @returns {$q} Promise that returns the configuration object for a spacecraft.
-     */
-    this.create = function(data) {
-        var id = data['spacecraft_id'];
-        var cfg = this._create(id, data);
-        this._scCfg[id] = cfg;
-        return maps.getMainMap().then(function(mapInfo) {
-            cfg.marker.addTo(mapInfo.map);
-            return cfg;
-        });
-    };
+        /**
+         * Creates a new configuration object for the Spacecraft based on the
+         * information contained in the data structure.
+         * @param data Information as retrieved through JSON-RPC from the server.
+         * @returns {$q} Promise that returns the configuration object for a spacecraft.
+         */
+        this.create = function (data) {
+            var id = data.spacecraft_id,
+                cfg = this.create(id, data);
+            this.scCfg[id] = cfg;
+            return maps.getMainMap().then(function (mapInfo) {
+                cfg.marker.addTo(mapInfo.map);
+                return cfg;
+            });
+        };
 
-    /**
-     * Initializes the internal variable with all the configuration structures
-     * using the given structure.
-     * @param {Object} cfgs All spacecraft configuration objects.
-     */
-    this.initAll = function(cfgs) {
-        for ( var i = 0; i < cfgs.length; i++ ) {
-            var c = cfgs[i];
-            this._scCfg[c.id] = {
-                cfg: c.cfg, tle: c.tle, marker: null
-            };
-        }
-        return cfgs;
-    };
+        /**
+         * Initializes the internal variable with all the configuration structures
+         * using the given structure.
+         * @param {Object} cfgs All spacecraft configuration objects.
+         */
+        this.initAll = function (cfgs) {
+            var i, c;
+            for (i = 0; i < cfgs.length; i += 1) {
+                c = cfgs[i];
+                this.scCfg[c.id] = {
+                    cfg: c.cfg,
+                    tle: c.tle,
+                    marker: null
+                };
+            }
+            return cfgs;
+        };
 
-    /**
-     * Returns the information for all the spacecraft configurations hold as
-     * a human-readable string.
-     * @returns {String} Human-readable string.
-     */
-    this.asString = function() {
-        var buffer = '';
-        for ( var id in this._scCfg ) {
-            var c = this._scCfg[id];
-            var scBuffer = '["id: "' + c.id + ', ' +
-                '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
-                '"tle: "' + JSON.stringify(c.tle) + ', ' +
-                '"marker: "' + c.marker +  ']\n';
-            buffer = buffer + scBuffer;
-        }
-        return buffer;
-    };
+        /**
+         * Returns the information for all the spacecraft configurations hold as
+         * a human-readable string.
+         * @returns {String} Human-readable string.
+         */
+        this.asString = function () {
+            var buffer = '', scBuffer = '', i, c;
+            for (i = 0; i < this.scCfg.length; i += 1) {
+                c = this.scCfg[i];
+                scBuffer = '["id: "' + c.id + ', ' +
+                    '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
+                    '"tle: "' + JSON.stringify(c.tle) + ', ' +
+                    '"marker: "' + c.marker + ']\n';
+                buffer = buffer + scBuffer;
+            }
+            return buffer;
+        };
 
-}]);
+    }]);

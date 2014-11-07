@@ -18,7 +18,8 @@
 
 /** Module definition (empty array is vital!). */
 angular.module(
-    'ui-map-controllers', [
+    'ui-map-controllers',
+    [
         'leaflet-directive',
         'broadcaster', 'map-services',
         'groundstation-models', 'x-groundstation-models',
@@ -32,119 +33,129 @@ angular.module('ui-map-controllers')
     .constant('_LNG', 8.933)
     .constant('_ZOOM', 8)
     .controller('MapController', [
-        '$scope', '$log',
-        'leafletData', 'broadcaster', 'maps',
-        'gs', 'xgs', 'sc', 'xsc',
-        '_LAT', '_LNG', '_ZOOM',
-        function(
-            $scope, $log,
-            leafletData, broadcaster, maps,
-            gs, xgs, sc, xsc,
-            _LAT, _LNG, _ZOOM
-        )
-{
-        
-    'use strict';
+        '$scope', 'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc', 'LAT', 'LNG', 'ZOOM',
+        function ($scope, broadcaster, maps, gs, xgs, sc, xsc, LAT, LNG, ZOOM) {
 
-    angular.extend($scope, {
-        center: { lat: _LAT, lng: _LNG, zoom: _ZOOM },
-        markers: []
-    });
-    maps.createMainMap(true).then(function(data) {
-        $log.log('[map-controller] <' + maps.asString(data) + '>');
-    });
+            'use strict';
 
-    xgs.initAll().then(function(data) {
-        $log.log(
-            '[map-controller] Ground Stations = <' + gs.asString(data) + '>'
-        );
-    });
-    xsc.initAll().then(function () {
-        $log.log(
-            '[map-controller] Spacecraft = <' + sc.asString() + '>'
-        );    
-    });
-    
-    $scope.$on(broadcaster.GS_ADDED_EVENT, function(event, gsId) {
-        console.log('@on-gs-added-event, gsId = ' + JSON.stringify(gsId));
-        xgs.addGSMarker(gsId);
-    });
-    $scope.$on(broadcaster.GS_REMOVED_EVENT, function(event, gsId) {
-        console.log('@on-gs-removed-event, gsId = ' + JSON.stringify(gsId));
-        gs.remove(gsId);
-    });
-    $scope.$on(broadcaster.GS_UPDATED_EVENT, function(event, gsId) {
-        console.log('@on-gs-updated-event, gsId = ' + JSON.stringify(gsId));
-        xgs.updateGSMarker(gsId);
-    });
+            angular.extend($scope, {
+                center: { lat: LAT, lng: LNG, zoom: ZOOM },
+                markers: []
+            });
+            maps.createMainMap(true).then(function (data) {
+                $log.log('[map-controller] <' + maps.asString(data) + '>');
+            });
 
-}]);
+            xgs.initAll().then(function (data) {
+                $log.log(
+                    '[map-controller] Ground Stations = <' + gs.asString(data) + '>'
+                );
+            });
+            xsc.initAll().then(function () {
+                $log.log(
+                    '[map-controller] Spacecraft = <' + sc.asString() + '>'
+                );
+            });
+
+            $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
+                console.log(
+                    '@on-gs-added-event, event = ' + event +
+                        'gsId = ' + JSON.stringify(gsId)
+                );
+                xgs.addGSMarker(gsId);
+            });
+            $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
+                console.log(
+                    '@on-gs-removed-event, event = ' + event +
+                        'gsId = ' + JSON.stringify(gsId)
+                );
+                gs.remove(gsId);
+            });
+            $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
+                console.log(
+                    '@on-gs-updated-event, event = ' + event +
+                        'gsId = ' + JSON.stringify(gsId)
+                );
+                xgs.updateGSMarker(gsId);
+            });
+
+        }]);
 
 angular.module('ui-map-controllers').controller('GSMenuCtrl', [
-    '$scope', '$log', '$modal', 'satnetRPC',
-    function($scope, $log, $modal, satnetRPC)
-{
+    '$scope', '$modal', 'satnetRPC',
+    function ($scope, $modal, satnetRPC) {
 
-    'use strict';
+        'use strict';
 
-    $scope.gsIds = [];
-    $scope.addGroundStation = function() {
-        var modalInstance = $modal.open({
-            templateUrl: '/static/scripts/src/templates/addGroundStation.html',
-            controller: 'AddGSModalCtrl',
-            backdrop: 'static'
-        });
-    };
-    $scope.editGroundStation = function(g) {
-        var modalInstance = $modal.open({
-            templateUrl: '/static/scripts/src/templates/editGroundStation.html',
-            controller: 'EditGSModalCtrl', backdrop: 'static',
-            resolve: { groundstationId: function() { return(g); } }
-        });
-    };
-    $scope.refreshGSList = function() {
-        satnetRPC.rCall('gs.list', []).then(function (data) {
-            $scope.gsIds = data.slice(0);
-        });
-    };
-    $scope.refreshGSList();
+        $scope.gsIds = [];
+        $scope.addGroundStation = function () {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/addGroundStation.html',
+                controller: 'AddGSModalCtrl',
+                backdrop: 'static'
+            });
+            console.log('Created modalInstance = ' + modalInstance);
+        };
+        $scope.editGroundStation = function (g) {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/editGroundStation.html',
+                controller: 'EditGSModalCtrl',
+                backdrop: 'static',
+                resolve: { groundstationId: function () {
+                    return g;
+                } }
+            });
+            console.log('Created modalInstance = ' + modalInstance);
+        };
+        $scope.refreshGSList = function () {
+            satnetRPC.rCall('gs.list', []).then(function (data) {
+                $scope.gsIds = data.slice(0);
+            });
+        };
+        $scope.refreshGSList();
 
-}]);
+    }]);
 
 angular.module('ui-map-controllers').controller('SCMenuCtrl', [
-    '$scope', '$log', '$modal', 'satnetRPC',
-        function($scope, $log, $modal, satnetRPC)
-{
-        
-    'use strict';
-        
-    $scope.scIds = [];
-    $scope.addSpacecraft = function() {
-        var modalInstance = $modal.open({
-            templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
-            controller: 'AddSCModalCtrl', backdrop: 'static'
-        });
-    };
-    $scope.editSpacecraft = function(s) {
-        var modalInstance = $modal.open({
-            templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
-            controller: 'EditSCModalCtrl', backdrop: 'static',
-            resolve: { spacecraftId: function() { return(s); } }
-        });
-    };
-    $scope.refreshSCList = function() {
-        satnetRPC.rCall('sc.list', []).then(function (data) {
-            $scope.scIds = data.slice(0);
-        });
-    };
-    $scope.refreshSCList();
+    '$scope', '$modal', 'satnetRPC',
+    function ($scope, $modal, satnetRPC) {
 
-}]);
+        'use strict';
+
+        $scope.scIds = [];
+        $scope.addSpacecraft = function () {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/addSpacecraft.html',
+                controller: 'AddSCModalCtrl',
+                backdrop: 'static'
+            });
+            console.log('Created modalInstance = ' + modalInstance);
+        };
+        $scope.editSpacecraft = function (s) {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/editSpacecraft.html',
+                controller: 'EditSCModalCtrl',
+                backdrop: 'static',
+                resolve: { spacecraftId: function () {
+                    return s;
+                } }
+            });
+            console.log('Created modalInstance = ' + modalInstance);
+        };
+        $scope.refreshSCList = function () {
+            satnetRPC.rCall('sc.list', []).then(function (data) {
+                $scope.scIds = data.slice(0);
+            });
+        };
+        $scope.refreshSCList();
+
+    }]);
 
 angular.module('ui-map-controllers').controller('ExitMenuCtrl', [
     '$scope', '$log',
-        function($scope, $log)
-{        
-    'use strict';       
-    $scope.home = function () { $log.info('Exiting...'); };    
-}]);
+    function ($scope, $log) {
+        'use strict';
+        $scope.home = function () {
+            $log.info('Exiting...');
+        };
+    }]);

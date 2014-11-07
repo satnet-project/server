@@ -19,12 +19,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 var app = angular.module('app', [ 'ngCookies' ])
-    .run(function($http, $cookies){
-        $http.defaults.headers.post['X-CSRFToken'] = $cookies['csrftoken'];
+    .run(function ($http, $cookies) {
+        'use strict';
+        $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     });
 var injector = angular.injector(['ng', 'app']);
 var init = {
-    setup: function() {
+    setup: function () {
+        'use strict';
         this.$scope = injector.get('$rootScope').$new();
     }
 };
@@ -35,15 +37,15 @@ var init = {
 
 module('tle-reader-test', init);
 
-QUnit.asyncTest( "[tle-reader] Read single TLE file...", function( assert ) {
-
-    expect(1);
-
+QUnit.asyncTest("[tle-reader] Read single TLE file...", function (assert) {
+    'use strict';
+    QUnit.expect(1);
     var tle_reader = new TLEReader(
-        injector.get('$log'), injector.get('$http')
+        injector.get('$log'),
+        injector.get('$http')
     );
 
-    setTimeout(function() {
+    QUnit.setTimeout(function () {
         assert.strictEqual(
             tle_reader.getSatellites().length, 99, 'Wrong raw data.'
         );

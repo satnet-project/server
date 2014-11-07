@@ -26,43 +26,42 @@ angular.module('x-spacecraft-models', [
  * GroundStations.
  */
 angular.module('x-spacecraft-models').service('xsc', [
-    '$log', '$q', 'satnetRPC', 'sc',
-    function($log, $q, satnetRPC, sc)
-{
+    '$q', 'satnetRPC', 'sc',
+    function ($q, satnetRPC, sc) {
 
-    'use strict';
+        'use strict';
 
-    /**
-     * Reads the configuration for all the GroundStation objects available
-     * in the server.
-     * @returns {$q} Promise that returns an array with the configuration
-     *               for each of the GroundStation objects.
-     */
-    this.getAllCfgs = function() {
-        return satnetRPC.rCall('sc.list', []).then(function (scs) {
-            var p = [];
-            angular.forEach (scs, function(scI) {
-                p.push(satnetRPC.readSCCfg(scI));
+        /**
+         * Reads the configuration for all the GroundStation objects available
+         * in the server.
+         * @returns {$q} Promise that returns an array with the configuration
+         *               for each of the GroundStation objects.
+         */
+        this.getAllCfgs = function () {
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (scI) {
+                    p.push(satnetRPC.readSCCfg(scI));
+                });
+                return $q.all(p).then(function (results) {
+                    var cfgs = [], j;
+                    for (j = 0; j < results.length; j += 1) {
+                        cfgs.push(results[j]);
+                    }
+                    return cfgs;
+                });
             });
-            return $q.all(p).then(function(results) {
-                var cfgs = [];
-                for ( var j = 0; j < results.length; j++ ) {
-                    cfgs.push(results[j]);
-                }
-                return cfgs;
+        };
+
+        /**
+         * Initializes all the configuration objects for the available
+         * spacecraft.
+         * @returns {[Object]} Array with the configuration objects.
+         */
+        this.initAll = function () {
+            return this.getAllCfgs().then(function (cfgs) {
+                return sc.initAll(cfgs);
             });
-        });
-    };
+        };
 
-    /**
-     * Initializes all the configuration objects for the available
-     * spacecraft.
-     * @returns {[Object]} Array with the configuration objects.
-     */
-    this.initAll = function() {
-        return this.getAllCfgs().then(function (cfgs) {
-            return sc.initAll(cfgs);
-        });
-    };
-
-}]);
+    }]);

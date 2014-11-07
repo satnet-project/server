@@ -18,7 +18,8 @@
 
 /** Module definition (empty array is vital!). */
 angular.module(
-    'ui-modalsc-controllers', [
+    'ui-modalsc-controllers',
+    [
         'ui.bootstrap', 'nya.bootstrap.select',
         'celestrak-services', 'satnet-services'
     ]
@@ -27,9 +28,9 @@ angular.module(
 angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
     '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak',
     function ($scope, $log, $modalInstance, satnetRPC, celestrak) {
-        
+
         'use strict';
-        
+
         $scope.sc = {
             identifier: '',
             callsign: '',
@@ -40,14 +41,14 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
         $scope.tlegroups = celestrak.CELESTRAK_SELECT_SECTIONS;
         $scope.tles = [];
 
-        $scope.initTles = function(defaultOption) {
-            celestrak.getTleArray(defaultOption).then(function(data) {
+        $scope.initTles = function (defaultOption) {
+            celestrak.getTleArray(defaultOption).then(function (data) {
                 $scope.tles = data.slice(0);
             });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            celestrak.getTleArray(value.subsection).then(function(data) {
+            celestrak.getTleArray(value.subsection).then(function (data) {
                 $scope.tles = data.slice(0);
             });
         };
@@ -59,24 +60,22 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
             ];
             satnetRPC.rCall('sc.add', newScCfg).then(function (data) {
                 $log.info(
-                    '[map-ctrl] SC added, id = ' + data['spacecraft_id']
+                    '[map-ctrl] SC added, id = ' + data.spacecraft_id
                 );
             });
             $modalInstance.close();
         };
-        $scope.cancel = function () { $modalInstance.close(); };
+        $scope.cancel = function () {
+            $modalInstance.close();
+        };
     }
 ]);
 
 angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
     '$scope', '$log', '$modalInstance',
     'satnetRPC', 'celestrak', 'spacecraftId',
-    function (
-         $scope, $log, $modalInstance,
-         satnetRPC, celestrak,
-         spacecraftId
-    ) {
-        
+    function ($scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId) {
+
         'use strict';
 
         $scope.sc = {
@@ -92,18 +91,18 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
 
         satnetRPC.rCall('sc.get', [spacecraftId]).then(function (data) {
             $scope.sc.identifier = spacecraftId;
-            $scope.sc.callsign = data['spacecraft_callsign'];
-            $scope.sc.savedTleId = data['spacecraft_tle_id'];
+            $scope.sc.callsign = data.spacecraft_callsign;
+            $scope.sc.savedTleId = data.spacecraft_tle_id;
         });
 
-        $scope.initTles = function(defaultOption) {
-            celestrak.getTleArray(defaultOption).then(function(data) {
+        $scope.initTles = function (defaultOption) {
+            celestrak.getTleArray(defaultOption).then(function (data) {
                 $scope.tles = data.slice(0);
             });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            celestrak.getTleArray(value.subsection).then(function(data) {
+            celestrak.getTleArray(value.subsection).then(function (data) {
                 $scope.tles = data.slice(0);
             });
         };
@@ -114,15 +113,18 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
                 'spacecraft_tle_id': $scope.sc.tleid.id
             };
             satnetRPC.rCall(
-                'sc.update', [spacecraftId, newScCfg]).then(function (data) {
-                    $log.info('[map-ctrl] SC updated, id = ' + data);
-                }
-            );
+                'sc.update',
+                [spacecraftId, newScCfg]
+            ).then(function (data) {
+                $log.info('[map-ctrl] SC updated, id = ' + data);
+            });
             $modalInstance.close();
         };
-        $scope.cancel = function () { $modalInstance.close(); };
+        $scope.cancel = function () {
+            $modalInstance.close();
+        };
         $scope.erase = function () {
-            if ( confirm('Delete this spacecraft?') === true ) {
+            if (confirm('Delete this spacecraft?') === true) {
                 satnetRPC.rCall('sc.delete', [spacecraftId]).then(function (data) {
                     $log.info(
                         '[map-ctrl] Spacecraft removed, id = ' + data

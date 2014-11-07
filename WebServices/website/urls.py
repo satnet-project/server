@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
 from django.contrib import admin
-
+from django.views.generic.base import RedirectView
 from services.accounts import views
 
 admin.autodiscover()
@@ -28,13 +28,17 @@ urlpatterns = urls.patterns(
     # ### ######################################################################
     # ### ################################################## OVERRIDEN MAIN URLS
     # ### ######################################################################
-
     urls.url(
         r'^$', views.redirect_login, name='index'
     ),
     # ### Command and Control Interface
     urls.url(
         r'^c2/', views.redirect_c2, name='c2_interface'
+    ),
+    urls.url(
+        r'^phppgadmin/$',
+        RedirectView.as_view(url='/phppgadmin'),
+        name='phppgadmin'
     ),
 
     # ### ######################################################################

@@ -23,42 +23,39 @@ angular.module('common', []);
  * Service used for broadcasting UI events in between controllers.
  */
 angular.module('common')
-    .service('common', [
-        '$q', '$http',
-        function ($q, $http)
-{
+    .service('common', [ '$http', function ($http) {
 
-    'use strict';
+        'use strict';
 
-    // URL for the IPINFO service.
-    this._IPINFO_URL = 'http://ipinfo.io/json';
+        // URL for the IPINFO service.
+        this.IPINFO_URL = 'http://ipinfo.io/json';
 
-    /**
-     * Retrieves the user location using an available Internet service.
-     * @returns {$q} Promise that returns a { lat, lng } object.
-     */
-    this.getUserLocation = function() {
-        return $http.get(this._IPINFO_URL).then( function (data) {
-            var ll = data.data.loc.split(',');
-            var lat = parseFloat(ll[0]);
-            var lng = parseFloat(ll[1]);
-            return { lat: lat, lng: lng };
-        });
-    };
-    
-    // Proxy to get rid of the CORS restrictions.
-    this._CORSS_PROXY = 'http://www.corsproxy.com/';
-    // Get rid of this part of the URI to use with corsproxy
-    this._CORSS_PROXY_HTTP = 'http://';
+        /**
+         * Retrieves the user location using an available Internet service.
+         * @returns {$q} Promise that returns a { lat, lng } object.
+         */
+        this.getUserLocation = function () {
+            return $http.get(this.IPINFO_URL).then(function (data) {
+                var ll = data.data.loc.split(','),
+                    lat = parseFloat(ll[0]),
+                    lng = parseFloat(ll[1]);
+                return { lat: lat, lng: lng };
+            });
+        };
 
-    /**
-     * Returns a URL modified to be used directly with the corsproxy.com service.
-     * @param url The URL to be modified.
-     * @returns {string} The ready-to-use URL.
-     */
-    this.getCORSSURL = function (url) {
-        var correctedUrl = url.replace(this._CORSS_PROXY_HTTP, '');
-        return(this._CORSS_PROXY + correctedUrl);
-    };
-    
-}]);
+        // Proxy to get rid of the CORS restrictions.
+        this.CORSS_PROXY = 'http://www.corsproxy.com/';
+        // Get rid of this part of the URI to use with corsproxy
+        this.CORSS_PROXY_HTTP = 'http://';
+
+        /**
+         * Returns a URL modified to be used directly with the corsproxy.com service.
+         * @param url The URL to be modified.
+         * @returns {string} The ready-to-use URL.
+         */
+        this.getCORSSURL = function (url) {
+            var correctedUrl = url.replace(this.CORSS_PROXY_HTTP, '');
+            return (this.CORSS_PROXY + correctedUrl);
+        };
+
+    }]);

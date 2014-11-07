@@ -25,77 +25,77 @@ angular.module('satnet-services', [ 'celestrak-services' ]);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$q', '$location', '$log', 'celestrak',
-    function(jsonrpc, $q, $location, $log, celestrak)
-{
+    'jsonrpc', '$location', '$log', 'celestrak',
+    function (jsonrpc, $location, $log, celestrak) {
 
-    'use strict';
+        'use strict';
 
-    var rpc = '' +
-        $location.protocol() + '://' +
-        $location.host() + ':' + $location.port() +
-        '/jrpc/';
-    this._CfgService = jsonrpc.newService('configuration', rpc);
-    this._services = {
-        // Configuration methods (Ground Stations)
-        'gs.list': this._CfgService.createMethod('gs.list'),
-        'gs.add': this._CfgService.createMethod('gs.create'),
-        'gs.get': this._CfgService.createMethod('gs.getConfiguration'),
-        'gs.update': this._CfgService.createMethod('gs.setConfiguration'),
-        'gs.delete': this._CfgService.createMethod('gs.delete'),
-         // Configuration methods (Spacecraft)
-        'sc.list': this._CfgService.createMethod('sc.list'),
-        'sc.add': this._CfgService.createMethod('sc.create'),
-        'sc.get': this._CfgService.createMethod('sc.getConfiguration'),
-        'sc.update': this._CfgService.createMethod('sc.setConfiguration'),
-        'sc.delete': this._CfgService.createMethod('sc.delete')
-    };
+        var rpc = $location.protocol() + '://' +
+            $location.host() + ':' + $location.port() +
+            '/jrpc/';
+        this.CfgService = jsonrpc.newService('configuration', rpc);
+        this.services = {
+            // Configuration methods (Ground Stations)
+            'gs.list': this.CfgService.createMethod('gs.list'),
+            'gs.add': this.CfgService.createMethod('gs.create'),
+            'gs.get': this.CfgService.createMethod('gs.getConfiguration'),
+            'gs.update': this.CfgService.createMethod('gs.setConfiguration'),
+            'gs.delete': this.CfgService.createMethod('gs.delete'),
+            // Configuration methods (Spacecraft)
+            'sc.list': this.CfgService.createMethod('sc.list'),
+            'sc.add': this.CfgService.createMethod('sc.create'),
+            'sc.get': this.CfgService.createMethod('sc.getConfiguration'),
+            'sc.update': this.CfgService.createMethod('sc.setConfiguration'),
+            'sc.delete': this.CfgService.createMethod('sc.delete')
+        };
 
-    /**
-     * Method for calling the remote service through JSON-RPC.
-     * @param service The name of the service, as per the internal services
-     * name definitions.
-     * @param paramArray The parameters for the service (as an array).
-     * @returns {*}
-     */
-    this.rCall = function(service, paramArray) {
-        if ( ( service in this._services ) === false ) {
-            throw '[satnetRPC] service not found, id = <' + service + '>';
-        }
-        $log.log('[satnetRPC] Invoked service = <' + service + '>');
-        return this._services[service](paramArray).then(
-            function(data) { return data.data; },
-            function(error) {
-                var msg = '[satnetRPC] Error invoking = <' + service + '>' +
-                            ', description = <' + error + '>';
-                $log.warn(msg);
+        /**
+         * Method for calling the remote service through JSON-RPC.
+         * @param service The name of the service, as per the internal services
+         * name definitions.
+         * @param paramArray The parameters for the service (as an array).
+         * @returns {*}
+         */
+        this.rCall = function (service, paramArray) {
+            if ((this.services.hasOwnProperty(service)) === false) {
+                throw '[satnetRPC] service not found, id = <' + service + '>';
             }
-        );
-    };
+            $log.log('[satnetRPC] Invoked service = <' + service + '>');
+            return this.services[service](paramArray).then(
+                function (data) {
+                    return data.data;
+                },
+                function (error) {
+                    var msg = '[satnetRPC] Error invoking = <' + service + '>' +
+                        ', description = <' + error + '>';
+                    $log.warn(msg);
+                }
+            );
+        };
 
-    /**
-     * Reads the complete configuration for a given spacecraft using the 
-     * Satnet and the Celestrak services.
-     * @param   {String} id Identifier of the spacecraft within the
-     *                      Satnet network.
-     * @returns {$q} Promise that returns the configuration object for this
-     *               spacecraft.
-     */
-    this.readSCCfg = function(id) {
-        return this.rCall('sc.get', [id]).then(function (cfg) {
-            var tleId = cfg['spacecraft_tle_id'];
-            return celestrak.findTle(tleId).then(function (tleArray) {
-                return {
-                    id: cfg['spacecraft_id'],
-                    cfg: cfg,
-                    tle: {
-                        id: cfg['spacecraft_tle_id'],
-                        l1: tleArray[0].l1,
-                        l2: tleArray[0].l2
-                    },
-                };
+        /**
+         * Reads the complete configuration for a given spacecraft using the
+         * Satnet and the Celestrak services.
+         * @param   {String} id Identifier of the spacecraft within the
+         *                      Satnet network.
+         * @returns {$q} Promise that returns the configuration object for this
+         *               spacecraft.
+         */
+        this.readSCCfg = function (id) {
+            return this.rCall('sc.get', [id]).then(function (cfg) {
+                var tleId = cfg.spacecraft_tle_id;
+                return celestrak.findTle(tleId).then(function (tleArray) {
+                    return {
+                        id: cfg.spacecraft_id,
+                        cfg: cfg,
+                        tle: {
+                            id: cfg.spacecraft_tle_id,
+                            l1: tleArray[0].l1,
+                            l2: tleArray[0].l2
+                        }
+                    };
+                });
             });
-        });
-    };
+        };
 
-}]);
+    }]);
