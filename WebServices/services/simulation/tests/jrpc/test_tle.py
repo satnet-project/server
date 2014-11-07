@@ -16,10 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
-
 import datadiff
 import logging
-
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as \
     segment_serializer

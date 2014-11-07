@@ -16,6 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
+from services.configuration.models import segments
+from services.simulation.jrpc.serializers import simulation
 
 
 @rpc4django.rpcmethod(
@@ -29,4 +31,6 @@ def get_groundtrack(spacecraft_id):
     :param spacecraft_id: Identifier of the spacecraft.
     :return: Array of objects containing { timestamp, lat, lng }.
     """
-    pass
+    return simulation.SimulationSerializer().serialize_groundtrack(
+        segments.Spacecraft.objects.get(identifier=spacecraft_id).groundtrack
+    )

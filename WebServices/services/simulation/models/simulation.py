@@ -123,16 +123,17 @@ class GroundTrackManager(models.Manager):
 
     def propagate_groundtracks(self):
         """
+        This method propagates the points for the GroundTracks along the
+        update window. This propagation should be done after the new TLE's
+        had been received.
         """
         os = simulator.OrbitalSimulator()
         (start, end) = os.get_update_window()
 
         for gt in self.all():
 
-            print '@INITIAL: gt.len = ' + str(len(gt.timestamp))
             # 1) remove old groundtrack points
             gt = GroundTrackManager.remove_old(gt)
-            print '@REMOVED: gt.len = ' + str(len(gt.timestamp))
             # 2) new groundtrack points
             ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(
                 os.calculate_groundtrack(
@@ -141,7 +142,6 @@ class GroundTrackManager(models.Manager):
             )
             # 3) create and store updated groundtrack
             gt = GroundTrackManager.append_new(gt, ts, lat, lng)
-            print '@APPEND: gt.len = ' + str(len(gt.timestamp))
             # 4) the updated groundtrack is saved to the database.
             gt.save()
 

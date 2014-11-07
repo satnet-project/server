@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from services.configuration.models import segments
 from services.simulation.models.celestrak import CelestrakDatabase
 from services.simulation.jrpc.serializers import tle
-
 import rpc4django
 
 

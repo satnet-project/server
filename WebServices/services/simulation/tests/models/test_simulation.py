@@ -51,14 +51,9 @@ class TestTle(TestCase):
         """
         # TODO Improve verification procedure
         tle_o = tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
-
         gt_i = simulation.GroundTrack.objects.get(tle=tle_o)
-        print '\n>> initial points = ' + str(len(gt_i.timestamp))
-
         simulation.GroundTrack.objects.propagate_groundtracks()
-
         gt_f = simulation.GroundTrack.objects.get(tle=tle_o)
-        print '>> final points = ' + str(len(gt_f.timestamp))
 
         self.assertNotEquals(
             len(gt_i.timestamp), len(gt_f.timestamp),
