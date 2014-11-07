@@ -20,7 +20,8 @@ from datetime import timedelta, datetime
 import logging
 import math
 from pytz import utc as pytz_utc
-from services.common import testing as db_tools, simulation
+from services.common import simulation
+from services.common.testing import helpers as db_tools
 from services.simulation.models import tle
 
 

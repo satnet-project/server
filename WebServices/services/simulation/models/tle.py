@@ -61,7 +61,9 @@ class TwoLineElementsManager(models.Manager):
 
     @staticmethod
     def load_celestrak():
-
+        """
+        Loads the TLE from all the accessible database from celestrak.com
+        """
         for s_tuple in Celestrak.CELESTRAK_SECTIONS:
 
             section = s_tuple[0]

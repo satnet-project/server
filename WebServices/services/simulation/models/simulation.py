@@ -17,34 +17,64 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 from djorm_pgarray import fields as pgarray_fields
-from services.common import simulation as simulator
+from services.common import simulation as simulator, misc
+from services.simulation.models import tle
 
 
 class GroundTrackManager(models.Manager):
     """
-    Manager for the GroundTracks.
+    Manager for the GroundTracks that handles the creation, update and deletion
+    process of these objects from the database.
     """
 
-    def create(self, groundtrack):
+    def create(self, spacecraft_tle):
+        """
+        Creates a new GroundTrack object within the database for the spacecraft
+        that has the given TLE. If the groundtrack already exists, it does not
+        update it.
+        :param spacecraft_tle: Two-line Element object as read from the
+                                database.
+        :return: Reference to the newly created object.
+        """
+        if GroundTrack.objects.filter(tle=spacecraft_tle).exists():
+            return GroundTrack.objects.get(tle=spacecraft_tle)
+
+        gt = simulator.OrbitalSimulator().calculate_groundtrack(spacecraft_tle)
+        lat, lng, ts = GroundTrackManager.groundtrack_to_dbarray(gt)
+
+        return super(GroundTrackManager, self).create(
+            tle=spacecraft_tle,
+            latitude=lat, longitude=lng, timestamp=ts
+        )
+
+    def propagate(self):
+
         pass
 
     @staticmethod
-    def spacecraft_added(sender, instance, **kwargs):
+    def groundtrack_to_dbarray(groundtrack):
         """
+        Static method that transforms a groundtrack array composed by points
+        (lat, lng, timestamp) into three independent arrays that can be stored
+        directly in a PostGres database.
+        :param groundtrack: The groundtrack to be split.
+        :return: ([latitude], [longitude], [timestamp]), three independent
+                arrays with the components of a given point from the
+                groundtrack.
         """
-        gt = simulator.OrbitalSimulator.calculate_groundtrack(instance.tle)
+        latitudes = []
+        longitudes = []
+        timestamps = []
 
-    @staticmethod
-    def spacecraft_removed(sender, instance, **kwargs):
-        """
-        """
-        pass
+        for point in groundtrack:
 
-    @staticmethod
-    def spacecraft_tle_updated(sender, instance, **kwargs):
-        """
-        """
-        pass
+            latitudes.append(point['latitude'])
+            longitudes.append(point['longitude'])
+            timestamps.append(
+                misc.get_utc_timestamp(point['timestamp'])
+            )
+
+        return latitudes, longitudes, timestamps
 
 
 class GroundTrack(models.Model):
@@ -57,13 +87,19 @@ class GroundTrack(models.Model):
 
     objects = GroundTrackManager()
 
+    tle = models.ForeignKey(
+        tle.TwoLineElement,
+        unique=True,
+        verbose_name='Reference to the TLE object used for this groundtrack'
+    )
+
     latitude = pgarray_fields.FloatArrayField(
         'Latitude for the points of the GroundTrack.'
     )
     longitude = pgarray_fields.FloatArrayField(
         'Longitude for the points of the GroundTrack.'
     )
-    timestamp = pgarray_fields.IntegerArrayField(
+    timestamp = pgarray_fields.BigIntegerArrayField(
         'UTC time at which the spacecraft is going to pass over the given point'
         ' of its GroundTrack.'
     )

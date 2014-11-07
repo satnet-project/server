@@ -19,7 +19,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 class CelestrakDatabase(object):
 
     # Base URL
-    CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/'
+    # CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/'
+    CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak/'
     # Weather and Earth Resources
     CELESTRAK_SECTION_1 = 'Weather & Earth Resources'
     CELESTRAK_WEATHER = CELESTRAK_URL_BASE + 'weather.txt'

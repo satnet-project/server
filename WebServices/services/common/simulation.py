@@ -19,6 +19,7 @@ import datetime
 import ephem
 import logging
 from services.common import gis, misc
+
 logger = logging.getLogger('common')
 
 
@@ -267,8 +268,7 @@ class OrbitalSimulator(object):
 
     def calculate_groundtrack(
         self, spacecraft_tle,
-        start=None, end=None,
-        timestep=datetime.timedelta(minutes=1)
+        start=None, end=None, timestep=datetime.timedelta(minutes=1)
     ):
         """
         Calculates the GroundTrack for the spacecraft with the given tle object.
@@ -293,8 +293,8 @@ class OrbitalSimulator(object):
 
             groundtrack.append({
                 'timestamp': date_i,
-                'lat': self._body.sublat,
-                'lng': self._body.sublong
+                'latitude': self._body.sublat,
+                'longitude': self._body.sublong
             })
 
             date_i += timestep

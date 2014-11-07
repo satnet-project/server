@@ -17,9 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models import signals
 from services.configuration.models import availability, compatibility, channels
-from services.configuration.models import rules, segments
+from services.configuration.models import rules
 from services.scheduling.models import operational
-from services.simulation.models import simulation
 
 
 def connect_rules_2_availability():
@@ -117,24 +116,7 @@ def connect_compatibility_2_operational():
         sender=compatibility.ChannelCompatibility
     )
 
-
-def connect_spacecraft_2_simulation():
-    """
-    Connects the events of adding a new spacecraft to the simulation of its
-    associated groundtracks.
-    """
-    signals.post_init.connect(
-        simulation.GroundTrackManager.spacecraft_added,
-        sender=segments.Spacecraft
-    )
-    signals.post_save.connect(
-        simulation.GroundTrackManager.spacecraft_tle_updated,
-        sender=segments.Spacecraft
-    )
-
-
 connect_availability_2_operational()
 connect_channels_2_compatibility()
 connect_compatibility_2_operational()
 connect_rules_2_availability()
-connect_spacecraft_2_simulation()

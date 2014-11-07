@@ -45,41 +45,21 @@ class SpacecraftManager(models.Manager):
         :param kwargs: Arguments to be used for this spacecraft object.
         :return: Spacecraft object reference.
         """
+        tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
+        groundtrack = simulation_models.GroundTrack.objects.create(tle)
+
         return super(SpacecraftManager, self).create(
-            tle=tle_models.TwoLineElement.objects.get(identifier=tle_id),
-            **kwargs
+            tle=tle, groundtrack=groundtrack, **kwargs
         )
 
-    def update(self, tle_id, **kwargs):
-        """
-
-        :param tle_id:
-        :param kwargs:
-        :return:
-        """
-        return super(SpacecraftManager, self).update(
-            tle=tle_models.TwoLineElement.objects.get(identifier=tle_id),
-            **kwargs
-        )
-
-    def add_channel(
-        self, sc_identifier=None, identifier=None,
-        frequency=None, modulation=None, bitrate=None, bandwidth=None,
-        polarization=None
-    ):
+    def add_channel(self, sc_identifier=None, **kwargs):
         """
         This method creates a new communications channel and associates it to
         the Spacecraft whose identifier is given as a parameter.
         """
         sc = self.get(identifier=sc_identifier)
         sc_ch = channels.SpacecraftChannel.objects.create(
-            identifier=identifier,
-            frequency=frequency,
-            modulation=modulation,
-            bitrate=bitrate,
-            bandwidth=bandwidth,
-            polarization=polarization,
-            enabled=True
+            enabled=True, **kwargs
         )
         sc.channels.add(sc_ch)
         sc.save()
@@ -135,24 +115,21 @@ class Spacecraft(models.Model):
         )]
     )
 
-    tle = models.ForeignKey(
-        tle_models.TwoLineElement,
-        verbose_name='TLE object for this Spacecraft'
-    )
-
-    # Spacecraft channels
     channels = models.ManyToManyField(
         channels.SpacecraftChannel,
         verbose_name='Available spacecraft communications channels'
     )
-    # GroundTracks for this spacecraft during the current simulation period
-    groundtracks = models.ForeignKey(
+    tle = models.ForeignKey(
+        tle_models.TwoLineElement,
+        verbose_name='TLE object for this Spacecraft'
+    )
+    groundtrack = models.ForeignKey(
         simulation_models.GroundTrack,
-        null=True,
-        verbose_name='Simulated spacecraft track'
+        unique=True,
+        verbose_name='Simulated spacecraft groundtrack'
     )
 
-    def dirty_update(self, callsign=None, tle_id=None):
+    def update(self, callsign=None, tle_id=None):
         """
         Updates the configuration for the given GroundStation object. It is not
         necessary to provide all the parameters for this function, since only
@@ -186,8 +163,8 @@ class GroundStationsManager(models.Manager):
     """
 
     def create(
-            self, latitude, longitude, altitude=None, username=None, user= None, 
-            IARU_region=0, **kwargs
+        self, latitude, longitude, altitude=None, username=None, user=None,
+        **kwargs
     ):
         """
         Method that creates a new GroundStation object using the given user as
@@ -208,34 +185,25 @@ class GroundStationsManager(models.Manager):
             altitude = gis.get_altitude(latitude, longitude)[0]
 
         results = gis.get_region(latitude, longitude)
+        iaru_region = 0
 
         return super(GroundStationsManager, self).create(
             latitude=latitude,
             longitude=longitude,
             altitude=altitude,
             country=results[gis.COUNTRY_SHORT_NAME],
-            IARU_region=IARU_region,
+            IARU_region=iaru_region,
             user=user,
             **kwargs
         )
 
-    def add_channel(
-        self, gs_identifier=None, identifier=None, band=None,
-        modulations=None, bitrates=None, bandwidths=None, polarizations=None
-    ):
+    def add_channel(self, gs_identifier=None, **kwargs):
         """
         This method creates a new communications channel and associates it to
         the GroundStation whose identifier is given as a parameter.
         """
         gs = self.get(identifier=gs_identifier)
-        gs_ch = channels.GroundStationChannel.objects.create(
-            identifier=identifier,
-            band=band,
-            modulations=modulations,
-            bitrates=bitrates,
-            bandwidths=bandwidths,
-            polarizations=polarizations
-        )
+        gs_ch = channels.GroundStationChannel.objects.create(**kwargs)
         gs.channels.add(gs_ch)
         gs.save()
 

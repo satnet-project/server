@@ -20,7 +20,8 @@ from django import test
 import datetime
 import logging
 
-from services.common import testing as db_tools, misc
+from services.common import misc
+from services.common.testing import helpers as db_tools
 from services.configuration import signals
 from services.configuration.jrpc.serializers import serialization as jrp_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs

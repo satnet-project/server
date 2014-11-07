@@ -79,6 +79,7 @@ create_apache_keys()
     sudo chmod -R o-w $APACHE_2_CERTIFICATES_DIR
 }
 
+__satnet_apache_ssl_conf='/etc/apache2/mods-available/ssl.conf'
 __satnet_apache_conf='/etc/apache2/sites-available/satnet_tls.conf'
 __apache_user='www-data'
 __apache_group='www-data'
@@ -95,6 +96,29 @@ __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
 # ### This function configures the apache2 server.
 configure_apache()
 {
+
+    # ### CONFIGURATION OF THE SSL MODULE
+    sudo rm -f $__satnet_apache_ssl_conf
+    sudo touch $__satnet_apache_ssl_conf
+
+    echo '<IfModule mod_ssl.c>' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed startup builtin' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed startup file:/dev/urandom 512' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed connect builtin' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed connect file:/dev/urandom 512' | sudo tee $__satnet_apache_ssl_conf
+    echo '    AddType application/x-x509-ca-cert .crt' | sudo tee $__satnet_apache_ssl_conf
+    echo '    AddType application/x-pkcs7-crl .crl' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLSessionCache         shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLSessionCacheTimeout  300' | sudo tee $__satnet_apache_ssl_conf
+    echo "    SSLCertificateFile $__apache_server_certificate" | sudo tee $__satnet_apache_ssl_conf
+    echo "    SSLCertificateKeyFile $__apache_server_key" | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLHonorCipherOrder On' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLCipherSuite HIGH:!aNULL:!MD5' | sudo tee $__satnet_apache_ssl_conf
+    echo '</IfModule>' | sudo tee $__satnet_apache_ssl_conf
+
+    # ### CONFIGURATION FOR THE VIRTUALHOST
     echo '<VirtualHost *:80>'  | sudo tee $__satnet_apache_conf
     echo "	ServerName $__apache_server_name" | sudo tee -a $__satnet_apache_conf
     echo "	Redirect permanent / $__apache_redirect_url" | sudo tee -a $__satnet_apache_conf
@@ -109,10 +133,11 @@ configure_apache()
     echo "    Alias /favicon.ico $webservices_public_html_dir/favicon.ico" | sudo tee -a $__satnet_apache_conf
     echo "    Alias /static $webservices_static_dir" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
-    echo '    GnuTLSEnable on' | sudo tee -a $__satnet_apache_conf
-    echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' | sudo tee -a $__satnet_apache_conf
-    echo "    GnuTLSCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_conf
-    echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
+    echo '    SSLEngine On' | sudo tee -a $__satnet_apache_conf
+    #echo '    GnuTLSEnable on' | sudo tee -a $__satnet_apache_conf
+    #echo '    GnuTLSPriorities NORMAL:!DHE-RSA:!DHE-DSS:!AES-256-CBC:%COMPAT' | sudo tee -a $__satnet_apache_conf
+    #echo "    GnuTLSCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_conf
+    #echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
     echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
@@ -148,9 +173,9 @@ configure_apache()
 
     create_apache_keys
 
-    sudo a2enmod gnutls
+    sudo a2dismod gnutls
     sudo a2enmod wsgi
-    sudo a2dismod ssl
+    sudo a2enmod ssl
     sudo a2ensite satnet_tls        # ubuntu compatible
     sudo a2ensite satnet_tls.conf   # debian compatible
     sudo a2dissite 000-default
@@ -287,6 +312,8 @@ __crontab_user='root'
 __crontab_shell='/bin/bash'
 __crontab_path='/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin'
 
+__wget_dir='/var/www/'
+
 # ### This is the function utilized for adding the crontab task required by
 # django-periodically for executing periodic maintenance tasks of the web
 # applications
@@ -295,6 +322,10 @@ configure_crontab()
     __django_runtasks="python $webservices_manage_py runtasks"
     __crontab_command="source $webservices_venv_activate && $__django_runtasks"
     __crontab_task="30 23 * * * $__crontab_user $__crontab_command"
+
+    --directory-prefix
+    __celestrak_command="wget -r --level=1 --no-parent --directory-prefix=$__wget_dir $__celestrak_url"
+    __celestrak_task="00 23 * * * $__crontab_user $__crontab_command"
 
     echo '# Adding crontab task for django-periodically...' | sudo tee $__crontab_conf
     echo "SHELL=$__crontab_shell" | sudo tee -a $__crontab_conf

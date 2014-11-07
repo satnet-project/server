@@ -20,9 +20,10 @@ from django import test
 import datadiff
 import logging
 
-from services.common import testing as db_tools
+from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as \
     segment_serializer
+from services.simulation.models import celestrak
 from services.simulation.jrpc.views import tle as tle_jrpc
 from services.simulation.jrpc.serializers import tle as tle_serializer
 
@@ -71,7 +72,7 @@ class JRPCTestTle(test.TestCase):
 
     def test_get_celestrak_resource(self):
 
-        e_resource = 'http://celestrak.com/NORAD/elements/cubesat.txt'
+        e_resource = celestrak.CelestrakDatabase.CELESTRAK_CUBESATS
         a_resource = tle_jrpc.get_celestrak_resource('CubeSats')
 
         self.assertEquals(

@@ -17,11 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
-
 import logging
 import ephem
-
-from services.common import testing as db_tools
+from services.common.testing import helpers as db_tools
 from services.simulation.models import tle
 
 

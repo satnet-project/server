@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import exceptions
 from django.test import TestCase
 
-from services.common import testing as db_tools
+from services.common.testing import helpers as db_tools
 from services.communications import jrpc as jrpc_comms
 from services.configuration import signals
 from services.configuration.jrpc.serializers import serialization as jrpc_keys

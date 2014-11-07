@@ -20,7 +20,8 @@ import datetime
 import logging
 from django import test
 
-from services.common import testing as db_tools, misc
+from services.common import misc
+from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
 from services.configuration.models import rules, segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
@@ -67,7 +68,8 @@ class JRPCRulesTest(test.TestCase):
             self.__sc_1_tle_id
         )
 
-        self.__sc_2_id = 'sc-humsat'
+        self.__sc_2_id = 'sc-swisscube'
+        self.__sc_2_tle_id = unicode('SWISSCUBE')
 
         db_tools.init_available()
         db_tools.init_tles_database()
@@ -102,8 +104,18 @@ class JRPCRulesTest(test.TestCase):
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
         self.__sc_2 = db_tools.create_sc(
-            user_profile=self.__user_profile, identifier=self.__sc_2_id,
+            user_profile=self.__user_profile,
+            identifier=self.__sc_2_id,
+            tle_id=self.__sc_2_tle_id
         )
+
+    def tearDown(self):
+        """
+        Restores the initial state of the database.
+        """
+        db_tools.remove_sc(self.__sc_1_id)
+        db_tools.remove_sc(self.__sc_2_id)
+        super(JRPCRulesTest, self).tearDown()
 
     def test_gs_list(self):
         """

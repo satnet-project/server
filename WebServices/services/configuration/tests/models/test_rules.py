@@ -20,7 +20,8 @@ import datetime
 from django import test
 import logging
 
-from services.common import testing as db_tools, misc, simulation
+from services.common.testing import helpers as db_tools
+from services.common import misc, simulation
 from services.configuration import signals
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import availability, rules
