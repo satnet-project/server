@@ -18,7 +18,7 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'satnet-services', 'spacecraft-models'
+    'satnet-services', 'x-satnet-services', 'spacecraft-models'
 ]);
 
 /**
@@ -26,32 +26,10 @@ angular.module('x-spacecraft-models', [
  * GroundStations.
  */
 angular.module('x-spacecraft-models').service('xsc', [
-    '$q', 'satnetRPC', 'sc',
-    function ($q, satnetRPC, sc) {
+    '$q', 'satnetRPC', 'xSatnetRPC', 'sc',
+    function ($q, satnetRPC, xSatnetRPC, sc) {
 
         'use strict';
-
-        /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @returns {$q} Promise that returns an array with the configuration
-         *               for each of the GroundStation objects.
-         */
-        this.getAllCfgs = function () {
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (scI) {
-                    p.push(satnetRPC.readSCCfg(scI));
-                });
-                return $q.all(p).then(function (results) {
-                    var cfgs = [], j;
-                    for (j = 0; j < results.length; j += 1) {
-                        cfgs.push(results[j]);
-                    }
-                    return cfgs;
-                });
-            });
-        };
 
         /**
          * Initializes all the configuration objects for the available
@@ -64,4 +42,26 @@ angular.module('x-spacecraft-models').service('xsc', [
             });
         };
 
-    }]);
+        /**
+         * Reads the configuration for all the GroundStation objects available
+         * in the server.
+         * @returns Promise that returns an array with the configuration for
+         *          each of the GroundStation objects.
+         */
+        this.getAllCfgs = function () {
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (scI) {
+                    p.push(xSatnetRPC.readFullSCCfg(scI));
+                });
+                return $q.all(p).then(function (results) {
+                    var cfgs = [], j;
+                    for (j = 0; j < results.length; j += 1) {
+                        cfgs.push(results[j]);
+                    }
+                    return cfgs;
+                });
+            });
+        };
+    }
+]);

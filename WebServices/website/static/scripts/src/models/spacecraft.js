@@ -57,8 +57,8 @@ angular.module('spacecraft-models')
         /**
          * Creates a new configuration object for the Spacecraft based on the
          * information contained in the data structure.
-         * @param data Information as retrieved through JSON-RPC from the server.
-         * @returns {$q} Promise that returns the configuration object for a spacecraft.
+         * @param data Information as retrieved from the server.
+         * @returns Promise that returns the configuration for a spacecraft.
          */
         this.create = function (data) {
             var id = data.spacecraft_id,
@@ -71,8 +71,8 @@ angular.module('spacecraft-models')
         };
 
         /**
-         * Initializes the internal variable with all the configuration structures
-         * using the given structure.
+         * Initializes the internal variable with all the configuration
+         * structures using the given structure.
          * @param {Object} cfgs All spacecraft configuration objects.
          */
         this.initAll = function (cfgs) {
@@ -82,6 +82,7 @@ angular.module('spacecraft-models')
                 this.scCfg[c.id] = {
                     cfg: c.cfg,
                     tle: c.tle,
+                    gt: c.groundtrack,
                     marker: null
                 };
             }

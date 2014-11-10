@@ -25,28 +25,42 @@ angular.module('satnet-services', [ 'celestrak-services' ]);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$location', '$log', 'celestrak',
-    function (jsonrpc, $location, $log, celestrak) {
+    'jsonrpc', '$location', '$log',
+    function (jsonrpc, $location, $log) {
 
         'use strict';
 
         var rpc = $location.protocol() + '://' +
             $location.host() + ':' + $location.port() +
             '/jrpc/';
-        this.CfgService = jsonrpc.newService('configuration', rpc);
+        this.configuration = jsonrpc.newService('configuration', rpc);
+        this.simulation = jsonrpc.newService('simulation', rpc);
+
         this.services = {
             // Configuration methods (Ground Stations)
-            'gs.list': this.CfgService.createMethod('gs.list'),
-            'gs.add': this.CfgService.createMethod('gs.create'),
-            'gs.get': this.CfgService.createMethod('gs.getConfiguration'),
-            'gs.update': this.CfgService.createMethod('gs.setConfiguration'),
-            'gs.delete': this.CfgService.createMethod('gs.delete'),
+            'gs.list': this.configuration.createMethod('gs.list'),
+            'gs.add': this.configuration.createMethod('gs.create'),
+            'gs.get': this.configuration.createMethod('gs.getConfiguration'),
+            'gs.update': this.configuration.createMethod('gs.setConfiguration'),
+            'gs.delete': this.configuration.createMethod('gs.delete'),
             // Configuration methods (Spacecraft)
-            'sc.list': this.CfgService.createMethod('sc.list'),
-            'sc.add': this.CfgService.createMethod('sc.create'),
-            'sc.get': this.CfgService.createMethod('sc.getConfiguration'),
-            'sc.update': this.CfgService.createMethod('sc.setConfiguration'),
-            'sc.delete': this.CfgService.createMethod('sc.delete')
+            'sc.list': this.configuration.createMethod('sc.list'),
+            'sc.add': this.configuration.createMethod('sc.create'),
+            'sc.get': this.configuration.createMethod('sc.getConfiguration'),
+            'sc.update': this.configuration.createMethod('sc.setConfiguration'),
+            'sc.delete': this.configuration.createMethod('sc.delete'),
+            // TLE methods
+            'simulation.tle.celestrak.getSections':
+                this.simulation.createMethod(
+                    'simulation.tle.celestrak.getSections'
+                ),
+            'tle.celestrak.getResource':
+                this.simulation.createMethod('tle.celestrak.getResource'),
+            'tle.celestrak.getTle':
+                this.simulation.createMethod('tle.celestrak.getTle'),
+            // Simulation methods
+            'sc.getGroundtrack':
+                this.simulation.createMethod('spacecraft.getGroundtrack')
         };
 
         /**
@@ -71,31 +85,6 @@ angular.module('satnet-services').service('satnetRPC', [
                     $log.warn(msg);
                 }
             );
-        };
-
-        /**
-         * Reads the complete configuration for a given spacecraft using the
-         * Satnet and the Celestrak services.
-         * @param   {String} id Identifier of the spacecraft within the
-         *                      Satnet network.
-         * @returns {$q} Promise that returns the configuration object for this
-         *               spacecraft.
-         */
-        this.readSCCfg = function (id) {
-            return this.rCall('sc.get', [id]).then(function (cfg) {
-                var tleId = cfg.spacecraft_tle_id;
-                return celestrak.findTle(tleId).then(function (tleArray) {
-                    return {
-                        id: cfg.spacecraft_id,
-                        cfg: cfg,
-                        tle: {
-                            id: cfg.spacecraft_tle_id,
-                            l1: tleArray[0].l1,
-                            l2: tleArray[0].l2
-                        }
-                    };
-                });
-            });
         };
 
     }]);

@@ -31,8 +31,8 @@ angular.module('celestrak-services').service('celestrak', [
         'use strict';
 
         // Base URL
-        // this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
-        this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak';
+        this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
+        //this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak';
         // Weather and Earth Resources
         this.CELESTRAK_SECTION_1 = 'Weather & Earth Resources';
         this.CELESTRAK_WEATHER = this.CELESTRAK_URL_BASE + 'weather.txt';
@@ -238,7 +238,7 @@ angular.module('celestrak-services').service('celestrak', [
          * This function finds the TLE information for a given Spacecraft from
          * among all the available ones in the Celestrak database.
          * @param   {String} tleId Spacecraft TLE identifier to be found.
-         * @returns {$q} Promise that returns the TLE object.
+         * @returns Promise that returns the TLE object.
          */
         this.findTle = function (tleId) {
 

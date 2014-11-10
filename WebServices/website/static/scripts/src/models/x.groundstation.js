@@ -17,57 +17,28 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module(
-    'x-groundstation-models',
-    [
-        'map-services', 'satnet-services', 'groundstation-models'
-    ]
-);
+angular.module('x-groundstation-models', [
+    'satnet-services', 'x-satnet-services', 'groundstation-models'
+]);
 
 /**
  * eXtended GroundStation models. Services built on top of the satnetRPC
  * service and the basic GroundStation models.
  */
-angular.module('x-groundstation-models')
-    .service('xgs', [
-        '$q', 'satnetRPC', 'gs', function ($q, satnetRPC, gs) {
+angular.module('x-groundstation-models').service('xgs', [
+    '$q', 'satnetRPC', 'xSatnetRPC', 'gs',
+    function ($q, satnetRPC, xSatnetRPC, gs) {
 
-            'use strict';
-
-            /**
-             * Reads the configuration for all the GroundStation objects available
-             * in the server.
-             * @returns {$q} Promise that returns an array with the configuration
-             *               for each of the GroundStation objects.
-             */
-            this.readAllGSConfiguration = function () {
-                return satnetRPC.rCall('gs.list', []).then(function (gss) {
-
-                    var p = [];
-
-                    angular.forEach(gss, function (gs) {
-                        p.push(satnetRPC.rCall('gs.get', [gs]));
-                    });
-
-                    return $q.all(p).then(function (results) {
-                        var cfgs = [], j;
-                        for (j = 0; j < results.length; j += 1) {
-                            cfgs.push(results[j]);
-                        }
-                        return cfgs;
-                    });
-
-                });
-            };
-
-            /**
-             * Initializes all the GroundStations reading the information from
-             * the server. Markers are indirectly initialized.
-             * @returns {$q} Promise that returns an array with all the configurations
-             *               read.
-             */
-            this.initAll = function () {
-                return this.readAllGSConfiguration().then(function (gsCfgs) {
+        'use strict';
+        /**
+         * Initializes all the GroundStations reading the information from
+         * the server. Markers are indirectly initialized.
+         * @returns Promise that returns an array with all the
+         *          configurations read.
+         */
+        this.initAll = function () {
+            return xSatnetRPC.readAllGSConfiguration()
+                .then(function (gsCfgs) {
                     var p = [];
                     angular.forEach(gsCfgs, function (gsCfg) {
                         p.push(gs.create(gsCfg));
@@ -76,16 +47,17 @@ angular.module('x-groundstation-models')
                         return results;
                     });
                 });
-            };
+        };
 
-            /**
-             * Updates the configuration for a given GroundStation.
-             * @param gsId The identifier of the GroundStation.
-             */
-            this.updateGSMarker = function (gsId) {
-                satnetRPC.rCall('gs.get', [gsId]).then(function (data) {
-                    gs.configure(data);
-                });
-            };
+        /**
+         * Updates the configuration for a given GroundStation.
+         * @param gsId The identifier of the GroundStation.
+         */
+        this.updateGSMarker = function (gsId) {
+            satnetRPC.rCall('gs.get', [gsId]).then(function (data) {
+                gs.configure(data);
+            });
+        };
 
-        }]);
+    }
+]);

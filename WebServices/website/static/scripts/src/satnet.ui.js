@@ -30,6 +30,7 @@ var app = angular.module('satnet-ui', [
     // level 1 services
     'common', 'map-services',
     'celestrak-services', 'satnet-services', 'broadcaster',
+    'x-satnet-services',
     // level 2 services
     'groundstation-models',
     'spacecraft-models',
@@ -37,8 +38,7 @@ var app = angular.module('satnet-ui', [
     'x-groundstation-models',
     'x-spacecraft-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-modalsc-controllers', 'ui-modalgs-controllers',
-    'simulator'
+    'ui-map-controllers', 'ui-modalsc-controllers', 'ui-modalgs-controllers'
 ]);
 
 // level 1 services
@@ -46,11 +46,11 @@ angular.module('common');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
+angular.module('x-satnet-services');
 angular.module('broadcaster');
 // level 2 services
 angular.module('groundstation-models');
 angular.module('spacecraft-models');
-angular.module('simulator');
 // level 3 services
 angular.module('x-groundstation-models');
 angular.module('x-spacecraft-models');
@@ -63,28 +63,27 @@ angular.module('ui-modalgs-controllers');
  * Configuration of the main AngularJS logger so that it broadcasts all logging
  * messages as events that can be catched by other visualization UI controllers.
  */
-app.config(function($provide) {
+app.config(function ($provide) {
     'use strict';
-    
-    $provide.decorator('$log', function($delegate) {
+    $provide.decorator('$log', function ($delegate) {
         var rScope = null;
-        return  {
-            setScope: function(scope) { rScope = scope; },
-            log: function () {
-                $delegate.log.apply(null, ['[log] ' + arguments[0]]);
-                rScope.$broadcast('logEvent', arguments[0]);
+        return {
+            setScope: function (scope) { rScope = scope; },
+            log: function (args) {
+                $delegate.log.apply(null, ['[log] ' + args]);
+                rScope.$broadcast('logEvent', args);
             },
-            info: function () {
-                $delegate.info.apply(null, ['[info] ' + arguments[0]]);
-                rScope.$broadcast('infoEvent', arguments[0]);
+            info: function (args) {
+                $delegate.info.apply(null, ['[info] ' + args]);
+                rScope.$broadcast('infoEvent', args);
             },
-            error: function () {
-                $delegate.error.apply(null, ['[error] ' + arguments[0]]);
-                rScope.$broadcast('errEvent', arguments[0]);
+            error: function (args) {
+                $delegate.error.apply(null, ['[error] ' + args]);
+                rScope.$broadcast('errEvent', args);
             },
-            warn: function () {
-                $delegate.warn.apply(null, ['[warn] ' + arguments[0]]);
-                rScope.$broadcast('warnEvent', arguments[0]);
+            warn: function (args) {
+                $delegate.warn.apply(null, ['[warn] ' + args]);
+                rScope.$broadcast('warnEvent', args);
             }
         };
     });
@@ -95,41 +94,38 @@ app.config(function($provide) {
  */
 app.run([
     '$rootScope', '$log', '$http', '$cookies',
-    function($rootScope, $log, $http, $cookies) {
-        
+    function ($rootScope, $log, $http, $cookies) {
         'use strict';
-        
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
-        
     }
 ]);
 
 app.controller('NotificationAreaController', [
-    '$scope', '$filter', function($scope, $filter) {
+    '$scope', '$filter',
+    function ($scope, $filter) {
+        'use strict';
+        $scope.eventLog = [];
+        $scope.logEvent = function (event, message) {
+            $scope.eventLog.unshift({
+                'type': event.name,
+                'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                'msg':  message
+            });
+        };
 
-    'use strict';
-        
-    $scope.eventLog = [];
-    $scope._logEvent = function (event, message) {
-        $scope.eventLog.unshift({
-            'type': event.name,
-            'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-            'msg':  message
+        $scope.$on('logEvent', function (event, message) {
+            $scope.logEvent(event, message);
         });
-    };
+        $scope.$on('infoEvent', function (event, message) {
+            $scope.logEvent(event, message);
+        });
+        $scope.$on('warnEvent', function (event, message) {
+            $scope.logEvent(event, message);
+        });
+        $scope.$on('errEvent', function (event, message) {
+            $scope.logEvent(event, message);
+        });
 
-    $scope.$on('logEvent', function(event, message) {
-        $scope._logEvent(event, message);
-    });
-    $scope.$on('infoEvent', function(event, message) {
-        $scope._logEvent(event, message);
-    });
-    $scope.$on('warnEvent', function(event, message) {
-        $scope._logEvent(event, message);
-    });
-    $scope.$on('errEvent', function(event, message) {
-        $scope._logEvent(event, message);
-    });
-
-}]);
+    }
+]);
