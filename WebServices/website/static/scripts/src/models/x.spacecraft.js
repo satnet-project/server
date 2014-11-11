@@ -63,5 +63,12 @@ angular.module('x-spacecraft-models').service('xsc', [
                 });
             });
         };
+
+        this.addSC = function (scId) {
+            satnetRPC.rCall('sc.get', [scId]).then(function (data) {
+                sc.add(data);
+            });
+        };
+
     }
 ]);

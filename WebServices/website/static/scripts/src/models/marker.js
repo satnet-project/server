@@ -26,7 +26,7 @@ angular.module('marker-models', [
  * service and the basic GroundStation models.
  */
 angular.module('marker-models').service('markers', [
-    '$log', 'maps', function ($log, maps) {
+    'maps', function (maps) {
 
         'use strict';
 
@@ -108,24 +108,29 @@ angular.module('marker-models').service('markers', [
 
         /**
          * Creates a new entrance in the configuration structure.
-         * @param   {String} id Identifier of the new GroundStation.
+         * @param   {String} scId Identifier of the Spacecraft.
          * @param   {Object} cfg Configuration object for the new GroundStation.
          * @returns {Object} Returns an object with the marker and the
          *                      configuration.
          */
-        this.createSC = function (id, cfg) {
-            return L.marker(
-                L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
-                {
-                    draggable: false,
-                    icon: L.icon({
-                        iconUrl: '/static/images/icons/gs-icon.svg',
-                        iconSize: [30, 30]
-                    })
-                }
-            ).bindLabel(id, { noHide: true });
+        this.createSC = function (scId, cfg) {
+            var gt = this.readTrack(cfg.groundtrack),
+                icon = L.icon({
+                    iconUrl: '/static/images/icons/gs-icon.svg',
+                    iconSize: [30, 30]
+                });
+            return L.marker.movingMarker(gt.positions, gt.durations, {
+                draggable: false,
+                icon: icon
+            }).bindLabel(scId);
         };
 
+        /**
+         * TODO Best unit testing for this algorithm.
+         * @param groundtrack
+         * @param timestamp
+         * @returns {number}
+         */
         this.findPrevious = function (groundtrack, timestamp) {
             var i;
             for (i = 0;  i < groundtrack.length; i += 1) {
@@ -137,21 +142,48 @@ angular.module('marker-models').service('markers', [
         };
 
         /**
-         *
          * TODO What if the groundtrack has not started yet?
+         * TODO Best unit testing for this algorithm.
+         * @param groundtrack
+         * @returns {{durations: Array, positions: Array}}
          */
-        this.createTrack = function (groundtrack) {
+        this.readTrack = function (groundtrack) {
+
             var nowMs = Date.now(),
                 startIndex = this.findNext(nowMs),
-                j;
-            if (startIndex === 0) {
-                $log.warn(
-                    '[marker] Initial point for the groundtrack is wrong.'
-                );
-            }
-            for (j = startIndex; j < groundtrack.length; j += 1) {
+                j,
+                durations = [],
+                positions = [];
 
+            if (startIndex !== 0) {
+                startIndex = startIndex - 1;
             }
+
+            positions.push(groundtrack[startIndex]);
+            for (j = startIndex; j < (groundtrack.length - 1); j += 1) {
+                durations.push(groundtrack[j + 1] - groundtrack[j]);
+                positions.push([
+                    groundtrack[j + 1].latitude,
+                    groundtrack[j + 1].longitude
+                ]);
+            }
+
+            return { durations: durations, positions: positions };
+
+        };
+
+        this.addSC = function (id, sc) {
+            if (this.sc.hasOwnProperty(id)) {
+                throw '[x-maps] SC Marker already exists, id = ' + id;
+            }
+            console.log('>>> sc = ' + JSON.stringify(sc));
+            var m = this.createSC(id, sc);
+            this.sc[id] = m;
+            return maps.getMainMap().then(function (mapInfo) {
+                console.log('mapInfo.map + ' + mapInfo.map);
+                m.addTo(mapInfo.map);
+                return { id: id, cfg: sc, marker: m };
+            });
         };
 
     }

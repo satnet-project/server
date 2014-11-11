@@ -17,14 +17,16 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('spacecraft-models', [ 'map-services' ]);
+angular.module('spacecraft-models', [
+    'marker-models'
+]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
 angular.module('spacecraft-models')
-    .service('sc', [ 'maps', function (maps) {
+    .service('sc', [ 'markers', function (markers) {
 
         'use strict';
 
@@ -39,7 +41,8 @@ angular.module('spacecraft-models')
          * Creates a new entrance in the configuration structure.
          * @param {String} id Identifier of the new Spacecraft.
          * @param {Object} cfg Configuration object for the new Spacecraft.
-         * @returns {Object} Returns an object with the marker and the configuration.
+         * @returns {Object} Returns an object with the marker and the
+         *                  configuration.
          */
         this.create = function (id, cfg) {
             var ll = L.latLng(),
@@ -57,16 +60,17 @@ angular.module('spacecraft-models')
         /**
          * Creates a new configuration object for the Spacecraft based on the
          * information contained in the data structure.
-         * @param data Information as retrieved from the server.
-         * @returns Promise that returns the configuration for a spacecraft.
+         * @param data Information as retrieved through JSON-RPC from the server.
+         * @returns {*} Leaflet.marker for this Spacecraft.
          */
-        this.create = function (data) {
-            var id = data.spacecraft_id,
-                cfg = this.create(id, data);
-            this.scCfg[id] = cfg;
-            return maps.getMainMap().then(function (mapInfo) {
-                cfg.marker.addTo(mapInfo.map);
-                return cfg;
+        this.add = function (data) {
+            var id = data.spacecraft_id;
+            this.scCfg[id] = {};
+            this.scCfg[id].cfg = this.createCfg(data);
+            return markers.addSC(id, this.scCfg[id]).then(function (data) {
+                console.log(
+                    '[sc-model] New SC added, cfg = ' + JSON.stringify(data.cfg)
+                );
             });
         };
 
@@ -90,8 +94,8 @@ angular.module('spacecraft-models')
         };
 
         /**
-         * Returns the information for all the spacecraft configurations hold as
-         * a human-readable string.
+         * Returns the information for all the spacecraft configurations hold
+         * as a human-readable string.
          * @returns {String} Human-readable string.
          */
         this.asString = function () {
