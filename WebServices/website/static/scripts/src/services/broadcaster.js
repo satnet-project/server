@@ -68,4 +68,45 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
         };
 
-    }]);
+        /**
+         * @type {string} Identifier of the event.
+         */
+        this.SC_ADDED_EVENT = 'sc.added';
+        /**
+         * @type {string} Identifier of the event.
+         */
+        this.SC_REMOVED_EVENT = 'sc.removed';
+        /**
+         * @type {string} Identifier of the event.
+         */
+        this.SC_UPDATED_EVENT = 'sc.updated';
+
+        /**
+         * Function that broadcasts the event associated with the creation of a
+         * new Spacececraft.
+         * @param scId The identifier of the Spacececraft.
+         */
+        this.scAdded = function (scId) {
+            $rootScope.$broadcast(this.SC_ADDED_EVENT, scId);
+        };
+
+        /**
+         * Function that broadcasts the event associated with the removal of a
+         * new Spacececraft.
+         * @param scId The identifier of the Spacececraft.
+         */
+        this.scRemoved = function (scId) {
+            $rootScope.$broadcast(this.SC_REMOVED_EVENT, scId);
+        };
+
+        /**
+         * Function that broadcasts the event associated with the update of
+         * new Spacececraft.
+         * @param scId The identifier of the Spacececraft.
+         */
+        this.scUpdated = function (scId) {
+            $rootScope.$broadcast(this.SC_UPDATED_EVENT, scId);
+        };
+
+    }
+]);

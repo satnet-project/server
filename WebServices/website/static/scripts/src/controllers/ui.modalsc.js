@@ -21,13 +21,13 @@ angular.module(
     'ui-modalsc-controllers',
     [
         'ui.bootstrap', 'nya.bootstrap.select',
-        'celestrak-services', 'satnet-services'
+        'celestrak-services', 'satnet-services', 'broadcaster'
     ]
 );
 
 angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
-    '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak',
-    function ($scope, $log, $modalInstance, satnetRPC, celestrak) {
+    '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak', 'broadcaster',
+    function ($scope, $log, $modalInstance, satnetRPC, celestrak, broadcaster) {
 
         'use strict';
 
@@ -62,6 +62,7 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
                 $log.info(
                     '[map-ctrl] SC added, id = ' + data.spacecraft_id
                 );
+                broadcaster.scAdded(data.spacecraft_id);
             });
             $modalInstance.close();
         };
@@ -73,9 +74,8 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
 
 angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
     '$scope', '$log', '$modalInstance',
-    'satnetRPC', 'celestrak', 'spacecraftId',
-    function ($scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId) {
-
+    'satnetRPC', 'celestrak', 'spacecraftId', 'broadcaster',
+    function ($scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId, broadcaster) {
         'use strict';
 
         $scope.sc = {
@@ -117,6 +117,7 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
                 [spacecraftId, newScCfg]
             ).then(function (data) {
                 $log.info('[map-ctrl] SC updated, id = ' + data);
+                broadcaster.scUpdated(data);
             });
             $modalInstance.close();
         };
@@ -129,6 +130,7 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
                     $log.info(
                         '[map-ctrl] Spacecraft removed, id = ' + data
                     );
+                    broadcaster.scRemoved(data);
                 });
                 $modalInstance.close();
             }

@@ -31,8 +31,8 @@ angular.module('celestrak-services').service('celestrak', [
         'use strict';
 
         // Base URL
-        this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
-        //this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak';
+        //this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
+        this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak';
         // Weather and Earth Resources
         this.CELESTRAK_SECTION_1 = 'Weather & Earth Resources';
         this.CELESTRAK_WEATHER = this.CELESTRAK_URL_BASE + 'weather.txt';

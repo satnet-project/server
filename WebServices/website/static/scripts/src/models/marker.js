@@ -119,10 +119,13 @@ angular.module('marker-models').service('markers', [
                     iconUrl: '/static/images/icons/gs-icon.svg',
                     iconSize: [30, 30]
                 });
+            console.log(
+                '[marker-models] new sc, id = ' + scId + ' gt = ' + gt
+            );
             return L.marker.movingMarker(gt.positions, gt.durations, {
                 draggable: false,
                 icon: icon
-            }).bindLabel(scId);
+            });//.bindLabel(scId);
         };
 
         /**
