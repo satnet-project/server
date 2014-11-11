@@ -17,14 +17,16 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('groundstation-models', [ 'map-services' ]);
+angular.module('groundstation-models', [
+    'marker-models'
+]);
 
 /**
  * Service that handles the configuration and map handlers/objects for all the
  * GroundStations.
  */
 angular.module('groundstation-models').service('gs', [
-    '$log', 'maps', function ($log, maps) {
+    '$log', 'markers', function ($log, markers) {
 
         'use strict';
 
@@ -36,25 +38,19 @@ angular.module('groundstation-models').service('gs', [
         this.gsCfg = {};
 
         /**
-         * Creates a new entrance in the configuration structure.
-         * @param   {String} gsId Identifier of the new GroundStation.
-         * @param   {Object} gsCfg Configuration object for the new GroundStation.
-         * @returns {Object} Returns an object with the marker and the configuration.
+         * Creates a confgiuration object using the values from the object
+         * obtained from the SATNet server.
+         * @param data The object as obtained from the SATNet server.
+         * @returns {{id: (data.groundstation_id|*), callsign: (data.groundstation_callsign|*), latitude: *, longitude: *, elevation: (data.groundstation_elevation|*)}}
          */
-        this.create = function (gsId, gsCfg) {
-            var ll = L.latLng(
-                gsCfg.groundstation_latlon[0],
-                gsCfg.groundstation_latlon[1]
-            ),
-                icon = L.icon({
-                    iconUrl: '/static/images/icons/gs-icon.svg',
-                    iconSize: [30, 30]
-                }),
-                m = L.marker(
-                    ll,
-                    { draggable: false, icon: icon }
-                ).bindLabel(gsId, { noHide: true });
-            return { marker: m, cfg: gsCfg };
+        this.createCfg = function (data) {
+            return {
+                id: data.groundstation_id,
+                callsign: data.groundstation_callsign,
+                latitude: data.groundstation_latlon[0],
+                longitude: data.groundstation_latlon[1],
+                elevation: data.groundstation_elevation
+            };
         };
 
         /**
@@ -63,13 +59,14 @@ angular.module('groundstation-models').service('gs', [
          * @param data Information as retrieved through JSON-RPC from the server.
          * @returns {*} Leaflet.marker for this GroundStation.
          */
-        this.create = function (data) {
-            var gsId = data.groundstation_id,
-                gsCfg = this.create(gsId, data);
-            this.gsCfg[gsId] = gsCfg;
-            return maps.getMainMap().then(function (mapInfo) {
-                gsCfg.marker.addTo(mapInfo.map);
-                return gsCfg;
+        this.add = function (data) {
+            var id = data.groundstation_id;
+            this.gsCfg[id] = {};
+            this.gsCfg[id].cfg = this.createCfg(data);
+            return markers.addGS(id, this.gsCfg[id]).then(function (data) {
+                console.log(
+                    '[gs-model] New GS added, cfg = ' + JSON.stringify(data.cfg)
+                );
             });
         };
 
@@ -80,25 +77,13 @@ angular.module('groundstation-models').service('gs', [
          */
         this.remove = function (gsId) {
             if (this.gsCfg.hasOwnProperty(gsId) === false) {
-                $log.warn('[markers] No marker for gs, id= ' + gsId);
-                return;
+                throw '[markers] No marker for gs, id= ' + gsId;
             }
-            this.removeMarker(this.gsCfg[gsId]).then(function () {
-                console.log('[gs-model] Marker layer removed, id = ' + gsId);
+            markers.removeGS(gsId).then(function (id) {
+                $log.log('[gs-model] Marker layer removed, id = ' + id);
             });
             delete this.gsCfg[gsId];
-            console.log('[gs-model] GS removed, id = ' + gsId);
-        };
-
-        /**
-         * Removes the marker from the main map.
-         * @param   {Leaflet.Marker} marker Marker to be removed.
-         * @returns {$q} Promise that returns nothing.
-         */
-        this.removeMarker = function (marker) {
-            return maps.getMap().then(function (map) {
-                map.removeLayer(marker);
-            });
+            $log.log('[gs-model] GS removed, id = ' + gsId);
         };
 
         /**
@@ -110,11 +95,10 @@ angular.module('groundstation-models').service('gs', [
          */
         this.latlngDirtyUpdate = function (gsId, data) {
             var llChanged = false,
-                ll = null,
                 newLat = data.groundstation_latlon[0],
                 newLng = data.groundstation_latlon[1],
-                oldLat = this.gsCfg[gsId].cfg.groundstation_latlon[0],
-                oldLng = this.gsCfg[gsId].cfg.groundstation_latlon[1];
+                oldLat = this.gsCfg[gsId].cfg.latitude,
+                oldLng = this.gsCfg[gsId].cfg.longitude;
             if (newLat !== oldLat) {
                 llChanged = true;
             }
@@ -122,10 +106,9 @@ angular.module('groundstation-models').service('gs', [
                 llChanged = true;
             }
             if (llChanged === true) {
-                ll = L.latLng(newLat, newLng);
-                this.gsCfg[gsId].cfg.groundstation_latlon[0] = newLat;
-                this.gsCfg[gsId].cfg.groundstation_latlon[1] = newLng;
-                this.gsCfg[gsId].marker.setLatLng(ll);
+                this.gsCfg[gsId].cfg.latitude = newLat;
+                this.gsCfg[gsId].cfg.longitude = newLng;
+                markers.updateGS(gsId, newLat, newLng);
             }
         };
 
@@ -136,7 +119,6 @@ angular.module('groundstation-models').service('gs', [
          */
         this.configure = function (data) {
             var gsId = data.groundstation_id;
-            console.log('@configure(' + gsId + ')');
             if (!this.gsCfg.hasOwnProperty(gsId)) {
                 $log.warn('[markers] No marker for gs, id= ' + gsId);
                 return;
@@ -154,18 +136,20 @@ angular.module('groundstation-models').service('gs', [
         /**
          * Returns a human-readable representation of all the configurationes saved
          * in the main structure for the available GroundStation objects.
-         * @param {Object} data holding the configuration for the GroundStations.
          * @returns {String} Human-readable string.
          */
-        this.asString = function (data) {
-            var gs =  null, gsBuffer = '', buffer = '', i;
-            for (i = 0; i < data.length; i += 1) {
-                gs = data[i];
-                gsBuffer = '"id": ' + gs.cfg.groundstation_id + ', ' +
+        this.asString = function () {
+            var gs = null, gsBuffer = '', buffer = '', id;
+            for (id in this.gsCfg) {
+                if (this.gsCfg.hasOwnProperty(id)) {
+                    gs = this.gsCfg[id];
+                    gsBuffer = '"id": ' + id + ', ' +
                         '"cfg": ' + JSON.stringify(gs.cfg);
-                buffer += gsBuffer;
+                    buffer += gsBuffer + ';\n';
+                }
             }
             return buffer;
         };
 
-    }]);
+    }
+]);

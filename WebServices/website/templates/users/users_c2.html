@@ -103,6 +103,9 @@
         src="{% static 'scripts/src/services/broadcaster.js'%}">
     </script>
     <script type="text/javascript"
+        src="{% static 'scripts/src/models/marker.js' %}">
+    </script>
+    <script type="text/javascript"
         src="{% static 'scripts/src/models/groundstation.js' %}">
     </script>
     <script type="text/javascript"
@@ -115,13 +118,16 @@
         src="{% static 'scripts/src/models/x.spacecraft.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.map.controllers.js'%}">
+        src="{% static 'scripts/src/controllers/ui.map.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalsc.controllers.js'%}">
+        src="{% static 'scripts/src/controllers/ui.menu.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalgs.controllers.js'%}">
+        src="{% static 'scripts/src/controllers/ui.modalsc.js' %}">
+    </script>
+    <script type="text/javascript"
+        src="{% static 'scripts/src/controllers/ui.modalgs.js' %}">
     </script>
 
     <script type="text/javascript"
@@ -141,8 +147,8 @@
 {% verbatim %}
 <div ng-app='satnet-ui'>
 
-    <div ng-controller='MapController' ng-init='init()' >
-        <leaflet center='center' markers='markers'
+    <div ng-controller='MapController' ng-init="init()" >
+        <leaflet id='mainMap' center='center' markers='markers'
                  style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
             </leaflet>
     </div>

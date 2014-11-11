@@ -27,18 +27,20 @@ var app = angular.module('satnet-ui', [
     'leaflet-directive',
     'ngResource', 'ngCookies',
     'remoteValidation', 'jsonrpc',
-    // level 1 services
+    // level 1 services/models
     'common', 'map-services',
     'celestrak-services', 'satnet-services', 'broadcaster',
     'x-satnet-services',
-    // level 2 services
+    // level 2 services/models
+    'marker-models',
     'groundstation-models',
     'spacecraft-models',
-    // level 3 services
+    // level 3 services/models
     'x-groundstation-models',
     'x-spacecraft-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-modalsc-controllers', 'ui-modalgs-controllers'
+    'ui-map-controllers', 'ui-menu-controllers',
+    'ui-modalsc-controllers', 'ui-modalgs-controllers'
 ]);
 
 // level 1 services
@@ -49,6 +51,7 @@ angular.module('satnet-services');
 angular.module('x-satnet-services');
 angular.module('broadcaster');
 // level 2 services
+angular.module('marker-models');
 angular.module('groundstation-models');
 angular.module('spacecraft-models');
 // level 3 services
@@ -56,6 +59,7 @@ angular.module('x-groundstation-models');
 angular.module('x-spacecraft-models');
 // level 4 controllers
 angular.module('ui-map-controllers');
+angular.module('ui-menu-controllers');
 angular.module('ui-modalsc-controllers');
 angular.module('ui-modalgs-controllers');
 
@@ -77,9 +81,11 @@ app.config(function ($provide) {
                 $delegate.info.apply(null, ['[info] ' + args]);
                 rScope.$broadcast('infoEvent', args);
             },
-            error: function (args) {
-                $delegate.error.apply(null, ['[error] ' + args]);
-                rScope.$broadcast('errEvent', args);
+            error: function () {
+                //$delegate.error.apply(null, ['[error] ' + args]);
+                $delegate.error.apply(null, arguments);
+                //Logging.error.apply(null,arguments)
+                //rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
                 $delegate.warn.apply(null, ['[warn] ' + args]);

@@ -95,14 +95,15 @@ angular.module('spacecraft-models')
          * @returns {String} Human-readable string.
          */
         this.asString = function () {
-            var buffer = '', scBuffer = '', i, c;
-            for (i = 0; i < this.scCfg.length; i += 1) {
-                c = this.scCfg[i];
-                scBuffer = '["id: "' + c.id + ', ' +
-                    '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
-                    '"tle: "' + JSON.stringify(c.tle) + ', ' +
-                    '"marker: "' + c.marker + ']\n';
-                buffer = buffer + scBuffer;
+            var buffer = '', scBuffer = '', id, c;
+            for (id in this.scCfg) {
+                if (this.scCfg.hasOwnProperty(id)) {
+                    c = this.scCfg[id];
+                    scBuffer = '["id: "' + c.id + ', ' +
+                        '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
+                        '"tle: "' + JSON.stringify(c.tle);
+                    buffer += scBuffer + ';\n';
+                }
             }
             return buffer;
         };
