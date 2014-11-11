@@ -52,7 +52,9 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         };
         $scope.refreshGSList = function () {
             satnetRPC.rCall('gs.list', []).then(function (data) {
-                $scope.gsIds = data.slice(0);
+                if (data !== null) {
+                    $scope.gsIds = data.slice(0);
+                }
             });
         };
         $scope.refreshGSList();
@@ -87,7 +89,10 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
         };
         $scope.refreshSCList = function () {
             satnetRPC.rCall('sc.list', []).then(function (data) {
-                $scope.scIds = data.slice(0);
+                if (data !== null) {
+                    console.log('sc.list >>> data = ' + JSON.stringify(data));
+                    $scope.scIds = data.slice(0);
+                }
             });
         };
         $scope.refreshSCList();

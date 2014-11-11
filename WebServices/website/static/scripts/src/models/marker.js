@@ -26,18 +26,18 @@ angular.module('marker-models', [
  * service and the basic GroundStation models.
  */
 angular.module('marker-models').service('markers', [
-    'maps', function (maps) {
+    '$log', 'maps', function ($log, maps) {
 
         'use strict';
 
         this.gs = {};
-        this.sc = {};
 
         /**
          * Creates a new entrance in the configuration structure.
          * @param   {String} id Identifier of the new GroundStation.
          * @param   {Object} cfg Configuration object for the new GroundStation.
-         * @returns {Object} Returns an object with the marker and the configuration.
+         * @returns {Object} Returns an object with the marker and the
+         *                  configuration.
          */
         this.createGS = function (id, cfg) {
             return L.marker(
@@ -89,8 +89,8 @@ angular.module('marker-models').service('markers', [
          * Removes the marker from the main map.
          * @param id Identifier of the GroundStation whose marker is to be
          *              removed.
-         * @returns {$q} Promise that returns the id of the just removed
-         *                  GroundStation.
+         * @returns Promise that returns the id of the just removed
+         *          GroundStation.
          */
         this.removeGS = function (id) {
             if (!this.gs.hasOwnProperty(id)) {
@@ -102,6 +102,56 @@ angular.module('marker-models').service('markers', [
                 mapInfo.map.removeLayer(marker);
                 return id;
             });
+        };
+
+        this.sc = {};
+
+        /**
+         * Creates a new entrance in the configuration structure.
+         * @param   {String} id Identifier of the new GroundStation.
+         * @param   {Object} cfg Configuration object for the new GroundStation.
+         * @returns {Object} Returns an object with the marker and the
+         *                      configuration.
+         */
+        this.createSC = function (id, cfg) {
+            return L.marker(
+                L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
+                {
+                    draggable: false,
+                    icon: L.icon({
+                        iconUrl: '/static/images/icons/gs-icon.svg',
+                        iconSize: [30, 30]
+                    })
+                }
+            ).bindLabel(id, { noHide: true });
+        };
+
+        this.findPrevious = function (groundtrack, timestamp) {
+            var i;
+            for (i = 0;  i < groundtrack.length; i += 1) {
+                if (groundtrack[i].timestamp > timestamp) {
+                    return i - 1;
+                }
+            }
+            throw 'GroundTrack is too old!';
+        };
+
+        /**
+         *
+         * TODO What if the groundtrack has not started yet?
+         */
+        this.createTrack = function (groundtrack) {
+            var nowMs = Date.now(),
+                startIndex = this.findNext(nowMs),
+                j;
+            if (startIndex === 0) {
+                $log.warn(
+                    '[marker] Initial point for the groundtrack is wrong.'
+                );
+            }
+            for (j = startIndex; j < groundtrack.length; j += 1) {
+
+            }
         };
 
     }
