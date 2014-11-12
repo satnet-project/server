@@ -35,6 +35,7 @@ module.exports = function (config) {
             'bower_components/jquery/dist/jquery.js',
             'bower_components/angular/angular.js',
             'node_modules/angular-mocks/angular-mocks.js',
+            //'node_modules/jasmine-as-promised/src/jasmine-as-promised.js',
             'src/services/*.js',
             'src/models/*.js',
             'src/controllers/*.js',

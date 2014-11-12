@@ -32,7 +32,7 @@ angular.module('common')
 
         /**
          * Retrieves the user location using an available Internet service.
-         * @returns {$q} Promise that returns a { lat, lng } object.
+         * @returns Promise that returns a { lat, lng } object.
          */
         this.getUserLocation = function () {
             return $http.get(this.IPINFO_URL).then(function (data) {
@@ -46,7 +46,7 @@ angular.module('common')
         // Proxy to get rid of the CORS restrictions.
         this.CORSS_PROXY = 'http://www.corsproxy.com/';
         // Get rid of this part of the URI to use with corsproxy
-        this.CORSS_PROXY_HTTP = 'http://';
+        this.CORSS_PROXY_HTTP = /^(https?):\/\//;
 
         /**
          * Returns a URL modified to be used directly with the corsproxy.com service.

@@ -31,8 +31,8 @@ angular.module('celestrak-services').service('celestrak', [
         'use strict';
 
         // Base URL
-        //this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
-        this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak';
+        this.CELESTRAK_URL_BASE = 'http://celestrak.com/NORAD/elements/';
+        //this.CELESTRAK_URL_BASE = 'https://satnet.aero.calpoly.edu/celestrak/';
         // Weather and Earth Resources
         this.CELESTRAK_SECTION_1 = 'Weather & Earth Resources';
         this.CELESTRAK_WEATHER = this.CELESTRAK_URL_BASE + 'weather.txt';
@@ -164,6 +164,7 @@ angular.module('celestrak-services').service('celestrak', [
          * @returns {*} (promise)
          */
         this.getSubsectionFile = function (subsection) {
+            //var uri = this.CELESTRAK_RESOURCES[subsection];
             var uri = common.getCORSSURL(this.CELESTRAK_RESOURCES[subsection]);
             return $http.get(uri).then(function (data) {
                 return data.data;
@@ -241,11 +242,12 @@ angular.module('celestrak-services').service('celestrak', [
          * @returns Promise that returns the TLE object.
          */
         this.findTle = function (tleId) {
+            var p = [], ss;
 
-            var p = [], i;
-
-            for (i = 0; i < this.CELESTRAK_RESOURCES.length; i += 1) {
-                p.push(this.tleObject(tleId, this.CELESTRAK_RESOURCES[i]));
+            for (ss in this.CELESTRAK_RESOURCES) {
+                if (this.CELESTRAK_RESOURCES.hasOwnProperty(ss)) {
+                    p.push(this.tleObject(tleId, ss));
+                }
             }
 
             return $q.all(p).then(function (results) {

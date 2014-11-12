@@ -66,9 +66,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
         this.readSCCfg = function (id) {
             return satnetRPC.rCall('sc.get', [id]).then(function (cfg) {
                 var tleId = cfg.spacecraft_tle_id;
-                console.log('>>> tle_id = ' + tleId);
                 return celestrak.findTle(tleId).then(function (tleArray) {
-                    console.log('>>> tleArray = ' + JSON.stringify(tleArray));
                     return {
                         id: cfg.spacecraft_id,
                         cfg: cfg,

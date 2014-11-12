@@ -84,6 +84,7 @@ angular.module('spacecraft-models')
             for (i = 0; i < cfgs.length; i += 1) {
                 c = cfgs[i];
                 this.scCfg[c.id] = {
+                    id: c.id,
                     cfg: c.cfg,
                     tle: c.tle,
                     gt: c.groundtrack,
@@ -103,9 +104,10 @@ angular.module('spacecraft-models')
             for (id in this.scCfg) {
                 if (this.scCfg.hasOwnProperty(id)) {
                     c = this.scCfg[id];
-                    scBuffer = '["id: "' + c.id + ', ' +
-                        '"cfg: "' + JSON.stringify(c.cfg) + ', ' +
-                        '"tle: "' + JSON.stringify(c.tle);
+                    scBuffer = '{ id: ' + c.id + ', ' +
+                        'cfg: ' + JSON.stringify(c.cfg) + ', ' +
+                        'tle: ' + JSON.stringify(c.tle) + ', ' +
+                        'gt.length = ' + c.gt.length + ' }';
                     buffer += scBuffer + ';\n';
                 }
             }

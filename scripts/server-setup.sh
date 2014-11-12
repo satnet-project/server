@@ -176,6 +176,7 @@ configure_apache()
     sudo a2dismod gnutls
     sudo a2enmod wsgi
     sudo a2enmod ssl
+    sudo a2enmod headers            # For enabling CORS
     sudo a2ensite satnet_tls        # ubuntu compatible
     sudo a2ensite satnet_tls.conf   # debian compatible
     sudo a2dissite 000-default

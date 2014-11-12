@@ -26,6 +26,7 @@
     "grunt": "^0.4.5",
     "grunt-contrib-qunit": "^0.5.2",
     "grunt-lib-phantomjs": "^0.6.0",
+    "jasmine-as-promised": "0.0.8",
     "karma": "^0.12.24",
     "karma-firefox-launcher": "^0.1.3",
     "karma-jasmine": "^0.2.3",

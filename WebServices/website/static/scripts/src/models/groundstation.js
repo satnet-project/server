@@ -65,7 +65,7 @@ angular.module('groundstation-models').service('gs', [
             this.gsCfg[id].cfg = this.createCfg(data);
             return markers.addGS(id, this.gsCfg[id]).then(function (data) {
                 console.log(
-                    '[gs-model] New GS added, cfg = ' + JSON.stringify(data.cfg)
+                    '[gs-model] GS added, cfg = ' + JSON.stringify(data.cfg)
                 );
             });
         };

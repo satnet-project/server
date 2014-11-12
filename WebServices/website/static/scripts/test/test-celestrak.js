@@ -20,11 +20,12 @@ describe('celestrak-services', function () {
     'use strict';
     describe('when I call celestrak.findTle', function () {
         beforeEach(module('celestrak-services'));
-        it('', inject(function (celestrak) {
-            expect(celestrak.findTle('HUMSAT-D')).toEqual({
-                id: 'HUMSAT-D',
-                l1: '',
-                l2: ''
+        it('Tests celestrak services', inject(function (celestrak) {
+            runs(function () {
+                celestrak.findTle('HUMSAT-D')
+                    .then(function (data) {
+                        expect(data.tle_id).toBeEqual('HUMSAT-D');
+                    });
             });
         }));
     });
