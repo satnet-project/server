@@ -10,7 +10,7 @@
                     ng-class="{ 'has-error': form.identifier.$invalid }">
                 <label class='control-label'
                        for='identifier'>Identifier</label>
-                <input type='text' name='identifier'
+                <input type='text' name='identifier' id='identifier'
                        class='form-control' style='width: 95%'
                        ng-model="gs.identifier" readonly />
             </div>
@@ -18,7 +18,7 @@
                     ng-class="{ 'has-error': form.callsign.$invalid }">
                 <label class='control-label'
                        for='callsign'>Callsign</label>
-                <input type='text' name='callsign'
+                <input type='text' name='callsign' id='callsign'
                        ng-model="gs.callsign"
                        class='form-control' style='width: 95%'
                        ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
@@ -28,17 +28,17 @@
                     ng-class="{ 'has-error': form.elevation.$invalid }">
                 <label class='control-label'
                        for='elevation'>Min. Antenna Elevation</label>
-                <input type='number' name='elevation'
+                <input type='number' name='elevation' id='elevation'
                        ng-model="gs.elevation"
                        class='form-control' style='width: 95%'
                        step='0.01' min='0' max='90' required />
             </div>
             <hr>
             <label for='edit_gs_lat'>Latitude</label>
-            <input type='text' name='edit_gs_lat' readonly
+            <input type='text' name='edit_gs_lat' id='edit_gs_lat' readonly
                    ng-model="markers.gsMarker.lat" style='width: 95%;' />
             <label for='edit_gs_lng'>Longitude</label>
-            <input type='text' name='edit_gs_lng' readonly
+            <input type='text' name='edit_gs_lng' id='edit_gs_lng' readonly
                    ng-model="markers.gsMarker.lng" style='width: 95%;' />
         </form>
     </div>

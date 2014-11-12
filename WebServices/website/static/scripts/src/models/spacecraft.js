@@ -38,26 +38,6 @@ angular.module('spacecraft-models')
         this.scCfg = {};
 
         /**
-         * Creates a new entrance in the configuration structure.
-         * @param {String} id Identifier of the new Spacecraft.
-         * @param {Object} cfg Configuration object for the new Spacecraft.
-         * @returns {Object} Returns an object with the marker and the
-         *                  configuration.
-         */
-        this.create = function (id, cfg) {
-            var ll = L.latLng(),
-                icon = L.icon({
-                    iconUrl: '/static/images/icons/sc-icon.svg',
-                    iconSize: [30, 30]
-                }),
-                m = L.marker(
-                    ll,
-                    { draggable: false, icon: icon }
-                ).bindLabel(id, { noHide: true });
-            return { marker: m, cfg: cfg };
-        };
-
-        /**
          * Creates a new configuration object for the Spacecraft based on the
          * information contained in the data structure.
          * @param data Information as retrieved through JSON-RPC from the server.
@@ -65,8 +45,7 @@ angular.module('spacecraft-models')
          */
         this.add = function (data) {
             var id = data.spacecraft_id;
-            this.scCfg[id] = {};
-            this.scCfg[id].cfg = this.createCfg(data);
+            this.scCfg[id] = data;
             return markers.addSC(id, this.scCfg[id]).then(function (data) {
                 console.log(
                     '[sc-model] New SC added, cfg = ' + JSON.stringify(data.cfg)
@@ -107,7 +86,7 @@ angular.module('spacecraft-models')
                     scBuffer = '{ id: ' + c.id + ', ' +
                         'cfg: ' + JSON.stringify(c.cfg) + ', ' +
                         'tle: ' + JSON.stringify(c.tle) + ', ' +
-                        'gt.length = ' + c.gt.length + ' }';
+                        'gt.length = ' + c.groundtrack.length + ' }';
                     buffer += scBuffer + ';\n';
                 }
             }

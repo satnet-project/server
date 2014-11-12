@@ -28,17 +28,8 @@ angular.module('broadcaster').service('broadcaster', [
 
         'use strict';
 
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.GS_ADDED_EVENT = 'gs.added';
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.GS_REMOVED_EVENT = 'gs.removed';
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.GS_UPDATED_EVENT = 'gs.updated';
 
         /**
@@ -68,17 +59,8 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
         };
 
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.SC_ADDED_EVENT = 'sc.added';
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.SC_REMOVED_EVENT = 'sc.removed';
-        /**
-         * @type {string} Identifier of the event.
-         */
         this.SC_UPDATED_EVENT = 'sc.updated';
 
         /**

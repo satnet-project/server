@@ -253,7 +253,7 @@ angular.module('celestrak-services').service('celestrak', [
             return $q.all(p).then(function (results) {
                 var fResults = [];
                 angular.forEach(results, function (r) {
-                    if (r !== null) {
+                    if ((r !== null) && (r !== undefined)) {
                         fResults.push(r);
                     }
                 });

@@ -105,39 +105,49 @@ angular.module('marker-models').service('markers', [
         };
 
         this.sc = {};
+        this.markerOptions = {
+            autostart: true,
+            draggable: false,
+            icon: L.icon({
+                iconUrl: '/static/images/icons/sc-icon.svg',
+                iconSize: [30, 30]
+            })
+        };
 
         /**
          * Creates a new entrance in the configuration structure.
-         * @param   {String} scId Identifier of the Spacecraft.
+         * @param   {String} id Identifier of the Spacecraft.
          * @param   {Object} cfg Configuration object for the new GroundStation.
          * @returns {Object} Returns an object with the marker and the
          *                      configuration.
          */
-        this.createSC = function (scId, cfg) {
-            var gt = this.readTrack(cfg.groundtrack),
-                icon = L.icon({
-                    iconUrl: '/static/images/icons/gs-icon.svg',
-                    iconSize: [30, 30]
-                });
+        this.createSC = function (id, cfg) {
             console.log(
-                '[marker-models] new sc, id = ' + scId + ' gt = ' + gt
+                '[marker-models] createSC, id = ' + id +
+                    ', cfg = ' + JSON.stringify(cfg.groundtrack)
             );
-            return L.marker.movingMarker(gt.positions, gt.durations, {
-                draggable: false,
-                icon: icon
-            });//.bindLabel(scId);
+            var gt = this.readTrack(cfg.groundtrack),
+                mo = this.markerOptions,
+                p = [[35.23611, -120.63611], [37.7833, -122.4167]],
+                d = [20000];
+            /*
+            maps.getMainMap().then(function (mapInfo) {
+                L.Marker.movingMarker(p, d, mo).addTo(mapInfo.map);
+            });
+            */
+            return L.Marker.movingMarker(p, d, mo);
         };
 
         /**
          * TODO Best unit testing for this algorithm.
          * @param groundtrack
-         * @param timestamp
+         * @param nowUs
          * @returns {number}
          */
-        this.findPrevious = function (groundtrack, timestamp) {
+        this.findPrevious = function (groundtrack, nowUs) {
             var i;
             for (i = 0;  i < groundtrack.length; i += 1) {
-                if (groundtrack[i].timestamp > timestamp) {
+                if (groundtrack[i].timestamp > nowUs) {
                     return i - 1;
                 }
             }
@@ -151,9 +161,8 @@ angular.module('marker-models').service('markers', [
          * @returns {{durations: Array, positions: Array}}
          */
         this.readTrack = function (groundtrack) {
-
-            var nowMs = Date.now(),
-                startIndex = this.findNext(nowMs),
+            var nowMs = Date.now() * 1000,
+                startIndex = this.findPrevious(groundtrack, nowMs),
                 j,
                 durations = [],
                 positions = [];
@@ -161,9 +170,8 @@ angular.module('marker-models').service('markers', [
             if (startIndex !== 0) {
                 startIndex = startIndex - 1;
             }
-
             positions.push(groundtrack[startIndex]);
-            for (j = startIndex; j < (groundtrack.length - 1); j += 1) {
+            for (j = startIndex; j < (groundtrack.length - 2); j += 1) {
                 durations.push(groundtrack[j + 1] - groundtrack[j]);
                 positions.push([
                     groundtrack[j + 1].latitude,
@@ -175,17 +183,18 @@ angular.module('marker-models').service('markers', [
 
         };
 
-        this.addSC = function (id, sc) {
+        this.addSC = function (id, cfg) {
+            console.log('@marker.addSC, id = ' + id);
             if (this.sc.hasOwnProperty(id)) {
                 throw '[x-maps] SC Marker already exists, id = ' + id;
             }
-            console.log('>>> sc = ' + JSON.stringify(sc));
-            var m = this.createSC(id, sc);
+            var m = this.createSC(id, cfg);
             this.sc[id] = m;
             return maps.getMainMap().then(function (mapInfo) {
                 console.log('mapInfo.map + ' + mapInfo.map);
                 m.addTo(mapInfo.map);
-                return { id: id, cfg: sc, marker: m };
+                m.start();
+                return { id: id, cfg: cfg, marker: m };
             });
         };
 

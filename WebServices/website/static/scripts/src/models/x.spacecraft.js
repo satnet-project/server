@@ -22,8 +22,8 @@ angular.module('x-spacecraft-models', [
 ]);
 
 /**
- * Service that handles the configuration and map handlers/objects for all the
- * GroundStations.
+ * eXtended GroundStation models. Services built on top of the satnetRPC
+ * service and the basic Spacecraft models.
  */
 angular.module('x-spacecraft-models').service('xsc', [
     '$q', 'satnetRPC', 'xSatnetRPC', 'sc',
@@ -37,35 +37,21 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @returns {[Object]} Array with the configuration objects.
          */
         this.initAll = function () {
-            return this.getAllCfgs().then(function (cfgs) {
-                return sc.initAll(cfgs);
-            });
+            return xSatnetRPC.readAllSCConfiguration()
+                .then(function (cfgs) {
+                    var p = [];
+                    angular.forEach(cfgs, function (c) { p.push(sc.add(c)); });
+                    return $q.all(p).then(function (r) { return r; });
+                });
         };
 
         /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @returns Promise that returns an array with the configuration for
-         *          each of the GroundStation objects.
+         * Adds a new Spacecraft together with its marker, using the
+         * configuration object that it retrieves from the server.
+         * @param id Identififer of the GroundStation to be added.
          */
-        this.getAllCfgs = function () {
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (scI) {
-                    p.push(xSatnetRPC.readFullSCCfg(scI));
-                });
-                return $q.all(p).then(function (results) {
-                    var cfgs = [], j;
-                    for (j = 0; j < results.length; j += 1) {
-                        cfgs.push(results[j]);
-                    }
-                    return cfgs;
-                });
-            });
-        };
-
-        this.addSC = function (scId) {
-            satnetRPC.rCall('sc.get', [scId]).then(function (data) {
+        this.addSC = function (id) {
+            satnetRPC.rCall('sc.get', [id]).then(function (data) {
                 sc.add(data);
             });
         };

@@ -27,8 +27,7 @@ angular.module('x-satnet-services', [
  * can be overriden by users.
  */
 angular.module('x-satnet-services').service('xSatnetRPC', [
-    '$q', 'satnetRPC', 'celestrak',
-    function ($q, satnetRPC, celestrak) {
+    '$q', 'satnetRPC', function ($q, satnetRPC) {
 
         'use strict';
 
@@ -44,7 +43,6 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
                 angular.forEach(gss, function (gs) {
                     p.push(satnetRPC.rCall('gs.get', [gs]));
                 });
-
                 return $q.all(p).then(function (results) {
                     var cfgs = [], j;
                     for (j = 0; j < results.length; j += 1) {
@@ -56,46 +54,24 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
         };
 
         /**
-         * Reads the basic configuration for a given spacecraft using the
-         * Satnet and the Celestrak services.
-         * @param   {String} id Identifier of the spacecraft within the
-         *                      Satnet network.
-         * @returns Promise that returns the configuration object for this
-         *          spacecraft.
+         * Reads the configuration for all the GroundStation objects available
+         * in the server.
+         * @returns Promise that returns an array with the configuration for
+         *          each of the GroundStation objects.
          */
-        this.readSCCfg = function (id) {
-            return satnetRPC.rCall('sc.get', [id]).then(function (cfg) {
-                var tleId = cfg.spacecraft_tle_id;
-                return celestrak.findTle(tleId).then(function (tleArray) {
-                    return {
-                        id: cfg.spacecraft_id,
-                        cfg: cfg,
-                        tle: {
-                            id: cfg.spacecraft_tle_id,
-                            l1: tleArray[0].l1,
-                            l2: tleArray[0].l2
-                        }
-                    };
+        this.readAllSCConfiguration = function () {
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (sc) {
+                    p = [ satnetRPC.readSCCfg(sc) ];
                 });
-            });
-        };
-
-        /**
-         * Reads the configuration for a given spacecraft, including the
-         * estimated groundtrack.
-         * @param scId The identifier of the spacecraft.
-         * @returns Promise that resturns the Spacecraft configuration object.
-         */
-        this.readFullSCCfg = function (scId) {
-            var xcfg = null,
-                p = [
-                    this.readSCCfg(scId),
-                    satnetRPC.rCall('sc.getGroundtrack', [scId])
-                ];
-            return $q.all(p).then(function (results) {
-                xcfg = results[0];
-                xcfg.groundtrack = results[1];
-                return xcfg;
+                return $q.all(p).then(function (results) {
+                    var cfgs = [], j;
+                    for (j = 0; j < results.length; j += 1) {
+                        cfgs.push(results[j]);
+                    }
+                    return cfgs;
+                });
             });
         };
 

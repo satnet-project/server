@@ -25,8 +25,8 @@ angular.module('satnet-services', [ 'celestrak-services' ]);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$location', '$log',
-    function (jsonrpc, $location, $log) {
+    'jsonrpc', '$location', '$log', '$q',
+    function (jsonrpc, $location, $log, $q) {
 
         'use strict';
 
@@ -85,6 +85,28 @@ angular.module('satnet-services').service('satnetRPC', [
                     $log.warn(msg);
                 }
             );
+        };
+
+        /**
+         * Reads the configuration for a given spacecraft, including the
+         * estimated groundtrack.
+         * @param scId The identifier of the spacecraft.
+         * @returns Promise that resturns the Spacecraft configuration object.
+         */
+        this.readSCCfg = function (scId) {
+            var cfg = null,
+                p = [
+                    this.rCall('sc.get', [scId]),
+                    this.rCall('sc.getGroundtrack', [scId]),
+                    this.rCall('tle.celestrak.getTle', [scId])
+                ];
+            return $q.all(p).then(function (results) {
+                cfg = results[0];
+                cfg.id = results[0].spacecraft_id;
+                cfg.groundtrack = results[1];
+                cfg.tle = results[2];
+                return cfg;
+            });
         };
 
     }]);

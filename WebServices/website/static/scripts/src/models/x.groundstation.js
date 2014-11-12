@@ -38,34 +38,30 @@ angular.module('x-groundstation-models').service('xgs', [
          */
         this.initAll = function () {
             return xSatnetRPC.readAllGSConfiguration()
-                .then(function (gsCfgs) {
+                .then(function (cfgs) {
                     var p = [];
-                    angular.forEach(gsCfgs, function (gsCfg) {
-                        p.push(gs.add(gsCfg));
-                    });
-                    return $q.all(p).then(function (results) {
-                        return results;
-                    });
+                    angular.forEach(cfgs, function (c) { p.push(gs.add(c)); });
+                    return $q.all(p).then(function (r) { return r; });
                 });
         };
 
         /**
          * Adds a new GroundStation together with its marker, using the
          * configuration object that it retrieves from the server.
-         * @param gsId Identififer of the GroundStation to be added.
+         * @param id Identififer of the GroundStation to be added.
          */
-        this.addGS = function (gsId) {
-            satnetRPC.rCall('gs.get', [gsId]).then(function (data) {
+        this.addGS = function (id) {
+            satnetRPC.rCall('gs.get', [id]).then(function (data) {
                 gs.add(data);
             });
         };
 
         /**
          * Updates the configuration for a given GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param id The identifier of the GroundStation.
          */
-        this.updateGS = function (gsId) {
-            satnetRPC.rCall('gs.get', [gsId]).then(function (data) {
+        this.updateGS = function (id) {
+            satnetRPC.rCall('gs.get', [id]).then(function (data) {
                 gs.configure(data);
             });
         };
