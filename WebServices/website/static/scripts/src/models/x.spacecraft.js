@@ -51,7 +51,7 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param id Identififer of the GroundStation to be added.
          */
         this.addSC = function (id) {
-            satnetRPC.rCall('sc.get', [id]).then(function (data) {
+            satnetRPC.readSCCfg(id).then(function (data) {
                 sc.add(data);
             });
         };

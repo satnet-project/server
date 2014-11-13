@@ -140,6 +140,7 @@ class GroundTrackManager(models.Manager):
                     spacecraft_tle=gt.tle, start=start, end=end
                 )
             )
+
             # 3) create and store updated groundtrack
             gt = GroundTrackManager.append_new(gt, ts, lat, lng)
             # 4) the updated groundtrack is saved to the database.

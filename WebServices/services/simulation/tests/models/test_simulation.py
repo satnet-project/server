@@ -19,16 +19,18 @@ from django.test import TestCase
 import logging
 from services.common.testing import helpers as db_tools
 from services.simulation.models import simulation, tle
+from services.simulation.jrpc.serializers import simulation as \
+    simulation_serializer
 
 
-class TestTle(TestCase):
+class TestSimulation(TestCase):
     """Unit test.
     Test for the TLE's class model.
     """
 
     def setUp(self):
 
-        super(TestTle, self).setUp()
+        super(TestSimulation, self).setUp()
 
         self.__verbose_testing = False
         self.__sc_1_id = 'sc-humsat'
@@ -59,3 +61,27 @@ class TestTle(TestCase):
             len(gt_i.timestamp), len(gt_f.timestamp),
             'The number of points should be different'
         )
+
+    def test_visualize_groundtracks(self):
+        """Basic groundtrack propagation.
+        Creates a KML output file with the generated coordinates. The name for
+        the points is the timestamp for that given coordinate.
+        """
+        tle_o = tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
+        gt_i = simulation.GroundTrack.objects.get(tle=tle_o)
+        simulation.GroundTrack.objects.propagate_groundtracks()
+        gt_f = simulation.GroundTrack.objects.get(tle=tle_o)
+        track = simulation_serializer\
+            .SimulationSerializer().serialize_groundtrack(gt_f)
+
+        import simplekml
+        kml = simplekml.Kml()
+        for p in track:
+            print '>>> @, ' + str(p['timestamp']) + ':(' +\
+                  str(p['latitude']) + ',' + str(p['longitude']) + ')'
+            kml.newpoint(
+                name=str(p['timestamp']),
+                coords=[(p['latitude'], p['longitude'])]
+            )
+        kml.save("test.kml")
+        print '>>> points = ' + str(len(track))

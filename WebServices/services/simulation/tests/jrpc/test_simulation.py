@@ -57,4 +57,5 @@ class JRPCSimulationTest(test.TestCase):
         """
         # TODO Improve the verificaton method (right now is by INSPECTION).
         gt = simulation.get_groundtrack(self.__sc_1_id)
-        misc.print_list(gt)
+        if self.__verbose_testing:
+            misc.print_list(gt)

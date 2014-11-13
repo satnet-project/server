@@ -115,6 +115,14 @@ class TestSimulation(TestCase):
             start=start, end=end, timestep=step
         )
 
+        if self.__verbose_testing:
+            for p in groundtrack:
+                print '>> @' + str(p['timestamp']) + ', ('\
+                    + str(p['latitude']) + ',' + str(p['longitude']) + ')'
+                #print '>> @' + str(p['timestamp']) + ', dd = ('\
+                #    + str(gis.degrees_2_float(p['latitude'])) + ','\
+                #    + str(gis.degrees_2_float(p['longitude'])) + ')'
+
         e_n_points = int(math.ceil(
             (end - start).total_seconds()/step.total_seconds()
         ))

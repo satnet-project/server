@@ -31,6 +31,13 @@ angular.module('marker-models').service('markers', [
         'use strict';
 
         this.gs = {};
+        this.gsMarker = {
+            draggable: false,
+            icon: L.icon({
+                iconUrl: '/static/images/icons/gs-icon.svg',
+                iconSize: [15, 15]
+            })
+        };
 
         /**
          * Creates a new entrance in the configuration structure.
@@ -42,13 +49,7 @@ angular.module('marker-models').service('markers', [
         this.createGS = function (id, cfg) {
             return L.marker(
                 L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
-                {
-                    draggable: false,
-                    icon: L.icon({
-                        iconUrl: '/static/images/icons/gs-icon.svg',
-                        iconSize: [30, 30]
-                    })
-                }
+                this.gsMarker
             ).bindLabel(id, { noHide: true });
         };
 
@@ -105,13 +106,19 @@ angular.module('marker-models').service('markers', [
         };
 
         this.sc = {};
-        this.markerOptions = {
+        this.scMarker = {
             autostart: true,
             draggable: false,
             icon: L.icon({
                 iconUrl: '/static/images/icons/sc-icon.svg',
-                iconSize: [30, 30]
+                iconSize: [10, 10]
             })
+        };
+        this.geolineOptions = {
+            weight: 7,
+            opacity: 0.5,
+            color: 'blue',
+            steps: 10
         };
 
         /**
@@ -120,22 +127,25 @@ angular.module('marker-models').service('markers', [
          * @param   {Object} cfg Configuration object for the new GroundStation.
          * @returns {Object} Returns an object with the marker and the
          *                      configuration.
+            [
+                new L.LatLng(
+                    gt.positions[0][0],
+                    gt.positions[0][1]
+                ),
+                new L.LatLng(
+                    gt.positions[gt.positions.length - 1][0],
+                    gt.positions[gt.positions.length - 1][1]
+                )
+            ]
          */
         this.createSC = function (id, cfg) {
-            console.log(
-                '[marker-models] createSC, id = ' + id +
-                    ', cfg = ' + JSON.stringify(cfg.groundtrack)
-            );
             var gt = this.readTrack(cfg.groundtrack),
-                mo = this.markerOptions,
-                p = [[35.23611, -120.63611], [37.7833, -122.4167]],
-                d = [20000];
-            /*
-            maps.getMainMap().then(function (mapInfo) {
-                L.Marker.movingMarker(p, d, mo).addTo(mapInfo.map);
-            });
-            */
-            return L.Marker.movingMarker(p, d, mo);
+                mo = this.scMarker;
+            return {
+                marker: L.Marker.movingMarker(gt.positions, gt.durations, mo)
+                    .bindLabel(id, { noHide: true }),
+                track: L.geodesic([gt.geopoints], this.geolineOptions)
+            };
         };
 
         /**
@@ -165,36 +175,66 @@ angular.module('marker-models').service('markers', [
                 startIndex = this.findPrevious(groundtrack, nowMs),
                 j,
                 durations = [],
-                positions = [];
+                positions = [],
+                geopoints = [];
 
             if (startIndex !== 0) {
                 startIndex = startIndex - 1;
             }
-            positions.push(groundtrack[startIndex]);
+            positions.push([
+                groundtrack[startIndex].latitude,
+                groundtrack[startIndex].longitude
+            ]);
             for (j = startIndex; j < (groundtrack.length - 2); j += 1) {
-                durations.push(groundtrack[j + 1] - groundtrack[j]);
+                durations.push(
+                    (groundtrack[j + 1].timestamp - groundtrack[j].timestamp)
+                        / 1000
+                );
                 positions.push([
                     groundtrack[j + 1].latitude,
                     groundtrack[j + 1].longitude
                 ]);
+                if (j % 1000 === 0) {
+                    geopoints.push(
+                        new L.LatLng(
+                            groundtrack[j + 1].latitude,
+                            groundtrack[j + 1].longitude
+                        )
+                    );
+                }
             }
 
-            return { durations: durations, positions: positions };
+            return {
+                durations: durations,
+                positions: positions,
+                geopoints: geopoints
+            };
 
         };
 
         this.addSC = function (id, cfg) {
-            console.log('@marker.addSC, id = ' + id);
             if (this.sc.hasOwnProperty(id)) {
                 throw '[x-maps] SC Marker already exists, id = ' + id;
             }
             var m = this.createSC(id, cfg);
             this.sc[id] = m;
             return maps.getMainMap().then(function (mapInfo) {
-                console.log('mapInfo.map + ' + mapInfo.map);
-                m.addTo(mapInfo.map);
-                m.start();
+                m.track.addTo(mapInfo.map);
+                m.marker.addTo(mapInfo.map);
                 return { id: id, cfg: cfg, marker: m };
+            });
+        };
+
+        this.removeSC = function (id) {
+            if (!this.sc.hasOwnProperty(id)) {
+                throw '[x-maps] Marker does NOT exist, id = ' + id;
+            }
+            var m = this.sc[id];
+            delete this.sc[id];
+            return maps.getMainMap().then(function (mapInfo) {
+                mapInfo.map.removeLayer(m.marker);
+                mapInfo.map.removeLayer(m.track);
+                return id;
             });
         };
 

@@ -26,7 +26,7 @@ angular.module('spacecraft-models', [
  * GroundStations.
  */
 angular.module('spacecraft-models')
-    .service('sc', [ 'markers', function (markers) {
+    .service('sc', [ '$log', 'markers', function ($log, markers) {
 
         'use strict';
 
@@ -51,6 +51,21 @@ angular.module('spacecraft-models')
                     '[sc-model] New SC added, cfg = ' + JSON.stringify(data.cfg)
                 );
             });
+        };
+
+        /**
+         * Removes a given Spacecraft from the models layer.
+         * @param id The identifier of the Spacecraft to be removed.
+         */
+        this.remove = function (id) {
+            if (this.scCfg.hasOwnProperty(id) === false) {
+                throw '[sc-model] No sc found, id= ' + id;
+            }
+            markers.removeSC(id).then(function (data) {
+                $log.log('[sc-model] Marker layer removed, id = ' + data);
+            });
+            delete this.scCfg[id];
+            $log.log('[sc-model] SC removed, id = ' + id);
         };
 
         /**

@@ -41,7 +41,13 @@ angular.module('groundstation-models').service('gs', [
          * Creates a confgiuration object using the values from the object
          * obtained from the SATNet server.
          * @param data The object as obtained from the SATNet server.
-         * @returns {{id: (data.groundstation_id|*), callsign: (data.groundstation_callsign|*), latitude: *, longitude: *, elevation: (data.groundstation_elevation|*)}}
+         * @returns {{
+         *      id: (data.groundstation_id|*),
+         *      callsign: (data.groundstation_callsign|*),
+         *      latitude: *,
+         *      longitude: *,
+         *      elevation: (data.groundstation_elevation|*)
+         *  }}
          */
         this.createCfg = function (data) {
             return {
@@ -73,17 +79,17 @@ angular.module('groundstation-models').service('gs', [
         /**
          * Removes a given GroundStation from the system, erasing its information
          * from the configuration structure and all related markers.
-         * @param gsId The identifier of the GroundStation to be removed.
+         * @param id The identifier of the GroundStation to be removed.
          */
-        this.remove = function (gsId) {
-            if (this.gsCfg.hasOwnProperty(gsId) === false) {
-                throw '[markers] No marker for gs, id= ' + gsId;
+        this.remove = function (id) {
+            if (this.gsCfg.hasOwnProperty(id) === false) {
+                throw '[gs-model] No gs found, id= ' + id;
             }
-            markers.removeGS(gsId).then(function (id) {
-                $log.log('[gs-model] Marker layer removed, id = ' + id);
+            markers.removeGS(id).then(function (data) {
+                $log.log('[gs-model] Marker layer removed, id = ' + data);
             });
-            delete this.gsCfg[gsId];
-            $log.log('[gs-model] GS removed, id = ' + gsId);
+            delete this.gsCfg[id];
+            $log.log('[gs-model] GS removed, id = ' + id);
         };
 
         /**

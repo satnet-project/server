@@ -213,3 +213,16 @@ def decimal_2_degrees(decimal, latitude=True, add_direction=False):
             return result + "" + get_latitude_direction(degrees)
 
     return result
+
+
+def degrees_2_decimal(degrees, separator=':'):
+    """
+    Converts a value in DMS to decimal degrees.
+    :param degrees: The DMS value to be converted (as a string).
+    :return: The generated decimal value (returns a float).
+    """
+    (ds, ms, ss) = degrees.split(separator)
+    d = float(ds)
+    m = float(ms)
+    s = float(ss)
+    return d + (m / 60) + (s / 3600)

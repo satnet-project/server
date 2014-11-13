@@ -65,3 +65,17 @@ class TestGis(TestCase):
             'Resolutions differ, expected = ' + str(expected_r_1)
             + ', actual = ' + str(actual_r_1)
         )
+
+    def test_dms2dec(self):
+        """DMS2Decimal test.
+        Test to validate the method that transforms a DMS coordinate into a
+        decimal value.
+        """
+        pobra_dms = '42:35:15'
+        e_pobra_dec = 42.0 + 35.0 / 60 + 15.0 / 3600
+        a_pobra_dec = gis.degrees_2_decimal(pobra_dms)
+
+        self.assertEquals(
+            e_pobra_dec, a_pobra_dec, 'Decimal coordinates differ, e = ' +
+            str(e_pobra_dec) + ', a = ' + str(a_pobra_dec)
+        )
