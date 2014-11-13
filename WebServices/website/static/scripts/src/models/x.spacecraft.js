@@ -48,11 +48,21 @@ angular.module('x-spacecraft-models').service('xsc', [
         /**
          * Adds a new Spacecraft together with its marker, using the
          * configuration object that it retrieves from the server.
-         * @param id Identififer of the GroundStation to be added.
+         * @param id Identififer of the Spacecraft to be added.
          */
         this.addSC = function (id) {
             satnetRPC.readSCCfg(id).then(function (data) {
                 sc.add(data);
+            });
+        };
+
+        /**
+         * Updates the configuration for a given Spacecraft.
+         * @param id The identifier of the Spacecraft.
+         */
+        this.updateSC = function (id) {
+            satnetRPC.rCall('sc.get', [id]).then(function (data) {
+                sc.configure(data);
             });
         };
 

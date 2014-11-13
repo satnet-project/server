@@ -28,8 +28,8 @@ angular.module('x-groundstation-models', [
 angular.module('x-groundstation-models').service('xgs', [
     '$q', 'satnetRPC', 'xSatnetRPC', 'gs',
     function ($q, satnetRPC, xSatnetRPC, gs) {
-
         'use strict';
+
         /**
          * Initializes all the GroundStations reading the information from
          * the server. Markers are indirectly initialized.

@@ -107,7 +107,7 @@ angular.module('ui-map-controllers')
                     '@on-sc-updated-event, event = ' + event + 'scId = ' + scId
                 );
                 console.log('NOT YET IMPLEMENTED!');
-                //xsc.updateSC(scId);
+                xsc.updateSC(scId);
             });
 
         }]);
