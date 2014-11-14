@@ -33,6 +33,8 @@ from client_amp import ClientProtocol
 from commands import *
 from errors import *
 
+from services.common import misc
+
 import pytz
 import datetime
 
@@ -155,7 +157,7 @@ class TestMultipleClients(unittest.TestCase):
         is not being checked due to dificulties with Twisted trial methods
     """
 
-    def test_1simultaneousUsers(self):
+    def test_simultaneousUsers(self):
         __iSlotId = 1
         __sMessageA2B = "Adiós, ríos; adios, fontes; adios, regatos pequenos;"
         __sMessageB2A = "adios, vista dos meus ollos: non sei cando nos veremos."
@@ -185,13 +187,13 @@ class TestMultipleClients(unittest.TestCase):
             lambda iEvent: self.assertEqual(iEvent, NotifyEvent.REMOTE_CONNECTED))
 
         d2.addCallback(lambda l: self.factory2.protoInstance.callRemote(
-            SendMsg, sMsg=__sMessageA2B, iDopplerShift=0, sTimestamp=str(pytz.utc.localize(datetime.datetime.utcnow()))))
+            SendMsg, sMsg=__sMessageA2B, iTimestamp=misc.get_utc_timestamp()))
 
         self.factory1.onMessageReceived.addCallback(
             lambda sMsg: self.assertEqual(sMsg, __sMessageA2B))
 
         d1.addCallback(lambda l: self.factory1.protoInstance.callRemote(
-            SendMsg, sMsg=__sMessageB2A, iDopplerShift=0, sTimestamp=str(pytz.utc.localize(datetime.datetime.utcnow()))))
+            SendMsg, sMsg=__sMessageB2A, iTimestamp=misc.get_utc_timestamp()))
 
         self.factory2.onMessageReceived.addCallback(
             lambda sMsg: self.assertEqual(sMsg, __sMessageB2A))
@@ -235,3 +237,28 @@ class TestMultipleClients(unittest.TestCase):
             res['iResult'], StartRemote.CLIENTS_COINCIDE))
 
         return d1
+
+    """
+    Wrong procedure. The client tries to send a message before invoking StartRemote command. 
+    The procedure goes:
+        1. Client A -> login
+        2. Client A -> sendMsg(__sMessageA2B) (should raise SlotErrorNotification(
+                'Connection not available. Call StartRemote command first.'))
+    """
+
+    def test_wrongMessageProcedure(self):
+        __iSlotId = 1
+        __sMessageA2B = "Adiós, ríos; adios, fontes; adios, regatos pequenos;"
+        # To notify when a new message is received by the client
+        self.factory1.onMessageReceived = defer.Deferred()
+        self.factory1.onEventReceived = defer.Deferred()
+
+        d1 = login(self.factory1.protoInstance, UsernamePassword(
+            'crespo', 'cre.spo'))
+        d1.addCallback(lambda l: self.factory1.protoInstance.callRemote(
+            SendMsg, sMsg=__sMessageA2B, iTimestamp=misc.get_utc_timestamp()))
+
+        def checkError(result):
+            self.assertEqual(
+                result.message, 'Connection not available. Call StartRemote command first.')
+        return self.assertFailure(d1, SlotErrorNotification).addCallback(checkError)

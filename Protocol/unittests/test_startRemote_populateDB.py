@@ -6,7 +6,8 @@ print sys.path
 sys.path.append(os.path.dirname(os.getcwd()) + "/WebServices")
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
-from services.common import testing as db_tools, misc, simulation
+from services.common import misc, simulation
+from services.common.testing import helpers
 
 from services.configuration.jrpc import channels as jrpc_channels_if
 from services.configuration.jrpc import rules as jrpc_rules_if
@@ -75,11 +76,11 @@ def _initDjangoDB():
     signals.connect_channels_2_compatibility()
     signals.connect_compatibility_2_operational()
     signals.connect_rules_2_availability()
-    signals.connect_segments_2_booking_tle()
+    #signals.connect_segments_2_booking_tle()
 
-    db_tools.init_available()
-    db_tools.init_tles_database()
-    __band = db_tools.create_band()
+    helpers.init_available()
+    helpers.init_tles_database()
+    __band = helpers.create_band()
 
     __usr_1_name = 'crespo'
     __usr_1_pass = 'cre.spo'
@@ -90,24 +91,24 @@ def _initDjangoDB():
     __usr_2_mail = 'tubio@tubio.gal'
 
     # Default values: username=testuser, password=testuser.
-    __user_def = db_tools.create_user_profile()
-    __usr_1 = db_tools.create_user_profile(
+    __user_def = helpers.create_user_profile()
+    __usr_1 = helpers.create_user_profile(
         username=__usr_1_name, password=__usr_1_pass, email=__usr_1_mail)
-    __usr_2 = db_tools.create_user_profile(
+    __usr_2 = helpers.create_user_profile(
         username=__usr_2_name, password=__usr_2_pass, email=__usr_2_mail)
 
-    __sc_1 = db_tools.create_sc(
+    __sc_1 = helpers.create_sc(
         user_profile=__usr_1,
         identifier=__sc_1_id,
         tle_id=__sc_1_tle_id,
     )
 
-    __sc_2 = db_tools.create_sc(
+    __sc_2 = helpers.create_sc(
         user_profile=__usr_2,
         identifier=__sc_2_id,
         tle_id=__sc_2_tle_id,
     )
-    __gs_1 = db_tools.create_gs(
+    __gs_1 = helpers.create_gs(
         user_profile=__usr_2, identifier=__gs_1_id,
     )
 
@@ -122,7 +123,7 @@ def _initDjangoDB():
 
     jrpc_rules_if.add_rule(
         __gs_1_id, __gs_1_ch_1_id,
-        db_tools.create_jrpc_daily_rule(
+        helpers.create_jrpc_daily_rule(
             starting_time=misc.localize_time_utc(datetime.time(
                 hour=8, minute=0, second=0
             )),
