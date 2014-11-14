@@ -16,8 +16,9 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from services.configuration.models import segments
+from services.simulation.models import tle as tle_models
 from services.simulation.models.celestrak import CelestrakDatabase
-from services.simulation.jrpc.serializers import tle
+from services.simulation.jrpc.serializers import tle as tle_serializers
 import rpc4django
 
 
@@ -47,7 +48,11 @@ def get_celestrak_resource(subsection):
                         the JRPC method 'get_celestrak_sections()'.
     :return: URI to the resource within the Celestrak databse.
     """
-    return CelestrakDatabase.CELESTRAK_RESOURCES[subsection]
+    print '@get_celestrak_resource, subsection = ' + str(subsection)
+    return tle_serializers.TleSerializer.serialize_resource(
+        CelestrakDatabase.CELESTRAK_RESOURCES[subsection],
+        tle_models.TwoLineElement.objects.filter(source=subsection).all()
+    )
 
 
 @rpc4django.rpcmethod(
@@ -63,4 +68,4 @@ def get_spacecraft_tle(spacecraft_id):
     :return: Object containing: { spacecraft_id, tle_id, line_1, line_2 }
     """
     sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
-    return tle.TleSerializer.serialize(sc)
+    return tle_serializers.TleSerializer.serialize_tle(sc)

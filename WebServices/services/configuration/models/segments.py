@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import validators
 from django.db import models
 from django.db.models import signals
+from django.dispatch import receiver
 from django_countries import fields
 import logging
 from services.accounts import models as account_models
@@ -154,6 +155,19 @@ class Spacecraft(models.Model):
         spacecraft object.
         """
         return ' >>> SC, id = ' + str(self.identifier)
+
+
+@receiver(
+    signals.pre_delete,
+    sender=Spacecraft,
+    dispatch_uid='spacecraft_deleted'
+)
+def spacecraft_deleted(sender, instance, using, **kwargs):
+    """
+    Handler that deletes the Groundtrack for the Spacecraft that is about to be
+    deleted.
+    """
+    return instance.groundtrack.delete()
 
 
 class GroundStationsManager(models.Manager):

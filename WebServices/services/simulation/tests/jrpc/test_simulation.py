@@ -55,7 +55,9 @@ class JRPCSimulationTest(test.TestCase):
         """UNIT test (JRPC Method).
         Tests the generation of the GroundTracks for registered spacecraft.
         """
+        self.__verbose_testing = True
         # TODO Improve the verificaton method (right now is by INSPECTION).
         gt = simulation.get_groundtrack(self.__sc_1_id)
         if self.__verbose_testing:
             misc.print_list(gt)
+        print 'gt.length = ' + str(len(gt))

@@ -28,7 +28,6 @@ from services.simulation.jrpc.serializers import tle as tle_serializer
 
 class JRPCTestTle(test.TestCase):
     """Testing class for the simulation services.
-
     This class tests the services related with the TLE objects.
     """
 
@@ -70,7 +69,10 @@ class JRPCTestTle(test.TestCase):
 
     def test_get_celestrak_resource(self):
 
-        e_resource = celestrak.CelestrakDatabase.CELESTRAK_CUBESATS
+        e_resource = tle_serializer.TleSerializer.serialize_resource(
+            celestrak.CelestrakDatabase.CELESTRAK_CUBESATS,
+
+        )
         a_resource = tle_jrpc.get_celestrak_resource('CubeSats')
 
         self.assertEquals(

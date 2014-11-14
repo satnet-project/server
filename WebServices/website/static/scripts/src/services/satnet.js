@@ -27,7 +27,6 @@ angular.module('satnet-services', [ 'celestrak-services' ]);
 angular.module('satnet-services').service('satnetRPC', [
     'jsonrpc', '$location', '$log', '$q',
     function (jsonrpc, $location, $log, $q) {
-
         'use strict';
 
         var rpc = $location.protocol() + '://' +
@@ -50,10 +49,8 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.update': this.configuration.createMethod('sc.setConfiguration'),
             'sc.delete': this.configuration.createMethod('sc.delete'),
             // TLE methods
-            'simulation.tle.celestrak.getSections':
-                this.simulation.createMethod(
-                    'simulation.tle.celestrak.getSections'
-                ),
+            'tle.celestrak.getSections':
+                this.simulation.createMethod('tle.celestrak.getSections'),
             'tle.celestrak.getResource':
                 this.simulation.createMethod('tle.celestrak.getResource'),
             'tle.celestrak.getTle':

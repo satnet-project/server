@@ -38,6 +38,7 @@ class TwoLineElementsManager(models.Manager):
         """
         return super(TwoLineElementsManager, self).create(
             timestamp=misc.get_utc_timestamp(),
+            source=source,
             identifier=l0,
             first_line=l1,
             second_line=l2,
@@ -48,16 +49,16 @@ class TwoLineElementsManager(models.Manager):
         This method creates the new entry in the databse (in case it does not
         exist); otherwise, it updates the existing entry with the given data
         (if necessary).
-        :param l0:
-        :param l1:
-        :param l2:
-        :return:
+        :param l0: the identifier line of the TLE element.
+        :param l1: the first line.
+        :param l2: the second line.
+        :return: a reference to the newly created object in the databse.
         """
         try:
             tle = self.get(identifier=l0)
-            tle.dirty_update(source=source, identifier=l0, l1=l1, l2=l2)
+            return tle.dirty_update(source=source, identifier=l0, l1=l1, l2=l2)
         except exceptions.ObjectDoesNotExist:
-            self.create(source, l0, l1, l2)
+            return self.create(source, l0, l1, l2)
 
     @staticmethod
     def load_celestrak():
@@ -179,3 +180,5 @@ class TwoLineElement(models.Model):
         if changed_flag:
             self.timestamp = misc.get_utc_timestamp()
             self.save()
+
+        return self

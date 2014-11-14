@@ -42,15 +42,17 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
         $scope.tles = [];
 
         $scope.initTles = function (defaultOption) {
-            celestrak.getTleArray(defaultOption).then(function (data) {
-                $scope.tles = data.slice(0);
-            });
+            satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
+                .then(function (data) {
+                    $scope.tles = data.slice(0);
+                });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
-            celestrak.getTleArray(value.subsection).then(function (data) {
-                $scope.tles = data.slice(0);
-            });
+            satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
+                .then(function (data) {
+                    $scope.tles = data.slice(0);
+                });
         };
         $scope.ok = function () {
             var newScCfg = [

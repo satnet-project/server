@@ -34,8 +34,12 @@ class TleSerializer(object):
     # Length of Line 2.
     LEN_TLE_LINE_2 = 69
 
+    # JSON key for the URI of the resource
+    TLE_RESOURCE_K = 'tle_resource'
+    TLE_ARRAY_K = 'tle_list'
+
     @staticmethod
-    def serialize(spacecraft):
+    def serialize_tle(spacecraft):
         """
         Method that serializes the information from a Spacecraft object
         including the information of the related TLE object.
@@ -54,3 +58,26 @@ class TleSerializer(object):
                 TleSerializer.TLE_LINE_1_K: spacecraft.tle.first_line,
                 TleSerializer.TLE_LINE_2_K: spacecraft.tle.second_line
             }
+
+    @staticmethod
+    def serialize_resource(resource, tles):
+        """
+        Method that serializes the URL for a given resource together with all
+        its associated TLE's.
+        :param resource: The resources that contains the TLE's.
+        :param tles: The list of TLE's to be serialized.
+        :return: Object { resource, tles: [ tle_i ] }
+        """
+        tle_array = []
+
+        for tle in tles:
+            tle_array.append({
+                segment_serializers.SC_TLE_ID_K: tle.identifier,
+                TleSerializer.TLE_LINE_1_K: tle.first_line,
+                TleSerializer.TLE_LINE_2_K: tle.second_line
+            })
+
+        return {
+            TleSerializer.TLE_RESOURCE_K: resource,
+            TleSerializer.TLE_ARRAY_K: tle_array
+        }

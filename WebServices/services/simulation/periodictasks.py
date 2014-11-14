@@ -29,5 +29,5 @@ def update_tle_database():
     key is expired and they did not complete still their registration process.
     """
     logger.info("Updating TLE database, daily task execution!")
-    tle.TwoLineElementsManager.load_tles()
+    tle.TwoLineElementsManager.load_celestrak()
     simulation.GroundTrack.objects.propagate_groundtracks()
