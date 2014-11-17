@@ -38,6 +38,7 @@ requests==2.3.0
 requests-oauthlib==0.4.1
 rpc4django==0.3.0
 service-identity==14.0.0
+simplekml==1.2.3
 six==1.8.0
 wsgiref==0.1.2
 zope.interface==4.1.1

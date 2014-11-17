@@ -14,6 +14,3 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-# Necessary for RPC4Django to detect the RPC methods.
-from services.simulation.jrpc.views import simulation, tle

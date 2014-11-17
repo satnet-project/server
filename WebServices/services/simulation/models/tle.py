@@ -15,7 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import exceptions
+from django.core import exceptions, validators
 from django.db import models
 import logging
 from urllib2 import urlopen as urllib2_urlopen
@@ -63,22 +63,20 @@ class TwoLineElementsManager(models.Manager):
     @staticmethod
     def load_celestrak():
         """
-        Loads the TLE from all the accessible database from celestrak.com
+        Loads the TLE from all the accessible resources from celestrak.com
         """
         for s_tuple in Celestrak.CELESTRAK_SECTIONS:
 
             section = s_tuple[0]
             tle_info = s_tuple[1]
 
+            logger.debug('@[load_celestrak], loading section = ' + str(section))
+
             for (url, description) in tle_info:
-                TwoLineElementsManager.load_tles(section, url)
+                TwoLineElementsManager.load_tles(source=url)
 
     @staticmethod
-    def load_tles(
-        section=Celestrak.CELESTRAK_SECTION_5,
-        url_string=Celestrak.CELESTRAK_CUBESATS,
-        debug=False
-    ):
+    def load_tles(source=Celestrak.CELESTRAK_CUBESATS):
         """
         This method loads the TLE's in the database and updates them in
         accordance with the latest information gathered from NORAD's website.
@@ -86,12 +84,9 @@ class TwoLineElementsManager(models.Manager):
         l_n = 0
         l0, l1, l2 = '', '', ''
 
-        if debug:
-            logger.debug(
-                '@[load_tles], url_string = ' + str(url_string)
-            )
+        logger.debug('@[load_tles], url_string = ' + str(source))
 
-        for l_i in urllib2_urlopen(url_string):
+        for l_i in urllib2_urlopen(source):
 
             if l_n % 3 == 0:
                 l0 = l_i.rstrip()
@@ -100,17 +95,16 @@ class TwoLineElementsManager(models.Manager):
             if l_n % 3 == 2:
                 l2 = l_i.rstrip()
 
-                if debug:
-                    logger.debug(
-                        '@[load_tles]: section = ' + str(section)
-                        + ', id = <' + str(l0) + '>'
-                        + ",\n\t l1 = <" + str(l1) + '>'
-                        + ",\n\t l2 = <" + str(l2) + '>'
-                    )
+            logger.debug(
+                '@[load_tles]: section = ' + str(source)
+                + ', id = <' + str(l0) + '>'
+                + ",\n\t l1 = <" + str(l1) + '>'
+                + ",\n\t l2 = <" + str(l2) + '>'
+            )
 
-                TwoLineElement.objects.create_or_update(
-                    source=section, l0=l0, l1=l1, l2=l2
-                )
+            TwoLineElement.objects.create_or_update(
+                source=source, l0=l0, l1=l1, l2=l2
+            )
 
             l_n += 1
 
@@ -134,11 +128,10 @@ class TwoLineElement(models.Model):
         'Timestamp with the update date for this TLE'
     )
 
-    source = models.CharField(
+    source = models.TextField(
         'String that indicates the source of this TLE',
         max_length=100,
-        choices=Celestrak.CELESTRAK_SECTIONS,
-        default=Celestrak.CELESTRAK_CUBESATS
+        validators=[validators.URLValidator()]
     )
 
     first_line = models.CharField(

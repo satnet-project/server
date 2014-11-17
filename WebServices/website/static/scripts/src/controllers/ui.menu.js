@@ -59,7 +59,8 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         };
         $scope.refreshGSList();
 
-    }]);
+    }
+]);
 
 angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
     '$scope', '$modal', 'satnetRPC',

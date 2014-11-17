@@ -21,7 +21,6 @@ import logging
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as \
     segment_serializer
-from services.simulation.models import celestrak
 from services.simulation.jrpc.views import tle as tle_jrpc
 from services.simulation.jrpc.serializers import tle as tle_serializer
 
@@ -65,20 +64,6 @@ class JRPCTestTle(test.TestCase):
             'Celestrak sections do not match, diff = ' + str(
                 datadiff.diff(a_sections, e_sections)
             )
-        )
-
-    def test_get_celestrak_resource(self):
-
-        e_resource = tle_serializer.TleSerializer.serialize_resource(
-            celestrak.CelestrakDatabase.CELESTRAK_CUBESATS,
-
-        )
-        a_resource = tle_jrpc.get_celestrak_resource('CubeSats')
-
-        self.assertEquals(
-            a_resource, e_resource,
-            'Celestrak resources do not match, a = '
-            + str(a_resource) + ', e = ' + str(e_resource)
         )
 
     def test_get_spacecraft_tle(self):
