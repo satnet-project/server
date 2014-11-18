@@ -42,6 +42,7 @@ MODULATIONS_K = 'modulations'
 POLARIZATIONS_K = 'polarizations'
 BITRATES_K = 'bitrates'
 BANDWIDTHS_K = 'bandwidths'
+AUTOMATED_K = 'automated'
 # ### Keys only for Spacecraft Channel parameters
 FREQUENCY_K = 'frequency'
 MODULATION_K = 'modulation'
@@ -124,6 +125,8 @@ def check_gs_channel_configuration(configuration):
         raise Exception("Parameter not provided, key = " + BITRATES_K)
     if not BANDWIDTHS_K in configuration:
         raise Exception("Parameter not provided, key = " + BANDWIDTHS_K)
+    if not AUTOMATED_K in configuration:
+        raise Exception("Parameter not provided, key = " + AUTOMATED_K)
 
 
 def check_sc_channel_configuration(configuration):
@@ -153,6 +156,7 @@ def serialize_gs_channel_configuration(channel):
     return {
         CH_ID_K: channel.identifier,
         BAND_K: channel.band.get_band_name(),
+        AUTOMATED_K: channel.automated,
         MODULATIONS_K: sorted(
             [obj.modulation for obj in channel.modulations.all()]
         ),
@@ -231,7 +235,11 @@ def deserialize_gs_channel_parameters(configuration):
     for e_i in configuration[POLARIZATIONS_K]:
         pol_l.append(bands.AvailablePolarizations.objects.get(polarization=e_i))
 
-    return configuration[BAND_K], mod_l, bps_l, bws_l, pol_l
+    return (
+        configuration[BAND_K],
+        configuration[AUTOMATED_K],
+        mod_l, bps_l, bws_l, pol_l
+    )
 
 
 def serialize_once_dates(rule, child_rule):

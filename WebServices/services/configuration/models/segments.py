@@ -157,17 +157,18 @@ class Spacecraft(models.Model):
         return ' >>> SC, id = ' + str(self.identifier)
 
 
+# TODO fix bug for properly deleting an object that uses pg_array fields.
+"""
 @receiver(
     signals.pre_delete,
     sender=Spacecraft,
     dispatch_uid='spacecraft_deleted'
 )
 def spacecraft_deleted(sender, instance, using, **kwargs):
-    """
     Handler that deletes the Groundtrack for the Spacecraft that is about to be
     deleted.
-    """
     return instance.groundtrack.delete()
+"""
 
 
 class GroundStationsManager(models.Manager):
@@ -294,10 +295,19 @@ class GroundStation(models.Model):
         verbose_name='Communication channels that belong to this GroundStation'
     )
 
+    is_automatic = models.BooleanField(
+        'Flag that defines this GroundStation as a fully automated one,'
+        'so that it will automatically accept any operation request from a '
+        'remote Spacecraft operator',
+        default=False
+    )
+
     def update(
         self, callsign=None,
         contact_elevation=None,
-        latitude=None, longitude=None
+        latitude=None,
+        longitude=None,
+        is_automatic=None
     ):
         """
         Updates the configuration for the given GroundStation object. It is not
@@ -314,6 +324,11 @@ class GroundStation(models.Model):
                 self.contact_elevation != contact_elevation:
             self.contact_elevation = contact_elevation
             changes = True
+
+        if is_automatic and self.is_automatic != is_automatic:
+            self.is_automatic = is_automatic
+            changes = True
+
         if latitude and self.latitude != latitude:
             self.latitude = latitude
             changes = True

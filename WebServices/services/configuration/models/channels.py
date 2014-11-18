@@ -68,7 +68,6 @@ class SpacecraftChannel(models.Model):
 
     objects = SpacecraftChannelManager()
 
-    # ### Channel management parameters
     enabled = models.BooleanField('Enables the usage of this channel.')
     identifier = models.CharField(
         'Unique identifier',
@@ -83,13 +82,11 @@ class SpacecraftChannel(models.Model):
         ]
     )
 
-    # ### Radio characteristics of the channel (common)
     modulation = models.ForeignKey(bands.AvailableModulations)
     bitrate = models.ForeignKey(bands.AvailableBitrates)
     bandwidth = models.ForeignKey(bands.AvailableBandwidths)
     polarization = models.ForeignKey(bands.AvailablePolarizations)
-    
-    # In Hz, mili-Hz resolution, up to 1 EHz, central frequency
+
     frequency = models.DecimalField(
         'Central frequency (Hz)', max_digits=15, decimal_places=3
     )
@@ -148,8 +145,9 @@ class GroundStationChannelManager(models.Manager):
     """
 
     def create(
-        self, identifier=None, band=None,
-        modulations=None, bitrates=None, bandwidths=None, polarizations=None
+        self,
+        modulations=None, bitrates=None, bandwidths=None, polarizations=None,
+        **kwargs
     ):
         """
         Creates a new channel object for a ground station, using the given
@@ -157,7 +155,7 @@ class GroundStationChannelManager(models.Manager):
         :return: A reference to the just-created channel object.
         """
         gs_ch = super(GroundStationChannelManager, self).create(
-            identifier=identifier, band=band, enabled=True
+            enabled=True, **kwargs
         )
 
         # not all parameters are mandatory, therefore, the object is created
@@ -203,7 +201,6 @@ class GroundStationChannel(models.Model):
         app_label = 'configuration'
     objects = GroundStationChannelManager()
 
-    # ### Channel management parameters
     enabled = models.BooleanField('Enables the usage of this channel.')
     identifier = models.CharField(
         'Unique identifier',
@@ -218,9 +215,13 @@ class GroundStationChannel(models.Model):
         ]
     )
 
+    automated = models.BooleanField(
+        'Defines this channel as fully automated',
+        default=False
+    )
+
     band = models.ForeignKey(bands.AvailableBands)
 
-    # ### Radio parameters for a channel.
     modulations = models.ManyToManyField(bands.AvailableModulations)
     bitrates = models.ManyToManyField(bands.AvailableBitrates)
     bandwidths = models.ManyToManyField(bands.AvailableBandwidths)
@@ -238,32 +239,47 @@ class GroundStationChannel(models.Model):
             + str(self.polarizations)
 
     def update(
-            self, band=None,
-            modulations_list=None,
-            bitrates_list=None,
-            bandwidths_list=None,
-            polarizations_list=None
+        self,
+        band=None,
+        automated=None,
+        modulations_list=None,
+        bitrates_list=None,
+        bandwidths_list=None,
+        polarizations_list=None
     ):
         """
         Updates the configuration for the given channel. It is not necessary to
         provide all the parameters for this function, since only those that
         are not null will be updated.
         """
+        change = False
+
         if band and self.band != band:
             self.band = band
+            change = True
+        if automated and self.automated != automated:
+            self.automated = automated
+            change = True
         if modulations_list and len(modulations_list) > 0:
             self.modulations.clear()
             self.modulations.add(*modulations_list)
+            change = True
         if bitrates_list and len(bitrates_list) > 0:
             self.bitrates.clear()
             self.bitrates.add(*bitrates_list)
+            change = True
         if bandwidths_list and len(bandwidths_list) > 0:
             self.bandwidths.clear()
             self.bandwidths.add(*bandwidths_list)
+            change = True
         if polarizations_list and len(polarizations_list) > 0:
             self.polarizations.clear()
             self.polarizations.add(*polarizations_list)
-        self.save()
+            change = True
+
+        if change:
+            self.save()
+
         return self
 
     def __unicode__(self):

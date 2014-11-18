@@ -28,15 +28,12 @@ from services.configuration.jrpc.serializers import serialization as jrpc_serial
     login_required=True
 )
 def list_spacecraft(**kwargs):
-    """
-    JRPC method.
-
+    """JRPC method.
     Creates a list with the identifiers of the available Spacecraft for
     the user that is requesting the service.
+    User name must be obtained from the request, since this has already been
+    validated by the authentication backend
     """
-
-    # 1) user must be obtained from the request, since this has already been
-    #       validated by the authentication backend
     http_request = kwargs.get('request', None)
     spacecraft = segments.Spacecraft.objects.filter(
         user=http_request.user
@@ -50,12 +47,11 @@ def list_spacecraft(**kwargs):
     login_required=True
 )
 def create(identifier, callsign, tle_id, **kwargs):
-    """
-    JRPC method.
-
+    """JRPC method.
     Creates a new ground station with the given configuration.
+    User name must be obtained from the request, since this has already been
+    validated by the authentication backend
     """
-
     request = kwargs.get('request', None)
     if request is None:
         return
@@ -86,9 +82,7 @@ def create(identifier, callsign, tle_id, **kwargs):
     login_required=True
 )
 def get_configuration(spacecraft_id):
-    """
-    JRPC method.
-
+    """JRPC method.
     Returns the configuration for the given Spacecraft.
     """
     return jrpc_serial.serialize_sc_configuration(
@@ -102,9 +96,7 @@ def get_configuration(spacecraft_id):
     login_required=True
 )
 def set_configuration(spacecraft_id, configuration):
-    """
-    JRPC method.
-
+    """JRPC method.
     Returns the configuration for the given Spacecraft.
     """
     callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
@@ -119,9 +111,7 @@ def set_configuration(spacecraft_id, configuration):
     login_required=True
 )
 def list_channels(spacecraft_id):
-    """
-    JRPC method.
-
+    """JRPC method.
     Returns the channels for the given Spacecraft.
     """
     return jrpc_serial.serialize_channels(
@@ -137,9 +127,7 @@ def list_channels(spacecraft_id):
     login_required=True
 )
 def delete(spacecraft_id):
-    """
-    JRPC method.
-
+    """JRPC method.
     Deletes the ground station identified by the given Spacecraft. It
     also deletes all channels associated to this ground station.
     """

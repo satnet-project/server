@@ -151,7 +151,8 @@ class JRPCChannelsTest(TestCase):
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
-                    'UHF / U / 435000000.000000 / 438000000.000000',
+                        'UHF / U / 435000000.000000 / 438000000.000000',
+                    jrpc_serial.AUTOMATED_K: False,
                     jrpc_serial.MODULATIONS_K: ['FM'],
                     jrpc_serial.POLARIZATIONS_K: ['LHCP'],
                     jrpc_serial.BITRATES_K: [300, 600, 900],
@@ -168,7 +169,8 @@ class JRPCChannelsTest(TestCase):
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
-                    'UHF / U / 435000000.000000 / 438000000.000000',
+                        'UHF / U / 435000000.000000 / 438000000.000000',
+                    jrpc_serial.AUTOMATED_K: False,
                     jrpc_serial.MODULATIONS_K: ['FM'],
                     jrpc_serial.POLARIZATIONS_K: ['LHCP'],
                     jrpc_serial.BITRATES_K: [300, 600, 900],
@@ -246,7 +248,8 @@ class JRPCChannelsTest(TestCase):
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
-                    'UHF / U / 435000000.000000 / 438000000.000000',
+                        'UHF / U / 435000000.000000 / 438000000.000000',
+                    jrpc_serial.AUTOMATED_K: False,
                     jrpc_serial.MODULATIONS_K: ['FM'],
                     jrpc_serial.POLARIZATIONS_K: ['LHCP'],
                     jrpc_serial.BITRATES_K: [300, 600, 900],
@@ -338,8 +341,8 @@ class JRPCChannelsTest(TestCase):
 
         expected_c = {
             jrpc_serial.CH_ID_K: self.__gs_1_ch_2_id,
-            jrpc_serial.BAND_K:
-            'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_serial.BAND_K: 'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_serial.AUTOMATED_K: False,
             jrpc_serial.MODULATIONS_K: ['FM'],
             jrpc_serial.POLARIZATIONS_K: ['LHCP'],
             jrpc_serial.BITRATES_K: [300, 600, 900],
@@ -464,7 +467,8 @@ class JRPCChannelsTest(TestCase):
             jrpc_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
                     jrpc_serial.BAND_K:
-                    'UHF / U / 435000000.000000 / 438000000.000000',
+                        'UHF / U / 435000000.000000 / 438000000.000000',
+                    jrpc_serial.AUTOMATED_K: False,
                     jrpc_serial.MODULATIONS_K: ['HM'],
                     jrpc_serial.POLARIZATIONS_K: ['LHCP'],
                     jrpc_serial.BITRATES_K: [600],
@@ -480,6 +484,7 @@ class JRPCChannelsTest(TestCase):
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
                     jrpc_serial.BAND_K:
                     'UHF / U / 435000000.000000 / 438000000.000000',
+                    jrpc_serial.AUTOMATED_K: False,
                     jrpc_serial.MODULATIONS_K: ['FM'],
                     jrpc_serial.POLARIZATIONS_K: ['XHHMP'],
                     jrpc_serial.BITRATES_K: [600],
@@ -492,8 +497,8 @@ class JRPCChannelsTest(TestCase):
 
         expected_c = {
             jrpc_serial.CH_ID_K: self.__gs_1_ch_1_id,
-            jrpc_serial.BAND_K:
-            'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_serial.BAND_K: 'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_serial.AUTOMATED_K: False,
             jrpc_serial.MODULATIONS_K: [unicode('AFSK'), unicode('FM')],
             jrpc_serial.POLARIZATIONS_K: [unicode('LHCP'), unicode('RHCP')],
             jrpc_serial.BITRATES_K: [300, 600],

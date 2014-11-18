@@ -85,7 +85,7 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
     returns 'true'; otherwise, it raises an exception that is also returned.
     """
     # 1) Get channel parameters from JSON representation into variables
-    band_name, mod_l, bps_l, bws_l, pol_l =\
+    band_name, automated, mod_l, bps_l, bws_l, pol_l =\
         serialization.deserialize_gs_channel_parameters(configuration)
     if channels.GroundStationChannel.objects.filter(
         identifier=channel_id
@@ -102,6 +102,7 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
         gs_identifier=ground_station_id,
         identifier=channel_id,
         band=bands.AvailableBands.objects.get(band_name=band_name),
+        automated=automated,
         modulations=mod_l,
         bitrates=bps_l,
         bandwidths=bws_l,
@@ -169,12 +170,13 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
         identifier=channel_id
     )
     # 2) Parameters sent through JRPC as a list as decoded first.
-    band_name, mod_l, bps_l, bws_l, pol_l =\
+    band_name, automated, mod_l, bps_l, bws_l, pol_l =\
         serialization.deserialize_gs_channel_parameters(configuration)
     band = bands.AvailableBands.objects.get(band_name=band_name)
     # 3) Update channel configuration
     ch.update(
         band=band,
+        automated=automated,
         modulations_list=mod_l,
         bitrates_list=bps_l,
         bandwidths_list=bws_l,

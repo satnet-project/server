@@ -19,7 +19,6 @@ import datadiff
 import datetime
 import logging
 from django import test
-
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
@@ -30,7 +29,7 @@ from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
 
 
-class JRPCRulesTest(test.TestCase):
+class JRPCSegmentsTest(test.TestCase):
 
     def setUp(self):
         """
@@ -379,7 +378,7 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_remove_rule(self):
-        """
+        """JRPC remove rule test.
         This test validates that the system correctly adds a new rule to the
         set of rules for a given channel of a ground station.
         """
@@ -401,6 +400,23 @@ class JRPCRulesTest(test.TestCase):
             if self.__verbose_testing:
                 print e.message
 
-
     def test_remove_sc(self):
-        pass
+        """JRPC remove spacecraft test.
+        Basic test for validating the removal of a given Spacecraft object from
+        the database through the correspondent JRPC method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_remove_sc)'
+
+        try:
+            a_id = jrpc_sc.delete(self.__sc_1_id)
+            self.assertEquals(
+                a_id, self.__sc_1_id,
+                'Wrong id returned, e = ' + self.__sc_1_id + ', a = ' + a_id
+            )
+        except Exception as e:
+            self.fail('No exception should have been thrown, e = ' + str(e))
+
+        if segments.Spacecraft.objects.filter(identifier=self.__sc_1_id)\
+                .exists():
+            self.fail('Spacecraft should not be available anymore.')
