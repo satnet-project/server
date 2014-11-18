@@ -42,27 +42,23 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
         $scope.tles = [];
 
         $scope.initTles = function (defaultOption) {
-            console.log(
-                'value = ' + JSON.stringify(defaultOption) +
-                    ', ss = ' + JSON.stringify(defaultOption)
-            );
             satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
-                .then(function (data) {
-                    $scope.tles = data.slice(0);
+                .then(function (tleIds) {
+                    $scope.tles = tleIds.tle_list.slice(0);
                 });
             $scope.sc.tlegroup = defaultOption;
         };
         $scope.groupChanged = function (value) {
             satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
-                .then(function (data) {
-                    $scope.tles = data.slice(0);
+                .then(function (tleIds) {
+                    $scope.tles = tleIds.tle_list.slice(0);
                 });
         };
         $scope.ok = function () {
             var newScCfg = [
                 $scope.sc.identifier,
                 $scope.sc.callsign,
-                $scope.sc.tleid.id
+                $scope.sc.tleid.spacecraft_tle_id
             ];
             satnetRPC.rCall('sc.add', newScCfg).then(function (data) {
                 $log.info(
@@ -103,8 +99,8 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
 
         $scope.initTles = function (defaultOption) {
             satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
-                .then(function (data) {
-                    $scope.tles = data.slice(0);
+                .then(function (tleIds) {
+                    $scope.tles = tleIds.tle_list.slice(0);
                 });
             $scope.sc.tlegroup = defaultOption;
         };
@@ -115,8 +111,8 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
                     ', ss = ' + JSON.stringify(value.subsection)
             );
             satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
-                .then(function (data) {
-                    $scope.tles = data.slice(0);
+                .then(function (tleIds) {
+                    $scope.tles = tleIds.tle_list.slice(0);
                 });
         };
         $scope.update = function () {
@@ -141,7 +137,7 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
             if (confirm('Delete this spacecraft?') === true) {
                 satnetRPC.rCall('sc.delete', [spacecraftId]).then(function (data) {
                     $log.info(
-                        '[map-ctrl] Spacecraft removed, id = ' + data
+                        '[map-ctrl] Spacecraft removed, id = ' + JSON.stringify(data)
                     );
                     broadcaster.scRemoved(data);
                 });

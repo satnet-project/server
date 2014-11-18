@@ -115,29 +115,12 @@ angular.module('marker-models').service('markers', [
             })
         };
         this.geolineOptions = {
-            weight: 7,
+            weight: 1,
             opacity: 0.5,
-            color: 'blue',
-            steps: 10
+            color: 'red',
+            steps: 100
         };
 
-        /**
-         * Creates a new entrance in the configuration structure.
-         * @param   {String} id Identifier of the Spacecraft.
-         * @param   {Object} cfg Configuration object for the new GroundStation.
-         * @returns {Object} Returns an object with the marker and the
-         *                      configuration.
-            [
-                new L.LatLng(
-                    gt.positions[0][0],
-                    gt.positions[0][1]
-                ),
-                new L.LatLng(
-                    gt.positions[gt.positions.length - 1][0],
-                    gt.positions[gt.positions.length - 1][1]
-                )
-            ]
-         */
         this.createSC = function (id, cfg) {
             var gt = this.readTrack(cfg.groundtrack),
                 mo = this.scMarker;
@@ -177,6 +160,9 @@ angular.module('marker-models').service('markers', [
                 durations = [],
                 positions = [],
                 geopoints = [];
+
+            console.log('>>> groundtrack = ' + JSON.stringify(groundtrack));
+            console.log('>>> nowMS = ' + nowMs);
 
             if (startIndex !== 0) {
                 startIndex = startIndex - 1;

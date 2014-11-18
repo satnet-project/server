@@ -400,3 +400,7 @@ class JRPCRulesTest(test.TestCase):
         except rules.AvailabilityRule.DoesNotExist as e:
             if self.__verbose_testing:
                 print e.message
+
+
+    def test_remove_sc(self):
+        pass
