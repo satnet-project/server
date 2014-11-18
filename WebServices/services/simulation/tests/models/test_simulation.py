@@ -37,7 +37,6 @@ class TestSimulation(TestCase):
         self.__sc_1_tle_id = 'HUMSAT-D'
 
         self.__band = db_tools.create_band()
-        db_tools.init_tles_database()
         self.__user_profile = db_tools.create_user_profile()
         db_tools.create_sc(
             user_profile=self.__user_profile,
@@ -77,11 +76,13 @@ class TestSimulation(TestCase):
         import simplekml
         kml = simplekml.Kml()
         for p in track:
-            print '>>> @, ' + str(p['timestamp']) + ':(' +\
-                  str(p['latitude']) + ',' + str(p['longitude']) + ')'
+            if self.__verbose_testing:
+                print '>>> @, ' + str(p['timestamp']) + ':(' +\
+                    str(p['latitude']) + ',' + str(p['longitude']) + ')'
             kml.newpoint(
                 name=str(p['timestamp']),
                 coords=[(p['latitude'], p['longitude'])]
             )
         kml.save("test.kml")
-        print '>>> points = ' + str(len(track))
+        if self.__verbose_testing:
+            print '>>> points = ' + str(len(track))

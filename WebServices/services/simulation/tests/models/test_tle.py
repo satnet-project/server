@@ -41,7 +41,6 @@ class TestTle(TestCase):
         self.__sc_2_tle_id = 'XXX99X9X'
 
         self.__band = db_tools.create_band()
-        db_tools.init_tles_database()
         self.__user_profile = db_tools.create_user_profile()
 
         if not self.__verbose_testing:

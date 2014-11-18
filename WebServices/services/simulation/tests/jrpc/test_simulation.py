@@ -40,8 +40,6 @@ class JRPCSimulationTest(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        db_tools.init_tles_database()
-
         self.__user_profile = db_tools.create_user_profile()
         self.__sc_1_id = 'humd-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
@@ -55,9 +53,8 @@ class JRPCSimulationTest(test.TestCase):
         """UNIT test (JRPC Method).
         Tests the generation of the GroundTracks for registered spacecraft.
         """
-        self.__verbose_testing = True
         # TODO Improve the verificaton method (right now is by INSPECTION).
         gt = simulation.get_groundtrack(self.__sc_1_id)
         if self.__verbose_testing:
             misc.print_list(gt)
-        print 'gt.length = ' + str(len(gt))
+            print 'gt.length = ' + str(len(gt))

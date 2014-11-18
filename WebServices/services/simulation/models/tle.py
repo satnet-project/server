@@ -70,8 +70,6 @@ class TwoLineElementsManager(models.Manager):
             section = s_tuple[0]
             tle_info = s_tuple[1]
 
-            logger.debug('@[load_celestrak], loading section = ' + str(section))
-
             for (url, description) in tle_info:
                 TwoLineElementsManager.load_tles(source=url)
 
@@ -84,8 +82,6 @@ class TwoLineElementsManager(models.Manager):
         l_n = 0
         l0, l1, l2 = '', '', ''
 
-        logger.debug('@[load_tles], url_string = ' + str(source))
-
         for l_i in urllib2_urlopen(source):
 
             if l_n % 3 == 0:
@@ -94,13 +90,6 @@ class TwoLineElementsManager(models.Manager):
                 l1 = l_i.rstrip()
             if l_n % 3 == 2:
                 l2 = l_i.rstrip()
-
-            logger.debug(
-                '@[load_tles]: section = ' + str(source)
-                + ', id = <' + str(l0) + '>'
-                + ",\n\t l1 = <" + str(l1) + '>'
-                + ",\n\t l2 = <" + str(l2) + '>'
-            )
 
             TwoLineElement.objects.create_or_update(
                 source=source, l0=l0, l1=l1, l2=l2

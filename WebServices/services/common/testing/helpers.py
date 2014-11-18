@@ -137,7 +137,7 @@ def init_tles_database():
     """
     Loads only the TLE's for the CubeSat section from celestrak.com.
     """
-    tle.TwoLineElementsManager.load_tles()
+    tle.TwoLineElementsManager.load_celestrak()
 
 
 def create_band(minimum_frequency=435000000, maximum_frequency=438000000):

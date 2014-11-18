@@ -49,7 +49,6 @@ class TestSimulation(TestCase):
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
         self.__simulator = simulation.OrbitalSimulator()
-        db_tools.init_tles_database()
 
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__test_user_profile, identifier=self.__gs_1_id,

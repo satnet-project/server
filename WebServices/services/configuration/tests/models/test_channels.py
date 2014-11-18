@@ -56,7 +56,6 @@ class TestModels(test.TestCase):
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
@@ -65,6 +64,9 @@ class TestModels(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_1_get_availability_slots(self):
         """

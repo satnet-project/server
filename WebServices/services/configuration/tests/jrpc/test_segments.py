@@ -39,9 +39,6 @@ class JRPCRulesTest(test.TestCase):
         """
         self.__verbose_testing = False
 
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_callsign = 'GS1GSGS'
         self.__gs_1_contact_elevation = 10.30
@@ -72,7 +69,6 @@ class JRPCRulesTest(test.TestCase):
         self.__sc_2_tle_id = unicode('SWISSCUBE')
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__http_request = db_tools.create_request(
@@ -109,13 +105,9 @@ class JRPCRulesTest(test.TestCase):
             tle_id=self.__sc_2_tle_id
         )
 
-    def tearDown(self):
-        """
-        Restores the initial state of the database.
-        """
-        db_tools.remove_sc(self.__sc_1_id)
-        db_tools.remove_sc(self.__sc_2_id)
-        super(JRPCRulesTest, self).tearDown()
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_gs_list(self):
         """

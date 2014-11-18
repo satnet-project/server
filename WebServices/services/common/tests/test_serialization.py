@@ -36,7 +36,6 @@ class TestSerialization(test.TestCase):
         self.__gs_1_ch_1_id = 'chan-cas-1'
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(

@@ -53,7 +53,6 @@ class JRPCChannelsTest(TestCase):
         self.__sc_1_ch_2_id = 'gmsk-sc-2'
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
 
@@ -71,6 +70,10 @@ class JRPCChannelsTest(TestCase):
         self.__sc_1_ch_1 = db_tools.sc_add_channel(
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
+
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_get_channel_options(self):
         """

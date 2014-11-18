@@ -18,9 +18,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django import test
 import datadiff
 import logging
+import ephem
+from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as \
     segment_serializer
+from services.simulation.models import celestrak
 from services.simulation.jrpc.views import tle as tle_jrpc
 from services.simulation.jrpc.serializers import tle as tle_serializer
 
@@ -43,8 +46,6 @@ class JRPCTestTle(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        db_tools.init_tles_database()
-
         self.__user_profile = db_tools.create_user_profile()
         self.__sc_1_id = 'humd-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
@@ -56,7 +57,42 @@ class JRPCTestTle(test.TestCase):
 
     def test_get_celestrak_sections(self):
 
-        e_sections = [{'section': 'Weather & Earth Resources', 'subsection': 'Weather'}, {'section': 'Weather & Earth Resources', 'subsection': 'NOAA'}, {'section': 'Weather & Earth Resources', 'subsection': 'GOES'}, {'section': 'Weather & Earth Resources', 'subsection': 'Earth Resources'}, {'section': 'Weather & Earth Resources', 'subsection': 'SARSAT'}, {'section': 'Weather & Earth Resources', 'subsection': 'Disaster Monitoring'}, {'section': 'Weather & Earth Resources', 'subsection': 'Tracking & Data Relay'}, {'section': 'Weather & Earth Resources', 'subsection': 'ARGOS'}, {'section': 'Communications', 'subsection': 'Geostationary'}, {'section': 'Communications', 'subsection': 'Intelsat'}, {'section': 'Communications', 'subsection': 'Gorizont'}, {'section': 'Communications', 'subsection': 'Raduga'}, {'section': 'Communications', 'subsection': 'Molniya'}, {'section': 'Communications', 'subsection': 'Iridium'}, {'section': 'Communications', 'subsection': 'Orbcomm'}, {'section': 'Communications', 'subsection': 'Globalstar'}, {'section': 'Communications', 'subsection': 'Amateur Radio'}, {'section': 'Communications', 'subsection': 'Experimental'}, {'section': 'Communications', 'subsection': 'Others'}, {'section': 'Navigation', 'subsection': 'GPS Operational'}, {'section': 'Navigation', 'subsection': 'Glonass Operational'}, {'section': 'Navigation', 'subsection': 'Galileo'}, {'section': 'Navigation', 'subsection': 'Beidou'}, {'section': 'Navigation', 'subsection': 'Satellite-based Augmentation System'}, {'section': 'Navigation', 'subsection': 'Navy Navigation Satellite System'}, {'section': 'Navigation', 'subsection': 'Russian LEO Navigation'}, {'section': 'Scientific', 'subsection': 'Space & Earth Science'}, {'section': 'Scientific', 'subsection': 'Geodetic'}, {'section': 'Scientific', 'subsection': 'Engineering'}, {'section': 'Scientific', 'subsection': 'Education'}, {'section': 'Miscellaneous', 'subsection': 'Military'}, {'section': 'Miscellaneous', 'subsection': 'Radar Callibration'}, {'section': 'Miscellaneous', 'subsection': 'CubeSats'}, {'section': 'Miscellaneous', 'subsection': 'Other'}]
+        e_sections = [
+            {'section': 'Weather & Earth Resources', 'subsection': 'Weather'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'NOAA'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'GOES'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'Earth Resources'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'SARSAT'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'Disaster Monitoring'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'Tracking & Data Relay'},
+            {'section': 'Weather & Earth Resources', 'subsection': 'ARGOS'},
+            {'section': 'Communications', 'subsection': 'Geostationary'},
+            {'section': 'Communications', 'subsection': 'Intelsat'},
+            {'section': 'Communications', 'subsection': 'Gorizont'},
+            {'section': 'Communications', 'subsection': 'Raduga'},
+            {'section': 'Communications', 'subsection': 'Molniya'},
+            {'section': 'Communications', 'subsection': 'Iridium'},
+            {'section': 'Communications', 'subsection': 'Orbcomm'},
+            {'section': 'Communications', 'subsection': 'Globalstar'},
+            {'section': 'Communications', 'subsection': 'Amateur Radio'},
+            {'section': 'Communications', 'subsection': 'Experimental'},
+            {'section': 'Communications', 'subsection': 'Others'},
+            {'section': 'Navigation', 'subsection': 'GPS Operational'},
+            {'section': 'Navigation', 'subsection': 'Glonass Operational'},
+            {'section': 'Navigation', 'subsection': 'Galileo'},
+            {'section': 'Navigation', 'subsection': 'Beidou'},
+            {'section': 'Navigation', 'subsection': 'Satellite-based Augmentation System'},
+            {'section': 'Navigation', 'subsection': 'Navy Navigation Satellite System'},
+            {'section': 'Navigation', 'subsection': 'Russian LEO Navigation'},
+            {'section': 'Scientific', 'subsection': 'Space & Earth Science'},
+            {'section': 'Scientific', 'subsection': 'Geodetic'},
+            {'section': 'Scientific', 'subsection': 'Engineering'},
+            {'section': 'Scientific', 'subsection': 'Education'},
+            {'section': 'Miscellaneous', 'subsection': 'Military'},
+            {'section': 'Miscellaneous', 'subsection': 'Radar Callibration'},
+            {'section': 'Miscellaneous', 'subsection': 'CubeSats'},
+            {'section': 'Miscellaneous', 'subsection': 'Other'}
+        ]
         a_sections = tle_jrpc.get_celestrak_sections()
 
         self.assertEquals(
@@ -65,6 +101,30 @@ class JRPCTestTle(test.TestCase):
                 datadiff.diff(a_sections, e_sections)
             )
         )
+
+    def test_get_celestrak_resource(self):
+        """JRPC TLE test.
+        Tests the retrieval of the information contained in one of the celestrak
+        resouces.
+        """
+        if self.__verbose_testing:
+            print '>>> get_celestrak_resource'
+
+        for s in celestrak.CelestrakDatabase.CELESTRAK_RESOURCES.keys():
+
+            tle_resource = tle_jrpc.get_celestrak_resource(s)
+            if self.__verbose_testing:
+                print '>>> resource = ' + misc.dict_2_string(tle_resource)
+
+            for t in tle_resource['tle_list']:
+
+                tle_id = t['spacecraft_tle_id']
+                self.assertNotEquals(
+                    len(str(tle_id)), 0, "Id for TLE cannot be empty"
+                )
+                ephem.readtle(
+                    str(tle_id), str(t['tle_line_1']), str(t['tle_line_2'])
+                )
 
     def test_get_spacecraft_tle(self):
 

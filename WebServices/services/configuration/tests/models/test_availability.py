@@ -45,7 +45,6 @@ class TestAvailability(test.TestCase):
         self.__gs_1_ch_1_id = 'chan-cas-1'
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
@@ -54,6 +53,9 @@ class TestAvailability(test.TestCase):
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_0_add_slots_no_rules(self):
         """

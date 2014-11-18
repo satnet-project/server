@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from services.common import misc
 from services.configuration.models import segments
 from services.simulation.models import tle as tle_models
 from services.simulation.models.celestrak import CelestrakDatabase
@@ -48,11 +49,9 @@ def get_celestrak_resource(subsection):
                         the JRPC method 'get_celestrak_sections()'.
     :return: URI to the resource within the Celestrak databse.
     """
-    print '@get_celestrak_resource, subsection = ' + str(subsection)
-    return tle_serializers.TleSerializer.serialize_resource(
-        CelestrakDatabase.CELESTRAK_RESOURCES[subsection],
-        tle_models.TwoLineElement.objects.filter(source=subsection).all()
-    )
+    url = CelestrakDatabase.CELESTRAK_RESOURCES[subsection]
+    tles = tle_models.TwoLineElement.objects.filter(source=url).all()
+    return tle_serializers.TleSerializer.serialize_resource(url, tles)
 
 
 @rpc4django.rpcmethod(

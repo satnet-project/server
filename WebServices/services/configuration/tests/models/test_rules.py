@@ -35,6 +35,7 @@ class TestRules(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -42,7 +43,6 @@ class TestRules(test.TestCase):
         signals.connect_rules_2_availability()
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs_1 = db_tools.create_gs(
@@ -51,6 +51,8 @@ class TestRules(test.TestCase):
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs_1, self.__band, self.__gs_1_ch_1_id
         )
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
     def test_1_a_slots_daily(self):
         """

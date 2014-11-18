@@ -46,7 +46,6 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
         db_tools.init_available()
-        db_tools.init_tles_database()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
@@ -55,6 +54,9 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__user_profile, identifier=self.__sc_1_id
         )
+        if not self.__verbose_testing:
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         signals.connect_channels_2_compatibility()
 
