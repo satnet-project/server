@@ -102,21 +102,21 @@ configure_apache()
     sudo touch $__satnet_apache_ssl_conf
 
     echo '<IfModule mod_ssl.c>' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLRandomSeed startup builtin' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLRandomSeed startup file:/dev/urandom 512' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLRandomSeed connect builtin' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLRandomSeed connect file:/dev/urandom 512' | sudo tee $__satnet_apache_ssl_conf
-    echo '    AddType application/x-x509-ca-cert .crt' | sudo tee $__satnet_apache_ssl_conf
-    echo '    AddType application/x-pkcs7-crl .crl' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLSessionCache         shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLSessionCacheTimeout  300' | sudo tee $__satnet_apache_ssl_conf
-    echo "    SSLCertificateFile $__apache_server_certificate" | sudo tee $__satnet_apache_ssl_conf
-    echo "    SSLCertificateKeyFile $__apache_server_key" | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLHonorCipherOrder On' | sudo tee $__satnet_apache_ssl_conf
-    echo '    SSLCipherSuite HIGH:!aNULL:!MD5' | sudo tee $__satnet_apache_ssl_conf
-    echo '</IfModule>' | sudo tee $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed startup builtin' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed startup file:/dev/urandom 512' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed connect builtin' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLRandomSeed connect file:/dev/urandom 512' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    AddType application/x-x509-ca-cert .crt' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    AddType application/x-pkcs7-crl .crl' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase' | sudo tee -a $__satnet_apache_ssl_conf # You have to generate this file before running the script
+    echo '    SSLSessionCache         shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLSessionCacheTimeout  300' | sudo tee -a $__satnet_apache_ssl_conf
+    echo "    SSLCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_ssl_conf
+    echo "    SSLCertificateKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLHonorCipherOrder On' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLCipherSuite HIGH:!aNULL:!MD5' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '</IfModule>' | sudo tee -a $__satnet_apache_ssl_conf
 
     # ### CONFIGURATION FOR THE VIRTUALHOST
     echo '<VirtualHost *:80>'  | sudo tee $__satnet_apache_conf
