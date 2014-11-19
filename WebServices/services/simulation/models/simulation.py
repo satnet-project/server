@@ -138,7 +138,7 @@ class GroundTrackManager(models.Manager):
                 )
             )
             # 3) create and store updated groundtrack
-            new_gt = GroundTrackManager.append_new(gt, ts, lat, lng)
+            gt = GroundTrackManager.append_new(gt, ts, lat, lng)
             # 4) the updated groundtrack is saved to the database.
             gt.save()
 
