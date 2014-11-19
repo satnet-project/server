@@ -108,7 +108,7 @@ configure_apache()
     echo '    SSLRandomSeed connect file:/dev/urandom 512' | sudo tee -a $__satnet_apache_ssl_conf
     echo '    AddType application/x-x509-ca-cert .crt' | sudo tee -a $__satnet_apache_ssl_conf
     echo '    AddType application/x-pkcs7-crl .crl' | sudo tee -a $__satnet_apache_ssl_conf
-    echo '    SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLPassPhraseDialog exec:/usr/share/apache2/ask-for-passphrase' | sudo tee -a $__satnet_apache_ssl_conf # You have to generate this file before running the script
     echo '    SSLSessionCache         shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee -a $__satnet_apache_ssl_conf
     echo '    SSLSessionCacheTimeout  300' | sudo tee -a $__satnet_apache_ssl_conf
     echo "    SSLCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_ssl_conf
