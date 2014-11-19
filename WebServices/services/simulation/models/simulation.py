@@ -19,7 +19,6 @@ import datetime
 from django.db import models
 from djorm_pgarray import fields as pgarray_fields
 from services.common import simulation as simulator, misc
-from services.simulation.models import tle
 
 
 class GroundTrackManager(models.Manager):
@@ -37,14 +36,10 @@ class GroundTrackManager(models.Manager):
                                 database.
         :return: Reference to the newly created object.
         """
-        if GroundTrack.objects.filter(tle=spacecraft_tle).exists():
-            return GroundTrack.objects.get(tle=spacecraft_tle)
-
         gt = simulator.OrbitalSimulator().calculate_groundtrack(spacecraft_tle)
         ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(gt)
 
         return super(GroundTrackManager, self).create(
-            tle=spacecraft_tle,
             timestamp=ts, latitude=lat, longitude=lng
         )
 
@@ -121,31 +116,6 @@ class GroundTrackManager(models.Manager):
 
         return timestamps, latitudes, longitudes
 
-    def propagate_groundtracks(self):
-        """
-        This method propagates the points for the GroundTracks along the
-        update window. This propagation should be done after the new TLE's
-        had been received.
-        """
-        os = simulator.OrbitalSimulator()
-        (start, end) = os.get_update_window()
-
-        for gt in self.all():
-
-            # 1) remove old groundtrack points
-            gt = GroundTrackManager.remove_old(gt)
-            # 2) new groundtrack points
-            ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(
-                os.calculate_groundtrack(
-                    spacecraft_tle=gt.tle, start=start, end=end
-                )
-            )
-
-            # 3) create and store updated groundtrack
-            gt = GroundTrackManager.append_new(gt, ts, lat, lng)
-            # 4) the updated groundtrack is saved to the database.
-            gt.save()
-
 
 class GroundTrack(models.Model):
     """
@@ -157,12 +127,6 @@ class GroundTrack(models.Model):
 
     objects = GroundTrackManager()
 
-    tle = models.ForeignKey(
-        tle.TwoLineElement,
-        unique=True,
-        verbose_name='Reference to the TLE object used for this groundtrack'
-    )
-
     latitude = pgarray_fields.FloatArrayField(
         'Latitude for the points of the GroundTrack.'
     )
@@ -173,3 +137,12 @@ class GroundTrack(models.Model):
         'UTC time at which the spacecraft is going to pass over the given point'
         ' of its GroundTrack.'
     )
+
+    def delete(self, using=None):
+
+        self.latitude = []
+        self.longitude = []
+        self.timestamp = []
+        self.save()
+
+        super(GroundTrack, self).delete(using=using)

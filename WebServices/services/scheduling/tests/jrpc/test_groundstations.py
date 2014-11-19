@@ -26,7 +26,7 @@ from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration import signals
 from services.configuration.jrpc.serializers\
-    import serialization as jrp_cfg_serial
+    import serialization as jrpc_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational
@@ -50,30 +50,32 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
-            jrp_cfg_serial.FREQUENCY_K: '437000000',
-            jrp_cfg_serial.MODULATION_K: 'FM',
-            jrp_cfg_serial.POLARIZATION_K: 'LHCP',
-            jrp_cfg_serial.BITRATE_K: '300',
-            jrp_cfg_serial.BANDWIDTH_K: '12.500000000'
+            jrpc_cfg_serial.FREQUENCY_K: '437000000',
+            jrpc_cfg_serial.MODULATION_K: 'FM',
+            jrpc_cfg_serial.POLARIZATION_K: 'LHCP',
+            jrpc_cfg_serial.BITRATE_K: '300',
+            jrpc_cfg_serial.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
         self.__gs_1_ch_1_id = 'gs-la-fm'
         self.__gs_1_ch_1_cfg = {
-            jrp_cfg_serial.BAND_K:
+            jrpc_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrp_cfg_serial.MODULATIONS_K: ['FM'],
-            jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrp_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrp_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            jrpc_cfg_serial.AUTOMATED_K: False,
+            jrpc_cfg_serial.MODULATIONS_K: ['FM'],
+            jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
+            jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
+            jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
         self.__gs_1_ch_2_id = 'gs-la-fm-2'
         self.__gs_1_ch_2_cfg = {
-            jrp_cfg_serial.BAND_K:
+            jrpc_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrp_cfg_serial.MODULATIONS_K: ['FM'],
-            jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrp_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrp_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            jrpc_cfg_serial.AUTOMATED_K: False,
+            jrpc_cfg_serial.MODULATIONS_K: ['FM'],
+            jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
+            jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
+            jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
         signals.connect_availability_2_operational()

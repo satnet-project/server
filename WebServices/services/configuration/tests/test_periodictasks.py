@@ -24,7 +24,7 @@ import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration import periodictasks, signals
-from services.configuration.models import availability
+from services.configuration.models import availability, segments
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.scheduling.models import operational
 
@@ -162,4 +162,26 @@ class TestSlotPropagation(test.TestCase):
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
             'Could not remove rule with ID = ' + str(r_1_id)
+        )
+
+    def test_propagate_groundtracks(self):
+        """Basic groundtrack propagation.
+        Basic test that verifies the propagation of the groundtrack points.
+        """
+        sc = segments.Spacecraft.objects.get(identifier=self.__sc_1_id)
+        gt_i = sc.groundtrack
+
+        segments.Spacecraft.objects.propagate_groundtracks()
+        gt_f = sc.groundtrack
+
+        self.assertNotEquals(
+            len(gt_i.timestamp), 0, 'Initial GroundTrack should not be empty'
+        )
+        self.assertNotEquals(
+            len(gt_f.timestamp), 0, 'Final GroundTrack should not be empty'
+        )
+
+        self.assertNotEquals(
+            len(gt_i.timestamp), len(gt_f.timestamp),
+            'The number of points should be different'
         )

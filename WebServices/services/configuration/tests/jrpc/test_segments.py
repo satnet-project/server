@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datadiff
 import datetime
 import logging
+import traceback
 from django import test
 from services.common import misc
 from services.common.testing import helpers as db_tools
@@ -27,6 +28,8 @@ from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
+from services.simulation.models import tle as model_tle
+from services.simulation.models import simulation as model_simulation
 
 
 class JRPCSegmentsTest(test.TestCase):
@@ -415,8 +418,19 @@ class JRPCSegmentsTest(test.TestCase):
                 'Wrong id returned, e = ' + self.__sc_1_id + ', a = ' + a_id
             )
         except Exception as e:
+            print traceback.format_exc()
             self.fail('No exception should have been thrown, e = ' + str(e))
 
         if segments.Spacecraft.objects.filter(identifier=self.__sc_1_id)\
                 .exists():
-            self.fail('Spacecraft should not be available anymore.')
+            self.fail('Spacecraft should not be available anymore')
+
+        if not model_tle.TwoLineElement.objects.filter(
+                identifier=self.__sc_1_tle_id
+        ).exists():
+            self.fail('TLE should not have been deleted')
+
+        self.assertEquals(
+            len(model_simulation.GroundTrack.objects.all()), 0,
+            'No GroundTracks should have been found'
+        )

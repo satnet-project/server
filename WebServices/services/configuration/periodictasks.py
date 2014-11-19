@@ -17,16 +17,15 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-
 from services.common import misc
-from services.configuration.models import availability
+from services.configuration.models import availability, segments
 
 logger = logging.getLogger('configuration')
 
 
 @decorators.daily()
 def populate_slots():
-    """
+    """Periodic task.
     Task to be executed periodically for updating the pass slots with the
     following ones (3 days in advance). The addition of a new
     AvailabilitySlot triggers the automatic (through signal) addition of all
@@ -36,9 +35,10 @@ def populate_slots():
     logger.info('[DAILY] >>> Populating slots')
     availability.AvailabilitySlot.objects.propagate_slots()
 
+
 @decorators.daily()
 def clean_slots():
-    """
+    """Periodic task.
     This task cleans all the old AvailabilitySlots from the database. Since
     the deletion of a given AvailabilitySlot triggers the deletion of the
     associated OperationalSlots, it is not necessary to clean the
@@ -51,3 +51,14 @@ def clean_slots():
     logger.info('> About to delete ' + str(len(old_slots)) + ' slots.')
     old_slots.delete()
     logger.info('> Deleted!')
+
+
+@decorators.daily()
+def propagate_groundtracks():
+    """Periodic task.
+    This task updates the available groundtracks for the different registered
+    Spacecraft.
+    """
+    logger.info('[DAILY] >>> Propagating groundtracks')
+    segments.Spacecraft.objects.propagate_groundtracks()
+    logger.info('> Propagated!')

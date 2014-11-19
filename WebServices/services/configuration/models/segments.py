@@ -18,11 +18,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import validators
 from django.db import models
 from django.db.models import signals
-from django.dispatch import receiver
 from django_countries import fields
 import logging
 from services.accounts import models as account_models
-from services.common import gis
+from services.common import gis, simulation as simulator
 from services.configuration.models import channels
 from services.simulation.models import tle as tle_models
 from services.simulation.models import simulation as simulation_models
@@ -81,6 +80,35 @@ class SpacecraftManager(models.Manager):
 
         return sc_ch
 
+    def propagate_groundtracks(self):
+        """
+        This method propagates the points for the GroundTracks along the
+        update window. This propagation should be done after the new TLE's
+        had been received.
+        """
+        os = simulator.OrbitalSimulator()
+        (start, end) = os.get_update_window()
+
+        for sc in self.all():
+
+            # 1) remove old groundtrack points
+            truncated_gt = simulation_models.GroundTrackManager.remove_old(
+                sc.groundtrack
+            )
+            # 2) new groundtrack points
+            ts, lat, lng = \
+                simulation_models.GroundTrackManager.groundtrack_to_dbarray(
+                    os.calculate_groundtrack(
+                        spacecraft_tle=sc.tle, start=start, end=end
+                    )
+                )
+            # 3) create and store updated groundtrack
+            new_gt = simulation_models.GroundTrackManager.append_new(
+                truncated_gt, ts, lat, lng
+            )
+            # 4) the updated groundtrack is saved to the database.
+            sc.save()
+
 
 class Spacecraft(models.Model):
     """
@@ -130,6 +158,11 @@ class Spacecraft(models.Model):
         verbose_name='Simulated spacecraft groundtrack'
     )
 
+    def delete(self, using=None):
+
+        self.groundtrack.delete()
+        super(Spacecraft, self).delete(using=using)
+
     def update(self, callsign=None, tle_id=None):
         """
         Updates the configuration for the given GroundStation object. It is not
@@ -155,20 +188,6 @@ class Spacecraft(models.Model):
         spacecraft object.
         """
         return ' >>> SC, id = ' + str(self.identifier)
-
-
-# TODO fix bug for properly deleting an object that uses pg_array fields.
-"""
-@receiver(
-    signals.pre_delete,
-    sender=Spacecraft,
-    dispatch_uid='spacecraft_deleted'
-)
-def spacecraft_deleted(sender, instance, using, **kwargs):
-    Handler that deletes the Groundtrack for the Spacecraft that is about to be
-    deleted.
-    return instance.groundtrack.delete()
-"""
 
 
 class GroundStationsManager(models.Manager):

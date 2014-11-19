@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import exceptions, validators
 from django.db import models
 import logging
+import sys
 from urllib2 import urlopen as urllib2_urlopen
 from services.common import misc
 from services.simulation.models.celestrak import CelestrakDatabase as Celestrak
@@ -67,10 +68,14 @@ class TwoLineElementsManager(models.Manager):
         """
         for s_tuple in Celestrak.CELESTRAK_SECTIONS:
 
+            sys.stdout.write('*')
+            sys.stdout.flush()
             section = s_tuple[0]
             tle_info = s_tuple[1]
 
             for (url, description) in tle_info:
+                sys.stdout.write('.')
+                sys.stdout.flush()
                 TwoLineElementsManager.load_tles(source=url)
 
     @staticmethod

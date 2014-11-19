@@ -63,6 +63,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         self.__gs_1_ch_1_cfg = {
             jrpc_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_cfg_serial.AUTOMATED_K: False,
             jrpc_cfg_serial.MODULATIONS_K: ['FM'],
             jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
             jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
@@ -72,6 +73,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         self.__gs_1_ch_2_cfg = {
             jrpc_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_cfg_serial.AUTOMATED_K: False,
             jrpc_cfg_serial.MODULATIONS_K: ['FM'],
             jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
             jrpc_cfg_serial.BITRATES_K: [300, 600, 900],

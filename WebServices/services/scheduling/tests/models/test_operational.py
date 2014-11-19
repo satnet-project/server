@@ -59,6 +59,7 @@ class OperationalModels(test.TestCase):
         self.__gs_1_ch_1_cfg = {
             jrpc_keys.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_keys.AUTOMATED_K: False,
             jrpc_keys.MODULATIONS_K: ['FM'],
             jrpc_keys.POLARIZATIONS_K: ['LHCP'],
             jrpc_keys.BITRATES_K: [300, 600, 900],
@@ -68,6 +69,7 @@ class OperationalModels(test.TestCase):
         self.__gs_1_ch_2_cfg = {
             jrpc_keys.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrpc_keys.AUTOMATED_K: False,
             jrpc_keys.MODULATIONS_K: ['FM'],
             jrpc_keys.POLARIZATIONS_K: ['LHCP'],
             jrpc_keys.BITRATES_K: [300, 600, 900],

@@ -16,10 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
-
 import datetime
 import logging
-
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration import signals
@@ -69,6 +67,7 @@ class JRPCBookingProcessTest(test.TestCase):
         self.__gs_1_ch_1_cfg = {
             jrp_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrp_cfg_serial.AUTOMATED_K: False,
             jrp_cfg_serial.MODULATIONS_K: ['FM'],
             jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
             jrp_cfg_serial.BITRATES_K: [300, 600, 900],
@@ -78,6 +77,7 @@ class JRPCBookingProcessTest(test.TestCase):
         self.__gs_1_ch_2_cfg = {
             jrp_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
+            jrp_cfg_serial.AUTOMATED_K: False,
             jrp_cfg_serial.MODULATIONS_K: ['FM'],
             jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
             jrp_cfg_serial.BITRATES_K: [300, 600, 900],

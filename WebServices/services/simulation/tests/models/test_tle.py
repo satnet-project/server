@@ -65,7 +65,7 @@ class TestTle(TestCase):
                 str(tle_i.second_line)
             )
 
-    def test_load_celestrak(self):
+    def _load_celestrak(self):
         """
         Test for validating that all the TLE's from celestrak.com are loaded
         correctly.

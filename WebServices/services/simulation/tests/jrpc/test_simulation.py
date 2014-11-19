@@ -19,7 +19,7 @@ from django import test
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.simulation.jrpc.views import simulation
+from services.simulation.jrpc.views import simulation as jrpc_sim
 
 
 class JRPCSimulationTest(test.TestCase):
@@ -54,7 +54,7 @@ class JRPCSimulationTest(test.TestCase):
         Tests the generation of the GroundTracks for registered spacecraft.
         """
         # TODO Improve the verificaton method (right now is by INSPECTION).
-        gt = simulation.get_groundtrack(self.__sc_1_id)
+        gt = jrpc_sim.get_groundtrack(self.__sc_1_id)
         if self.__verbose_testing:
             misc.print_list(gt)
             print 'gt.length = ' + str(len(gt))
