@@ -15,20 +15,21 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
 import logging
 import traceback
+
+import datadiff
 from django import test
+
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
-from services.configuration.models import rules, segments
+from services.configuration.models import rules, segments, tle
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
-from services.simulation.models import tle as model_tle
 from services.simulation.models import simulation as model_simulation
 
 
@@ -425,7 +426,7 @@ class JRPCSegmentsTest(test.TestCase):
                 .exists():
             self.fail('Spacecraft should not be available anymore')
 
-        if not model_tle.TwoLineElement.objects.filter(
+        if not tle.TwoLineElement.objects.filter(
                 identifier=self.__sc_1_tle_id
         ).exists():
             self.fail('TLE should not have been deleted')

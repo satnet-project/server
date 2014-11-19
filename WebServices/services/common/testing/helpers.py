@@ -24,9 +24,8 @@ from django.test.client import RequestFactory
 from services.accounts.models import UserProfile
 from services.common import misc, gis
 from services.common import serialization as common_serial
-from services.configuration.models import bands, channels, segments
+from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
-from services.simulation.models import tle
 
 
 def create_user(username='testuser', password='testuser.', email='test@test.test'):

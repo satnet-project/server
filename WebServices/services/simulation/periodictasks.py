@@ -17,16 +17,17 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-from services.simulation.models import tle
+from services.simulation.models import simulation as simulation_models
 
 logger = logging.getLogger('simulation')
 
 
 @decorators.daily()
-def update_tle_database():
+def propagate_groundtracks():
+    """Periodic task.
+    This task updates the available groundtracks for the different registered
+    Spacecraft.
     """
-    Task to be executed periodically for cleaning up all users whose activation
-    key is expired and they did not complete still their registration process.
-    """
-    logger.info("Updating TLE database, daily task execution!")
-    tle.TwoLineElementsManager.load_celestrak()
+    logger.info('[DAILY] >>> Propagating groundtracks')
+    simulation_models.GroundTrack.objects.propagate_groundtracks()
+    logger.info('> Propagated!')

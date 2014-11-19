@@ -15,17 +15,18 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
+
 from django import test
 import datadiff
-import logging
 import ephem
+
 from services.common import misc
 from services.common.testing import helpers as db_tools
+from services.configuration.models import celestrak
 from services.configuration.jrpc.serializers import serialization as \
-    segment_serializer
-from services.simulation.models import celestrak
-from services.simulation.jrpc.views import tle as tle_jrpc
-from services.simulation.jrpc.serializers import tle as tle_serializer
+    segment_serializer, tle as tle_serializer
+from services.configuration.jrpc.views import tle as tle_jrpc
 
 
 class JRPCTestTle(test.TestCase):

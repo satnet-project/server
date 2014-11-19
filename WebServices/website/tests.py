@@ -13,11 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.configuration.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 import sys
 from django.test.runner import DiscoverRunner
-from services.simulation.models import tle
 
 
 class SatnetTestRunner(DiscoverRunner):

@@ -19,7 +19,10 @@ from django import test
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.simulation.jrpc.views import simulation as jrpc_sim
+from services.simulation.jrpc.views import simulation as simulation_jrpc
+from services.simulation.jrpc.serializers import simulation as \
+    simulation_serializer
+from services.simulation.models import simulation as simulation_models
 
 
 class JRPCSimulationTest(test.TestCase):
@@ -54,7 +57,32 @@ class JRPCSimulationTest(test.TestCase):
         Tests the generation of the GroundTracks for registered spacecraft.
         """
         # TODO Improve the verificaton method (right now is by INSPECTION).
-        gt = jrpc_sim.get_groundtrack(self.__sc_1_id)
+        gt = simulation_jrpc.get_groundtrack(self.__sc_1_id)
         if self.__verbose_testing:
             misc.print_list(gt)
             print 'gt.length = ' + str(len(gt))
+
+    def test_visualize_groundtracks(self):
+        """Basic groundtrack propagation.
+        Creates a KML output file with the generated coordinates. The name for
+        the points is the timestamp for that given coordinate.
+        """
+        simulation_models.GroundTrack.objects.propagate_groundtracks()
+        gt_f = simulation_models.GroundTrack.objects.all()[0]
+        track = simulation_serializer\
+            .SimulationSerializer().serialize_groundtrack(gt_f)
+
+        import simplekml
+        kml = simplekml.Kml()
+        for p in track:
+            if self.__verbose_testing:
+                print '>>> @, ' + str(p['timestamp']) + ':(' +\
+                    str(p['latitude']) + ',' + str(p['longitude']) + ')'
+            kml.newpoint(
+                name=str(p['timestamp']),
+                coords=[(p['latitude'], p['longitude'])]
+            )
+        kml.save("test.kml")
+
+        if self.__verbose_testing:
+            print '>>> points = ' + str(len(track))

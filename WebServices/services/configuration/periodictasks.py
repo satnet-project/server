@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from periodically import decorators
 from services.common import misc
-from services.configuration.models import availability, segments
+from services.configuration.models import availability, tle
 
 logger = logging.getLogger('configuration')
 
@@ -52,13 +52,11 @@ def clean_slots():
     old_slots.delete()
     logger.info('> Deleted!')
 
-
 @decorators.daily()
-def propagate_groundtracks():
-    """Periodic task.
-    This task updates the available groundtracks for the different registered
-    Spacecraft.
+def update_tle_database():
     """
-    logger.info('[DAILY] >>> Propagating groundtracks')
-    segments.Spacecraft.objects.propagate_groundtracks()
-    logger.info('> Propagated!')
+    Task to be executed periodically for cleaning up all users whose activation
+    key is expired and they did not complete still their registration process.
+    """
+    logger.info("Updating TLE database, daily task execution!")
+    tle.TwoLineElementsManager.load_celestrak()

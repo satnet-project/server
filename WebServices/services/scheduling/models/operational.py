@@ -15,13 +15,16 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db import models
-from django.db.models import Q
 import datetime
 import logging
+
+from django.db import models
+from django.db.models import Q
+
 from services.common import misc, simulation
-from services.configuration.models import availability, channels, compatibility
-from services.simulation.models import tle
+from services.configuration.models import availability, channels, compatibility, \
+    tle
+
 
 logger = logging.getLogger('scheduling')
 

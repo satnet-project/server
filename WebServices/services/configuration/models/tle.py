@@ -15,15 +15,16 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import exceptions, validators
-from django.db import models
 import logging
 import sys
 from urllib2 import urlopen as urllib2_urlopen
+from django.core import exceptions, validators
+from django.db import models
 from services.common import misc
-from services.simulation.models.celestrak import CelestrakDatabase as Celestrak
+from services.configuration.models.celestrak \
+    import CelestrakDatabase as Celestrak
 
-logger = logging.getLogger('simulation')
+logger = logging.getLogger('configuration')
 
 
 class TwoLineElementsManager(models.Manager):
@@ -108,7 +109,7 @@ class TwoLineElement(models.Model):
     Class that models the TLE elements within the database.
     """
     class Meta:
-        app_label = 'simulation'
+        app_label = 'configuration'
 
     objects = TwoLineElementsManager()
 

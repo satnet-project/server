@@ -18,9 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django import test
 import logging
 from services.common.testing import helpers as db_tools
-from services.configuration.models import segments as segment_models
-from services.simulation.jrpc.serializers import simulation as \
-    simulation_serializer
 
 logger = logging.getLogger('configuration')
 
@@ -48,30 +45,3 @@ class TestGroundTrackPropagation(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-
-    def test_visualize_groundtracks(self):
-        """Basic groundtrack propagation.
-        Creates a KML output file with the generated coordinates. The name for
-        the points is the timestamp for that given coordinate.
-        """
-        sc = segment_models.Spacecraft.objects.get(identifier=self.__sc_1_id)
-        gt_i = sc.groundtrack
-        segment_models.Spacecraft.objects.propagate_groundtracks()
-        gt_f = sc.groundtrack
-        track = simulation_serializer\
-            .SimulationSerializer().serialize_groundtrack(gt_f)
-
-        import simplekml
-        kml = simplekml.Kml()
-        for p in track:
-            if self.__verbose_testing:
-                print '>>> @, ' + str(p['timestamp']) + ':(' +\
-                    str(p['latitude']) + ',' + str(p['longitude']) + ')'
-            kml.newpoint(
-                name=str(p['timestamp']),
-                coords=[(p['latitude'], p['longitude'])]
-            )
-        kml.save("test.kml")
-
-        if self.__verbose_testing:
-            print '>>> points = ' + str(len(track))

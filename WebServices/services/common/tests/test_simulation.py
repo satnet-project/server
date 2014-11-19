@@ -13,6 +13,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+from services.configuration.models import tle
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
@@ -22,7 +24,6 @@ import math
 from pytz import utc as pytz_utc
 from services.common import simulation
 from services.common.testing import helpers as db_tools
-from services.simulation.models import tle
 
 
 class TestSimulation(TestCase):

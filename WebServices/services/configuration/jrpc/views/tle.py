@@ -15,11 +15,9 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.common import misc
-from services.configuration.models import segments
-from services.simulation.models import tle as tle_models
-from services.simulation.models.celestrak import CelestrakDatabase
-from services.simulation.jrpc.serializers import tle as tle_serializers
+from services.configuration.jrpc.serializers import tle as tle_serializers
+from services.configuration.models import segments, tle as tle_models
+from services.configuration.models.celestrak import CelestrakDatabase
 import rpc4django
 
 
