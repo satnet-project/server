@@ -403,35 +403,3 @@ class JRPCSegmentsTest(test.TestCase):
         except rules.AvailabilityRule.DoesNotExist as e:
             if self.__verbose_testing:
                 print e.message
-
-    def test_remove_sc(self):
-        """JRPC remove spacecraft test.
-        Basic test for validating the removal of a given Spacecraft object from
-        the database through the correspondent JRPC method.
-        """
-        if self.__verbose_testing:
-            print '>>> TEST (test_remove_sc)'
-
-        try:
-            a_id = jrpc_sc.delete(self.__sc_1_id)
-            self.assertEquals(
-                a_id, self.__sc_1_id,
-                'Wrong id returned, e = ' + self.__sc_1_id + ', a = ' + a_id
-            )
-        except Exception as e:
-            print traceback.format_exc()
-            self.fail('No exception should have been thrown, e = ' + str(e))
-
-        if segments.Spacecraft.objects.filter(identifier=self.__sc_1_id)\
-                .exists():
-            self.fail('Spacecraft should not be available anymore')
-
-        if not tle.TwoLineElement.objects.filter(
-                identifier=self.__sc_1_tle_id
-        ).exists():
-            self.fail('TLE should not have been deleted')
-
-        self.assertEquals(
-            len(model_simulation.GroundTrack.objects.all()), 0,
-            'No GroundTracks should have been found'
-        )

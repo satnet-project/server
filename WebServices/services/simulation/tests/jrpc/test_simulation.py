@@ -17,8 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
 import logging
+import traceback
 from services.common import misc
 from services.common.testing import helpers as db_tools
+from services.configuration.models import segments as segment_models
+from services.configuration.models import tle as tle_models
+from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
 from services.simulation.jrpc.views import simulation as simulation_jrpc
 from services.simulation.jrpc.serializers import simulation as \
     simulation_serializer
@@ -86,3 +90,40 @@ class JRPCSimulationTest(test.TestCase):
 
         if self.__verbose_testing:
             print '>>> points = ' + str(len(track))
+
+    def test_remove_sc(self):
+        """JRPC remove spacecraft test.
+        Basic test for validating the removal of a given Spacecraft object from
+        the database through the correspondent JRPC method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_remove_sc)'
+
+        try:
+            a_id = sc_jrpc.delete(self.__sc_1_id)
+            self.assertEquals(
+                a_id, self.__sc_1_id,
+                'Wrong id returned, e = ' + self.__sc_1_id + ', a = ' + a_id
+            )
+        except Exception as e:
+            print traceback.format_exc()
+            self.fail('No exception should have been thrown, e = ' + str(e))
+
+        if segment_models.Spacecraft.objects.filter(identifier=self.__sc_1_id)\
+                .exists():
+            self.fail('Spacecraft should not be available anymore')
+
+        if not tle_models.TwoLineElement.objects.filter(
+                identifier=self.__sc_1_tle_id
+        ).exists():
+            self.fail('TLE should not have been deleted')
+
+        tle = tle_models.TwoLineElement.objects.get(
+            identifier=self.__sc_1_tle_id
+        )
+
+        if simulation_models.GroundTrack.objects.filter(tle=tle).exists():
+            self.fail(
+                'GroundTrack should have been deleted, tle_id = '
+                    + str(self.__sc_1_tle_id)
+            )

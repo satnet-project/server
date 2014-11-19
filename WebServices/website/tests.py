@@ -19,10 +19,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import sys
 from django.test.runner import DiscoverRunner
+from services.common.testing import helpers as db_tools
 
 
 class SatnetTestRunner(DiscoverRunner):
-    """
+    """Custom Test Runner.
+    Custom test runner for the SATNet services that pre-loads some information
+    in the database for the tests.
     """
 
     def setup_databases(self, **kwargs):
@@ -32,17 +35,16 @@ class SatnetTestRunner(DiscoverRunner):
         )
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
-        tle.TwoLineElementsManager.load_celestrak()
+        tle.TwoLineElementsManager.load_tles()
+        # tle.TwoLineElementsManager.load_celestrak()
         print ' done!'
 
-        """
-        sys.stdout.write('>>> Adding <SWISSCUBE> as testing Spacecraft...')
+        sys.stdout.write('>>> Adding <CANX-2> as testing Spacecraft...')
         sys.stdout.flush()
         db_tools.create_sc(
-            user_profile=db_tools.create_user_profile(),
-            identifier='sc-swisscube', tle_id='SWISSCUBE'
+            user_profile=db_tools.create_user_profile(username='globaluser'),
+            identifier='sc-canx-2', tle_id='CANX-2'
         )
         print ' done!'
-        """
 
         return db
