@@ -45,7 +45,6 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__sc_1_ch_3_id = 'xatco-fm-3'
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(

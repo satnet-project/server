@@ -89,7 +89,6 @@ class JRPCBookingProcessTest(test.TestCase):
         signals.connect_compatibility_2_operational()
         signals.connect_rules_2_availability()
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__sc_1 = db_tools.create_sc(

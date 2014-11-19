@@ -52,7 +52,6 @@ class JRPCChannelsTest(TestCase):
         self.__sc_1_ch_1_f = 437000000
         self.__sc_1_ch_2_id = 'gmsk-sc-2'
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
 

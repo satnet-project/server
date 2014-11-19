@@ -17,26 +17,22 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
-import traceback
-
 import datadiff
 from django import test
-
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
-from services.configuration.models import rules, segments, tle
+from services.configuration.models import rules, segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
-from services.simulation.models import simulation as model_simulation
 
 
 class JRPCSegmentsTest(test.TestCase):
 
     def setUp(self):
-        """
+        """Test setup.
         This method populates the database with some information to be used
         only for this test.
         """
@@ -71,7 +67,6 @@ class JRPCSegmentsTest(test.TestCase):
         self.__sc_2_id = 'sc-swisscube'
         self.__sc_2_tle_id = unicode('SWISSCUBE')
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__http_request = db_tools.create_request(

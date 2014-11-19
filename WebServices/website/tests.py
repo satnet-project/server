@@ -47,4 +47,9 @@ class SatnetTestRunner(DiscoverRunner):
         )
         print ' done!'
 
+        sys.stdout.write('>>> Initializing options for the bands...')
+        sys.stdout.flush()
+        db_tools.init_available()
+        print ' done!'
+
         return db

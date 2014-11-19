@@ -46,7 +46,6 @@ class TestSimulation(TestCase):
         self.__sc_1_ch_1_id = 'qpsk-sc-1'
         self.__sc_1_ch_1_f = 437000000
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
         self.__simulator = simulation.OrbitalSimulator()

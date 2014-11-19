@@ -66,7 +66,6 @@ class JRPCAutomatedBookingTest(test.TestCase):
             jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        db_tools.init_available()
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__sc_1 = db_tools.create_sc(
