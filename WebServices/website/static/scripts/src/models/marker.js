@@ -180,7 +180,7 @@ angular.module('marker-models').service('markers', [
                     groundtrack[j + 1].latitude,
                     groundtrack[j + 1].longitude
                 ]);
-                if (j % 1000 === 0) {
+                if (j % 10 === 0) {
                     geopoints.push(
                         new L.LatLng(
                             groundtrack[j + 1].latitude,

@@ -22,7 +22,7 @@ import rpc4django
 
 
 @rpc4django.rpcmethod(
-    name='simulation.tle.celestrak.getSections',
+    name='configuration.tle.celestrak.getSections',
     signature=[],
     login_required=True
 )
@@ -35,7 +35,7 @@ def get_celestrak_sections():
 
 
 @rpc4django.rpcmethod(
-    name='simulation.tle.celestrak.getResource',
+    name='configuration.tle.celestrak.getResource',
     signature=['String'],
     login_required=True
 )
@@ -53,7 +53,7 @@ def get_celestrak_resource(subsection):
 
 
 @rpc4django.rpcmethod(
-    name='simulation.tle.celestrak.getTle',
+    name='configuration.tle.celestrak.getTle',
     signature=['String'],
     login_required=True
 )

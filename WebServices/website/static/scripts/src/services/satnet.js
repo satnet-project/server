@@ -50,11 +50,11 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.delete': this.configuration.createMethod('sc.delete'),
             // TLE methods
             'tle.celestrak.getSections':
-                this.simulation.createMethod('tle.celestrak.getSections'),
+                this.configuration.createMethod('tle.celestrak.getSections'),
             'tle.celestrak.getResource':
-                this.simulation.createMethod('tle.celestrak.getResource'),
+                this.configuration.createMethod('tle.celestrak.getResource'),
             'tle.celestrak.getTle':
-                this.simulation.createMethod('tle.celestrak.getTle'),
+                this.configuration.createMethod('tle.celestrak.getTle'),
             // Simulation methods
             'sc.getGroundtrack':
                 this.simulation.createMethod('spacecraft.getGroundtrack')

@@ -45,6 +45,7 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
             satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
                 .then(function (tleIds) {
                     $scope.tles = tleIds.tle_list.slice(0);
+                    console.log('$scope.tles = ' + JSON.stringify($scope.tles));
                 });
             $scope.sc.tlegroup = defaultOption;
         };
@@ -52,6 +53,7 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
             satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
                 .then(function (tleIds) {
                     $scope.tles = tleIds.tle_list.slice(0);
+                    console.log('$scope.tles = ' + JSON.stringify($scope.tles));
                 });
         };
         $scope.ok = function () {
