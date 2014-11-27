@@ -41,7 +41,7 @@ install_packages()
     sudo apt-get install ruby rubygem-integration
     sudo gem install sass
     sudo gem install compass
-    
+
     sudo apt-get install yui-compressor
 
     sudo apt-get clean
@@ -157,7 +157,7 @@ configure_apache()
     echo "    ErrorLog $webservices_logs_dir/error.log" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo '</VirtualHost>' | sudo tee -a $__satnet_apache_conf
-    
+
     sudo sed -i -e 's/allow from 127/# allow from 127/g' -e 's/# allow from all/allow from all/g' $__phppgadmin_apache_config
     # ### Extra login security can be disabled for local access only by
     # uncommenting the following <sed> command. This permits the access to
@@ -166,7 +166,7 @@ configure_apache()
     # be enabled again, an additional user for access through <phppgadmin> has
     # to be created and configured.
     # sudo sed -i -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" $__phppgadmin_config_file
-    
+
     # default 80 ports are disabled (TLS access only!)
     sudo sed -i -e 's/NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/Listen 80/# Listen 80/g' $__apache_server_ports
 
@@ -192,7 +192,7 @@ django_user_password='satnet'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
 {
-    
+
     # ### Uncomment the following lines if you want to reset default user's
     # password.
     #echo 'User <postgres> grants access through <phppgadmin>'
@@ -235,7 +235,7 @@ create_secrets()
 {
     mkdir -p $webservices_secrets_dir
     [[ -e $webservices_secrets_init ]] || touch $webservices_secrets_init
-    
+
     __secret_key=$( ./django-secret-key-generator.py )
     echo ">>> Generating django's SECRET_KEY=$__secret_key"
     echo "SECRET_KEY='$__secret_key'" > $webservices_secrets_auth
@@ -260,14 +260,13 @@ create_secrets()
     echo ">>> $webservices_secrets_email should be updated with the correct email account information."
     echo 'Press any key to continue...'
     read
-    
+
     echo "EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
     echo "EMAIL_HOST='smtp.gmail.com'" >> $webservices_secrets_email
     echo "EMAIL_PORT=587" >> $webservices_secrets_email
     echo "EMAIL_HOST_USER='XXXXXX@gmail.com'" >> $webservices_secrets_email
     echo "EMAIL_HOST_PASSWORD='XXXXXXXX'" >> $webservices_secrets_email
-    echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email    
-
+    echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email
 }
 
 # ### Method that configures a given root with the virtualenvirment required,
@@ -286,6 +285,9 @@ configure_root()
 
     [[ ! -d "$webservices_secrets_dir" ]] && create_secrets
 
+    clear && echo '>>>>> Installing Angular dependencies...'
+    install_bower
+
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
     source $webservices_venv_activate
@@ -293,10 +295,9 @@ configure_root()
     pip install -r "$python_requirements_txt"
     python manage.py syncdb
     python manage.py collectstatic
-    
+
     deactivate
     cd $script_path
-
 }
 
 # ### This function upgrades all the pip packages installed in the
@@ -339,19 +340,24 @@ node_js_root_dir='/opt'
 # that can be downloaded from GitHub.
 install_bower()
 {
-    sudo apt-get install python g++ make checkinstall
-    cd $node_js_root_dir
-    sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
-    sudo tar xzvf node-latest.tar.gz && cd node-v*
-    sudo ./configure
+
+    # sudo apt-get install python g++ make checkinstall
+    # cd $node_js_root_dir
+    # sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
+    # sudo tar xzvf node-latest.tar.gz && cd node-v*
+    # sudo ./configure
     # ### IMPORTANT
-    echo 'In the next menu that will be prompted, the <v> letter from the'
-    echo 'version number must be erased. For doing that, select <Choice 3>'
-    echo 'and erase the <v> letter leaving the rest of the version number'
-    echo 'intact.'
-    sudo checkinstall -D
-    sudo dpkg -i node_*
+    # echo 'In the next menu that will be prompted, the <v> letter from the'
+    # echo 'version number must be erased. For doing that, select <Choice 3>'
+    # echo 'and erase the <v> letter leaving the rest of the version number'
+    # echo 'intact.'
+    # sudo checkinstall -D
+    # sudo dpkg -i node_*
+    sudo apt-get install nodejs npm
     sudo npm install -g bower
+    cd $ng_app_dir
+    sudo npm install -g
+    bower install
 }
 
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
@@ -362,13 +368,12 @@ venv_projects="$HOME/repositories/satnet-release-1/WebServices"
 # ### Examples of HOW TO call this script
 usage()
 {
-
     echo "Please, use ONLY ONE ARGUMENT at a time:"
     echo "Usage: $0 [-a] #Installs EVERYTHING."
     echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
-    echo "Usage: $0 [-c] #Create and install self-signed certificates" 
-    echo "Usage: $0 [-i] #Install Debian packages <root>"     
-    echo "Usage: $0 [-p] #Configures PostgreSQL" 
+    echo "Usage: $0 [-c] #Create and install self-signed certificates"
+    echo "Usage: $0 [-i] #Install Debian packages <root>"
+    echo "Usage: $0 [-p] #Configures PostgreSQL"
     echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET."
     echo "Usage: $0 [-s] #Creates the <secrets> module with initial values."
     echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
@@ -376,8 +381,7 @@ usage()
     echo "Usage: $0 [-x] #Configures Apache web server"
 
     1>&2;
-    exit 1; 
-
+    exit 1;
 }
 
 ################################################################################
