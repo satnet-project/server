@@ -25,8 +25,8 @@ angular.module('marker-models', [
  * eXtended GroundStation models. Services built on top of the satnetRPC
  * service and the basic GroundStation models.
  */
-angular.module('marker-models').constant('_LAT', 32.630).service('markers', [
-    'maps', function (maps) {
+angular.module('marker-models').constant('_RATE', 1).service('markers', [
+    'maps', '_RATE', function (maps, _RATE) {
 
         'use strict';
 
@@ -164,9 +164,7 @@ angular.module('marker-models').constant('_LAT', 32.630).service('markers', [
             console.log('>>> groundtrack = ' + JSON.stringify(groundtrack));
             console.log('>>> nowMS = ' + nowMs);
 
-            if (startIndex !== 0) {
-                startIndex = startIndex - 1;
-            }
+            if (startIndex !== 0) { startIndex = startIndex - 1; }
             positions.push([
                 groundtrack[startIndex].latitude,
                 groundtrack[startIndex].longitude
@@ -180,7 +178,7 @@ angular.module('marker-models').constant('_LAT', 32.630).service('markers', [
                     groundtrack[j + 1].latitude,
                     groundtrack[j + 1].longitude
                 ]);
-                if (j % 10 === 0) {
+                if (j % _RATE === 0) {
                     geopoints.push(
                         new L.LatLng(
                             groundtrack[j + 1].latitude,
@@ -210,7 +208,6 @@ angular.module('marker-models').constant('_LAT', 32.630).service('markers', [
                 return { id: id, cfg: cfg, marker: m };
             });
         };
-
         this.removeSC = function (id) {
             if (!this.sc.hasOwnProperty(id)) {
                 throw '[x-maps] Marker does NOT exist, id = ' + id;
