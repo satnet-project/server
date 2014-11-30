@@ -32,6 +32,10 @@ MANAGERS = ADMINS
 
 DATABASES = database.DATABASES
 
+BASE_DIR = os.path.join(
+    os.path.dirname(__file__), '..'
+)
+
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.4/ref/website/#allowed-hosts
 ALLOWED_HOSTS = []

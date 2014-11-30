@@ -67,6 +67,9 @@ class JRPCSegmentsTest(test.TestCase):
         self.__sc_2_id = 'sc-swisscube'
         self.__sc_2_tle_id = unicode('SWISSCUBE')
 
+        self.__sc_3_id = 'sc-somp'
+        self.__sc_3_tle_id = unicode('SOMP')
+
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__http_request = db_tools.create_request(
@@ -129,6 +132,32 @@ class JRPCSegmentsTest(test.TestCase):
         sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
         self.assertItemsEqual(
             sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
+        )
+
+    def test_sc_create(self):
+        """
+        This test validates the addition of a new Spacecraft through the
+        correspondent JRPC method.
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_sc_add)'
+
+        result = jrpc_sc.create(
+            self.__sc_3_id, 'xxxcs', self.__sc_3_tle_id,
+            request=self.__http_request
+        )
+
+        self.assertEquals(
+            result['spacecraft_id'], self.__sc_3_id,
+            'Error creating the SC, expected id = '
+            + str(self.__sc_3_id) + ', actual id = ' + str(result[
+                'spacecraft_id'
+            ])
+        )
+
+        self.assertNotEquals(
+            segments.Spacecraft.objects.get(identifier=self.__sc_3_id), None,
+            'SC id = <' + str(self.__sc_3_id) + '>, should have been found'
         )
 
     def test_gs_list_channels(self):

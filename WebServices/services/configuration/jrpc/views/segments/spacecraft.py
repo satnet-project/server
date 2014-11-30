@@ -21,6 +21,8 @@ from services.accounts import models as account_models
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 
+import logging
+logger = logging.getLogger('configuration')
 
 @rpcmethod(
     name='configuration.sc.list',
@@ -54,6 +56,7 @@ def create(identifier, callsign, tle_id, **kwargs):
     """
     request = kwargs.get('request', None)
     if request is None:
+        logger.warning('No HTTP request found.')
         return
     username = request.user.username
 

@@ -44,7 +44,6 @@ class SpacecraftManager(models.Manager):
         :return: Spacecraft object reference.
         """
         tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
-        # groundtrack = simulation_models.GroundTrack.objects.create(tle)
         return super(SpacecraftManager, self).create(tle=tle, **kwargs)
 
     def add_channel(self, sc_identifier=None, **kwargs):
