@@ -25,7 +25,7 @@ angular.module('marker-models', [
  * eXtended GroundStation models. Services built on top of the satnetRPC
  * service and the basic GroundStation models.
  */
-angular.module('marker-models').service('markers', [
+angular.module('marker-models').constant('_LAT', 32.630).service('markers', [
     'maps', function (maps) {
 
         'use strict';
@@ -115,7 +115,7 @@ angular.module('marker-models').service('markers', [
             })
         };
         this.geolineOptions = {
-            weight: 1,
+            weight: 7,
             opacity: 0.5,
             color: 'red',
             steps: 100
@@ -149,7 +149,7 @@ angular.module('marker-models').service('markers', [
 
         /**
          * TODO What if the groundtrack has not started yet?
-         * TODO Best unit testing for this algorithm.
+         * TODO A better unit testing for this algorithm.
          * @param groundtrack
          * @returns {{durations: Array, positions: Array}}
          */
