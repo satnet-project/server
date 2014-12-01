@@ -48,7 +48,7 @@ angular.module('spacecraft-models')
             this.scCfg[id] = data;
             return markers.addSC(id, this.scCfg[id]).then(function (data) {
                 console.log(
-                    '[sc-model] New SC added, cfg = ' + JSON.stringify(data.cfg)
+                    '[sc-model] SC added, id = ' + data.cfg.spacecraft_id
                 );
             });
         };

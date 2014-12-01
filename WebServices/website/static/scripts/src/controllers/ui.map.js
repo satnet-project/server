@@ -54,6 +54,16 @@ angular.module('ui-map-controllers')
 
             angular.extend($scope, {
                 center: { lat: LAT, lng: LNG, zoom: ZOOM },
+                tiles: {
+                    url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+                    options: {
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        minZoom: 2,
+                        maxZoom: 12,
+                        continuousWorld: false,
+                        noWrap: true
+                    }
+                },
                 markers: []
             });
             maps.createMainMap(true).then(function (data) {

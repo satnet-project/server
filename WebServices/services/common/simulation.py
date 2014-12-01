@@ -268,7 +268,7 @@ class OrbitalSimulator(object):
 
     def calculate_groundtrack(
         self, spacecraft_tle,
-        start=None, end=None, timestep=datetime.timedelta(seconds=10)
+        start=None, end=None, timestep=datetime.timedelta(seconds=30)
     ):
         """
         Calculates the GroundTrack for the spacecraft with the given tle object.

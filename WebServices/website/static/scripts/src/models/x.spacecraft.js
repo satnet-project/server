@@ -40,7 +40,9 @@ angular.module('x-spacecraft-models').service('xsc', [
             return xSatnetRPC.readAllSCConfiguration()
                 .then(function (cfgs) {
                     var p = [];
-                    angular.forEach(cfgs, function (c) { p.push(sc.add(c)); });
+                    angular.forEach(cfgs, function (c) {
+                        p.push(sc.add(c));
+                    });
                     return $q.all(p).then(function (r) { return r; });
                 });
         };

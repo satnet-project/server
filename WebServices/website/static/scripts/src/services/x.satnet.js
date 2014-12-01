@@ -63,7 +63,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
             return satnetRPC.rCall('sc.list', []).then(function (scs) {
                 var p = [];
                 angular.forEach(scs, function (sc) {
-                    p = [ satnetRPC.readSCCfg(sc) ];
+                    p.push(satnetRPC.readSCCfg(sc));
                 });
                 return $q.all(p).then(function (results) {
                     var cfgs = [], j;

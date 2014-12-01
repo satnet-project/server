@@ -21,9 +21,11 @@ from django.test import TestCase
 from datetime import timedelta, datetime
 import logging
 import math
+import numpy
 from pytz import utc as pytz_utc
-from services.common import simulation
+from services.common import simulation, misc
 from services.common.testing import helpers as db_tools
+from services.simulation.models import simulation as simulation_models
 
 
 class TestSimulation(TestCase):
@@ -130,3 +132,27 @@ class TestSimulation(TestCase):
             'Number of points differs! e = ' + str(e_n_points)
             + ', a = ' + str(len(groundtrack))
         )
+
+    def __test_groundtrack_variation(self):
+
+        if self.__verbose_testing:
+            print '>>> test_groundtrack_statistics:'
+
+        step = timedelta(minutes=1)
+        (start, end) = self.__simulator.get_simulation_window()
+
+        groundtrack_1_m = self.__simulator.calculate_groundtrack(
+            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            start=start, end=end, timestep=step
+        )
+
+        ts_1_m, lat_1_m, lng_1_m = simulation_models.GroundTrackManager\
+            .groundtrack_to_dbarray(groundtrack_1_m)
+
+        array_1_m = numpy.array(lat_1_m)
+        misc.print_list(array_1_m)
+
+        var_1_m_lat = numpy.std(array_1_m, dtype=numpy.float64)
+        var_1_m_lng = numpy.std(array_1_m, dtype=numpy.float64)
+
+        print 'var_1_m = (' + str(var_1_m_lat) + ', ' + str(var_1_m_lng) + ')'
