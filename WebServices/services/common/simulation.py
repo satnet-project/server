@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import ephem
+import numpy
 import logging
 from services.common import gis, misc
 
@@ -266,21 +267,61 @@ class OrbitalSimulator(object):
 
         return pass_slots
 
+    @staticmethod
+    def arrays_2_groundtrack(timestamps, latitudes, longitudes):
+        """
+        Converts the 3 arrays into a single groundtrack array with objects as
+        items.
+        :param timestamps: array with the timestamps
+        :param latitudes: array with the latitudes
+        :param longitudes: array with the longitudes
+        :return: Array where each element is { timestamp, latitude, longitude }.
+                    The first timestamp is "start" and the last one is
+                    "start+floor(duration/timestamp)*timestamp".
+        """
+        gt = []
+        i = 0
+
+        for ts_i in timestamps:
+
+            lat_i = latitudes[i]
+            lng_i = longitudes[i]
+
+            gt.append({
+                'timestamp': ts_i,
+                'latitude': lat_i,
+                'longitude': lng_i
+            })
+
+            i += 1
+
+        return gt
+
     def calculate_groundtrack(
         self, spacecraft_tle,
-        start=None, end=None, timestep=datetime.timedelta(seconds=30)
+        start=None, end=None, timestep=datetime.timedelta(seconds=30),
+        soften=False
     ):
         """
         Calculates the GroundTrack for the spacecraft with the given tle object.
         :param spacecraft_tle:
+        :param start: starting datetime for the simulation.
+        :param end: ending datetime for the simulation.
         :param timestep: time ellapsed for the calculation of two subsequent
                             points in the ground track.
+        :param soften=False: if 'True' the resulting groundtrack uses a
+                            polynomial regression to soften the results of the
+                            simulator.
         :return: Array where each element is { timestamp, latitude, longitude }.
                     The first timestamp is "start" and the last one is
                     "start+floor(duration/timestamp)*timestamp".
         """
         if (start is None) or (end is None):
             (start, end) = self.get_simulation_window()
+
+        ts_a = []
+        lat_a = []
+        lng_a = []
 
         self.set_spacecraft(spacecraft_tle)
 
@@ -290,14 +331,30 @@ class OrbitalSimulator(object):
         while date_i < end:
 
             self._body.compute(date_i)
-            groundtrack.append({
-                'timestamp': date_i,
-                'latitude': gis.degrees_2_decimal(str(self._body.sublat)),
-                'longitude': gis.degrees_2_decimal(str(self._body.sublong))
-            })
+
+            lat_i = gis.degrees_2_decimal(str(self._body.sublat))
+            lng_i = gis.degrees_2_decimal(str(self._body.sublong))
+
+            if soften:
+                ts_a.append(date_i)
+                lat_a.append(lat_i)
+                lng_a.append(lng_i)
+            else:
+                groundtrack.append({
+                    'timestamp': date_i,
+                    'latitude': lat_i,
+                    'longitude': lng_i
+                })
+
             date_i += timestep
 
-        return groundtrack
+        if soften:
+            np_lat_a = numpy.array(lat_a)
+            np_lng_a = numpy.array(lng_a)
+            gt_curve = numpy.polyfit(np_lat_a, np_lng_a, 5)
+            return OrbitalSimulator.arrays_2_groundtrack(ts_a, [], [])
+        else:
+            return groundtrack
 
     def __unicode__(self):
 
