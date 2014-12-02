@@ -128,7 +128,7 @@ class OrbitalSimulator(object):
         """
         Creates an PyEphem body object with the data from a Spacecraft object.
         :param spacecraft_tle: Spacecraft's tle as obtained by invoking the
-        method "get" of the <services.scheduling.models.TwoLineElement>.
+        method "get" of the <services.configuration.models.TwoLineElement>.
         """
         self._tle = spacecraft_tle
         l0, l1, l2 = OrbitalSimulator.dbtle_2_ephem_str(spacecraft_tle)

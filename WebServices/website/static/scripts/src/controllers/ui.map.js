@@ -120,4 +120,5 @@ angular.module('ui-map-controllers')
                 xsc.updateSC(scId);
             });
 
-        }]);
+        }
+    ]);
