@@ -221,8 +221,10 @@ def degrees_2_decimal(degrees, separator=':'):
     :param degrees: The DMS value to be converted (as a string).
     :return: The generated decimal value (returns a float).
     """
+    sighn = degrees.lstrip()[:1] == '-' and -1.0 or 1.0
     (ds, ms, ss) = degrees.split(separator)
+
     d = float(ds)
-    m = float(ms)
-    s = float(ss)
+    m = sighn * float(ms)
+    s = sighn * float(ss)
     return d + (m / 60) + (s / 3600)

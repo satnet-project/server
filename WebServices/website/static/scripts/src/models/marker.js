@@ -28,7 +28,7 @@ angular.module('marker-models', [
 angular.module('marker-models')
     .constant('_RATE', 1)
     .constant('_SIM_DAYS', 1)
-    .constant('_GEOLINE_STEPS', 100)
+    .constant('_GEOLINE_STEPS', 5)
     .service('markers', [
         'maps', '_RATE', '_SIM_DAYS', '_GEOLINE_STEPS',
         function (maps, _RATE, _SIM_DAYS, _GEOLINE_STEPS) {
