@@ -28,4 +28,8 @@ urlpatterns = urls.patterns('',
         views.spacecraft_valid_id,
         name='ajax-cfg-sc-valid-id'
     ),
+    urls.url(r'^user/geoip$',
+        views.user_geoip,
+        name='ajax-cfg-user-geoip'
+    )
 )
