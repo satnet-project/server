@@ -30,7 +30,10 @@ function updateTerminator(t) {
 }
 
 /** Module definition (empty array is vital!). */
-angular.module('map-services', [ 'leaflet-directive', 'common' ]);
+angular.module('map-services', [
+    'leaflet-directive',
+    'satnet-services'
+]);
 
 angular.module('map-services')
     .constant('T_OPACITY', 0.125)
@@ -38,13 +41,12 @@ angular.module('map-services')
     .constant('DETAIL_ZOOM', 10)
     .constant('DEFAULT_MOVEME', 'Drag me!')
     .service('maps', [
-
-        '$q', 'common', 'leafletData',
+        '$q', 'leafletData', 'satnetRPC',
         'ZOOM', 'DETAIL_ZOOM', 'T_OPACITY', 'DEFAULT_MOVEME',
         function (
             $q,
-            common,
             leafletData,
+            satnetRPC,
             ZOOM,
             DETAIL_ZOOM,
             T_OPACITY,
@@ -109,7 +111,7 @@ angular.module('map-services')
                 } else {
                     p.push(this.getMainMap());
                 }
-                p.push(common.getUserLocation());
+                p.push(satnetRPC.getUserLocation());
 
                 return $q.all(p).then(function (results) {
                     var ll = new L.LatLng(results[1].lat, results[1].lng);
@@ -140,7 +142,7 @@ angular.module('map-services')
                     message = DEFAULT_MOVEME;
                 }
 
-                return common.getUserLocation().then(function (location) {
+                return satnetRPC.getUserLocation().then(function (location) {
                     var lat = location.lat,
                         lng = location.lng,
                         ll = new L.LatLng(lat, lng),

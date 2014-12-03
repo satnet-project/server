@@ -91,6 +91,7 @@ __apache_server_certificates_dir='/etc/apache2/certificates'
 __apache_server_certificate="$__apache_server_certificates_dir/$CERTIFICATE_NAME"
 __apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
 __apache_document_root="$webservices_static_dir"
+__apache_rotate_logs="/usr/local/apache/bin/rotatelogs"
 __phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
 __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
 # ### This function configures the apache2 server.
@@ -152,6 +153,7 @@ configure_apache()
     echo '	      </IfVersion>' | sudo tee -a $__satnet_apache_conf
     echo '    </Directory>' | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
+# "||/usr/local/apache/bin/rotatelogs /var/log/access_log 86400"
     echo "    CustomLog $webservices_logs_dir/access.log combined" | sudo tee -a $__satnet_apache_conf
     echo "    CustomLog $webservices_logs_dir/ssl_request.log \"%t %h %{SSL_PROTOCOL}s %{SSL_CIPHER}s \\\"%r\\\" %b\"" | sudo tee -a $__satnet_apache_conf
     echo "    ErrorLog $webservices_logs_dir/error.log" | sudo tee -a $__satnet_apache_conf

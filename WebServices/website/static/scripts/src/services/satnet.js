@@ -25,8 +25,8 @@ angular.module('satnet-services', [ 'celestrak-services' ]);
  * can be overriden by users.
  */
 angular.module('satnet-services').service('satnetRPC', [
-    'jsonrpc', '$location', '$log', '$q',
-    function (jsonrpc, $location, $log, $q) {
+    'jsonrpc', '$location', '$log', '$q', '$http',
+    function (jsonrpc, $location, $log, $q, $http) {
         'use strict';
 
         var rpc = $location.protocol() + '://' +
@@ -82,6 +82,17 @@ angular.module('satnet-services').service('satnetRPC', [
                     $log.warn(msg);
                 }
             );
+        };
+
+        /**
+         * Retrieves the user location using an available Internet service.
+         * @returns Promise that returns a { lat, lng } object.
+         */
+        this.getUserLocation = function () {
+            return $http.get('/configuration/user/geoip').then(function (data) {
+                console.log('@getUserLocation, data = ' + JSON.stringify(data));
+                return angular.fromJson(data);
+            });
         };
 
         /**

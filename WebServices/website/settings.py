@@ -17,8 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import os
 import sys
-
-
 from secrets import auth, database, email
 
 # Django website for WebServices project.

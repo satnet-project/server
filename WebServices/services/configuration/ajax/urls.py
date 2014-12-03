@@ -16,7 +16,6 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
-
 from services.configuration.ajax import views
 
 urlpatterns = urls.patterns('',

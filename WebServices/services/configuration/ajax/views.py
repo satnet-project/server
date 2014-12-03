@@ -17,11 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from django.contrib.auth import decorators as auth_decorators
+from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
-from services.common import gis
+from services.common import gis, misc
 from services.configuration.models import segments
 
 logger = logging.getLogger('configuration')
+
 
 @decorators.json_view
 @auth_decorators.login_required
@@ -45,6 +47,7 @@ def groundstation_valid_id(request):
         'value': requested_id
     }
 
+
 @decorators.json_view
 @auth_decorators.login_required
 def spacecraft_valid_id(request):
@@ -67,6 +70,7 @@ def spacecraft_valid_id(request):
         'value': requested_id
     }
 
+
 @decorators.json_view
 @auth_decorators.login_required
 def user_geoip(request):
@@ -74,14 +78,14 @@ def user_geoip(request):
     AJAX method for retrieving the estimated location of a given user using the
     IP address of the request..
     :param request: The GET HTTP request.
-    :return: {  }
+    :return: { }
     """
-    requested_id = request.GET['value']
-    if not requested_id:
-        raise exceptions.BadRequest("'value' not found as a GET parameter.")
-
-    lat, lng = gis.get_remote_user_location(ip='')
-
-    return {
-        'latitude': lat, 'longitude': lng
-    }
+    print '@user_geoip: request.META = ' + str(request)
+    ip = ipware_get_ip(request)
+    if ip is None:
+        raise Exception('No IP could be found for the user.')
+    else:
+        lat, lng = gis.get_remote_user_location(ip=ip)
+        return {
+            'latitude': lat, 'longitude': lng
+        }

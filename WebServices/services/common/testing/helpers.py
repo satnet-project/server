@@ -39,7 +39,11 @@ def create_user(username='testuser', password='testuser.', email='test@test.test
     return user
 
 
-def create_user_profile(username='testuser', password='testuser.', email='test@test.test'):
+def create_user_profile(
+    username='testuser',
+    password='testuser.',
+    email='test@test.test'
+):
     """
     This method creates a new user profile and its associated User, with the
     parameteres provided, in case the given user object is None.
@@ -68,16 +72,17 @@ def create_user_profile(username='testuser', password='testuser.', email='test@t
     return user_profile
 
 
-def create_request(url='/test', user_profile=None):
+def create_request(url='/test', user_profile=None, user_ip='129.65.71.110'):
     """
     This method creates an HTTP request linked to a test user that, in case
     it is not provided, it is created through the method
     :param url: URL for the HTTP request.
     :return: The created HTTP request.
     """
-
     factory = RequestFactory()
     request = factory.get(url)
+
+    request.META['REMOTE_ADDR'] = user_ip
 
     if user_profile:
         request.user = user_profile

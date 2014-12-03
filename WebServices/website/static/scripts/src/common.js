@@ -18,12 +18,23 @@
 
 __DEBUG__ = true;
 
-function __log_error(msg)
-    { if(__DEBUG__) console.log(msg); alert(msg); throw msg; }
+function __log_error(msg) {
+    'use strict';
+    if (__DEBUG__) {
+        console.log(msg);
+        alert(msg);
+        throw msg;
+    }
+}
 
 function __log_cb(cb_name, result) {
-    if (__DEBUG__) console.log(cb_name);
-    if (__DEBUG__) console.log(result);
+    'use strict';
+    if (__DEBUG__) {
+        console.log(cb_name);
+    }
+    if (__DEBUG__) {
+        console.log(result);
+    }
 }
 
 /*
