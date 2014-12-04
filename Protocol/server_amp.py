@@ -230,7 +230,7 @@ def main():
     portal = Portal(realm, [checker])
 
     pf = CredAMPServerFactory(portal)
-    cert = ssl.PrivateCertificate.loadPEM(open('key/private.pem').read())
+    cert = ssl.PrivateCertificate.loadPEM(open('key/test.pem').read())
 
     reactor.listenSSL(1234, pf, cert.options())
     log.msg('Server running...')

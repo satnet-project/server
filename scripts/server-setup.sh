@@ -294,7 +294,8 @@ configure_root()
     cd $webservices_dir
     source $webservices_venv_activate
 
-    pip install -r "$python_requirements_txt"
+    pip install -r "$webservices_requirements_txt"
+    pip install -r "$protocol_requirements_txt"    
     python manage.py syncdb
     python manage.py collectstatic
 
@@ -391,8 +392,10 @@ usage()
 script_path="$( cd "$( dirname "$0" )" && pwd )"
 project_path=$( readlink -e "$script_path/.." )
 webservices_dir="$project_path/WebServices"
+protocol_dir="$project_path/Protocol"
 webservices_secrets_dir="$webservices_dir/website/secrets"
-python_requirements_txt="$webservices_dir/requirements.txt"
+webservices_requirements_txt="$webservices_dir/requirements.txt"
+protocol_requirements_txt="$protocol_dir/requirements.txt"
 webservices_secrets_init="$webservices_secrets_dir/__init__.py"
 webservices_secrets_auth="$webservices_secrets_dir/auth.py"
 webservices_secrets_database="$webservices_secrets_dir/database.py"

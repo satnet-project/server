@@ -9,11 +9,11 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from services.common import misc, simulation
 from services.common.testing import helpers
 
-from services.configuration.jrpc import channels as jrpc_channels_if
-from services.configuration.jrpc import rules as jrpc_rules_if
-from services.configuration.jrpc import serialization as jrpc_keys
-from services.scheduling.jrpc import groundstations as jrpc_gs_scheduling
-from services.scheduling.jrpc import spacecraft as jrpc_sc_scheduling
+from services.configuration.jrpc.views import channels as jrpc_channels_if
+from services.configuration.jrpc.views import rules as jrpc_rules_if
+from services.configuration.jrpc.serializers import serialization as jrpc_keys
+from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
+from services.scheduling.jrpc.views import spacecraft as jrpc_sc_scheduling
 from services.configuration.models import rules, availability, channels
 from services.configuration import signals
 from services.scheduling.models import operational
