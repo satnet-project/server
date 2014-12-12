@@ -34,7 +34,8 @@ def create_user(username='testuser', password='testuser.', email='test@test.test
     :return: Reference to the just-created user.
     """
     user = User.objects.create_user(
-        username=username, email=email, password=password)
+        username=username, email=email, password=password
+    )
     user.save()
     return user
 

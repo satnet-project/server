@@ -138,6 +138,9 @@ TEMPLATE_DIRS = (
     os.path.join(
         os.path.dirname(__file__), '..', 'services', 'accounts', 'templates'
     ),
+    os.path.join(
+        os.path.dirname(__file__), '..', 'services', 'cluster', 'templates'
+    ),
 )
 
 TEST_RUNNER = 'website.tests.SatnetTestRunner'
@@ -173,6 +176,7 @@ INSTALLED_APPS = (
     'services.scheduling',
     'services.communications',
     'services.simulation',
+    'services.cluster',
 
     # ### django-admin
     'django.contrib.admin',

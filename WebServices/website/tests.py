@@ -18,6 +18,7 @@ from services.configuration.models import tle
 __author__ = 'rtubiopa@calpoly.edu'
 
 import sys
+import urllib2
 from django.test.runner import DiscoverRunner
 from services.common.testing import helpers as db_tools
 
@@ -35,17 +36,25 @@ class SatnetTestRunner(DiscoverRunner):
         )
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
-        tle.TwoLineElementsManager.load_tles()
-        # tle.TwoLineElementsManager.load_celestrak()
-        print ' done!'
 
-        sys.stdout.write('>>> Adding <CANX-2> as testing Spacecraft...')
-        sys.stdout.flush()
-        db_tools.create_sc(
-            user_profile=db_tools.create_user_profile(username='globaluser'),
-            identifier='sc-canx-2', tle_id='CANX-2'
-        )
-        print ' done!'
+        try:
+
+            tle.TwoLineElementsManager.load_tles()
+            # tle.TwoLineElementsManager.load_celestrak()
+            print ' done!'
+
+            sys.stdout.write('>>> Adding <CANX-2> as testing Spacecraft...')
+            sys.stdout.flush()
+            db_tools.create_sc(
+                user_profile=db_tools.create_user_profile(
+                    username='globaluser'
+                ),
+                identifier='sc-canx-2', tle_id='CANX-2'
+            )
+            print ' done!'
+
+        except urllib2.URLError:
+            print ' No internet connection! Could not load TLEs.'
 
         sys.stdout.write('>>> Initializing options for the bands...')
         sys.stdout.flush()

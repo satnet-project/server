@@ -122,7 +122,7 @@ class PendingRegView(ListView):
     queryset = models.UserProfile.objects.\
         filter(is_verified=False).\
         filter(is_blocked=False)
-    context_object_name = "user_list"
+    context_object_name = 'user_list'
 
     def post(self, request, *args, **kwargs):
         """
