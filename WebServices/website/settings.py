@@ -139,7 +139,7 @@ TEMPLATE_DIRS = (
         os.path.dirname(__file__), '..', 'services', 'accounts', 'templates'
     ),
     os.path.join(
-        os.path.dirname(__file__), '..', 'services', 'cluster', 'templates'
+        os.path.dirname(__file__), '..', 'services', 'leop', 'templates'
     ),
 )
 
@@ -176,7 +176,7 @@ INSTALLED_APPS = (
     'services.scheduling',
     'services.communications',
     'services.simulation',
-    'services.cluster',
+    'services.leop',
 
     # ### django-admin
     'django.contrib.admin',

@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.views.generic import list as list_views
-from services.cluster import models as cluster_models
+from services.leop import models as cluster_models
 
 
 class ClusterManagementView(list_views.ListView):

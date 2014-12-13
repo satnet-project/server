@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.conf import urls
 from django.contrib.auth import decorators
 
-from services.cluster import views as cluster_views
+from services.leop import views as cluster_views
 
 urlpatterns = urls.patterns(
     '',

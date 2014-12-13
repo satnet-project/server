@@ -30,12 +30,12 @@ class ClusterManager(models.Manager):
 
 class Cluster(models.Model):
     """Cluster database model.
-    Database model that manages the information relative to a given cluster
+    Database model that manages the information relative to a given leop
     of satellites during the LEOP phases.
     """
 
     class Meta:
-        app_label = 'cluster'
+        app_label = 'leop'
 
     objects = ClusterManager()
 

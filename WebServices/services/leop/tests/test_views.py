@@ -19,7 +19,7 @@ import logging
 from django import test
 from services.accounts import models as account_models
 from services.common.testing import helpers as db_tools
-from services.cluster import models as cluster_models, views as cluster_views
+from services.leop import models as cluster_models, views as cluster_views
 
 
 class TestClusterViews(test.TestCase):
@@ -33,7 +33,7 @@ class TestClusterViews(test.TestCase):
         self.__user_2 = db_tools.create_user_profile(username='User2')
 
         if not self.__verbose_testing:
-            logging.getLogger('cluster').setLevel(level=logging.CRITICAL)
+            logging.getLogger('leop').setLevel(level=logging.CRITICAL)
 
     def test_get_queryset(self):
         """Unit test case.
@@ -53,4 +53,4 @@ class TestClusterViews(test.TestCase):
 
         cm.request = db_tools.create_request(user_profile=self.__user_2)
         qs_2 = cm.get_queryset()
-        self.assertEquals(len(qs_2), 1 , '1 cluster is owned by test user.')
+        self.assertEquals(len(qs_2), 1 , '1 leop is owned by test user.')
