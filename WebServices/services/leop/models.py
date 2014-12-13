@@ -21,15 +21,15 @@ from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 
 
-class ClusterManager(models.Manager):
-    """Cluster database mdoel manager.
-    Model manager for the database Cluster model.
+class LeopManager(models.Manager):
+    """LEOP database mdoel manager.
+    Model manager for the database LEOP model.
     """
     pass
 
 
-class Cluster(models.Model):
-    """Cluster database model.
+class Leop(models.Model):
+    """LEOP database model.
     Database model that manages the information relative to a given leop
     of satellites during the LEOP phases.
     """
@@ -37,26 +37,26 @@ class Cluster(models.Model):
     class Meta:
         app_label = 'leop'
 
-    objects = ClusterManager()
+    objects = LeopManager()
 
     admin = models.ForeignKey(
-        account_models.UserProfile, verbose_name='Cluster administrator'
+        account_models.UserProfile, verbose_name='LEOP administrator'
     )
 
     identifier = models.CharField(
-        'Cluster identifier',
+        'LEOP identifier',
         max_length=30,
         unique=True,
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",
-            code='invalid_cluster_identifier'
+            code='invalid_leop_identifier'
         )]
     )
 
     groundstations = models.ManyToManyField(
-        segment_models.GroundStation, verbose_name='Cluster ground stations',
+        segment_models.GroundStation, verbose_name='LEOP ground stations',
     )
     spacecraft = models.ManyToManyField(
-        segment_models.Spacecraft, verbose_name='Cluster spacecraft'
+        segment_models.Spacecraft, verbose_name='LEOP spacecraft'
     )

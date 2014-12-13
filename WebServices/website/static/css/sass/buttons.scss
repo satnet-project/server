@@ -11,17 +11,26 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
-a.link
-{cursor:pointer;color: #0F3E62;font-weight:
-    bold;border-radius: 5px;padding: 0.75em;}
-a.link:link,a.link:visited{text-decoration:none;}
-a.blue-action
-{
+
+@import 'main';
+
+a.link {
+  cursor:pointer;
+  color: $cool_blue;
+  font-weight:bold;
+  border-radius: 5px;
+  padding: 0.75em;
+}
+a.link:link, a.link:visited {
+  text-decoration:none;
+}
+
+a.blue-action {
     font-weight:bold;
     color:blue;
     border:2px solid blue;
     border-radius:5px;
-    background-color:#005CB8;
+    background-color: $light_blue;
     padding:2px;
     opacity:0.6;
 }
@@ -29,7 +38,7 @@ a.blue-action
 {
     font-weight: bold;
     color: black;
-    background-color: #FFFFA3;
+    background-color: $light_yellow;
     padding: 2px;
     border:2px solid black;
     border-radius: 5px;
@@ -40,7 +49,7 @@ a.blue-action
     font-weight: bold;
     color: green;
     border:2px solid green;
-    background-color: #A3C2C2;
+    background-color: $light_green;
     padding: 2px;
     border-radius: 5px;
     opacity: 0.6;
@@ -48,19 +57,22 @@ a.blue-action
 .red-action
 {
     font-weight: bold;
-    color: #8F0000;
-    border:2px solid #8F0000;
-    background-color: #BC6666;
+    color: darkred;
+    border:2px solid darkred;
+    background-color: $light_red;
     padding: 2px;
     border-radius: 5px;
     opacity: 0.6;
 }
-a.action,a.green-action,a.red-action{cursor:pointer;}
+a.action, a.green-action, a.red-action {
+  cursor:pointer;
+}
+
 a.undo
 {
     font-weight: bold;
     color: grey;
-    background-color: #A3A3C2;
+    background-color: $light_gray;
     padding: 2px;
     border-radius: 5px;
     opacity: 0.6;
@@ -70,16 +82,16 @@ a.button-light
     border: 2px solid;
     border-radius: 5px;
     padding: 5px;
-    background-color: #0F3E62;
+    background-color: $cool_blue;
     color: white;
     opacity: 0.6;
 }
 a.button-dark
 {
-    border: 2px solid #0F3E62;
+    border: 2px solid $cool_blue;
     border-radius: 5px;
     padding: 5px;
-    background-color: #0F3E62;
+    background-color: $cool_blue;
     color: white;
     opacity: 0.9;
 }

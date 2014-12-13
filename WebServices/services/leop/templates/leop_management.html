@@ -1,4 +1,4 @@
-{% extends "staff/staff_home.html" %}
+{% extends 'staff/staff_home.html' %}
 
 {% comment %}
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
@@ -30,30 +30,46 @@
 {% block content %}
 
     <div>
+        <h1>LEOP Cluster Management</h1>
+    </div>
 
+    <div style='text-align: left'>
+        <a class="button-dark">
+            + LEOP Cluster
+        </a>
+    </div>
+
+    <div>
+        <hr style="width: 25%; text-align: left; margin-left: 0px"/>
+    </div>
+
+    <div>
+
+    {% if leop_list %}
         <div>
             <div>Identifier</div>
             <div>Ground Stations</div>
             <div>Spacecraft</div>
+            <div>Actions</div>
         </div>
-
-    {% for c in cluster_list %}
-
-        <div>
-            <div>c.identifier</div>
-            <div><ol>
-                {% for g in c.groundstations %}
-                    <li>{{ g.identifier }}</li>
-                {% endfor %}
-            </ol></div>
-            <div><ol>
-                {% for s in c.spacecraft %}
-                    <li>{{ s.identifier }}</li>
-                {% endfor %}
-            </ol></div>
-        </div>
-
-    {% endfor %}
+        {% for c in leop_list %}
+            <div>
+                <div>c.identifier</div>
+                <div><ol>
+                    {% for g in c.groundstations %}
+                        <li>{{ g.identifier }}</li>
+                    {% endfor %}
+                </ol></div>
+                <div><ol>
+                    {% for s in c.spacecraft %}
+                        <li>{{ s.identifier }}</li>
+                    {% endfor %}
+                </ol></div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div><p>(no LEOP clusters defined yet)</p></div>
+    {% endif %}
 
     </div>
 

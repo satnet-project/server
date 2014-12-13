@@ -1,5 +1,4 @@
-"""
-   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -11,22 +10,18 @@
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
-   limitations under the License.
-"""
-__author__ = 'rtubiopa@calpoly.edu'
+   limitations under the License. */
 
-from django.conf import urls
-from django.contrib.auth import decorators
+// Colors
+$cool_blue: #0F3E62;
+$karbon: #293542;
 
-from services.leop import views as leop_views
+$light_blue: #005CB8;
+$light_yellow: #FFFFA3;
+$light_red: #BC6666;
+$light_green: #A3C2C2;
+$light_gray: #A3A3C2;
 
-urlpatterns = urls.patterns(
-    '',
-    urls.url(
-        r'^management',
-        decorators.login_required(
-            leop_views.LeopManagementView.as_view()
-        ),
-        name='leop_management'
-    ),
-)
+div#content div {
+  margin: 25px;
+}
