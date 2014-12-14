@@ -34,8 +34,7 @@ a.blue-action {
     padding:2px;
     opacity:0.6;
 }
-.action
-{
+.action {
     font-weight: bold;
     color: black;
     background-color: $light_yellow;
@@ -44,8 +43,7 @@ a.blue-action {
     border-radius: 5px;
     opacity: 0.6;
 }
-.green-action
-{
+.green-action {
     font-weight: bold;
     color: green;
     border:2px solid green;
@@ -54,8 +52,7 @@ a.blue-action {
     border-radius: 5px;
     opacity: 0.6;
 }
-.red-action
-{
+.red-action {
     font-weight: bold;
     color: darkred;
     border:2px solid darkred;
@@ -65,11 +62,10 @@ a.blue-action {
     opacity: 0.6;
 }
 a.action, a.green-action, a.red-action {
-  cursor:pointer;
+  cursor: pointer;
 }
 
-a.undo
-{
+a.undo {
     font-weight: bold;
     color: grey;
     background-color: $light_gray;
@@ -77,8 +73,7 @@ a.undo
     border-radius: 5px;
     opacity: 0.6;
 }
-a.button-light
-{
+a.button-light {
     border: 2px solid;
     border-radius: 5px;
     padding: 5px;
@@ -86,8 +81,7 @@ a.button-light
     color: white;
     opacity: 0.6;
 }
-a.button-dark
-{
+a.button-dark {
     border: 2px solid $cool_blue;
     border-radius: 5px;
     padding: 5px;
@@ -95,10 +89,35 @@ a.button-dark
     color: white;
     opacity: 0.9;
 }
-a.button-dark:link,a.button-dark:visited{text-decoration:none;}
-a.button-dark:hover{text-decoration:underline;}
-a.button-dark:active{text-decoration:underline;}
-a.button{padding:5px;margin-right:0;margin-left:auto;}
-a.button:link,a.button:visited{color:white;text-decoration: none;}
-a.button:hover{color: white;text-decoration: none;}
-a.button:active{color: black;text-decoration: underline;}
+a.button-dark:link, a.button-dark:visited {
+  text-decoration: none;
+}
+a.button-dark:hover {
+  text-decoration: underline;
+}
+a.button-dark:active {
+  text-decoration: underline;
+}
+a.button {
+  padding:5px;
+  margin-right:0;
+  margin-left:auto;
+}
+a.button:link, a.button:visited {
+  color:white;
+  text-decoration: none;
+}
+a.button:hover {
+  color: white;
+  text-decoration: none;
+}
+a.button:active {
+  color: black;
+  text-decoration: underline;
+}
+
+a.button-red {
+  @extend a.button-dark;
+  background-color: darkred;
+  border-color: darkred;
+}

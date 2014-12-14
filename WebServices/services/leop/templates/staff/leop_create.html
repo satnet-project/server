@@ -1,4 +1,6 @@
-"""
+{% extends 'staff/staff_home.html' %}
+
+{% comment %}
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,7 +14,33 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
-"""
-__author__ = 'rtubiopa@calpoly.edu'
+{% endcomment %}
 
-print '>>> Testing <services.common>'
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+{% endblock %}
+
+{% block content %}
+
+<h1>Create LEOP Manager</h1>
+<hr/>
+
+<form class='leop-manager' action="{% url 'leop_create' %}" method='post'>
+
+    {% csrf_token %}
+    {{ form.as_p }}
+
+    <div>
+        <input type='submit' value="{% trans '+ LEOP Manager' %}" />
+    </div>
+
+</form>
+
+{% endblock %}
+
+{% block content_footer %}
+{% endblock %}
+{% block license_footer %}
+{% endblock %}

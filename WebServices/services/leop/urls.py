@@ -17,16 +17,33 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
 from django.contrib.auth import decorators
-
 from services.leop import views as leop_views
 
 urlpatterns = urls.patterns(
     '',
     urls.url(
-        r'^management',
-        decorators.login_required(
-            leop_views.LeopManagementView.as_view()
-        ),
+        r'^management$',
+        decorators.login_required(leop_views.LeopManagementView.as_view()),
         name='leop_management'
+    ),
+    urls.url(
+        r'^create$',
+        decorators.login_required(leop_views.LeopCreateView.as_view()),
+        name='leop_create'
+    ),
+    urls.url(
+        r'^update/(?P<cluster_id>\w+)/$',
+        decorators.login_required(leop_views.LeopUpdateView.as_view()),
+        name='leop_update'
+    ),
+    urls.url(
+        r'^remove/([a-zA-Z0-9.\-_]*)/$',
+        decorators.login_required(leop_views.LeopDeleteView.as_view()),
+        name='leop_delete'
+    ),
+    urls.url(
+        r'^cluster/([a-zA-Z0-9.\-_]*)/$',
+        decorators.login_required(leop_views.redirect_leop),
+        name='leop_cluster'
     ),
 )

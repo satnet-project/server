@@ -15,4 +15,14 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-print '>>> Testing <services.common>'
+from django import forms
+from services.leop import models as leop_models
+
+
+class LeopForm(forms.ModelForm):
+    """Form for creating a manager for the LEOP operations phase.
+    """
+    class Meta:
+        """Model to be used from within this form."""
+        model = leop_models.Cluster
+        fields = ('identifier',)

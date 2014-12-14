@@ -26,6 +26,7 @@ from services.common import misc, gis
 from services.common import serialization as common_serial
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
+from services.leop import models as leop_models
 
 
 def create_user(username='testuser', password='testuser.', email='test@test.test'):
@@ -94,9 +95,11 @@ def create_request(url='/test', user_profile=None, user_ip='129.65.71.110'):
 
 
 def create_sc(
-    user_profile=None, identifier='sc-uvigo',
+    user_profile=None,
+    identifier='sc-uvigo',
     callsign='BABA00',
-    tle_id='HUMSAT-D'
+    tle_id='HUMSAT-D',
+    is_ufo=False
 ):
 
     username = 'testuser'
@@ -112,7 +115,27 @@ def create_sc(
         user=user_profile,
         identifier=identifier,
         callsign=callsign,
-        tle_id=tle_id
+        tle_id=tle_id,
+        is_ufo=is_ufo
+    )
+
+
+def create_cluster(
+    username='admin-cluster-1',
+    admin=None,
+    identifier='cluster-1'
+):
+
+    try:
+        if not admin:
+            admin = create_user_profile(username=username)
+    except IntegrityError:
+        print 'User already exists, getting a reference to it...'
+        admin = UserProfile.objects.get(username=username)
+
+    return leop_models.Cluster.objects.create(
+        admin=admin,
+        identifier=identifier
     )
 
 

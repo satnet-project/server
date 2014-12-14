@@ -22,11 +22,9 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
-
-import logging
-
 from services.accounts import forms, models, utils
 
+import logging
 logger = logging.getLogger(__name__)
 
 

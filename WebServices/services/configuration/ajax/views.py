@@ -19,7 +19,7 @@ import logging
 from django.contrib.auth import decorators as auth_decorators
 from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
-from services.common import gis, misc
+from services.common import gis
 from services.configuration.models import segments
 
 logger = logging.getLogger('configuration')
@@ -80,7 +80,6 @@ def user_geoip(request):
     :param request: The GET HTTP request.
     :return: { }
     """
-    print '@user_geoip: request.META = ' + str(request)
     ip = ipware_get_ip(request)
     if ip is None:
         raise Exception('No IP could be found for the user.')

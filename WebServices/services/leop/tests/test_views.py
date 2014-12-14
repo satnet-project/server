@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from django import test
-from services.accounts import models as account_models
 from services.common.testing import helpers as db_tools
 from services.leop import models as leop_models, views as leop_views
 
@@ -29,8 +28,23 @@ class TestLeopViews(test.TestCase):
     def setUp(self):
 
         self.__verbose_testing = False
-        self.__request = db_tools.create_request()
+
+        self.__sc_id = 'humsat-d'
+        self.__ufo_id = 'object-111'
+
+        self.__user_1 = db_tools.create_user_profile()
         self.__user_2 = db_tools.create_user_profile(username='User2')
+
+        self.__request_1 = db_tools.create_request(user_profile=self.__user_1)
+        self.__request_2 = db_tools.create_request(user_profile=self.__user_2)
+
+        self.__sc = db_tools.create_sc(
+            user_profile=self.__user_1, identifier=self.__sc_id
+        )
+
+        self.__ufo = db_tools.create_sc(
+            user_profile=self.__user_2, identifier=self.__ufo_id, is_ufo=True
+        )
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
@@ -40,17 +54,16 @@ class TestLeopViews(test.TestCase):
         Simply checks this method of the LeopManagementView since it had to
         be implemented slightly different than what expected beforehand.
         """
-        self.__leop_user_2 = leop_models.Leop.objects.create(
-            admin=account_models.UserProfile.objects.get(
-                username=self.__user_2.username
-            )
+        self.__cluster = leop_models.Cluster.objects.create(
+            admin=self.__user_2
         )
 
         cm = leop_views.LeopManagementView()
-        cm.request = self.__request
-        qs = cm.get_queryset()
-        self.assertEquals(len(qs), 0 , 'No LEOPs are owned by test user.')
+        cm.request = self.__request_1
 
-        cm.request = db_tools.create_request(user_profile=self.__user_2)
+        qs = cm.get_queryset()
+        self.assertEquals(len(qs), 0 , 'No LEOPs should be owned by user 1.')
+
+        cm.request = self.__request_2
         qs_2 = cm.get_queryset()
-        self.assertEquals(len(qs_2), 1 , '1 LEOP is owned by test user.')
+        self.assertEquals(len(qs_2), 1 , '1 LEOP should be owned by user 2.')

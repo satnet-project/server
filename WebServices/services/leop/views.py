@@ -15,8 +15,74 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.views.generic import list as list_views
-from services.leop import models as leop_models
+from django.core import urlresolvers as django_resolvers
+from django.template import response as django_response
+from django.views.generic import list as list_views, edit as edit_views
+from services.accounts import models as account_models
+from services.common import misc
+from services.leop import forms as leop_forms, models as leop_models
+
+
+def redirect_leop(request):
+    """Redirect method.
+    Redirects staff either to the LEOP interface or to the login page.
+    """
+    return django_response.TemplateResponse(request, 'staff/leop_cluster.html')
+
+
+class LeopCreateView(edit_views.CreateView):
+    """LEOP Manager create view.
+    """
+    model = leop_models.Cluster
+    form_class = leop_forms.LeopForm
+    template_name = 'staff/leop_create.html'
+    success_url = django_resolvers.reverse_lazy('leop_management')
+
+    def form_valid(self, form):
+        """Method executed after ther form is found valid.
+        It is necessary to override this method for adding the admin of the
+        cluster taken from the username included in the request.
+        """
+        form.instance.admin = account_models.UserProfile.objects.get(
+            username=self.request.user
+        )
+        return super(LeopCreateView, self).form_valid(form)
+
+
+class LeopUpdateView(edit_views.UpdateView):
+    """LEOP Manager Update view.
+    """
+    model = leop_models.Cluster
+    slug_field = 'cluster_id'
+    form_class = leop_forms.LeopForm
+    template_name = 'staff/leop_update.html'
+    success_url = django_resolvers.reverse_lazy('leop_management')
+
+    def get_object(self, queryset=None):
+        """
+        Returns the object that has to be updated, using the slug provided
+        within the request.
+        """
+        print '>>> self.request.GET = ' + misc.dict_2_string(
+            self.request.GET.dict()
+        )
+        print '>>> self.request.POST = ' + misc.dict_2_string(
+            self.request.POST.dict()
+        )
+
+        print '>>> cluster_id = ' + str(self.request.GET.get('cluster_id'))
+        print '>>> user = ' + str(self.request.user)
+        print '>>> '
+        return self.model.objects.get(
+            identifier=self.request.GET.get('cluster_id')
+        )
+
+
+class LeopDeleteView(edit_views.DeleteView):
+    """LEOP Manager delete view.
+    """
+    model = leop_models.Cluster
+    success_url = django_resolvers.reverse_lazy('leop_management')
 
 
 class LeopManagementView(list_views.ListView):
@@ -26,20 +92,17 @@ class LeopManagementView(list_views.ListView):
     second step of the registration process, that takes place after a user has
     sent the registration request.
     """
-    model = leop_models.Leop
-    template_name = 'leop_management.html'
-    context_object_name = 'leop_list'
+    model = leop_models.Cluster
+    context_object_name = 'cluster_list'
+    template_name = 'staff/leop_management.html'
 
     def get_queryset(self):
         """QuerySet handler.
         Returns the set of LEOP spacecraft that are owned by the current user
         making the requests.
         """
-        return leop_models.Leop.objects.filter(admin=self.request.user)
-
-    def post(self, request, *args, **kwargs):
-        """
-        POST method handler. This method is invoked once the submit button of
-        the form is pressed.
-        """
-        return self.get(request, *args, **kwargs)
+        return self.model.objects.filter(
+            admin=account_models.UserProfile.objects.get(
+                username=self.request.user
+            )
+        )

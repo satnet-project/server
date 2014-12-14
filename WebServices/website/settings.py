@@ -261,6 +261,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'leop': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
     }
 }
 

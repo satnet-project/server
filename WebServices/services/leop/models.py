@@ -21,15 +21,15 @@ from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 
 
-class LeopManager(models.Manager):
+class ClusterManager(models.Manager):
     """LEOP database mdoel manager.
     Model manager for the database LEOP model.
     """
     pass
 
 
-class Leop(models.Model):
-    """LEOP database model.
+class Cluster(models.Model):
+    """LEOP Cluster database model.
     Database model that manages the information relative to a given leop
     of satellites during the LEOP phases.
     """
@@ -37,10 +37,11 @@ class Leop(models.Model):
     class Meta:
         app_label = 'leop'
 
-    objects = LeopManager()
+    objects = ClusterManager()
 
     admin = models.ForeignKey(
-        account_models.UserProfile, verbose_name='LEOP administrator'
+        account_models.UserProfile,
+        verbose_name='Administrator for this LEOP'
     )
 
     identifier = models.CharField(
@@ -55,8 +56,10 @@ class Leop(models.Model):
     )
 
     groundstations = models.ManyToManyField(
-        segment_models.GroundStation, verbose_name='LEOP ground stations',
+        segment_models.GroundStation,
+        verbose_name='LEOP ground stations',
     )
     spacecraft = models.ManyToManyField(
-        segment_models.Spacecraft, verbose_name='LEOP spacecraft'
+        segment_models.Spacecraft,
+        verbose_name='Spacecraft'
     )

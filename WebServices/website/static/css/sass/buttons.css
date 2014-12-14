@@ -27,6 +27,43 @@
 div#content div {
   margin: 25px; }
 
+div.table-row {
+  display: table-row;
+  text-align: center;
+  padding: 10px; }
+
+div.table-header div {
+  border-bottom: thick solid #0F3E62;
+  font-weight: bold; }
+
+div.table-row div {
+  display: table-cell;
+  text-align: center;
+  padding: 10px; }
+
+div.table-row div:first-child {
+  font-weight: bold;
+  border-right: thick solid #0F3E62; }
+
+.no-items {
+  font-size: 75%;
+  font-style: italic;
+  text-align: center;
+  color: #0F3E62; }
+
+a.edit-link {
+  cursor: pointer;
+  color: #0F3E62; }
+
+a.edit-link:link, a.edit-link:visited {
+  text-decoration: none; }
+
+a.edit-link:hover {
+  text-decoration: underline; }
+
+a.edit-link:active {
+  text-decoration: underline; }
+
 a.link {
   cursor: pointer;
   color: #0F3E62;
@@ -92,7 +129,7 @@ a.button-light {
   color: white;
   opacity: 0.6; }
 
-a.button-dark {
+a.button-dark, a.button-red {
   border: 2px solid #0F3E62;
   border-radius: 5px;
   padding: 5px;
@@ -100,13 +137,13 @@ a.button-dark {
   color: white;
   opacity: 0.9; }
 
-a.button-dark:link, a.button-dark:visited {
+a.button-dark:link, a.button-red:link, a.button-dark:visited, a.button-red:visited {
   text-decoration: none; }
 
-a.button-dark:hover {
+a.button-dark:hover, a.button-red:hover {
   text-decoration: underline; }
 
-a.button-dark:active {
+a.button-dark:active, a.button-red:active {
   text-decoration: underline; }
 
 a.button {
@@ -125,5 +162,9 @@ a.button:hover {
 a.button:active {
   color: black;
   text-decoration: underline; }
+
+a.button-red {
+  background-color: darkred;
+  border-color: darkred; }
 
 /*# sourceMappingURL=buttons.css.map */

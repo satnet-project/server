@@ -13,14 +13,13 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-from services.configuration.models import tle
-
 __author__ = 'rtubiopa@calpoly.edu'
 
 import sys
 import urllib2
 from django.test.runner import DiscoverRunner
 from services.common.testing import helpers as db_tools
+from services.configuration.models import tle
 
 
 class SatnetTestRunner(DiscoverRunner):
@@ -56,7 +55,7 @@ class SatnetTestRunner(DiscoverRunner):
         except urllib2.URLError:
             print ' No internet connection! Could not load TLEs.'
 
-        sys.stdout.write('>>> Initializing options for the bands...')
+        sys.stdout.write('>>> Initializing available bands...')
         sys.stdout.flush()
         db_tools.init_available()
         print ' done!'

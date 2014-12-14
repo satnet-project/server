@@ -14,3 +14,5 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
+
+print '>>> Testing <services.configuration>'

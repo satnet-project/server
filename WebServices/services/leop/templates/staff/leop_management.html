@@ -20,11 +20,6 @@
 {% load staticfiles %}
 
 {% block head %}
-<script type="text/javascript">
-        $.ajaxSetup({
-            data: { csrfmiddlewaretoken: '{{ csrf_token }}' }
-        });
-    </script>
 {% endblock %}
 
 {% block content %}
@@ -34,7 +29,7 @@
     </div>
 
     <div style='text-align: left'>
-        <a class="button-dark">
+        <a class='button-dark' href="{% url 'leop_create' %}">
             + LEOP Cluster
         </a>
     </div>
@@ -45,30 +40,42 @@
 
     <div>
 
-    {% if leop_list %}
-        <div>
+    {% if cluster_list %}
+        <div class='table-row table-header'>
             <div>Identifier</div>
             <div>Ground Stations</div>
             <div>Spacecraft</div>
             <div>Actions</div>
         </div>
-        {% for c in leop_list %}
+        {% for c in cluster_list %}
+        <div class='table-row'>
+            <div><a class='edit-link'
+                    href="{% url 'leop_update' c.identifier %}">
+                {{ c.identifier }}</a></div>
+            <div><ol>
+                {% for g in c.groundstations_set.all %}
+                    <li>{{ g.identifier }}</li>
+                {% empty %}
+                    <p class='no-items'>(no ground stations)</p>
+                {% endfor %}
+            </ol></div>
+            <div><ol>
+                {% for s in c.spacecraft_set.all %}
+                    <li>{{ s.identifier }}</li>
+                {% empty %}
+                    <p class='no-items'>(no spacecraft)</p>
+                {% endfor %}
+            </ol></div>
             <div>
-                <div>c.identifier</div>
-                <div><ol>
-                    {% for g in c.groundstations %}
-                        <li>{{ g.identifier }}</li>
-                    {% endfor %}
-                </ol></div>
-                <div><ol>
-                    {% for s in c.spacecraft %}
-                        <li>{{ s.identifier }}</li>
-                    {% endfor %}
-                </ol></div>
+                <a class='button-dark' style='font-weight: bold'
+                   href="{% url 'leop_cluster' c.identifier %}">></a>
+                <a class='button-red' style='font-weight: bold'
+                   href="{% url 'leop_delete' c.identifier %}">X</a>
             </div>
+        </div>
         {% endfor %}
     {% else %}
-        <div><p>(no LEOP clusters defined yet)</p></div>
+        <div><p>(no clusters defined yet)</p></div>
     {% endif %}
 
     </div>
