@@ -20,6 +20,7 @@
 {% load staticfiles %}
 
 {% block head %}
+    <style> div#content div { margin: 25px; } </style>
 {% endblock %}
 
 {% block content %}
@@ -42,10 +43,10 @@
 
     {% if cluster_list %}
         <div class='table-row table-header'>
-            <div>Identifier</div>
-            <div>Ground Stations</div>
-            <div>Spacecraft</div>
-            <div>Actions</div>
+            <div style='width: 75px'>Identifier</div>
+            <div style='width: 200px'>Ground Stations</div>
+            <div style='width: 200px'>UFOs</div>
+            <div style='width: 100px'>Actions</div>
         </div>
         {% for c in cluster_list %}
         <div class='table-row'>
@@ -63,12 +64,12 @@
                 {% for s in c.spacecraft_set.all %}
                     <li>{{ s.identifier }}</li>
                 {% empty %}
-                    <p class='no-items'>(no spacecraft)</p>
+                    <p class='no-items'>(no ufos)</p>
                 {% endfor %}
             </ol></div>
             <div>
                 <a class='button-dark' style='font-weight: bold'
-                   href="{% url 'leop_cluster' c.identifier %}">></a>
+                   href="{% url 'leop_access' c.identifier %}">></a>
                 <a class='button-red' style='font-weight: bold'
                    href="{% url 'leop_delete' c.identifier %}">X</a>
             </div>

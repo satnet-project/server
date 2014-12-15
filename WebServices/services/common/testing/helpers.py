@@ -44,7 +44,8 @@ def create_user(username='testuser', password='testuser.', email='test@test.test
 def create_user_profile(
     username='testuser',
     password='testuser.',
-    email='test@test.test'
+    email='test@test.test',
+    is_staff=False
 ):
     """
     This method creates a new user profile and its associated User, with the
@@ -63,7 +64,8 @@ def create_user_profile(
             first_name=first_name, last_name=last_name,
             email=email,
             organization=organization, country=country,
-            is_active=False, is_verified=False, is_blocked=False
+            is_active=False, is_verified=False, is_blocked=False,
+            is_staff=is_staff
         )
 
     user_id = user_profile.user_ptr_id

@@ -14,3 +14,7 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
+
+# It is necessary to import this module here for rpc4django to detect the RPC
+# methods.
+from services.leop.jrpc.views import groundstations

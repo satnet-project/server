@@ -1,4 +1,4 @@
-{% extends "staff/staff_home.html" %}
+{% extends 'staff/staff_home.html' %}
 
 {% comment %}
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
@@ -23,6 +23,12 @@
 {% endblock %}
 
 {% block content %}
+
+    <form action="" method="post">{% csrf_token %}
+        <p>Are you sure you want to delete "{{ object }}"?</p>
+        <input type="submit" value="Confirm" />
+    </form>
+
 {% endblock %}
 
 {% block content_footer %}

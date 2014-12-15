@@ -19,15 +19,16 @@ from django.core import urlresolvers as django_resolvers
 from django.template import response as django_response
 from django.views.generic import list as list_views, edit as edit_views
 from services.accounts import models as account_models
-from services.common import misc
 from services.leop import forms as leop_forms, models as leop_models
 
 
-def redirect_leop(request):
+def redirect_leop(request, identifier):
     """Redirect method.
     Redirects staff either to the LEOP interface or to the login page.
     """
-    return django_response.TemplateResponse(request, 'staff/leop_cluster.html')
+    return django_response.TemplateResponse(
+        request, 'staff/leop_access.html', { 'leop_id': identifier }
+    )
 
 
 class LeopCreateView(edit_views.CreateView):
@@ -53,35 +54,26 @@ class LeopUpdateView(edit_views.UpdateView):
     """LEOP Manager Update view.
     """
     model = leop_models.Cluster
-    slug_field = 'cluster_id'
+    slug_field = 'identifier'
+    slug_url_kwarg = 'identifier'
     form_class = leop_forms.LeopForm
     template_name = 'staff/leop_update.html'
     success_url = django_resolvers.reverse_lazy('leop_management')
 
-    def get_object(self, queryset=None):
-        """
-        Returns the object that has to be updated, using the slug provided
-        within the request.
-        """
-        print '>>> self.request.GET = ' + misc.dict_2_string(
-            self.request.GET.dict()
-        )
-        print '>>> self.request.POST = ' + misc.dict_2_string(
-            self.request.POST.dict()
-        )
+    def get_context_data(self, **kwargs):
 
-        print '>>> cluster_id = ' + str(self.request.GET.get('cluster_id'))
-        print '>>> user = ' + str(self.request.user)
-        print '>>> '
-        return self.model.objects.get(
-            identifier=self.request.GET.get('cluster_id')
-        )
+        context = super(LeopUpdateView, self).get_context_data(**kwargs)
+        context['cluster_id'] = self.kwargs['identifier']
+        return context
 
 
 class LeopDeleteView(edit_views.DeleteView):
     """LEOP Manager delete view.
     """
     model = leop_models.Cluster
+    slug_field = 'identifier'
+    slug_url_kwarg = 'identifier'
+    template_name = 'staff/leop_confirm_delete.html'
     success_url = django_resolvers.reverse_lazy('leop_management')
 
 

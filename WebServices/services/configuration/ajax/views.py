@@ -21,6 +21,7 @@ from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
 from services.common import gis
 from services.configuration.models import segments
+from website import settings
 
 logger = logging.getLogger('configuration')
 
@@ -82,7 +83,9 @@ def user_geoip(request):
     """
     ip = ipware_get_ip(request)
     if ip is None:
-        raise Exception('No IP could be found for the user.')
+        return {
+            'latitude': 37.7833, 'longitude': -122.4167
+        }
     else:
         lat, lng = gis.get_remote_user_location(ip=ip)
         return {

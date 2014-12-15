@@ -90,8 +90,8 @@ angular.module('satnet-services').service('satnetRPC', [
          */
         this.getUserLocation = function () {
             return $http.get('/configuration/user/geoip').then(function (data) {
-                console.log('@getUserLocation, data = ' + JSON.stringify(data));
-                return angular.fromJson(data);
+                console.log('>>> @getUserLocation: data.data = ' + JSON.stringify(data.data));
+                return data.data;
             });
         };
 
