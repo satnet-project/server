@@ -32,6 +32,17 @@ class TestLeopViews(test.TestCase):
         self.__user = db_tools.create_user_profile()
         self.__request_1 = db_tools.create_request(user_profile=self.__user)
 
+        self.__gs_1_id = 'gs-uvigo'
+        self.__gs_1 = db_tools.create_gs(
+            user_profile=self.__user,
+            identifier=self.__gs_1_id
+        )
+        self.__gs_2_id = 'gs-calpoly'
+        self.__gs_2 = db_tools.create_gs(
+            user_profile=self.__user,
+            identifier=self.__gs_2_id
+        )
+
         self.__admin = db_tools.create_user_profile(
             username='user_admin',
             email='admin@satnet.org',
@@ -48,16 +59,24 @@ class TestLeopViews(test.TestCase):
         GroundStations available for the administrator to create a LEOP system.
         """
 
-        # First user is not staff, access forbidden...
+        # First step: user is not staff, access forbidden...
         try:
             jrpc_leop_gs.list_groundstations(**{ 'request': self.__request_1 })
             self.fail('User is not staff, permission should not be granted')
         except Exception:
             pass
 
-        # Second user is staff, therefore access should be granted
-        try:
-            jrpc_leop_gs.list_groundstations(**{ 'request': self.__request_2 })
-        except Exception:
-            self.fail('User is staff, permission should have been granted')
+        # Second step: user is staff, therefore access should be granted
+        e_gs_list = [ self.__gs_1_id, self.__gs_2_id ]
 
+        try:
+            self.assertEquals(
+                jrpc_leop_gs.list_groundstations(
+                    **{'request': self.__request_2}
+                ),
+                e_gs_list,
+                'No GroundStations should be available'
+            )
+        except Exception as e:
+            print '>>> e = ' + str(e)
+            self.fail('User is staff, permission should have been granted')
