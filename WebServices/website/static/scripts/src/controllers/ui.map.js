@@ -32,11 +32,10 @@ angular.module('ui-map-controllers')
     .constant('_LAT', 32.630)
     .constant('_LNG', 8.933)
     .constant('_ZOOM', 8)
-    .constant('_UPDATE_TERMINATOR', 500)
     .controller('MapController', [
         '$scope', '$log',
         'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc',
-        'LAT', 'LNG', 'ZOOM', '_UPDATE_TERMINATOR',
+        'LAT', 'LNG', 'ZOOM',
         function (
             $scope,
             $log,
@@ -48,8 +47,7 @@ angular.module('ui-map-controllers')
             xsc,
             LAT,
             LNG,
-            ZOOM,
-            _UPDATE_TERMINATOR
+            ZOOM
         ) {
 
             'use strict';

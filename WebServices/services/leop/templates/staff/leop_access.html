@@ -1,4 +1,4 @@
-{% extends "staff/staff_home.html" %}
+{% extends "users/users_c2.html" %}
 
 {% comment %}
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
@@ -19,143 +19,17 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block head %}
+    {% block app_scripts %}
 
-    <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
-    <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
-    <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}" />
+    {% endblock %}
 
-    <link rel='stylesheet' href="{% static 'css/sass/c2.css'%}" />
+    {% block specific_scripts %}
 
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/leaflet-dist/leaflet.js'%}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular/angular.js'%}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-cookies/angular-cookies.min.js'%}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js'%}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-resource/angular-resource.min.js' %}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}">
-    </script>
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/nya-bootstrap-select/src/nya-bootstrap-select.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/bower_components/angular-uuid/uuid.min.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/bower_components/moment/min/moment-with-locales.min.js' %}">
-    </script>
+        <script type='text/javascript'
+                src="{% static 'scripts/bower_components/angular-bootstrap-duallistbox/dist/angular-bootstrap-duallistbox.min.js' %}">
+        </script>
 
-    <!-- NON-BOWER LIBRARIES -->
-    <script type="text/javascript"
-        src="{% static 'scripts/external_components/L.Terminator.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/external_components/leaflet.label.js' %}">
-    </script>
-    <link rel='stylesheet'
-          href="{% static 'scripts/external_components/leaflet.label.css' %}" />
-    <script type="text/javascript"
-        src="{% static 'scripts/external_components/MovingMarker.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/external_components/Leaflet.Geodesic.js' %}">
-    </script>
-    <!-- -->
-    <script type="text/javascript"
-            src="{% static 'scripts/src/common.js'%}">
-    </script>
-
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/common.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/maps.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/satnet.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/x.satnet.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/celestrak.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/broadcaster.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/marker.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/groundstation.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/x.groundstation.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/spacecraft.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/x.spacecraft.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.map.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.menu.js'%}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalsc.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalgs.js' %}">
-    </script>
-
-    <script type="text/javascript"
-        src="{% static 'scripts/src/leop.ui.js' %}">
-    </script>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $("#toolbar").toggle('slide', { direction: 'left' }, 500);
-        });
-    </script>
-    <script>
-        var backendVars = {
-            'leopId' : "{{ leop_id }}"
-        }
-    </script>
-
-{% endblock %}
-
+    {% endblock %}
 
 {% block content %}
 
@@ -245,5 +119,6 @@
 
 {% block content_footer %}
 {% endblock %}
+
 {% block license_footer %}
 {% endblock %}

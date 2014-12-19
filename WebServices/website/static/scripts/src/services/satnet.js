@@ -48,6 +48,8 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.get': this.configuration.createMethod('sc.getConfiguration'),
             'sc.update': this.configuration.createMethod('sc.setConfiguration'),
             'sc.delete': this.configuration.createMethod('sc.delete'),
+            // User configuration
+            'user.getLocation': this.configuration.createMethod('user.getLocation'),
             // TLE methods
             'tle.celestrak.getSections':
                 this.configuration.createMethod('tle.celestrak.getSections'),
@@ -90,7 +92,6 @@ angular.module('satnet-services').service('satnetRPC', [
          */
         this.getUserLocation = function () {
             return $http.get('/configuration/user/geoip').then(function (data) {
-                console.log('>>> @getUserLocation: data.data = ' + JSON.stringify(data.data));
                 return data.data;
             });
         };

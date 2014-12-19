@@ -89,6 +89,9 @@
         src="{% static 'scripts/external_components/Leaflet.Geodesic.js' %}">
     </script>
     <!-- -->
+
+    {% block service_scripts %}
+
     <script type="text/javascript"
             src="{% static 'scripts/src/common.js'%}">
     </script>
@@ -126,6 +129,11 @@
     <script type="text/javascript"
         src="{% static 'scripts/src/models/x.spacecraft.js' %}">
     </script>
+
+    {% endblock %}
+
+    {% block app_scripts %}
+
     <script type="text/javascript"
         src="{% static 'scripts/src/controllers/ui.map.js' %}">
     </script>
@@ -148,6 +156,11 @@
             $("#toolbar").toggle('slide', { direction: 'left' }, 500);
         });
     </script>
+
+    {% endblock %}
+
+    {% block specific_scripts %}
+    {% endblock %}
 
 {% endblock %}
 

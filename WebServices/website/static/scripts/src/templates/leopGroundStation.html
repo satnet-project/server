@@ -1,0 +1,17 @@
+<div class='modal-header'>
+    <h3 class='modal-title'>Pick Ground Stations</h3>
+</div>
+
+<div class='modal-body' style='display: inline-block;'>
+    <form name='form'>
+        <select ng-options="el in elements" ng-model="selections"
+                multiple bs-duallistbox>
+        </select>
+    </form>
+</div>
+
+<div class='modal-footer'>
+    <button class='btn btn-primary'
+            ng-click="ok()" ng-disabled="form.$invalid">(ok)</button>
+    <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
+</div>
