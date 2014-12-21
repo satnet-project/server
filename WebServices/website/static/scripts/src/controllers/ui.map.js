@@ -29,9 +29,10 @@ angular.module(
 );
 
 angular.module('ui-map-controllers')
-    .constant('_LAT', 32.630)
-    .constant('_LNG', 8.933)
-    .constant('_ZOOM', 8)
+    .constant('LAT', 32.630)
+    .constant('LNG', 8.933)
+    .constant('D_ZOOM', 10)
+    .constant('GS_ELEVATION', 15.0)
     .controller('MapController', [
         '$scope', '$log',
         'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc',

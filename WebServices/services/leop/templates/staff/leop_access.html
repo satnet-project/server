@@ -21,6 +21,26 @@
 
     {% block app_scripts %}
 
+        <script type="text/javascript"
+            src="{% static 'scripts/src/controllers/ui.map.js' %}">
+        </script>
+        <script type="text/javascript"
+            src="{% static 'scripts/src/controllers/ui.menu.js'%}">
+        </script>
+        <script type="text/javascript"
+            src="{% static 'scripts/src/controllers/ui.leop.menu.js'%}">
+        </script>
+        <script type="text/javascript"
+            src="{% static 'scripts/src/controllers/ui.modalsc.js' %}">
+        </script>
+        <script type="text/javascript"
+            src="{% static 'scripts/src/controllers/ui.leop.modalgs.js' %}">
+        </script>
+
+        <script type="text/javascript"
+            src="{% static 'scripts/src/leop.ui.js' %}">
+        </script>
+
     {% endblock %}
 
     {% block specific_scripts %}
@@ -32,6 +52,10 @@
     {% endblock %}
 
 {% block content %}
+
+<script type="text/javascript">
+   var leop_id = "{{ leop_id }}"
+</script>
 
 {% verbatim %}
 <div ng-app='satnet-ui'>
@@ -53,7 +77,7 @@
 
     <!-- Single button -->
     <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="GSMenuCtrl">
+            ng-controller="LEOPGSMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshGSList()">

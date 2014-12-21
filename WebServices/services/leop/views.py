@@ -27,7 +27,7 @@ def redirect_leop(request, identifier):
     Redirects staff either to the LEOP interface or to the login page.
     """
     return django_response.TemplateResponse(
-        request, 'staff/leop_access.html', { 'leop_id': identifier }
+        request, 'staff/leop_access.html', {'leop_id': identifier}
     )
 
 

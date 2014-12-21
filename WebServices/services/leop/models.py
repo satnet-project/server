@@ -63,3 +63,19 @@ class Cluster(models.Model):
         segment_models.Spacecraft,
         verbose_name='Spacecraft'
     )
+
+    def add_ground_stations(self, identifiers):
+        """
+        This method adds an existing ground station to the list of registered
+        ground stations for this cluster.
+        :param identifiers: List with the identifiers of the GroundStations to
+                            be added to this cluster.
+        """
+        for i in identifiers:
+            gs = segment_models.GroundStation.objects.get(identifier=i)
+            self.groundstations.add(gs)
+
+        self.save()
+
+    def add_ufo(self, identifier, tle_id):
+        pass

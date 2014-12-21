@@ -34,6 +34,7 @@ angular.module('satnet-services').service('satnetRPC', [
             '/jrpc/';
         this.configuration = jsonrpc.newService('configuration', rpc);
         this.simulation = jsonrpc.newService('simulation', rpc);
+        this.leop = jsonrpc.newService('leop', rpc);
 
         this.services = {
             // Configuration methods (Ground Stations)
@@ -59,7 +60,11 @@ angular.module('satnet-services').service('satnetRPC', [
                 this.configuration.createMethod('tle.celestrak.getTle'),
             // Simulation methods
             'sc.getGroundtrack':
-                this.simulation.createMethod('spacecraft.getGroundtrack')
+                this.simulation.createMethod('spacecraft.getGroundtrack'),
+            // LEOP services
+            'leop.gs.list': this.leop.createMethod('gs.list'),
+            'leop.gs.add': this.leop.createMethod('gs.add'),
+            'leop.gs.remove': this.leop.createMethod('gs.remove')
         };
 
         /**

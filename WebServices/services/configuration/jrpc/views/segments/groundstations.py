@@ -25,6 +25,7 @@ import logging
 
 logger = logging.getLogger('jrpc')
 
+
 @rpcmethod(
     name='configuration.gs.list',
     signature=[],

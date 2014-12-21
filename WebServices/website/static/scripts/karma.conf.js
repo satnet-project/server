@@ -35,11 +35,11 @@ module.exports = function (config) {
             'bower_components/jquery/dist/jquery.js',
             'bower_components/angular/angular.js',
             'node_modules/angular-mocks/angular-mocks.js',
-            //'node_modules/jasmine-as-promised/src/jasmine-as-promised.js',
             'src/services/*.js',
-            'src/models/*.js',
             'src/controllers/*.js',
+            'src/models/*.js',
             'src/satnet.ui.js',
+            'src/leop.ui.js',
             'test/**/*.js'
         ],
 
@@ -72,7 +72,7 @@ module.exports = function (config) {
 
         // start these browsers
         // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-        browsers: ['Firefox'],
+        browsers: ['Chrome'],
 
         // Continuous Integration mode
         // if true, Karma captures browsers, runs the tests and exits

@@ -39,8 +39,8 @@ var app = angular.module('satnet-ui', [
     'x-groundstation-models',
     'x-spacecraft-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-menu-controllers',
-    'ui-modalsc-controllers', 'ui-modalgs-controllers'
+    'ui-map-controllers', 'ui-menu-controllers', 'ui-leop-menu-controllers',
+    'ui-modalsc-controllers', 'ui-leop-modalgs-controllers'
 ]);
 
 // level 1 services
@@ -60,8 +60,9 @@ angular.module('x-spacecraft-models');
 // level 4 controllers
 angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');
+angular.module('ui-leop-menu-controllers');
 angular.module('ui-modalsc-controllers');
-angular.module('ui-modalgs-controllers');
+angular.module('ui-leop-modalgs-controllers');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
@@ -99,9 +100,12 @@ app.config(function ($provide) {
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies',
-    function ($rootScope, $log, $http, $cookies) {
+    '$rootScope', '$window', '$log', '$http', '$cookies',
+    function ($rootScope, $window, $log, $http, $cookies) {
         'use strict';
+        $rootScope.leop_id = $window.leop_id;
+        console.log('>> $rootScope.leop_id = ' + $rootScope.leop_id);
+        console.log('>> $window.leop_id = ' + $window.leop_id);
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     }

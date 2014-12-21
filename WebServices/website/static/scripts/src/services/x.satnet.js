@@ -75,5 +75,40 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
             });
         };
 
+        /**
+         * Reads the configuration for all the GroundStations associated with
+         * this LEOP cluster.
+         * @param leop_id Identifier of the LEOP cluster.
+         * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
+         */
+        this.readLEOPGSConfiguration = function (leop_id) {
+            return satnetRPC.rCall('leop.gs.list', [leop_id])
+                .then(function (gss) {
+                    var p = [];
+                    angular.forEach(gss.leop_gs_available, function (gs) {
+                        p.push(satnetRPC.rCall('gs.get', [gs]));
+                    });
+                    angular.forEach(gss.leop_gs_inuse, function (gs) {
+                        p.push(satnetRPC.rCall('gs.get', [gs]));
+                    });
+                    return $q.all(p).then(function (results) {
+                        var a_cfgs = [], u_cfgs = [], j, r_j, r_j_id;
+                        for (j = 0; j < results.length; j += 1) {
+                            r_j = results[j];
+                            r_j_id = r_j.groundstation_id;
+                            if (gss.leop_gs_available.indexOf(r_j_id) >= 0) {
+                                a_cfgs.push(r_j);
+                            } else {
+                                u_cfgs.push(r_j);
+                            }
+                        }
+                        return {
+                            leop_gs_available: a_cfgs,
+                            leop_gs_inuse: u_cfgs
+                        };
+                    });
+                });
+        };
+
     }
 ]);

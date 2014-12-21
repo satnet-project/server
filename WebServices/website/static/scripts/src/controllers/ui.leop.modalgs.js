@@ -22,169 +22,134 @@ angular.module(
     [
         'ui.bootstrap', 'nya.bootstrap.select',
         'leaflet-directive',
-        'common', 'satnet-services', 'broadcaster'
+        'common', 'satnet-services', 'x-satnet-services', 'broadcaster'
     ]
 );
 
 angular.module('ui-leop-modalgs-controllers')
-    .constant('LAT', 32.630)
-    .constant('LNG', 8.933)
-    .constant('D_ZOOM', 10)
-    .constant('GS_ELEVATION', 15.0)
-    .controller('AddGSModalCtrl', [
-        '$scope', '$log',
-        '$modalInstance',
-        'common', 'satnetRPC', 'broadcaster',
-        'LAT', 'LNG', 'D_ZOOM', 'GS_ELEVATION',
-        function ($scope, $log, $modalInstance, common, satnetRPC, broadcaster, LAT, LNG, D_ZOOM, GS_ELEVATION) {
+    .controller('ManageGSModalCtrl', [
+        '$rootScope', '$scope', '$log', '$modalInstance',
+        'satnetRPC', 'xSatnetRPC', 'broadcaster',
+        function (
+            $rootScope,
+            $scope,
+            //$log,
+            $modalInstance,
+            satnetRPC,
+            xSatnetRPC//,
+            //broadcaster
+        ) {
 
             'use strict';
 
-            $scope.gs = {};
-            $scope.gs.identifier = '';
-            $scope.gs.callsign = '';
-            $scope.gs.elevation = GS_ELEVATION;
+            $scope.gsIds = {};
+            $scope.gsIds.aItems = [];
+            $scope.gsIds.uItems = [];
 
-            $scope.center = {};
-            $scope.markers = [];
+            $scope.gsIds.toAdd = [];
+            $scope.gsIds.toRemove = [];
 
-            angular.extend($scope, {
-                center: {
-                    lat: LAT,
-                    lng: LNG,
-                    zoom: D_ZOOM
-                },
-                markers: {
-                    gsMarker: {
-                        lat: LAT,
-                        lng: LNG,
-                        message: 'Move me!',
-                        focus: true,
-                        draggable: true
-                    }
-                }
-            });
-
-            $scope.initMap = function () {
-                common.getUserLocation().then(function (location) {
-                    $scope.center.lat = location.lat;
-                    $scope.center.lng = location.lng;
-                    $scope.markers.gsMarker.lat = location.lat;
-                    $scope.markers.gsMarker.lng = location.lng;
-                });
+            $scope.init = function () {
+                xSatnetRPC.readLEOPGSConfiguration($rootScope.leop_id)
+                    .then(function (data) {
+                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
+                        if (data === null) { return; }
+                        $scope.gsIds = data;
+                    });
             };
 
-            $scope.initMap();
+            $scope.selectGs = function () {
+
+                var i, item;
+                console.log('>>> aItems = ' + JSON.stringify($scope.gsIds.aItems));
+                console.log('>>> toAdd = ' + JSON.stringify($scope.gsIds.toAdd));
+                console.log('>>> leop_gs_a = ' + JSON.stringify($scope.gsIds.leop_gs_available));
+                console.log('>>> leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
+
+                if ($scope.gsIds.toAdd === undefined) {
+                    $scope.gsIds.toAdd = [];
+                }
+
+                for (i = 0; i < $scope.gsIds.aItems.length; i += 1) {
+                    item = $scope.gsIds.aItems[i];
+                    $scope.gsIds.leop_gs_available.splice(
+                        $scope.gsIds.leop_gs_available.indexOf(item),
+                        1
+                    );
+                    if ($scope.gsIds.toAdd.indexOf(item) < 0) {
+                        $scope.gsIds.toAdd.push(item);
+                    }
+                    if ($scope.gsIds.leop_gs_inuse.indexOf(item) < 0) {
+                        $scope.gsIds.leop_gs_inuse.push(item);
+                    }
+                }
+
+                $scope.gsIds.aItems = [];
+                console.log('<<< aItems = ' + JSON.stringify($scope.gsIds.aItems));
+                console.log('<<< toAdd = ' + JSON.stringify($scope.gsIds.toAdd));
+                console.log('<<< leop_gs_a = ' + JSON.stringify($scope.gsIds.leop_gs_available));
+                console.log('<<< leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
+
+            };
+            $scope.unselectGs = function () {
+                var i, item;
+                console.log('>>> uItems = ' + JSON.stringify($scope.gsIds.uItems));
+                console.log('>>> toRemove = ' + JSON.stringify($scope.gsIds.toRemove));
+                console.log('>>> leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
+
+                if ($scope.gsIds.toRemove === undefined) {
+                    $scope.gsIds.toRemove = [];
+                }
+
+                for (i = 0; i < $scope.gsIds.uItems.length; i += 1) {
+                    item = $scope.gsIds.uItems[i];
+                    $scope.gsIds.leop_gs_inuse.splice(
+                        $scope.gsIds.leop_gs_inuse.indexOf(item),
+                        1
+                    );
+                    if ($scope.gsIds.toRemove.indexOf(item) < 0) {
+                        $scope.gsIds.toRemove.push(item);
+                    }
+                    if ($scope.gsIds.leop_gs_available.indexOf(item) < 0) {
+                        $scope.gsIds.leop_gs_available.push(item);
+                    }
+                }
+
+                $scope.gsIds.uItems = [];
+                console.log('<<< uItems = ' + JSON.stringify($scope.gsIds.uItems));
+                console.log('<<< toRemove = ' + JSON.stringify($scope.gsIds.toRemove));
+                console.log('<<< leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
+            };
 
             $scope.ok = function () {
-                var newGsCfg = [
-                    $scope.gs.identifier,
-                    $scope.gs.callsign,
-                    $scope.gs.elevation.toFixed(2),
-                    $scope.markers.gsMarker.lat.toFixed(6),
-                    $scope.markers.gsMarker.lng.toFixed(6)
-                ];
-                satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
-                    var gsId = data.groundstation_id;
-                    $log.info('[map-ctrl] GS added, id = ' + gsId);
-                    broadcaster.gsAdded(gsId);
-                    $modalInstance.close();
-                });
+                var a_ids = [], r_ids = [], i;
+                for (i = 0; i < $scope.gsIds.toAdd.length; i += 1) {
+                    a_ids.push($scope.gsIds.toAdd[i].groundstation_id);
+                }
+                for (i = 0; i < $scope.gsIds.toRemove.length; i += 1) {
+                    r_ids.push($scope.gsIds.toRemove[i].groundstation_id);
+                }
+                satnetRPC.rCall('leop.gs.add', [a_ids]).then(
+                    function (data) {
+                        console.log(
+                            '>>> updated LEOP = ' + JSON.stringify(data)
+                        );
+                    }
+                );
+                satnetRPC.rCall('leop.gs.remove', [r_ids]).then(
+                    function (data) {
+                        console.log(
+                            '>>> updated LEOP = ' + JSON.stringify(data)
+                        );
+                    }
+                );
             };
+
             $scope.cancel = function () {
                 $modalInstance.close();
             };
-        }
-    ]);
 
-angular.module('ui-leop-modalgs-controllers')
-    .constant('LAT', 32.630)
-    .constant('LNG', 8.933)
-    .constant('D_ZOOM', 10)
-    .constant('GS_ELEVATION', 15.0)
-    .controller('EditGSModalCtrl', [
-        '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'broadcaster', 'maps', 'groundstationId',
-        'LAT', 'LNG', 'D_ZOOM',
-        function ($scope, $log, $modalInstance, satnetRPC, broadcaster, maps, groundstationId, LAT, LNG, D_ZOOM) {
-            'use strict';
-
-            $scope.gs = {};
-            $scope.center = {};
-            $scope.markers = [];
-
-            angular.extend($scope, {
-                center: {
-                    lat: LAT,
-                    lng: LNG,
-                    zoom: D_ZOOM
-                },
-                markers: {
-                    gsMarker: {
-                        lat: LAT,
-                        lng: LNG,
-                        message: 'Move me!',
-                        focus: true,
-                        draggable: true
-                    }
-                }
-            });
-
-            satnetRPC.rCall('gs.get', [groundstationId]).then(function (cfg) {
-                $scope.gs.identifier = groundstationId;
-                $scope.gs.callsign = cfg.groundstation_callsign;
-                $scope.gs.elevation = cfg.groundstation_elevation;
-                angular.extend($scope, {
-                    center: {
-                        lat: cfg.groundstation_latlon[0],
-                        lng: cfg.groundstation_latlon[1],
-                        zoom: maps.DEFAULT_ZOOM
-                    },
-                    markers: {
-                        gsMarker: {
-                            lat: cfg.groundstation_latlon[0],
-                            lng: cfg.groundstation_latlon[1],
-                            message: 'Move me!',
-                            focus: true,
-                            draggable: true
-                        }
-                    }
-                });
-            });
-            $scope.update = function () {
-                var newGsCfg = {
-                    'groundstation_id': groundstationId,
-                    'groundstation_callsign': $scope.gs.callsign,
-                    'groundstation_elevation': $scope.gs.elevation.toFixed(2),
-                    'groundstation_latlon': [
-                        $scope.markers.gsMarker.lat.toFixed(6),
-                        $scope.markers.gsMarker.lng.toFixed(6)
-                    ]
-                };
-                satnetRPC.rCall(
-                    'gs.update',
-                    [groundstationId, newGsCfg]
-                ).then(function (data) {
-                    $log.info('[map-ctrl] GS updated, id = ' + data);
-                    broadcaster.gsUpdated(groundstationId);
-                    $modalInstance.close();
-                });
-            };
-            $scope.cancel = function () {
-                $modalInstance.close();
-            };
-            $scope.erase = function () {
-                if (confirm('Delete this ground station?') === true) {
-                    satnetRPC.rCall(
-                        'gs.delete',
-                        [groundstationId]
-                    ).then(function (gsId) {
-                        $log.info('[map-ctrl] GS removed, id = ' + gsId);
-                        broadcaster.gsRemoved(gsId);
-                        $modalInstance.close();
-                    });
-                }
-            };
+            $scope.init();
 
         }
     ]);

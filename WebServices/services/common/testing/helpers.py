@@ -29,7 +29,9 @@ from services.configuration.jrpc.serializers import serialization
 from services.leop import models as leop_models
 
 
-def create_user(username='testuser', password='testuser.', email='test@test.test'):
+def create_user(
+        username='testuser', password='testuser.', email='test@test.test'
+):
     """
     This method creates a new user in the database.
     :return: Reference to the just-created user.
