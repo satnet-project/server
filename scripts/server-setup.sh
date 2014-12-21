@@ -22,12 +22,20 @@
 # Description: configures a Debian server for the SATNet project.
 ################################################################################
 
+etc_apt_sources='/etc/apt/sources.list'
+backports='deb http://http.debian.net/debian wheezy-backports main contrib non-free'
 # ### Installs the packages necessary for the Debian operating system.
 install_packages()
 {
 
+    echo $backports | sudo tee -a $etc_apt_sources
+
     sudo apt-get update
     sudo apt-get dist-upgrade
+
+    sudo apt-get -t wheezy-backports nodejs
+    sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
+    curl https://www.npmjs.org/install.sh | sudo sh
 
     sudo apt-get install apache2
     sudo apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
@@ -300,13 +308,15 @@ configure_root()
 
     clear && echo '>>>>> Installing Angular dependencies...'
     install_bower
+    echo 'Press any key to continue'
+    read
 
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
     source $webservices_venv_activate
 
     pip install -r "$webservices_requirements_txt"
-    pip install -r "$protocol_requirements_txt"    
+    # ### pip install -r "$protocol_requirements_txt"    
     python manage.py syncdb
     python manage.py collectstatic
 
@@ -367,8 +377,6 @@ install_bower()
     # echo 'intact.'
     # sudo checkinstall -D
     # sudo dpkg -i node_*
-    echo 'INSTALLING BOWERS!!!!'
-    sudo apt-get install nodejs npm
     sudo npm install -g bower
     cd $ng_app_dir
     sudo npm install -g
