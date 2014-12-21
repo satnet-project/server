@@ -9,7 +9,7 @@
             <select multiple
                     ng-model="gsIds.aItems"
                     ng-options="aid as aid.groundstation_id for aid in gsIds.leop_gs_available"
-                    style='width: 95%;'>
+                    style='width: 95%;' class='leop-gs-duallist'>
             </select>
         </div>
         <div style='width: 10px; display: table-cell; margin-top: 50px;'>
@@ -35,7 +35,8 @@
 
 <div class='modal-footer'>
     <button class='btn btn-primary'
-            ng-click="ok()" ng-disabled="!gsIds.toAdd || !gsIds.toRemove">
+            ng-click="ok()">
+        <!--ng-disabled="!gsIds.toAdd || !gsIds.toRemove">-->
         (ok)
     </button>
     <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>

@@ -29,7 +29,7 @@ install_packages()
 {
 
     echo '>>> Activating <contrib> and <non-free> repositories...'
-    sudo sed -i -e 's/ main/ main contrib non-free/g' $etc_apt_sources
+    sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
 
     echo '>>> Activating <wheezy-backports>...'
     [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
