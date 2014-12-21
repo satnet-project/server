@@ -57,8 +57,8 @@ __tmp_cert="/tmp/tmp.crt"
 __tmp_csr="/tmp/tmp.csr"
 __tmp_key="/tmp/tmp.key"
 __original_tmp_key="/tmp/tmp.key.original"
-CERTIFICATE_NAME="$__tmp_cert"
-KEY_NAME="$__tmp_key"
+CERTIFICATE_NAME="tmp.crt"
+KEY_NAME="tmp.key"
 
 # ### This function creates a new self signed certificate and key to be used by
 # the Apache2 server and installs them in the correct directory.
