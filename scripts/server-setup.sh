@@ -28,7 +28,7 @@ backports='deb http://http.debian.net/debian wheezy-backports main contrib non-f
 install_packages()
 {
 
-    [[ -z $( cat $etc_apt_sources | grep $backports ) ]] && {
+    [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
         echo $backports | sudo tee -a $etc_apt_sources
     } || {
         echo '>>> Backports already activated, press any key to continue...'
