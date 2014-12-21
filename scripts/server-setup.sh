@@ -263,7 +263,7 @@ create_secrets()
     echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
     echo "        'NAME': '$django_db'," >> $webservices_secrets_database
     echo "        'USER': '$django_user'," >> $webservices_secrets_database
-    echo "        'PASSWORD': '$django_user_password'," >> $webservices_secrets_database
+    echo "        'PASSWORD': XXXX," >> $webservices_secrets_database
     echo "        'HOST': 'localhost'," >> $webservices_secrets_database
     echo "        'PORT': ''," >> $webservices_secrets_database
     echo "    }" >> $webservices_secrets_database
@@ -367,6 +367,7 @@ install_bower()
     # echo 'intact.'
     # sudo checkinstall -D
     # sudo dpkg -i node_*
+    echo 'INSTALLING BOWERS!!!!'
     sudo apt-get install nodejs npm
     sudo npm install -g bower
     cd $ng_app_dir
