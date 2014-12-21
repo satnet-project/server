@@ -391,6 +391,18 @@ install_bower()
     bower install
 }
 
+last_instructions()
+{
+    echo 'Congratulations, installation is complete.'
+    echo 'However, the following manual password configuration tasks are left:'
+    echo '>>> $setup_folder/WebServices/website/secrets/database.py'
+    echo '    * Check that the password for the database is the one you gave.'
+    echo '>>> $setup_folder/WebServices/website/secrets/email.py'
+    echo '    * Please provide an external email account and the password.'
+    echo 'Press any key to exist the installation script.'
+    read
+}
+
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
 bashrc_file="$HOME/.bashrc"
 venv_workon="$HOME/.virtualenvs"
@@ -466,6 +478,7 @@ while getopts ":abcikprsovx" opt; do
             clear && echo '>>>>>>> Configuring Apache...'
             configure_apache
             echo 'DONE'
+            last_instructions
             exit 1
             ;;
         b)
