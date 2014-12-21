@@ -28,12 +28,18 @@ backports='deb http://http.debian.net/debian wheezy-backports main contrib non-f
 install_packages()
 {
 
-    echo $backports | sudo tee -a $etc_apt_sources
+    [[ -z ( cat $etc_apt_sources | grep $backports ) ]] && {
+        echo $backports | sudo tee -a $etc_apt_sources
+    } || {
+        echo '>>> Backports already activated, press any key to continue...'
+        read
+    }
 
     sudo apt-get update
     sudo apt-get dist-upgrade
 
     sudo apt-get -t wheezy-backports install nodejs
+    sudo apt-get install curl
     sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
     curl https://www.npmjs.org/install.sh | sudo sh
 
