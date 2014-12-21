@@ -28,21 +28,21 @@ backports='deb http://http.debian.net/debian wheezy-backports main contrib non-f
 install_packages()
 {
 
-    [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
-        echo $backports | sudo tee -a $etc_apt_sources
-    } || {
-        echo '>>> Backports already activated, press any key to continue...'
-        read
-    }
-
+    #[[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
+    #    echo $backports | sudo tee -a $etc_apt_sources
+    #} || {
+    #    echo '>>> Backports already activated, press any key to continue...'
+    #    read
+    #}
+    #sudo apt-get -t wheezy-backports install nodejs
+    #sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
+    #curl https://www.npmjs.org/install.sh | sudo sh
+    
     sudo apt-get update
     sudo apt-get dist-upgrade
 
-    sudo apt-get -t wheezy-backports install nodejs
     sudo apt-get install curl
-    sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
-    curl https://www.npmjs.org/install.sh | sudo sh
-
+    sudo apt-get install git-core curl build-essential openssl libssl-dev
     sudo apt-get install apache2
     sudo apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
     sudo apt-get install postgresql postgresql-contrib phppgadmin
@@ -51,8 +51,7 @@ install_packages()
     sudo apt-get install binutils libproj-dev gdal-bin
     sudo apt-get install build-essential libssl-dev libffi-dev
 
-    # TODO :: Nodejs, bower and grunt install
-    sudo apt-get install ruby rubygem-integration
+    sudo apt-get install ruby rubygems-integration
     sudo gem install sass
     sudo gem install compass
 
@@ -365,27 +364,28 @@ configure_crontab()
 }
 
 node_js_root_dir='/opt'
-
+ng_app_dir="$webservices_dir/website/static/scripts/"
 # ### This function installs bower together with Node.js, the vanilla version
 # that can be downloaded from GitHub.
 install_bower()
 {
 
-    # sudo apt-get install python g++ make checkinstall
-    # cd $node_js_root_dir
-    # sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
-    # sudo tar xzvf node-latest.tar.gz && cd node-v*
-    # sudo ./configure
+    sudo apt-get install python g++ make checkinstall
+    cd $node_js_root_dir
+    sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
+    sudo tar xzvf node-latest.tar.gz && cd node-v*
+    sudo ./configure
     # ### IMPORTANT
-    # echo 'In the next menu that will be prompted, the <v> letter from the'
-    # echo 'version number must be erased. For doing that, select <Choice 3>'
-    # echo 'and erase the <v> letter leaving the rest of the version number'
-    # echo 'intact.'
-    # sudo checkinstall -D
-    # sudo dpkg -i node_*
+    echo 'In the next menu that will be prompted, the <v> letter from the'
+    echo 'version number must be erased. For doing that, select <Choice 3>'
+    echo 'and erase the <v> letter leaving the rest of the version number'
+    echo 'intact.'
+    sudo checkinstall -D
+    sudo dpkg -i node_*
+    
     sudo npm install -g bower
     cd $ng_app_dir
-    sudo npm install -g
+    npm install
     bower install
 }
 
