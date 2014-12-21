@@ -53,7 +53,8 @@ install_packages()
 
     sudo apt-get install ruby rubygems-integration
     sudo gem install sass
-    sudo gem install compass
+    # TODO: check this dependency (cannot install)
+    # sudo gem install compass
 
     sudo apt-get install yui-compressor
 
@@ -194,7 +195,7 @@ configure_apache()
     # sudo sed -i -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" $__phppgadmin_config_file
 
     # default 80 ports are disabled (SSL access only!)
-    sudo sed -i -e 's/^NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/^Listen 80/# Listen 80/g' $__apache_server_ports
+    # sudo sed -i -e 's/^NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/^Listen 80/# Listen 80/g' $__apache_server_ports
 
     create_apache_keys
 
