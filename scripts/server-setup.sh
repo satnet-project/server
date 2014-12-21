@@ -51,26 +51,34 @@ install_packages()
 }
 
 APACHE_2_CERTIFICATES_DIR='/etc/apache2/certificates'
-CERTIFICATE_NAME='marajota.calpoly.edu.crt'
-KEY_NAME='marajota.calpoly.edu.key'
+#CERTIFICATE_NAME='marajota.calpoly.edu.crt'
+#KEY_NAME='marajota.calpoly.edu.key'
 __tmp_cert="/tmp/tmp.crt"
 __tmp_csr="/tmp/tmp.csr"
 __tmp_key="/tmp/tmp.key"
 __original_tmp_key="/tmp/tmp.key.original"
+CERTIFICATE_NAME="$__tmp_cert"
+KEY_NAME="$__tmp_key"
+
 # ### This function creates a new self signed certificate and key to be used by
 # the Apache2 server and installs them in the correct directory.
 create_apache_keys()
 {
     # 1: Generate a Private Key
+    echo '>>> STEP 1: generate privakte RSA key:'
     openssl genrsa -des3 -out $__tmp_key 1024
     # 2: Generate a CSR (Certificate Signing Request)
+    echo '>>> STEP 2: Generate Signing Request:'
     openssl req -new -key $__tmp_key -out $__tmp_csr
     # 3: Remove Passphrase from Key
+    echo '>>> STEP 3: Removing passphrase from key'
     mv -f $__tmp_key $__original_tmp_key
     openssl rsa -in $__original_tmp_key -out $__tmp_key
+    echo '>>> STEP 4: Generating self-signed certificate without passphrase:'
     # 4: Generating a Self-Signed Certificate
     openssl x509 -req -days 365 -in $__tmp_csr -signkey $__tmp_key -out $__tmp_cert
 
+    echo '>>> STEP 5: certificates installation:'
     # 5: Certificates installation
     [[ ! -d $APACHE_2_CERTIFICATES_DIR ]] &&\
         sudo mkdir -p $APACHE_2_CERTIFICATES_DIR
@@ -109,8 +117,8 @@ configure_apache()
     echo '    SSLRandomSeed connect file:/dev/urandom 512' | sudo tee -a $__satnet_apache_ssl_conf
     echo '    AddType application/x-x509-ca-cert .crt' | sudo tee -a $__satnet_apache_ssl_conf
     echo '    AddType application/x-pkcs7-crl .crl' | sudo tee -a $__satnet_apache_ssl_conf
-    echo '    SSLSessionCache         shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee -a $__satnet_apache_ssl_conf
-    echo '    SSLSessionCacheTimeout  300' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLSessionCache shmcb:${APACHE_RUN_DIR}/ssl_scache(512000)' | sudo tee -a $__satnet_apache_ssl_conf
+    echo '    SSLSessionCacheTimeout 300' | sudo tee -a $__satnet_apache_ssl_conf
     echo "    SSLCertificateFile $__apache_server_certificate" | sudo tee -a $__satnet_apache_ssl_conf
     echo "    SSLCertificateKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_ssl_conf
     echo '    SSLProtocol all -SSLv2 -SSLv3 -TLSv1 -TLSv1.1' | sudo tee -a $__satnet_apache_ssl_conf
@@ -169,8 +177,8 @@ configure_apache()
     # to be created and configured.
     # sudo sed -i -e "s/extra_login_security'] = true;/extra_login_security'] = false;/g" $__phppgadmin_config_file
 
-    # default 80 ports are disabled (TLS access only!)
-    sudo sed -i -e 's/NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/Listen 80/# Listen 80/g' $__apache_server_ports
+    # default 80 ports are disabled (SSL access only!)
+    sudo sed -i -e 's/^NameVirtualHost \*\:80/# NameVirtualHost \*\:80/g' -e 's/^Listen 80/# Listen 80/g' $__apache_server_ports
 
     create_apache_keys
 
