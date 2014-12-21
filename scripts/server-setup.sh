@@ -64,6 +64,9 @@ KEY_NAME="tmp.key"
 # the Apache2 server and installs them in the correct directory.
 create_apache_keys()
 {
+    # In case keys from previous installations exist, we remove them...
+    sudo rm -f $__tmp_cert $__tmp_csr $__tmp_key
+
     # 1: Generate a Private Key
     echo '>>> STEP 1: generate privakte RSA key:'
     openssl genrsa -des3 -out $__tmp_key 1024
