@@ -365,11 +365,12 @@ configure_crontab()
 }
 
 node_js_root_dir='/opt'
-ng_app_dir="$webservices_dir/website/static/scripts/"
 # ### This function installs bower together with Node.js, the vanilla version
 # that can be downloaded from GitHub.
 install_bower()
 {
+
+    ng_app_dir="$webservices_dir/website/static/scripts/"
 
     sudo apt-get install python g++ make checkinstall
     cd $node_js_root_dir
