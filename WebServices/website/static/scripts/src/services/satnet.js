@@ -32,25 +32,37 @@ angular.module('satnet-services').service('satnetRPC', [
         var rpc = $location.protocol() + '://' +
             $location.host() + ':' + $location.port() +
             '/jrpc/';
+
         this.configuration = jsonrpc.newService('configuration', rpc);
         this.simulation = jsonrpc.newService('simulation', rpc);
         this.leop = jsonrpc.newService('leop', rpc);
 
         this.services = {
             // Configuration methods (Ground Stations)
-            'gs.list': this.configuration.createMethod('gs.list'),
-            'gs.add': this.configuration.createMethod('gs.create'),
-            'gs.get': this.configuration.createMethod('gs.getConfiguration'),
-            'gs.update': this.configuration.createMethod('gs.setConfiguration'),
-            'gs.delete': this.configuration.createMethod('gs.delete'),
+            'gs.list':
+                this.configuration.createMethod('gs.list'),
+            'gs.add':
+                this.configuration.createMethod('gs.create'),
+            'gs.get':
+                this.configuration.createMethod('gs.getConfiguration'),
+            'gs.update':
+                this.configuration.createMethod('gs.setConfiguration'),
+            'gs.delete':
+                this.configuration.createMethod('gs.delete'),
             // Configuration methods (Spacecraft)
-            'sc.list': this.configuration.createMethod('sc.list'),
-            'sc.add': this.configuration.createMethod('sc.create'),
-            'sc.get': this.configuration.createMethod('sc.getConfiguration'),
-            'sc.update': this.configuration.createMethod('sc.setConfiguration'),
-            'sc.delete': this.configuration.createMethod('sc.delete'),
+            'sc.list':
+                this.configuration.createMethod('sc.list'),
+            'sc.add':
+                this.configuration.createMethod('sc.create'),
+            'sc.get':
+                this.configuration.createMethod('sc.getConfiguration'),
+            'sc.update':
+                this.configuration.createMethod('sc.setConfiguration'),
+            'sc.delete':
+                this.configuration.createMethod('sc.delete'),
             // User configuration
-            'user.getLocation': this.configuration.createMethod('user.getLocation'),
+            'user.getLocation':
+                this.configuration.createMethod('user.getLocation'),
             // TLE methods
             'tle.celestrak.getSections':
                 this.configuration.createMethod('tle.celestrak.getSections'),
@@ -62,9 +74,12 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.getGroundtrack':
                 this.simulation.createMethod('spacecraft.getGroundtrack'),
             // LEOP services
-            'leop.gs.list': this.leop.createMethod('gs.list'),
-            'leop.gs.add': this.leop.createMethod('gs.add'),
-            'leop.gs.remove': this.leop.createMethod('gs.remove')
+            'leop.gs.list':
+                this.leop.createMethod('gs.list'),
+            'leop.gs.add':
+                this.leop.createMethod('gs.add'),
+            'leop.gs.remove':
+                this.leop.createMethod('gs.remove')
         };
 
         /**
@@ -84,8 +99,9 @@ angular.module('satnet-services').service('satnetRPC', [
                     return data.data;
                 },
                 function (error) {
-                    var msg = '[satnetRPC] Error invoking = <' + service + '>' +
-                        ', description = <' + error + '>';
+                    var msg = '[satnetRPC] Error invoking = <'
+                        + service + '>'
+                        + ', description = <' + error + '>';
                     $log.warn(msg);
                 }
             );

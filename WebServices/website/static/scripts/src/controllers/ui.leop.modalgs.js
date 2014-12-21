@@ -19,25 +19,28 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
+    []
+);
+
+/*
     [
-        'ui.bootstrap', 'nya.bootstrap.select',
+        'ui.bootstrap',
+        'nya.bootstrap.select',
         'leaflet-directive',
-        'common', 'satnet-services', 'x-satnet-services', 'broadcaster'
+        'common',
+        'x-satnet-services',
+        'broadcaster'
     ]
 );
+*/
 
 angular.module('ui-leop-modalgs-controllers')
     .controller('ManageGSModalCtrl', [
-        '$rootScope', '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'xSatnetRPC', 'broadcaster',
+        '$scope',
+        '$modalInstance',
         function (
-            $rootScope,
             $scope,
-            //$log,
-            $modalInstance,
-            satnetRPC,
-            xSatnetRPC//,
-            //broadcaster
+            $modalInstance
         ) {
 
             'use strict';
@@ -50,16 +53,20 @@ angular.module('ui-leop-modalgs-controllers')
             $scope.gsIds.toRemove = [];
 
             $scope.init = function () {
-                xSatnetRPC.readLEOPGSConfiguration($rootScope.leop_id)
+                console.log('init');
+                /*
+                xSatnetRPC.readLEOPGs($rootScope.leop_id)
                     .then(function (data) {
                         console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
+                */
             };
 
             $scope.selectGs = function () {
-
+                console.log('selectGs');
+                /*
                 var i, item;
                 console.log('>>> aItems = ' + JSON.stringify($scope.gsIds.aItems));
                 console.log('>>> toAdd = ' + JSON.stringify($scope.gsIds.toAdd));
@@ -89,14 +96,16 @@ angular.module('ui-leop-modalgs-controllers')
                 console.log('<<< toAdd = ' + JSON.stringify($scope.gsIds.toAdd));
                 console.log('<<< leop_gs_a = ' + JSON.stringify($scope.gsIds.leop_gs_available));
                 console.log('<<< leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
-
+                */
             };
+
             $scope.unselectGs = function () {
+                console.log('unselectGs');
+                /*
                 var i, item;
                 console.log('>>> uItems = ' + JSON.stringify($scope.gsIds.uItems));
                 console.log('>>> toRemove = ' + JSON.stringify($scope.gsIds.toRemove));
                 console.log('>>> leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
-
                 if ($scope.gsIds.toRemove === undefined) {
                     $scope.gsIds.toRemove = [];
                 }
@@ -119,9 +128,12 @@ angular.module('ui-leop-modalgs-controllers')
                 console.log('<<< uItems = ' + JSON.stringify($scope.gsIds.uItems));
                 console.log('<<< toRemove = ' + JSON.stringify($scope.gsIds.toRemove));
                 console.log('<<< leop_gs_u = ' + JSON.stringify($scope.gsIds.leop_gs_inuse));
+                */
             };
 
             $scope.ok = function () {
+                console.log('ok');
+                /*
                 var a_ids = [], r_ids = [], i;
                 for (i = 0; i < $scope.gsIds.toAdd.length; i += 1) {
                     a_ids.push($scope.gsIds.toAdd[i].groundstation_id);
@@ -143,6 +155,7 @@ angular.module('ui-leop-modalgs-controllers')
                         );
                     }
                 );
+                */
             };
 
             $scope.cancel = function () {

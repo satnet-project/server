@@ -53,6 +53,10 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
             });
         };
 
+        this.testFun2 = function () {
+            console.log('this function works!');
+        };
+
         /**
          * Reads the configuration for all the GroundStation objects available
          * in the server.
@@ -75,13 +79,17 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
             });
         };
 
+        this.testFun = function () {
+            console.log('this function works!');
+        };
+
         /**
          * Reads the configuration for all the GroundStations associated with
          * this LEOP cluster.
          * @param leop_id Identifier of the LEOP cluster.
          * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
          */
-        this.readLEOPGSConfiguration = function (leop_id) {
+        this.readLEOPGs = function (leop_id) {
             return satnetRPC.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];

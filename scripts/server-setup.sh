@@ -28,39 +28,26 @@ backports='deb http://http.debian.net/debian wheezy-backports main contrib non-f
 install_packages()
 {
 
-    #[[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
-    #    echo $backports | sudo tee -a $etc_apt_sources
-    #} || {
-    #    echo '>>> Backports already activated, press any key to continue...'
-    #    read
-    #}
-    #sudo apt-get -t wheezy-backports install nodejs
-    #sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
-    #curl https://www.npmjs.org/install.sh | sudo sh
-    
-    sudo apt-get update
-    sudo apt-get dist-upgrade
+    echo '>>> Activating <contrib> and <non-free> repositories...'
+    sudo sed -i -e 's/ main/ main contrib non-free/g' $etc_apt_sources
 
-    sudo apt-get install curl
-    sudo apt-get install git-core curl build-essential openssl libssl-dev
-    sudo apt-get install apache2
-    sudo apt-get install libapache2-mod-wsgi libapache2-mod-gnutls
-    sudo apt-get install postgresql postgresql-contrib phppgadmin
-    sudo apt-get install postgresql-server-dev-all
-    sudo apt-get install python python-virtualenv python-pip python-dev
-    sudo apt-get install binutils libproj-dev gdal-bin
-    sudo apt-get install build-essential libssl-dev libffi-dev
+    echo '>>> Activating <wheezy-backports>...'
+    [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
+        echo $backports | sudo tee -a $etc_apt_sources
+    } || {
+        echo '>>> Backports already activated, press any key to continue...'
+        read
+    }
 
-    sudo apt-get install ruby rubygems-integration
+    sudo aptitude update && sudo aptitude dist-upgrade
+    sudo aptitude install $( cat "$debian_packages" )
+    sudo aptitude clean
+
     sudo gem install sass
     # TODO: check this dependency (cannot install)
     # sudo gem install compass
 
-    sudo apt-get install yui-compressor
-
-    sudo apt-get clean
-
-    pip install virtualenvwrapper
+    sudo pip install virtualenvwrapper
 
 }
 
@@ -430,6 +417,7 @@ usage()
 ################################################################################
 # ### Main variables and parameters
 script_path="$( cd "$( dirname "$0" )" && pwd )"
+debian_packages="$script_path/debian.packages"
 project_path=$( readlink -e "$script_path/.." )
 webservices_dir="$project_path/WebServices"
 protocol_dir="$project_path/Protocol"
