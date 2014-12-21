@@ -33,7 +33,7 @@ install_packages()
     sudo apt-get update
     sudo apt-get dist-upgrade
 
-    sudo apt-get -t wheezy-backports nodejs
+    sudo apt-get -t wheezy-backports install nodejs
     sudo update-alternatives --install /usr/bin/node nodejs /usr/bin/nodejs 100
     curl https://www.npmjs.org/install.sh | sudo sh
 
