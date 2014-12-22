@@ -41,6 +41,7 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
+# Load local server definition:
+from services.network import models as network_models
+print '>>> Loading local server information...'
+network_models.ServerManager().load_local_server()

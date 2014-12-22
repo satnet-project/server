@@ -21,7 +21,6 @@ from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
 from services.common import gis
 from services.configuration.models import segments
-from website import settings
 
 logger = logging.getLogger('configuration')
 

@@ -22,7 +22,7 @@ from services.configuration.models import segments as segment_models
 
 
 class ClusterManager(models.Manager):
-    """LEOP database mdoel manager.
+    """LEOP database model manager.
     Model manager for the database LEOP model.
     """
     pass

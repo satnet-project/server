@@ -20,6 +20,32 @@ import pytz
 import sys
 import StringIO
 import unicodedata
+import socket
+
+
+def get_fqdn(ip_address):
+    """
+    Function that transforms a given IP address into the associated FQDN name
+    for that host.
+    :param ip_address: IP address of the remote host.
+    :return: FQDN name for that host.
+    """
+    return socket.gethostbyaddr(ip_address)
+
+
+def get_fqdn_ip():
+    """
+    Function that returns the hostname as read from the socket library and
+    the IP address for that hostname.
+    :return: String with the name of the current host.
+    """
+    hn = 'localhost'
+    try:
+        hn = socket.getfqdn()
+    except:
+        pass
+
+    return hn, socket.gethostbyname(hn)
 
 
 def print_list(l, name=None, output=sys.stdout):

@@ -20,7 +20,7 @@
 angular.module(
     'ui-leop-modalgs-controllers',
     [
-        'satnet-services', 'x-satnet-services'
+        'broadcaster', 'satnet-services', 'x-satnet-services'
     ]
 );
 
@@ -32,12 +32,14 @@ angular.module('ui-leop-modalgs-controllers')
         '$scope',
         '$rootScope',
         '$modalInstance',
+        'broadcaster',
         'satnetRPC',
         'xSatnetRPC',
         function (
             $scope,
             $rootScope,
             $modalInstance,
+            broadcaster,
             satnetRPC,
             xSatnetRPC
         ) {
@@ -109,13 +111,18 @@ angular.module('ui-leop-modalgs-controllers')
             };
 
             $scope.ok = function () {
-                var a_ids = [], r_ids = [], i;
+                var a_ids = [], r_ids = [], i, gs_id;
 
                 if ($scope.gsIds.toAdd !== undefined) {
                     for (i = 0; i < $scope.gsIds.toAdd.length; i += 1) {
-                        a_ids.push($scope.gsIds.toAdd[i].groundstation_id);
+                        gs_id = $scope.gsIds.toAdd[i].groundstation_id;
+                        a_ids.push(gs_id);
+                        broadcaster.gsAdded(gs_id);
                     }
-                    satnetRPC.rCall('leop.gs.add', [a_ids]).then(
+                    satnetRPC.rCall(
+                        'leop.gs.add',
+                        [$rootScope.leop_id, a_ids]
+                    ).then(
                         function (data) {
                             console.log(
                                 '>>> updated LEOP = ' + JSON.stringify(data)
@@ -126,9 +133,14 @@ angular.module('ui-leop-modalgs-controllers')
 
                 if ($scope.gsIds.toRemove !== undefined) {
                     for (i = 0; i < $scope.gsIds.toRemove.length; i += 1) {
-                        r_ids.push($scope.gsIds.toRemove[i].groundstation_id);
+                        gs_id = $scope.gsIds.toRemove[i].groundstation_id;
+                        r_ids.push(gs_id);
+                        broadcaster.gsRemoved(gs_id);
                     }
-                    satnetRPC.rCall('leop.gs.remove', [r_ids]).then(
+                    satnetRPC.rCall(
+                        'leop.gs.remove',
+                        [$rootScope.leop_id, r_ids]
+                    ).then(
                         function (data) {
                             console.log(
                                 '>>> updated LEOP = ' + JSON.stringify(data)

@@ -19,6 +19,7 @@ import os
 import sys
 from secrets import auth, database, email
 
+
 # Django website for WebServices project.
 DEBUG = True
 TESTING = sys.argv[1:2] == ['test']
@@ -141,6 +142,9 @@ TEMPLATE_DIRS = (
     os.path.join(
         os.path.dirname(__file__), '..', 'services', 'leop', 'templates'
     ),
+    os.path.join(
+        os.path.dirname(__file__), '..', 'services', 'network', 'templates'
+    ),
 )
 
 TEST_RUNNER = 'website.tests.SatnetTestRunner'
@@ -177,6 +181,7 @@ INSTALLED_APPS = (
     'services.communications',
     'services.simulation',
     'services.leop',
+    'services.network',
 
     # ### django-admin
     'django.contrib.admin',
