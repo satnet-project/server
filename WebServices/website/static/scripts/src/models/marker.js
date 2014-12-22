@@ -35,6 +35,10 @@ angular.module('marker-models')
 
             'use strict';
 
+            /******************************************************************/
+            /************************************************* SERVER MARKERS */
+            /******************************************************************/
+
             this.servers = {};
             this.serverMarker = {
                 draggable: false,
@@ -46,15 +50,57 @@ angular.module('marker-models')
 
             /**
              * Creates a new marker for the given Network Server.
-             * @param id Identifier of the server.
-             * @param cfg Associated server configuration.
+             * @param {String} identifier Identifier of the server.
+             * @param {Number} latitude Server's estimated latitude.
+             * @param {Number} longitude Server's estimated longitude.
+             * @return {Object} Marker for this server.
              */
-            this.createServer = function (id, cfg) {
+            this.createServerMarker = function (
+                identifier,
+                latitude,
+                longitude
+            ) {
                 return L.marker(
-                    L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
+                    L.latLng(latitude, longitude),
                     this.serverMarker
-                ).bindLabel(id, { noHide: true });
+                ).bindLabel(identifier, { noHide: false });
             };
+
+            /**
+             * Adds a new server with the given ID and position (latitude,
+             * longitude) to the map.
+             * @param id Identifer of the server (usually the hostname).
+             * @param latitude Latitude position.
+             * @param longitude Longitude position.
+             * @returns {*} Promise that returns the configuration..
+             */
+            this.addServer = function (id, latitude, longitude) {
+
+                if (this.servers.hasOwnProperty(id)) {
+                    throw '[x-maps] SERVER Marker already exists, id = ' + id;
+                }
+                console.log(
+                    '>>> server = ' + id
+                        + '@(' + latitude + ', ' + longitude + ')'
+                );
+                var m = this.createServer(id, latitude, longitude);
+                this.servers[id] = m;
+                return maps.getMainMap().then(function (mapInfo) {
+                    console.log('mapInfo.map + ' + mapInfo.map);
+                    m.addTo(mapInfo.map);
+                    return {
+                        id: id,
+                        latitude: latitude,
+                        longitude: longitude,
+                        marker: m
+                    };
+                });
+
+            };
+
+            /******************************************************************/
+            /***************************************** GROUND STATION MARKERS */
+            /******************************************************************/
 
             this.gs = {};
             this.gsMarker = {
@@ -84,7 +130,7 @@ angular.module('marker-models')
              * Adds a marker to the main map.
              * @param id Identifier of the GroundStation.
              * @param gs Configuration object for the groundstastion.
-             * @returns {*} Promise that returns the updated configuration object.
+             * @returns {*} Promise that returns the updated configuration.
              */
             this.addGS = function (id, gs) {
                 if (this.gs.hasOwnProperty(id)) {
@@ -131,6 +177,10 @@ angular.module('marker-models')
                     return id;
                 });
             };
+
+            /******************************************************************/
+            /********************************************* SPACECRAFT MARKERS */
+            /******************************************************************/
 
             this.sc = {};
             this.scMarker = {

@@ -55,7 +55,7 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
-                xSatnetRPC.readLEOPGs($rootScope.leop_id)
+                xSatnetRPC.readLEOPGsOptions($rootScope.leop_id)
                     .then(function (data) {
                         console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }

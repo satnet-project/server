@@ -30,5 +30,9 @@ urlpatterns = urls.patterns('',
     urls.url(r'^user/geoip$',
         views.user_geoip,
         name='ajax-cfg-user-geoip'
+    ),
+    urls.url(r'^hostname/geoip$',
+        views.hostname_geoip,
+        name='ajax-cfg-hostname-geoip'
     )
 )

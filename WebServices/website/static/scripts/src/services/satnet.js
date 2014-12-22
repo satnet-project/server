@@ -109,12 +109,25 @@ angular.module('satnet-services').service('satnetRPC', [
 
         /**
          * Retrieves the user location using an available Internet service.
-         * @returns Promise that returns a { lat, lng } object.
+         * @returns Promise that returns a { latitude, longitude } object.
          */
         this.getUserLocation = function () {
-            return $http.get('/configuration/user/geoip').then(function (data) {
-                return data.data;
-            });
+            return $http.get('/configuration/user/geoip')
+                .then(function (data) {
+                    return data.data;
+                });
+        };
+
+        /**
+         * Retrieves the server location using an available Internet service.
+         * @returns Promise that returns a { latitude, longitude } object.
+         */
+        this.getServerLocation = function (hostname) {
+            return $http
+                .get('/configuration/hostname/geoip', {'hostname': hostname})
+                .then(function (data) {
+                    return data.data;
+                });
         };
 
         /**

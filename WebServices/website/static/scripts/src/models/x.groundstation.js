@@ -26,8 +26,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$q', 'satnetRPC', 'xSatnetRPC', 'gs',
-    function ($q, satnetRPC, xSatnetRPC, gs) {
+    '$rootScope', '$q', 'satnetRPC', 'xSatnetRPC', 'gs',
+    function ($rootScope, $q, satnetRPC, xSatnetRPC, gs) {
         'use strict';
 
         /**
@@ -38,6 +38,22 @@ angular.module('x-groundstation-models').service('xgs', [
          */
         this.initAll = function () {
             return xSatnetRPC.readAllGSConfiguration()
+                .then(function (cfgs) {
+                    var p = [];
+                    angular.forEach(cfgs, function (c) { p.push(gs.add(c)); });
+                    return $q.all(p).then(function (r) { return r; });
+                });
+        };
+
+        /**
+         * Initializes all the GroundStations reading the information from
+         * the server, for all those that are registered for this LEOP cluster.
+         * Markers are indirectly initialized.
+         * @returns Promise that returns an array with all the
+         *          configurations read.
+         */
+        this.initAllLEOP = function () {
+            return xSatnetRPC.readAllLEOPGs($rootScope.leop_id)
                 .then(function (cfgs) {
                     var p = [];
                     angular.forEach(cfgs, function (c) { p.push(gs.add(c)); });

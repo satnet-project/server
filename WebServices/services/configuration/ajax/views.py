@@ -19,6 +19,7 @@ import logging
 from django.contrib.auth import decorators as auth_decorators
 from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
+import socket
 from services.common import gis
 from services.configuration.models import segments
 
@@ -73,20 +74,24 @@ def spacecraft_valid_id(request):
 
 @decorators.json_view
 @auth_decorators.login_required
+def hostname_geoip(hostname):
+    """AJAX method
+    Retrieves the location of the given hostname using the GEO IP services.
+    :param hostname: String with the name of the host to be GEO located.
+    :return: JSON object, { latitude: $lat, longitude: $lng }
+    """
+    lat, lng = gis.get_remote_user_location(ip=socket.gethostbyaddr(hostname))
+    return {'latitude': lat, 'longitude': lng}
+
+
+@decorators.json_view
+@auth_decorators.login_required
 def user_geoip(request):
-    """
-    AJAX method for retrieving the estimated location of a given user using the
-    IP address of the request..
+    """AJAX method
+    Retrieves the estimated location of a given user using the IP address of
+    the request.
     :param request: The GET HTTP request.
-    :return: { }
+    :return: JSON object, { latitude: $lat, longitude: $lng }
     """
-    ip = ipware_get_ip(request)
-    if ip is None:
-        return {
-            'latitude': 37.7833, 'longitude': -122.4167
-        }
-    else:
-        lat, lng = gis.get_remote_user_location(ip=ip)
-        return {
-            'latitude': lat, 'longitude': lng
-        }
+    lat, lng = gis.get_remote_user_location(ip=ipware_get_ip(request))
+    return { 'latitude': lat, 'longitude': lng }

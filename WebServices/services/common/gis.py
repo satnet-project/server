@@ -30,7 +30,7 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     returns None.
     """
     if not ip:
-        return None
+        return __SLO_LAT__, __SLO_LON__
     if ip == "127.0.0.1":
         return __SLO_LAT__, __SLO_LON__
 
