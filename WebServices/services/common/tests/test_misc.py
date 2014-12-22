@@ -179,3 +179,16 @@ class TestMisc(test.TestCase):
                 availability.AvailabilitySlot.objects.all(),
                 name='Availability Slots'
             )
+
+    def test_get_fqdn(self):
+        """
+        This test validates the function that gets the current hostname.
+        """
+        self.__verbose_testing = True
+        if self.__verbose_testing:
+            print '>>> test_get_fqdn:'
+
+        hn, ip = misc.get_fqdn_ip()
+        if self.__verbose_testing:
+            print 'fqdn = ' + str(hn) + ', ip = ' + str(ip)
+        self.__verbose_testing = False

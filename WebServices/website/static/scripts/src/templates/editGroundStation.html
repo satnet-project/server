@@ -3,8 +3,8 @@
 </div>
 
 <div class='modal-body'
-     style='display: inline-block;'>
-    <div style='float: left; width: 200px;'>
+     style='display: table-row;'>
+    <div style='float: left; display: table-cell; width: 175px; margin: 15px;'>
         <form name="form">
             <div class='control-group'
                     ng-class="{ 'has-error': form.identifier.$invalid }">
@@ -42,9 +42,10 @@
                    ng-model="markers.gsMarker.lng" style='width: 95%;' />
         </form>
     </div>
-    <div>
+    <div style='display: table-cell;'>
         <leaflet id='editGSMap' markers='markers' center='center'
-                 style='width: 375px; height: 375px;'>
+                 style='float: left; width: 365px; height:365px;
+                 margin: 15px 15px 15px 0px;'>
             </leaflet>
     </div>
 </div>

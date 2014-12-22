@@ -114,14 +114,17 @@ angular.module('map-services')
                 p.push(satnetRPC.getUserLocation());
 
                 return $q.all(p).then(function (results) {
-                    var ll = new L.LatLng(results[1].lat, results[1].lng);
+                    var ll = new L.LatLng(
+                        results[1].latitude,
+                        results[1].longitude
+                    );
                     results[0].map.setView(ll, ZOOM);
                     return ({
                         map: results[0].map,
                         terminator: results[0].terminator,
                         center: {
-                            lat: results[1].lat,
-                            lng: results[1].lng
+                            lat: results[1].latitude,
+                            lng: results[1].longitude
                         }
                     });
                 });

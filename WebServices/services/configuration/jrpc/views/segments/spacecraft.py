@@ -71,7 +71,7 @@ def create(identifier, callsign, tle_id, **kwargs):
         tle_id,
         user=user,
         identifier=identifier,
-        callsign=callsign,
+        callsign=callsign
     )
 
     return {

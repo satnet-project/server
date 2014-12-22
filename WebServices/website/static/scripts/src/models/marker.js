@@ -35,6 +35,27 @@ angular.module('marker-models')
 
             'use strict';
 
+            this.servers = {};
+            this.serverMarker = {
+                draggable: false,
+                icon: L.icon({
+                    iconUrl: '/static/images/icons/server-icon.svg',
+                    iconSize: [12, 12]
+                })
+            };
+
+            /**
+             * Creates a new marker for the given Network Server.
+             * @param id Identifier of the server.
+             * @param cfg Associated server configuration.
+             */
+            this.createServer = function (id, cfg) {
+                return L.marker(
+                    L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
+                    this.serverMarker
+                ).bindLabel(id, { noHide: true });
+            };
+
             this.gs = {};
             this.gsMarker = {
                 draggable: false,
@@ -45,7 +66,7 @@ angular.module('marker-models')
             };
 
             /**
-             * Creates a new entrance in the configuration structure.
+             * Creates a new markerfor the given GroundStation object.
              * @param   {String} id Identifier of the new GroundStation.
              * @param   {Object} cfg Configuration object for the new
              *                          GroundStation.

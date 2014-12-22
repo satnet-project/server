@@ -99,9 +99,6 @@ class RegistrationForm(forms.ModelForm):
         extends the basic User handled by the Django auth system.
         :param user: User linked with this UserProfile.
         """
-        print '>>>>>>>>>>>>>>>>> USER = ' + str(user)
-        print '<<<<<<<<<<<<<<<<< ' + str(self.cleaned_data)
-
         profile = account_models.UserProfile()
         profile.user_ptr = user
         profile.organization = self.cleaned_data['organization']

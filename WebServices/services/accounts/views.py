@@ -22,11 +22,9 @@ from django.template.response import TemplateResponse
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.edit import UpdateView
 from django.views.generic.list import ListView
-
-import logging
-
 from services.accounts import forms, models, utils
 
+import logging
 logger = logging.getLogger(__name__)
 
 
@@ -122,7 +120,7 @@ class PendingRegView(ListView):
     queryset = models.UserProfile.objects.\
         filter(is_verified=False).\
         filter(is_blocked=False)
-    context_object_name = "user_list"
+    context_object_name = 'user_list'
 
     def post(self, request, *args, **kwargs):
         """

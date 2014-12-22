@@ -35,6 +35,11 @@ urlpatterns = urls.patterns(
     urls.url(
         r'^c2/', views.redirect_c2, name='c2_interface'
     ),
+    # django-registration
+    urls.url(
+        r'^leop/',
+        urls.include('services.leop.urls')
+    ),
     urls.url(
         r'^phppgadmin/$',
         RedirectView.as_view(url='/phppgadmin'),
