@@ -152,6 +152,9 @@ class Server(django_models.Model):
         'UTC time (in microseconds) of the last position estimation'
     )
 
+    def __unicode__(self):
+        return ">>> Network Server {" + '}'
+
 
 @django_dispatch.receiver(
     django_signals.post_save,

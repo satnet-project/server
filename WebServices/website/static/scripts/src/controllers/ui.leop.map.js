@@ -23,7 +23,7 @@ angular.module(
         'leaflet-directive',
         'broadcaster', 'map-services',
         'groundstation-models', 'x-groundstation-models',
-        'spacecraft-models', 'x-spacecraft-models',
+        'spacecraft-models', 'x-spacecraft-models', 'x-server-models',
         'ui-modalsc-controllers'
     ]
 );
@@ -35,7 +35,7 @@ angular.module('ui-map-controllers')
     .constant('GS_ELEVATION', 15.0)
     .controller('MapController', [
         '$scope', '$log',
-        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc',
+        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc', 'xserver',
         'LAT', 'LNG', 'ZOOM',
         function (
             $scope,
@@ -46,6 +46,7 @@ angular.module('ui-map-controllers')
             xgs,
             sc,
             xsc,
+            xserver,
             LAT,
             LNG,
             ZOOM
@@ -71,6 +72,11 @@ angular.module('ui-map-controllers')
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
             });
 
+            xserver.initStandalone().then(function (server) {
+                $log.log(
+                    '[map-controller] Server = ' + JSON.stringify(server)
+                );
+            });
             xgs.initAllLEOP().then(function (gss) {
                 $log.log(
                     '[map-controller] Ground Stations = ' + JSON.stringify(gss)

@@ -11,6 +11,7 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+
 body {
     font-family:"PT Sans",sans-serif;
     font-weight:400;
@@ -39,7 +40,19 @@ h2 {
     font-family: Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;
     color: #0F3E62;
 }
-h3{font-family:Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;color:#0F3E62;}
-form p label{display: inline-block;width:175px;}
-form p input,form p select,form p span{width:200px;}
-.v-line {border-left: thick solid #ff0000;}
+h3 {
+    font-family: Ubuntu,"Bitstream Vera Sans","DejaVu Sans",Tahoma,sans-serif;
+    color: #0F3E62;
+}
+
+form p label {
+    display: inline-block;
+    width: 175px;
+}
+form p input, form p select, form p span {
+    width: 200px;
+}
+
+.v-line {
+    border-left: thick solid #ff0000;
+}

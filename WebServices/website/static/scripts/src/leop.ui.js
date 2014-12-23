@@ -37,6 +37,7 @@ var app = angular.module('satnet-ui', [
     'spacecraft-models',
     // level 3 services/models
     'x-groundstation-models',
+    'x-server-models',
     'x-spacecraft-models',
     // level 4 (controllers),
     'ui-map-controllers', 'ui-menu-controllers', 'ui-leop-menu-controllers',

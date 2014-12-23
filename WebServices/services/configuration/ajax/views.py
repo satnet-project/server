@@ -20,7 +20,7 @@ from django.contrib.auth import decorators as auth_decorators
 from ipware.ip import get_real_ip as ipware_get_ip
 from jsonview import decorators, exceptions
 import socket
-from services.common import gis
+from services.common import gis, misc
 from services.configuration.models import segments
 
 logger = logging.getLogger('configuration')
@@ -74,12 +74,16 @@ def spacecraft_valid_id(request):
 
 @decorators.json_view
 @auth_decorators.login_required
-def hostname_geoip(hostname):
+def hostname_geoip(request):
     """AJAX method
     Retrieves the location of the given hostname using the GEO IP services.
     :param hostname: String with the name of the host to be GEO located.
     :return: JSON object, { latitude: $lat, longitude: $lng }
     """
+    hostname = request.GET['hostname']
+    if not hostname:
+        raise exceptions.BadRequest("'hostname' not found as a GET parameter.")
+
     lat, lng = gis.get_remote_user_location(ip=socket.gethostbyaddr(hostname))
     return {'latitude': lat, 'longitude': lng}
 
