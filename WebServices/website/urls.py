@@ -81,6 +81,11 @@ urlpatterns = urls.patterns(
         r'^jrpc/$',
         'rpc4django.views.serve_rpc_request'
     ),
+    # ### Django Auth REST API
+    urls.url(
+        r'^rest-auth/', 
+        urls.include('rest_auth.urls')
+    ),
 
     # ### ######################################################################
     # ### ################################################################# MISC

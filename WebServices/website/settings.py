@@ -172,6 +172,8 @@ INSTALLED_APPS = (
     'periodically',
     'rpc4django',
     'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
     'django_extensions',
 
     # ### developed applications
