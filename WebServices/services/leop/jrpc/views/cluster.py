@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import rpc4django
 from django.core import exceptions as django_ex
 from services.configuration.models import segments as segment_models
-from services.leop import models as leop_models
+from services.leop.models import leop as leop_models
 from services.leop.jrpc.serializers import cluster as cluster_serial
 
 
@@ -44,7 +44,7 @@ def list_groundstations(leop_id, **kwargs):
     if not http_request or not http_request.user.is_staff:
         raise django_ex.PermissionDenied()
 
-    leop_cluster = leop_models.Cluster.objects.get(identifier=leop_id)
+    leop_cluster = leop_models.LEOP.objects.get(identifier=leop_id)
 
     # List construction: ground stations in use and available for LEOP
     u_gs = leop_cluster.groundstations.all()
@@ -77,7 +77,7 @@ def add_groundstations(leop_id, groundstations, **kwargs):
         raise django_ex.PermissionDenied()
 
     # find the cluster object and add the ground stations to it
-    leop_cluster = leop_models.Cluster.objects.get(identifier=leop_id)
+    leop_cluster = leop_models.LEOP.objects.get(identifier=leop_id)
 
     # If no groundstations are provided but the leop cluster exists and the user
     # has the appropriate permissions, this case is considered to be a correct
@@ -118,7 +118,7 @@ def remove_groundstations(leop_id, groundstations, **kwargs):
         raise django_ex.PermissionDenied()
 
     # find the cluster object and add the ground stations to it
-    leop_cluster = leop_models.Cluster.objects.get(identifier=leop_id)
+    leop_cluster = leop_models.LEOP.objects.get(identifier=leop_id)
 
     # If no groundstations are provided but the leop cluster exists and the user
     # has the appropriate permissions, this case is considered to be a correct

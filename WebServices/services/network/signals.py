@@ -15,14 +15,23 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import forms
-from services.leop.models import leop as leop_models
+from django.db.models import signals as django_signals
+from django import dispatch as django_dispatch
+from services.configuration.models import segments as segment_models
+from services.network import models as network_models
 
 
-class LeopForm(forms.ModelForm):
-    """Form for creating a manager for the LEOP operations phase.
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=segment_models.GroundStation
+)
+def gs_saved_handler(sender, instance, created, raw, **kwargs):
+    """Signal handler.
+    Callback invoked whenever a GroundStation object is saved.
     """
-    class Meta:
-        """Model to be used from within this form."""
-        model = leop_models.LEOP
-        fields = ('identifier',)
+    if not created or raw:
+        return
+
+    local_s = network_models.Server.objects.get_local()
+    local_s.groundstations.add(instance)
+    local_s.save()

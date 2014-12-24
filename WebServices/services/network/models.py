@@ -17,14 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
 from django.db import models as django_models
-from django.db.models import signals as django_signals
-from django import dispatch as django_dispatch
-import logging
 from services.accounts import models as account_models
 from services.common import gis, misc
 from services.configuration.models import segments as segment_models
-
-logger = logging.getLogger('network')
 
 
 class ServerManager(django_models.Manager):
@@ -154,19 +149,3 @@ class Server(django_models.Model):
 
     def __unicode__(self):
         return ">>> Network Server {" + '}'
-
-
-@django_dispatch.receiver(
-    django_signals.post_save,
-    sender=segment_models.GroundStation
-)
-def gs_saved_handler(sender, instance, created, raw, **kwargs):
-    """Signal handler.
-    Callback invoked whenever a GroundStation object is saved.
-    """
-    if not created or raw:
-        return
-
-    local_s = Server.objects.get_local()
-    local_s.groundstations.add(instance)
-    local_s.save()

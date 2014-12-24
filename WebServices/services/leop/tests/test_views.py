@@ -18,7 +18,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django import test
 from services.common.testing import helpers as db_tools
-from services.leop import models as leop_models, views as leop_views
+from services.leop import views as leop_views
+from services.leop.models import leop as leop_models
 
 
 class TestLeopViews(test.TestCase):
@@ -54,7 +55,7 @@ class TestLeopViews(test.TestCase):
         Simply checks this method of the LeopManagementView since it had to
         be implemented slightly different than what expected beforehand.
         """
-        self.__cluster = leop_models.Cluster.objects.create(
+        self.__cluster = leop_models.LEOP.objects.create(
             admin=self.__user_2
         )
 

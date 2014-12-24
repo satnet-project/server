@@ -20,7 +20,7 @@ import datadiff
 from django import test
 from django.core import exceptions as django_ex
 from services.common.testing import helpers as db_tools
-from services.leop import models as leop_models
+from services.leop.models import leop as leop_models
 from services.leop.jrpc.views import cluster as jrpc_leop_gs
 from services.leop.jrpc.serializers import cluster as cluster_serial
 
@@ -150,7 +150,7 @@ class TestLeopViews(test.TestCase):
                 'FAKE', None, **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.Cluster.DoesNotExist:
+        except leop_models.LEOP.DoesNotExist:
             pass
         # Basic parameters test (2)
         actual = jrpc_leop_gs.add_groundstations(
@@ -182,7 +182,7 @@ class TestLeopViews(test.TestCase):
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        cluster = leop_models.Cluster.objects.get(identifier=self.__leop_id)
+        cluster = leop_models.LEOP.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
@@ -216,7 +216,7 @@ class TestLeopViews(test.TestCase):
                 'FAKE', None, **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.Cluster.DoesNotExist:
+        except leop_models.LEOP.DoesNotExist:
             pass
         # Basic parameters test (2)
         actual = jrpc_leop_gs.remove_groundstations(
@@ -243,7 +243,7 @@ class TestLeopViews(test.TestCase):
         jrpc_leop_gs.add_groundstations(
             self.__leop_id, gss, **{'request': self.__request_2}
         )
-        cluster = leop_models.Cluster.objects.get(identifier=self.__leop_id)
+        cluster = leop_models.LEOP.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'

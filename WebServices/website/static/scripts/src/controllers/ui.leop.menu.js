@@ -52,3 +52,33 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
 
     }
 ]);
+
+angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
+    '$scope', '$modal', 'satnetRPC',
+    function ($scope, $modal, satnetRPC) {
+
+        'use strict';
+
+        $scope.ufoIds = [];
+        $scope.addUFO = function () {
+            var modalInstance = $modal.open({
+                templateUrl: '/static/scripts/src/templates/leop/manageUFO.html',
+                controller: 'ManageUFOCtrl',
+                backdrop: 'static'
+            });
+            console.log('Created modalInstance = ' + modalInstance);
+        };
+        $scope.refreshUFOList = function () {
+            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
+                if (data !== null) {
+                    console.log(
+                        'leop.ufo.list >>> data = ' + JSON.stringify(data)
+                    );
+                    $scope.scIds = data.slice(0);
+                }
+            });
+        };
+        $scope.refreshUFOList();
+
+    }
+]);

@@ -16,35 +16,26 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
-from django.db import models
+from django.db import models as django_models
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
+from services.leop.models import ufo as ufo_models
 
 
-class ClusterManager(models.Manager):
-    """LEOP database model manager.
-    Model manager for the database LEOP model.
-    """
-    pass
-
-
-class Cluster(models.Model):
+class LEOP(django_models.Model):
     """LEOP Cluster database model.
     Database model that manages the information relative to a given leop
     of satellites during the LEOP phases.
     """
-
     class Meta:
         app_label = 'leop'
 
-    objects = ClusterManager()
-
-    admin = models.ForeignKey(
+    admin = django_models.ForeignKey(
         account_models.UserProfile,
         verbose_name='Administrator for this LEOP'
     )
 
-    identifier = models.CharField(
+    identifier = django_models.CharField(
         'LEOP identifier',
         max_length=30,
         unique=True,
@@ -55,13 +46,13 @@ class Cluster(models.Model):
         )]
     )
 
-    groundstations = models.ManyToManyField(
+    groundstations = django_models.ManyToManyField(
         segment_models.GroundStation,
         verbose_name='LEOP ground stations',
     )
-    spacecraft = models.ManyToManyField(
-        segment_models.Spacecraft,
-        verbose_name='Spacecraft'
+    cluster = django_models.ManyToManyField(
+        ufo_models.UFO,
+        verbose_name='UFO Objects'
     )
 
     def add_ground_stations(self, identifiers):
@@ -76,6 +67,3 @@ class Cluster(models.Model):
             self.groundstations.add(gs)
 
         self.save()
-
-    def add_ufo(self, identifier, tle_id):
-        pass

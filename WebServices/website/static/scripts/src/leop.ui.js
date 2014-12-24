@@ -40,8 +40,11 @@ var app = angular.module('satnet-ui', [
     'x-server-models',
     'x-spacecraft-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-menu-controllers', 'ui-leop-menu-controllers',
-    'ui-modalsc-controllers', 'ui-leop-modalgs-controllers'
+    'ui-map-controllers',
+    'ui-menu-controllers',
+    'ui-leop-menu-controllers',
+    'ui-leop-modalsc-controllers',
+    'ui-leop-modalgs-controllers'
 ]);
 
 // level 1 services
@@ -62,7 +65,7 @@ angular.module('x-spacecraft-models');
 angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
-angular.module('ui-modalsc-controllers');
+angular.module('ui-leop-modalsc-controllers');
 angular.module('ui-leop-modalgs-controllers');
 
 /**
