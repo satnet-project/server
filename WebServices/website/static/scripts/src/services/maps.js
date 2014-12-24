@@ -98,6 +98,7 @@ angular.module('map-services')
             /**
              * This promise returns a simple object with a reference to the
              * just created map.
+             *
              * @param terminator If 'true' adds the overlaying terminator line.
              * @returns {$q} Promise that returns the 'mapData' structure with
              *               a reference to the Leaflet map and to the
@@ -119,6 +120,7 @@ angular.module('map-services')
                         results[1].longitude
                     );
                     results[0].map.setView(ll, ZOOM);
+
                     return ({
                         map: results[0].map,
                         terminator: results[0].terminator,
@@ -127,6 +129,7 @@ angular.module('map-services')
                             lng: results[1].longitude
                         }
                     });
+
                 });
 
             };
@@ -141,9 +144,7 @@ angular.module('map-services')
              */
             this.createMoveMeMap = function (map, message) {
 
-                if (message === null) {
-                    message = DEFAULT_MOVEME;
-                }
+                if (message === null) { message = DEFAULT_MOVEME; }
 
                 return satnetRPC.getUserLocation().then(function (location) {
                     var lat = location.lat,

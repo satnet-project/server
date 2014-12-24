@@ -39,6 +39,7 @@ angular.module('marker-models')
             /************************************************* SERVER MARKERS */
             /******************************************************************/
 
+            this.serverLayers = L.layerGroup();
             this.servers = {};
 
             this.serverMarker = {
@@ -64,7 +65,7 @@ angular.module('marker-models')
                 return L.marker(
                     L.latLng(latitude, longitude),
                     this.serverMarker
-                ).bindLabel(identifier, { noHide: true });
+                ).bindLabel(identifier, { noHide: false });
             };
 
             /**
@@ -90,8 +91,10 @@ angular.module('marker-models')
                 this.servers[id] = {
                     marker: m,
                     latitude: latitude,
-                    longitude: longitude
+                    longitude: longitude,
+                    groundstations: []
                 };
+                this.serverLayers.addLayer(m);
 
                 return maps.getMainMap().then(function (mapInfo) {
                     console.log('mapInfo.map + ' + mapInfo.map);
@@ -111,7 +114,9 @@ angular.module('marker-models')
             /******************************************************************/
 
             this.gs = {};
+            this.gsLayers = L.layerGroup();
             this.connectors = {};
+            this.connectorLayers = L.layerGroup();
 
             this.gsStyle = {
                 draggable: false,
@@ -146,18 +151,25 @@ angular.module('marker-models')
              *
              * @param {Object} gs Configuration object of the GroundStation.
              * @returns {*} L.polyline object
+             *
+             * TODO The structure for modelling what server owns each
+             * TODO GroundStation has already started to be implemented. In the
+             * TODO 'this.servers' dictionary, each entry has a field called
+             * TODO 'groundstations' that enables the correct modelling of the
+             * TODO network. Right now, the first server is always chosen and
+             * TODO all the GroundStations are bound to it. In the future, each
+             * TODO time a GroundStation is added, the server that it belongs
+             * TODO to should be specified and used accordingly.
              */
             this.createGSConnector = function (gs) {
 
-                var s_local, s_ll, g_ll, line_ll,
-                    s_ids = Object.keys(this.servers);
+                var server, s_ids = Object.keys(this.servers);
+                server = this.servers[s_ids[0]];
 
-                s_local = this.servers[s_ids[0]];
-                s_ll = [s_local.latitude, s_local.longitude];
-                g_ll = [gs.cfg.latitude, gs.cfg.longitude];
-                line_ll = [ L.latLng(s_ll), L.latLng(g_ll)];
-
-                return L.polyline(line_ll, this.connectorStyle);
+                return L.polyline(
+                    this.calculateLineLatLngs(server, gs),
+                    this.connectorStyle
+                );
 
             };
 
@@ -178,6 +190,8 @@ angular.module('marker-models')
 
                 this.gs[id] = m;
                 this.connectors[id] = c;
+                this.gsLayers.addLayer(m);
+                this.connectorLayers.addLayer(c);
 
                 return maps.getMainMap().then(function (mapInfo) {
                     console.log('mapInfo.map + ' + mapInfo.map);
@@ -197,10 +211,36 @@ angular.module('marker-models')
              * @param lng The new longitude for the marker.
              */
             this.updateGS = function (id, lat, lng) {
+
                 if (!this.gs.hasOwnProperty(id)) {
                     throw '[x-maps] Marker does NOT exist, id = ' + id;
                 }
-                this.gs[id].setLatLng(L.latLng(lat, lng));
+
+                var server,
+                    s_ids = Object.keys(this.servers),
+                    gs = this.gs[id];
+                server = this.servers[s_ids[0]];
+
+                gs.setLatLng(L.latLng(lat, lng));
+                this.connectors[id].setLatLngs(
+                    this.calculateLineLatLngs(server, gs)
+                );
+
+            };
+
+            /**
+             * This function calculates the starting and ending point of the
+             * Polylines to be used as connectors in between the GroundStations
+             * and the servers of the network.
+             *
+             * @param server Server configuration object.
+             * @param gs GroundStation configuration object.
+             * @returns {[L.latlng]}
+             */
+            this.calculateLineLatLngs = function (server, gs) {
+                var s_ll = [server.latitude, server.longitude],
+                    g_ll = [gs.cfg.latitude, gs.cfg.longitude];
+                return [ L.latLng(s_ll), L.latLng(g_ll)];
             };
 
             /**
@@ -216,13 +256,15 @@ angular.module('marker-models')
                 if (!this.gs.hasOwnProperty(id)) {
                     throw '[x-maps] Marker does NOT exist, id = ' + id;
                 }
-                marker = this.gs[id];
 
                 if (this.connectors.hasOwnProperty(id)) {
                     c = this.connectors[id];
+                    this.connectorLayers.removeLayer(c);
                     delete this.connectors[id];
                 }
 
+                marker = this.gs[id];
+                this.gsLayers.removeLayer(marker);
                 delete this.gs[id];
 
                 return maps.getMainMap().then(function (mapInfo) {
@@ -237,6 +279,9 @@ angular.module('marker-models')
             /******************************************************************/
 
             this.sc = {};
+            this.scLayers = L.layerGroup();
+            this.trackLayers = L.layerGroup();
+
             this.scStyle = {
                 autostart: true,
                 draggable: false,
@@ -246,30 +291,36 @@ angular.module('marker-models')
                 })
             };
 
-            this.colors = [
-                'red', 'blue', 'black'
-            ];
+            this.trackStyle = {
+                weight: 3,
+                opacity: 0.25,
+                steps: _GEOLINE_STEPS
+            };
+
+            this.colors = [ 'red', 'blue', 'yellow' ];
             this.color_n = 0;
 
-            this.createSC = function (id, cfg) {
+            /**
+             * For a given Spacecraft configuration object, it creates the
+             * marker for the spacecraft, its associated label and the
+             * groundtrack.
+             *
+             * @param id Identifier of the Spacecraft.
+             * @param cfg Configuration object.
+             * @returns {{marker: *, track: *}}
+             */
+            this.createSCMarkers = function (id, cfg) {
 
                 var gt = this.readTrack(cfg.groundtrack),
                     mo = this.scStyle,
                     color =  this.colors[this.color_n % this.colors.length];
                 this.color_n += 1;
+                this.trackStyle.color = color;
 
                 return {
                     marker: L.Marker.movingMarker(gt.positions, gt.durations, mo)
                         .bindLabel(id, { noHide: true }),
-                    track: L.geodesic(
-                        [gt.geopoints],
-                        {
-                            weight: 3,
-                            opacity: 0.25,
-                            color: color,
-                            steps: _GEOLINE_STEPS
-                        }
-                    )
+                    track: L.geodesic([gt.geopoints], this.trackStyle)
                 };
 
             };
@@ -297,6 +348,7 @@ angular.module('marker-models')
              * @returns {{durations: Array, positions: Array}}
              */
             this.readTrack = function (groundtrack) {
+
                 var nowUs = Date.now() * 1000,
                     endUs = moment().add(_SIM_DAYS, "days")
                         .toDate().getTime() * 1000,
@@ -306,11 +358,6 @@ angular.module('marker-models')
                     durations = [],
                     positions = [],
                     geopoints = [];
-
-                console.log('>>> nowMS = ' + nowUs);
-                console.log('>>> endMS = ' + endUs);
-                console.log('>>> startIndex = ' + startIndex);
-                console.log('>>> endIndex = ' + endIndex);
 
                 if (startIndex !== 0) {
                     startIndex = startIndex - 1;
@@ -345,30 +392,62 @@ angular.module('marker-models')
 
             };
 
+            /**
+             * Adds the markers for the new Spacecraft, this is: the marker for
+             * the Spacecraft itself (together with its associated label) and
+             * associated groundtrack geoline.
+             *
+             * @param id Identifier of the Spacecraft.
+             * @param cfg Configuration for the Spacecraft.
+             * @returns { id, cfg, m.L.Marker.movingMarker, m.L.geodesic }
+             */
             this.addSC = function (id, cfg) {
+
                 if (this.sc.hasOwnProperty(id)) {
                     throw '[x-maps] SC Marker already exists, id = ' + id;
                 }
-                var m = this.createSC(id, cfg);
+
+                var m = this.createSCMarkers(id, cfg);
                 this.sc[id] = m;
+                this.scLayers.addLayer(m.marker);
+                this.trackLayers.addLayer(m.track);
+
                 return maps.getMainMap().then(function (mapInfo) {
                     m.track.addTo(mapInfo.map);
                     m.marker.addTo(mapInfo.map);
-                    return { id: id, cfg: cfg, marker: m };
+                    return {
+                        id: id,
+                        cfg: cfg,
+                        marker: m.marker,
+                        track: m.track
+                    };
                 });
+
             };
 
+            /**
+             * Removes all the markers associated with this Spacecraft object.
+             *
+             * @param id Identifier of the Spacecraft.
+             * @returns {String} Spacecraft identifier.
+             */
             this.removeSC = function (id) {
+
                 if (!this.sc.hasOwnProperty(id)) {
                     throw '[x-maps] Marker does NOT exist, id = ' + id;
                 }
+
                 var m = this.sc[id];
+                this.scLayers.removeLayer(m.marker);
+                this.trackLayers.removeLayer(m.track);
                 delete this.sc[id];
+
                 return maps.getMainMap().then(function (mapInfo) {
                     mapInfo.map.removeLayer(m.marker);
                     mapInfo.map.removeLayer(m.track);
                     return id;
                 });
+
             };
 
         }
