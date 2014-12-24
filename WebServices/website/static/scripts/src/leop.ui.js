@@ -43,7 +43,7 @@ var app = angular.module('satnet-ui', [
     'ui-map-controllers',
     'ui-menu-controllers',
     'ui-leop-menu-controllers',
-    'ui-leop-modalsc-controllers',
+    'ui-leop-modalufo-controllers',
     'ui-leop-modalgs-controllers'
 ]);
 
@@ -65,7 +65,7 @@ angular.module('x-spacecraft-models');
 angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
-angular.module('ui-leop-modalsc-controllers');
+angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
 
 /**

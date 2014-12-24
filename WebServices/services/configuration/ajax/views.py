@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django.contrib.auth import decorators as auth_decorators
 from ipware.ip import get_real_ip as ipware_get_ip
+import json
 from jsonview import decorators, exceptions
 import socket
 from services.common import gis, misc
@@ -80,11 +81,26 @@ def hostname_geoip(request):
     :param hostname: String with the name of the host to be GEO located.
     :return: JSON object, { latitude: $lat, longitude: $lng }
     """
-    hostname = request.GET['hostname']
-    if not hostname:
-        raise exceptions.BadRequest("'hostname' not found as a GET parameter.")
+    hostname = None
 
-    lat, lng = gis.get_remote_user_location(ip=socket.gethostbyaddr(hostname))
+    if 'hostname' in request.GET:
+        hostname = request.GET['hostname']
+    elif 'hostname' in request.POST:
+        hostname = request.POST['hostname']
+    else:
+        json_data = json.loads(request.body)
+        if 'hostname' in json_data:
+            hostname = json_data['hostname']
+        else:
+            raise exceptions.BadRequest(
+                "'hostname' not found as a parameter of the request."
+            )
+
+    print '>>> hostname = ' + str(hostname)
+    host_ip = socket.gethostbyname(hostname)
+    print '>>> host_ip = ' + str(host_ip)
+
+    lat, lng = gis.get_remote_user_location(ip=host_ip)
     return {'latitude': lat, 'longitude': lng}
 
 

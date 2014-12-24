@@ -21,9 +21,13 @@ angular.module(
     'ui-map-controllers',
     [
         'leaflet-directive',
-        'broadcaster', 'map-services',
-        'groundstation-models', 'x-groundstation-models',
-        'spacecraft-models', 'x-spacecraft-models',
+        'broadcaster',
+        'map-services',
+        'groundstation-models',
+        'x-groundstation-models',
+        'spacecraft-models',
+        'x-spacecraft-models',
+        'x-server-models',
         'ui-modalsc-controllers'
     ]
 );
@@ -35,7 +39,7 @@ angular.module('ui-map-controllers')
     .constant('GS_ELEVATION', 15.0)
     .controller('MapController', [
         '$scope', '$log',
-        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc',
+        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc', 'xserver',
         'LAT', 'LNG', 'ZOOM',
         function (
             $scope,
@@ -46,6 +50,7 @@ angular.module('ui-map-controllers')
             xgs,
             sc,
             xsc,
+            xserver,
             LAT,
             LNG,
             ZOOM
@@ -71,11 +76,22 @@ angular.module('ui-map-controllers')
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
             });
 
-            xgs.initAll().then(function () {
+            xserver.initStandalone().then(function (server) {
                 $log.log(
-                    '[map-controller] Ground Stations = <' + gs.asString() + '>'
+                    '[map-controller] Server {'
+                        + '    identifier: ' + server.id
+                        + '    latitude: ' + server.latitude
+                        + '    longitude: ' + server.longitude
+                        + '}'
                 );
+                xgs.initAll().then(function (gss) {
+                    $log.log(
+                        '[map-controller] Ground Stations = '
+                            + gs.gssAsString(gss)
+                    );
+                });
             });
+
             xsc.initAll().then(function () {
                 $log.log(
                     '[map-controller] Spacecraft = <' + sc.asString() + '>'

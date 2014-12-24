@@ -55,7 +55,7 @@ angular.module('ui-modalgs-controllers')
                     zoom: D_ZOOM
                 },
                 markers: {
-                    gsMarker: {
+                    gsStyle: {
                         lat: LAT,
                         lng: LNG,
                         message: 'Move me!',
@@ -69,8 +69,8 @@ angular.module('ui-modalgs-controllers')
                 common.getUserLocation().then(function (location) {
                     $scope.center.lat = location.lat;
                     $scope.center.lng = location.lng;
-                    $scope.markers.gsMarker.lat = location.lat;
-                    $scope.markers.gsMarker.lng = location.lng;
+                    $scope.markers.gsStyle.lat = location.lat;
+                    $scope.markers.gsStyle.lng = location.lng;
                 });
             };
 
@@ -81,8 +81,8 @@ angular.module('ui-modalgs-controllers')
                     $scope.gs.identifier,
                     $scope.gs.callsign,
                     $scope.gs.elevation.toFixed(2),
-                    $scope.markers.gsMarker.lat.toFixed(6),
-                    $scope.markers.gsMarker.lng.toFixed(6)
+                    $scope.markers.gsStyle.lat.toFixed(6),
+                    $scope.markers.gsStyle.lng.toFixed(6)
                 ];
                 satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
                     var gsId = data.groundstation_id;
@@ -120,7 +120,7 @@ angular.module('ui-modalgs-controllers')
                     zoom: D_ZOOM
                 },
                 markers: {
-                    gsMarker: {
+                    gsStyle: {
                         lat: LAT,
                         lng: LNG,
                         message: 'Move me!',
@@ -141,7 +141,7 @@ angular.module('ui-modalgs-controllers')
                         zoom: maps.DEFAULT_ZOOM
                     },
                     markers: {
-                        gsMarker: {
+                        gsStyle: {
                             lat: cfg.groundstation_latlon[0],
                             lng: cfg.groundstation_latlon[1],
                             message: 'Move me!',
@@ -157,8 +157,8 @@ angular.module('ui-modalgs-controllers')
                     'groundstation_callsign': $scope.gs.callsign,
                     'groundstation_elevation': $scope.gs.elevation.toFixed(2),
                     'groundstation_latlon': [
-                        $scope.markers.gsMarker.lat.toFixed(6),
-                        $scope.markers.gsMarker.lng.toFixed(6)
+                        $scope.markers.gsStyle.lat.toFixed(6),
+                        $scope.markers.gsStyle.lng.toFixed(6)
                     ]
                 };
                 satnetRPC.rCall(

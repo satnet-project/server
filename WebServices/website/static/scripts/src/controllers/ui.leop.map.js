@@ -21,10 +21,13 @@ angular.module(
     'ui-map-controllers',
     [
         'leaflet-directive',
-        'broadcaster', 'map-services',
-        'groundstation-models', 'x-groundstation-models',
-        'spacecraft-models', 'x-spacecraft-models', 'x-server-models',
-        'ui-modalsc-controllers'
+        'broadcaster',
+        'map-services',
+        'groundstation-models',
+        'x-groundstation-models',
+        'spacecraft-models',
+        'x-spacecraft-models',
+        'x-server-models'
     ]
 );
 
@@ -34,9 +37,18 @@ angular.module('ui-map-controllers')
     .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('MapController', [
-        '$scope', '$log',
-        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc', 'xserver',
-        'LAT', 'LNG', 'ZOOM',
+        '$scope',
+        '$log',
+        'broadcaster',
+        'maps',
+        'gs',
+        'xgs',
+        'sc',
+        'xsc',
+        'xserver',
+        'LAT',
+        'LNG',
+        'ZOOM',
         function (
             $scope,
             $log,
@@ -68,19 +80,25 @@ angular.module('ui-map-controllers')
                 },
                 markers: []
             });
+
             maps.createMainMap(true).then(function (data) {
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
             });
 
             xserver.initStandalone().then(function (server) {
                 $log.log(
-                    '[map-controller] Server = ' + JSON.stringify(server)
+                    '[map-controller] Server {'
+                        + '    identifier: ' + server.id
+                        + '    latitude: ' + server.latitude
+                        + '    longitude: ' + server.longitude
+                        + '}'
                 );
-            });
-            xgs.initAllLEOP().then(function (gss) {
-                $log.log(
-                    '[map-controller] Ground Stations = ' + JSON.stringify(gss)
-                );
+                xgs.initAllLEOP().then(function (gss) {
+                    $log.log(
+                        '[map-controller] Ground Stations = '
+                            + gs.gssAsString(gss)
+                    );
+                });
             });
 
             $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {

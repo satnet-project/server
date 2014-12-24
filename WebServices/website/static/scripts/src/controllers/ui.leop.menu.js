@@ -78,7 +78,7 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
                 }
             });
         };
-        $scope.refreshUFOList();
+        //$scope.refreshUFOList();
 
     }
 ]);

@@ -40,11 +40,12 @@ angular.module('marker-models')
             /******************************************************************/
 
             this.servers = {};
+
             this.serverMarker = {
                 draggable: false,
                 icon: L.icon({
                     iconUrl: '/static/images/icons/server-icon.svg',
-                    iconSize: [12, 12]
+                    iconSize: [15, 15]
                 })
             };
 
@@ -63,7 +64,7 @@ angular.module('marker-models')
                 return L.marker(
                     L.latLng(latitude, longitude),
                     this.serverMarker
-                ).bindLabel(identifier, { noHide: false });
+                ).bindLabel(identifier, { noHide: true });
             };
 
             /**
@@ -83,8 +84,15 @@ angular.module('marker-models')
                     '>>> server = ' + id
                         + '@(' + latitude + ', ' + longitude + ')'
                 );
-                var m = this.createServer(id, latitude, longitude);
-                this.servers[id] = m;
+
+                var m = this.createServerMarker(id, latitude, longitude);
+
+                this.servers[id] = {
+                    marker: m,
+                    latitude: latitude,
+                    longitude: longitude
+                };
+
                 return maps.getMainMap().then(function (mapInfo) {
                     console.log('mapInfo.map + ' + mapInfo.map);
                     m.addTo(mapInfo.map);
@@ -103,7 +111,9 @@ angular.module('marker-models')
             /******************************************************************/
 
             this.gs = {};
-            this.gsMarker = {
+            this.connectors = {};
+
+            this.gsStyle = {
                 draggable: false,
                 icon: L.icon({
                     iconUrl: '/static/images/icons/gs-icon.svg',
@@ -111,19 +121,44 @@ angular.module('marker-models')
                 })
             };
 
+            this.connectorStyle = {
+                color: '#036128',
+                weight: 2,
+                opacity: 0.5
+            };
+
             /**
              * Creates a new markerfor the given GroundStation object.
-             * @param   {String} id Identifier of the new GroundStation.
              * @param   {Object} cfg Configuration object for the new
              *                          GroundStation.
-             * @returns {Object} Returns an object with the marker and the
-             *                  configuration.
+             * @returns {Object} L.marker object
              */
-            this.createGS = function (id, cfg) {
+            this.createGSMarker = function (cfg) {
                 return L.marker(
                     L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
-                    this.gsMarker
-                ).bindLabel(id, { noHide: true });
+                    this.gsStyle
+                ).bindLabel(cfg.cfg.id, { noHide: true });
+            };
+
+            /**
+             * This function creates a connection line object to be draw on the
+             * map.
+             *
+             * @param {Object} gs Configuration object of the GroundStation.
+             * @returns {*} L.polyline object
+             */
+            this.createGSConnector = function (gs) {
+
+                var s_local, s_ll, g_ll, line_ll,
+                    s_ids = Object.keys(this.servers);
+
+                s_local = this.servers[s_ids[0]];
+                s_ll = [s_local.latitude, s_local.longitude];
+                g_ll = [gs.cfg.latitude, gs.cfg.longitude];
+                line_ll = [ L.latLng(s_ll), L.latLng(g_ll)];
+
+                return L.polyline(line_ll, this.connectorStyle);
+
             };
 
             /**
@@ -133,17 +168,26 @@ angular.module('marker-models')
              * @returns {*} Promise that returns the updated configuration.
              */
             this.addGS = function (id, gs) {
+
                 if (this.gs.hasOwnProperty(id)) {
                     throw '[x-maps] GS Marker already exists, id = ' + id;
                 }
-                console.log('>>> gs = ' + JSON.stringify(gs));
-                var m = this.createGS(id, gs);
+
+                var m = this.createGSMarker(gs),
+                    c = this.createGSConnector(gs);
+
                 this.gs[id] = m;
+                this.connectors[id] = c;
+
                 return maps.getMainMap().then(function (mapInfo) {
                     console.log('mapInfo.map + ' + mapInfo.map);
+                    c.addTo(mapInfo.map);
                     m.addTo(mapInfo.map);
-                    return { id: id, cfg: gs, marker: m };
+                    gs.marker = m;
+                    gs.connector = c;
+                    return gs;
                 });
+
             };
 
             /**
@@ -160,20 +204,30 @@ angular.module('marker-models')
             };
 
             /**
-             * Removes the marker from the main map.
+             * Removes the marker from the main map and the connector associated
+             * with this GroundStation (in case it exists, flexible approach).
              * @param id Identifier of the GroundStation whose marker is to be
              *              removed.
              * @returns Promise that returns the id of the just removed
              *          GroundStation.
              */
             this.removeGS = function (id) {
+                var marker = null, c = null;
                 if (!this.gs.hasOwnProperty(id)) {
                     throw '[x-maps] Marker does NOT exist, id = ' + id;
                 }
-                var marker = this.gs[id];
+                marker = this.gs[id];
+
+                if (this.connectors.hasOwnProperty(id)) {
+                    c = this.connectors[id];
+                    delete this.connectors[id];
+                }
+
                 delete this.gs[id];
+
                 return maps.getMainMap().then(function (mapInfo) {
                     mapInfo.map.removeLayer(marker);
+                    if (c !== null) { mapInfo.map.removeLayer(c); }
                     return id;
                 });
             };
@@ -183,7 +237,7 @@ angular.module('marker-models')
             /******************************************************************/
 
             this.sc = {};
-            this.scMarker = {
+            this.scStyle = {
                 autostart: true,
                 draggable: false,
                 icon: L.icon({
@@ -200,7 +254,7 @@ angular.module('marker-models')
             this.createSC = function (id, cfg) {
 
                 var gt = this.readTrack(cfg.groundtrack),
-                    mo = this.scMarker,
+                    mo = this.scStyle,
                     color =  this.colors[this.color_n % this.colors.length];
                 this.color_n += 1;
 

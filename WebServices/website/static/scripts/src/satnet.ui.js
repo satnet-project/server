@@ -24,39 +24,48 @@ var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
 
 var app = angular.module('satnet-ui', [
     // AngularJS libraries
+    'jsonrpc',
+    'ngCookies',
+    'ngResource',
     'leaflet-directive',
-    'ngResource', 'ngCookies',
-    'remoteValidation', 'jsonrpc',
+    'remoteValidation',
     // level 1 services/models
-    'common', 'map-services',
-    'celestrak-services', 'satnet-services', 'broadcaster',
+    'common',
+    'broadcaster',
+    'map-services',
+    'satnet-services',
     'x-satnet-services',
+    'celestrak-services',
     // level 2 services/models
     'marker-models',
-    'groundstation-models',
     'spacecraft-models',
+    'groundstation-models',
     // level 3 services/models
-    'x-groundstation-models',
+    'x-server-models',
     'x-spacecraft-models',
+    'x-groundstation-models',
     // level 4 (controllers),
-    'ui-map-controllers', 'ui-menu-controllers',
-    'ui-modalsc-controllers', 'ui-modalgs-controllers'
+    'ui-map-controllers',
+    'ui-menu-controllers',
+    'ui-modalsc-controllers',
+    'ui-modalgs-controllers'
 ]);
 
 // level 1 services
 angular.module('common');
+angular.module('broadcaster');
 angular.module('map-services');
-angular.module('celestrak-services');
 angular.module('satnet-services');
 angular.module('x-satnet-services');
-angular.module('broadcaster');
+angular.module('celestrak-services');
 // level 2 services
 angular.module('marker-models');
-angular.module('groundstation-models');
 angular.module('spacecraft-models');
+angular.module('groundstation-models');
 // level 3 services
-angular.module('x-groundstation-models');
+angular.module('x-server-models');
 angular.module('x-spacecraft-models');
+angular.module('x-groundstation-models');
 // level 4 controllers
 angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');

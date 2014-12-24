@@ -73,6 +73,7 @@ angular.module('groundstation-models').service('gs', [
                 console.log(
                     '[gs-model] GS added, cfg = ' + JSON.stringify(data.cfg)
                 );
+                return data;
             });
         };
 
@@ -140,20 +141,42 @@ angular.module('groundstation-models').service('gs', [
         };
 
         /**
-         * Returns a human-readable representation of all the configurationes saved
-         * in the main structure for the available GroundStation objects.
+         * Returns a human-readable representation of all the configurationes
+         * saved in the main structure for the available GroundStation objects.
          * @returns {String} Human-readable string.
          */
         this.asString = function () {
-            var gs = null, gsBuffer = '', buffer = '', id;
+            var gs = null, buffer = '', id;
             for (id in this.gsCfg) {
                 if (this.gsCfg.hasOwnProperty(id)) {
                     gs = this.gsCfg[id];
-                    gsBuffer = '"id": ' + id + ', ' +
-                        '"cfg": ' + JSON.stringify(gs.cfg);
-                    buffer += gsBuffer + ';\n';
+                    buffer +=  this.gsAsString(id, gs);
                 }
             }
+            return buffer;
+        };
+
+        /**
+         * Returns a human-readable representation of the configuration for a
+         * single GroundStation object.
+         * @param gs GroundStation configuration object.
+         * @returns {string} Human-readable string.
+         */
+        this.gsAsString = function (gs) {
+            return 'gs : ' + JSON.stringify(gs.cfg) + ';\n';
+        };
+
+        /**
+         * Returns a human-readable representation of the configuration for an
+         * array GroundStation object.
+         * @param gss Array of GroundStation configuration objects.
+         * @returns {string} Human-readable string.
+         */
+        this.gssAsString = function (gss) {
+            var print_gs = this.gsAsString, buffer = '';
+            angular.forEach(gss, function (g) {
+                buffer += print_gs(g) + '\n';
+            });
             return buffer;
         };
 
