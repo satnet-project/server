@@ -108,8 +108,6 @@ app.run([
     function ($rootScope, $window, $log, $http, $cookies) {
         'use strict';
         $rootScope.leop_id = $window.leop_id;
-        console.log('>> $rootScope.leop_id = ' + $rootScope.leop_id);
-        console.log('>> $window.leop_id = ' + $window.leop_id);
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     }

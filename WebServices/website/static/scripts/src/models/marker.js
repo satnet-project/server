@@ -35,6 +35,35 @@ angular.module('marker-models')
 
             'use strict';
 
+            this.getNgOverlays = function () {
+                return {
+                    'servers': {
+                        name: 'Servers',
+                        type: 'group',
+                        visible: true,
+                        layerOptions: {
+                            layers: this.serverLayers.getLayers().concat(this.connectorLayers.getLayers())
+                        }
+                    },
+                    'gss' : {
+                        name: 'Ground Stations',
+                        type: 'group',
+                        visible: true,
+                        layerOptions: {
+                            layers: this.gsLayers.getLayers()
+                        }
+                    },
+                    'sc' : {
+                        name: 'Spacecraft',
+                        type: 'group',
+                        visible: true,
+                        layerOptions: {
+                            layers: this.scLayers.getLayers().concat(this.trackLayers.getLayers())
+                        }
+                    }
+                };
+            };
+
             /******************************************************************/
             /************************************************* SERVER MARKERS */
             /******************************************************************/
@@ -136,7 +165,7 @@ angular.module('marker-models')
              * Creates a new markerfor the given GroundStation object.
              * @param   {Object} cfg Configuration object for the new
              *                          GroundStation.
-             * @returns {Object} L.marker object
+             * @returns {L.Marker}
              */
             this.createGSMarker = function (cfg) {
                 return L.marker(
@@ -206,9 +235,11 @@ angular.module('marker-models')
 
             /**
              * Updates the configuration for the marker of the given GS.
+             *
              * @param id The identififer of the GroundStation.
              * @param lat The new latitude for the marker.
              * @param lng The new longitude for the marker.
+             * @returns {String} GroundStation identifier.
              */
             this.updateGS = function (id, lat, lng) {
 
@@ -225,6 +256,8 @@ angular.module('marker-models')
                 this.connectors[id].setLatLngs(
                     this.calculateLineLatLngs(server, gs)
                 );
+
+                return id;
 
             };
 
@@ -246,6 +279,7 @@ angular.module('marker-models')
             /**
              * Removes the marker from the main map and the connector associated
              * with this GroundStation (in case it exists, flexible approach).
+             *
              * @param id Identifier of the GroundStation whose marker is to be
              *              removed.
              * @returns Promise that returns the id of the just removed
@@ -307,7 +341,7 @@ angular.module('marker-models')
              *
              * @param id Identifier of the Spacecraft.
              * @param cfg Configuration object.
-             * @returns {{marker: *, track: *}}
+             * @returns {{marker: L.Marker.movingMarker, track: L.polyline}}
              */
             this.createSCMarkers = function (id, cfg) {
 
@@ -326,10 +360,16 @@ angular.module('marker-models')
             };
 
             /**
+             * Finds the current point at which the marker has to be positioned.
+             * Using the parameter {nowUs}, this function searchs for the
+             * following point of the GroundTrack at which the Spacecraft is
+             * supposed to be positioned.
+             *
              * TODO Best unit testing for this algorithm.
-             * @param groundtrack
-             * @param nowUs
-             * @returns {number}
+             *
+             * @param groundtrack RAW groundtrack from the server.
+             * @param nowUs Now time in microsecnods.
+             * @returns {number} Position of the array.
              */
             this.findPrevious = function (groundtrack, nowUs) {
                 var i;
@@ -342,10 +382,14 @@ angular.module('marker-models')
             };
 
             /**
+             * Function that reads the RAW groundtrack from the server and
+             * transforms it into a usable one for the JS client.
+             *
              * TODO What if the groundtrack has not started yet?
              * TODO A better unit testing for this algorithm.
-             * @param groundtrack
-             * @returns {{durations: Array, positions: Array}}
+             *
+             * @param groundtrack RAW groundtrack from the server.
+             * @returns {{durations: Array, positions: Array, geopoints: Array}}
              */
             this.readTrack = function (groundtrack) {
 
@@ -399,7 +443,12 @@ angular.module('marker-models')
              *
              * @param id Identifier of the Spacecraft.
              * @param cfg Configuration for the Spacecraft.
-             * @returns { id, cfg, m.L.Marker.movingMarker, m.L.geodesic }
+             * @returns {{
+             *              id: String,
+             *              cfg: Object,
+             *              marker: m.L.Marker.movingMarker,
+             *              track: m.L.geodesic
+             *          }}
              */
             this.addSC = function (id, cfg) {
 

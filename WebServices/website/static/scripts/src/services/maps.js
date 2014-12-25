@@ -106,7 +106,8 @@ angular.module('map-services')
              */
             this.createMainMap = function (terminator) {
 
-                var p = [];
+                var p = [];//, layers_control = this.layersControl;
+
                 if (terminator) {
                     p.push(this.createTerminatorMap());
                 } else {
@@ -116,10 +117,13 @@ angular.module('map-services')
 
                 return $q.all(p).then(function (results) {
                     var ll = new L.LatLng(
-                        results[1].latitude,
-                        results[1].longitude
-                    );
-                    results[0].map.setView(ll, ZOOM);
+                            results[1].latitude,
+                            results[1].longitude
+                        ),
+                        map = results[0].map;
+
+                    map.setView(ll, ZOOM);
+                    //layers_control.addTo(map);
 
                     return ({
                         map: results[0].map,
@@ -137,6 +141,7 @@ angular.module('map-services')
             /**
              * Initializes the map, centers it with the estimated position
              * of the user (GeoIP) and adds a "move-me" draggable marker.
+             *
              * @param {L} map Reference to the Leaflet map.
              * @param {String} message Message to be added to the marker.
              * @returns {$q} Promise that returns the 'mapData' structure with
@@ -174,8 +179,165 @@ angular.module('map-services')
 
             };
 
+            var esri_baselayer = L.tileLayer(
+                'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                {
+                    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+                    maxZoom: 16
+                }
+            ),
+                osm_baselayer = L.tileLayer(
+                    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                    {
+                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }
+                ),
+                oms_admin_overlay =  L.tileLayer(
+                    'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}',
+                    {
+                        minZoom: 0,
+                        maxZoom: 19,
+                        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }
+                ),
+                hydda_roads_labels_overlay =  L.tileLayer(
+                    'http://{s}.tile.openstreetmap.se/hydda/roads_and_labels/{z}/{x}/{y}.png',
+                    {
+                        minZoom: 0,
+                        maxZoom: 18,
+                        attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                    }
+                ),
+                stamen_toner_labels_overlay =  L.tileLayer(
+                    'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
+                    {
+                        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                        subdomains: 'abcd',
+                        minZoom: 0,
+                        maxZoom: 20
+                    }
+                ),
+                owm_rain_overlay = L.tileLayer(
+                    'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png',
+                    {
+                        attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+                        opacity: 0.35
+                    }
+                ),
+                owm_temperature_overlay = L.tileLayer(
+                    'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png',
+                    {
+                        attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+                        opacity: 0.5
+                    }
+                );
+
+            this.getBaseLayers = function () {
+                // esri : Esri_WorldGrayCanvas
+                // osm: OpenStreetMap_Mapnik
+                return {
+                    'ESRI Maps': esri_baselayer,
+                    'OpenStret Maps': osm_baselayer
+                };
+            };
+
+            this.getOverlays = function () {
+                // oms_admin: OpenMapSurfer_AdminBounds
+                // hydda_roads_labels: Hydda_RoadsAndLabels
+                // stamen_toner_labels: Stamen_TonerLabels
+                return {
+                    'Administrative Bounds': oms_admin_overlay,
+                    'Roads and Labels': hydda_roads_labels_overlay,
+                    'Toner Labels': stamen_toner_labels_overlay,
+                    'Rain (own)': owm_rain_overlay,
+                    'Temperature (owm)': owm_temperature_overlay
+                };
+            };
+
+            this.getNgBaseLayers = function () {
+                return {
+                    esri_baselayer: {
+                        name: 'ESRI Base Layer',
+                        type: 'xyz',
+                        url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                        layerOptions: {
+                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                        }
+                    },
+                    osm_baselayer: {
+                        name: 'OSM Base Layer',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }
+                    }
+                };
+            };
+
+            this.getNgOverlays = function () {
+                return {
+                    oms_admin_overlay: {
+                        name: 'Administrative Boundaries',
+                        type: 'xyz',
+                        url: 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}',
+                        visible: true,
+                        layerOptions: {
+                            minZoom: 0,
+                            maxZoom: 19,
+                            attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }
+                    },
+                    hydda_roads_labels_overlay: {
+                        name: 'Roads and Labels',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openstreetmap.se/hydda/roads_and_labels/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            minZoom: 0,
+                            maxZoom: 18,
+                            attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }
+                    },
+                    stamen_toner_labels_overlay: {
+                        name: 'Labels',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                            subdomains: 'abcd',
+                            minZoom: 0,
+                            maxZoom: 20
+                        }
+                    },
+                    owm_rain_overlay: {
+                        name: 'Rain',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+                            opacity: 0.35
+                        }
+                    },
+                    owm_temperature_overlay: {
+                        name: 'Temperature',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
+                            opacity: 0.5
+                        }
+                    }
+                };
+            };
+
+            this.layersControl = L.control.layers(
+                this.getBaseLayers(),
+                this.getOverlays()
+            );
+
             /**
              * Returns a string with the data from a MapInfo like structure.
+             *
              * @param   {Object} mapInfo The structure to be printed out.
              * @returns {String} Human-readable representation (string).
              */

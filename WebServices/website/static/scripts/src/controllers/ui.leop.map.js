@@ -23,6 +23,7 @@ angular.module(
         'leaflet-directive',
         'broadcaster',
         'map-services',
+        'marker-models',
         'groundstation-models',
         'x-groundstation-models',
         'spacecraft-models',
@@ -41,6 +42,7 @@ angular.module('ui-map-controllers')
         '$log',
         'broadcaster',
         'maps',
+        'markers',
         'gs',
         'xgs',
         'sc',
@@ -54,6 +56,7 @@ angular.module('ui-map-controllers')
             $log,
             broadcaster,
             maps,
+            markers,
             gs,
             xgs,
             sc,
@@ -68,15 +71,26 @@ angular.module('ui-map-controllers')
 
             angular.extend($scope, {
                 center: { lat: LAT, lng: LNG, zoom: ZOOM },
-                tiles: {
-                    url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    options: {
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                        minZoom: 2,
-                        maxZoom: 12,
-                        continuousWorld: false,
-                        noWrap: true
-                    }
+                layers: {
+                    baselayers: {
+                        esri_baselayer: {
+                            name: 'ESRI Base Layer',
+                            type: 'xyz',
+                            url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                            layerOptions: {
+                                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                            }
+                        },
+                        osm_baselayer: {
+                            name: 'OSM Base Layer',
+                            type: 'xyz',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            layerOptions: {
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            }
+                        }
+                    },
+                    overlays: {}
                 },
                 markers: []
             });
@@ -100,6 +114,12 @@ angular.module('ui-map-controllers')
                     );
                 });
             });
+
+            $scope.layers.overlays = angular.extend(
+                {},
+                maps.getNgOverlays(),
+                markers.getNgOverlays()
+            );
 
             $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
                 console.log(
