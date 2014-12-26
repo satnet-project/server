@@ -123,7 +123,6 @@ angular.module('map-services')
                         map = results[0].map;
 
                     map.setView(ll, ZOOM);
-                    //layers_control.addTo(map);
 
                     return ({
                         map: results[0].map,
@@ -212,7 +211,7 @@ angular.module('map-services')
              *
              * @returns {{oms_admin_overlay: {name: string, type: string, url: string, visible: boolean, layerOptions: {minZoom: number, maxZoom: number, attribution: string}}, hydda_roads_labels_overlay: {name: string, type: string, url: string, layerOptions: {minZoom: number, maxZoom: number, attribution: string}}, stamen_toner_labels_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, subdomains: string, minZoom: number, maxZoom: number}}, owm_rain_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, opacity: number}}, owm_temperature_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, opacity: number}}}}
              */
-            this.getNgOverlays = function () {
+            this.getOverlays = function () {
                 return {
                     oms_admin_overlay: {
                         name: 'Administrative Boundaries',

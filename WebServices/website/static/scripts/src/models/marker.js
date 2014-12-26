@@ -35,9 +35,48 @@ angular.module('marker-models')
 
             'use strict';
 
-            this.ids2keys = {};
+            /******************************************************************/
+            /****************************************************** MAP SCOPE */
+            /******************************************************************/
+
+            // Scope where the leaflet angular pluing has its variables.
+            this._mapScope = null;
+
+            /**
+             * Bounds this markers service to this scope.
+             * @param scope The Angular Leaflet plugin scope to where to bound
+             *              this service.
+             */
+            this.setMapScope = function (scope) {
+                this._mapScope = scope;
+            };
+
+            /**
+             * Returns the current scope to which this markers service is bound
+             * to.
+             * @returns {null|*} The _mapScope object.
+             */
+            this.getMapScope = function () {
+                if (this._mapScope === null) {
+                    throw '<_mapScope> has not been set.';
+                }
+                return this._mapScope;
+            };
+
+            /******************************************************************/
+            /**************************************************** MARKER KEYS */
+            /******************************************************************/
+
             this._KEY_HEADER = 'MK'; // "MK" stands for "marker key"
             this._key_number = 0;
+
+            /**
+             * Dictionary that contains the relation between the identifiers
+             * of the objects and the keys for the markers that represent those
+             * objects.
+             * @type {{}}
+             */
+            this._ids2keys = {};
 
             /**
              * Creates a new key for the given identifier and adds it to the
@@ -47,13 +86,13 @@ angular.module('marker-models')
              */
             this.createMarkerKey = function (identifier) {
 
-                if (this.ids2keys[identifier] !== undefined) {
+                if (this._ids2keys[identifier] !== undefined) {
                     return this.getMarkerKey(identifier);
                 }
 
                 var key = this._KEY_HEADER + this._key_number;
                 this._key_number += 1;
-                this.ids2keys[identifier] = key;
+                this._ids2keys[identifier] = key;
                 return key;
 
             };
@@ -64,7 +103,7 @@ angular.module('marker-models')
              * @returns {string} Key for accessing to the marker.
              */
             this.getMarkerKey = function (identifier) {
-                return this.ids2keys[identifier];
+                return this._ids2keys[identifier];
             };
 
             /**
@@ -73,7 +112,7 @@ angular.module('marker-models')
              *
              * @returns {{servers: {name: string, type: string, visible: boolean}, groundstations: {name: string, type: string, visible: boolean}, spacecraft: {name: string, type: string, visible: boolean}}}
              */
-            this.getNgOverlays = function () {
+            this.getOverlays = function () {
                 return {
                     servers : {
                         name: 'Network',
@@ -93,20 +132,25 @@ angular.module('marker-models')
                 };
             };
 
+            /******************************************************************/
+            /***************************************** NETWORK SERVER MARKERS */
+            /******************************************************************/
+
+            this._serverMarkerKey = null;
+
             /**
              * Creates a new marker for the given Network Server.
              * @param {String} id Identifier of the server.
              * @param {Number} latitude Server's estimated latitude.
              * @param {Number} longitude Server's estimated longitude.
-             * @return {Object} Marker for this server.
              *
              * TODO Check possible bug: when 'noHide = false', once the layer
              * TODO is removed, the label does not appear again when the mouse
              * TODO is over the icon.
              */
             this.createServerMarker = function (id, latitude, longitude) {
-                var key = this.createMarkerKey(id), r = {};
-                r[key] = {
+                this._serverMarkerKey = this.createMarkerKey(id);
+                this.getMapScope().markers[this._serverMarkerKey] = {
                     lat: latitude,
                     lng: longitude,
                     focus: true,
@@ -122,24 +166,81 @@ angular.module('marker-models')
                             noHide: true
                         }
                     },
-                    groundstations: []
+                    groundstations: [],
+                    identifier: id
                 };
-                return r;
+                return id;
+            };
+
+            /**
+             * Returns the marker for the server, in case it exists!
+             * @returns {null|*} String with the key for the marker of the
+             *                      server.
+             */
+            this.getServerMarker = function () {
+                if (this._serverMarkerKey === null) {
+                    throw 'No server has been defined';
+                }
+                return this._serverMarkerKey;
             };
 
             /******************************************************************/
             /***************************************** GROUND STATION MARKERS */
             /******************************************************************/
 
-            this.gs = {};
-            this.gsLayers = L.layerGroup();
-            this.connectors = {};
-            this.connectorLayers = L.layerGroup();
+            /**
+             * Creates a unique identifier for the connector of this
+             * GroundStation and the Standalone network server.
+             *
+             * @param gs_identifier Identifier of the GroundStation object.
+             * @returns {string} Identifier for the connector.
+             */
+            this.createConnectorIdentifier = function (gs_identifier) {
+                return 'connect:'
+                    + gs_identifier + '_2_'
+                    + this.getMapScope().markers[
+                        this._serverMarkerKey
+                    ].identifier;
+            };
 
-            this.connectorStyle = {
-                color: '#036128',
-                weight: 2,
-                opacity: 0.5
+            /**
+             * This function creates a connection line object to be draw on the
+             * map in between the provided Server and the Ground Station
+             * objects.
+             *
+             * @param {Object} gs_identifier Identifier of the GroundStation
+             *                                  object.
+             * @returns {*} L.polyline object
+             *
+             * TODO The structure for modelling what server owns each
+             * TODO GroundStation has already started to be implemented. In the
+             * TODO 'this.servers' dictionary, each entry has a field called
+             * TODO 'groundstations' that enables the correct modelling of the
+             * TODO network. Right now, the first server is always chosen and
+             * TODO all the GroundStations are bound to it. In the future, each
+             * TODO time a GroundStation is added, the server that it belongs
+             * TODO to should be specified and used accordingly.
+             */
+            this.createGSConnector = function (gs_identifier) {
+
+                var s_marker = this.getMapScope().markers[
+                        this._serverMarkerKey
+                    ],
+                    g_marker = this.getMapScope().markers[
+                        this.getMarkerKey(gs_identifier)
+                    ],
+                    c_key = this.createMarkerKey(
+                        this.createConnectorIdentifier(gs_identifier)
+                    );
+
+                this.getMapScope().paths[c_key] = {
+                    color: '#036128',
+                    weight: 2,
+                    opacity: 0.5,
+                    layer: 'servers',
+                    latlngs: [s_marker, g_marker]
+                };
+
             };
 
             /**
@@ -149,9 +250,10 @@ angular.module('marker-models')
              * @returns Angular leaflet marker.
              */
             this.createGSMarker = function (cfg) {
-                var id = cfg.groundstation_id, key, r = {};
-                key = this.createMarkerKey(id);
-                r[key] = {
+
+                var id = cfg.groundstation_id;
+
+                this.getMapScope().markers[this.createMarkerKey(id)] = {
                     lat: cfg.groundstation_latlon[0],
                     lng: cfg.groundstation_latlon[1],
                     focus: true,
@@ -168,34 +270,10 @@ angular.module('marker-models')
                         }
                     }
                 };
-                return r;
-            };
 
-            /**
-             * This function creates a connection line object to be draw on the
-             * map.
-             *
-             * @param {Object} gs Configuration object of the GroundStation.
-             * @returns {*} L.polyline object
-             *
-             * TODO The structure for modelling what server owns each
-             * TODO GroundStation has already started to be implemented. In the
-             * TODO 'this.servers' dictionary, each entry has a field called
-             * TODO 'groundstations' that enables the correct modelling of the
-             * TODO network. Right now, the first server is always chosen and
-             * TODO all the GroundStations are bound to it. In the future, each
-             * TODO time a GroundStation is added, the server that it belongs
-             * TODO to should be specified and used accordingly.
-             */
-            this.createGSConnector = function (gs) {
+                this.createGSConnector(id);
 
-                var server, s_ids = Object.keys(this.servers);
-                server = this.servers[s_ids[0]];
-
-                return L.polyline(
-                    this.calculateLineLatLngs(server, gs),
-                    this.connectorStyle
-                );
+                return id;
 
             };
 

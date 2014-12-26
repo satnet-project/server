@@ -58,11 +58,9 @@ angular.module('x-groundstation-models').service('xgs', [
         this.initAllLEOP = function () {
             return xSatnetRPC.readAllLEOPGs($rootScope.leop_id)
                 .then(function (cfgs) {
-                    var gs_markers = {};
+                    var gs_markers = [];
                     angular.forEach(cfgs, function (cfg) {
-                        gs_markers = angular.extend(
-                            {},
-                            gs_markers,
+                        gs_markers = gs_markers.concat(
                             markers.createGSMarker(cfg)
                         );
                     });

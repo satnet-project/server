@@ -83,32 +83,29 @@ angular.module('ui-map-controllers')
                     },
                     overlays: {}
                 },
-                markers: {}
+                markers: {},
+                paths: {}
             });
+
+            markers.setMapScope($scope);
 
             maps.createMainMap(true).then(function (data) {
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
                 $scope.layers.overlays = angular.extend(
                     {},
-                    maps.getNgOverlays(),
-                    markers.getNgOverlays()
+                    maps.getOverlays(),
+                    markers.getOverlays()
                 );
             });
 
             xserver.initStandalone().then(function (server) {
 
                 $log.log('[map-controller] Server =' + JSON.stringify(server));
-                $scope.markers = angular.extend({}, $scope.markers, server);
 
                 xgs.initAllLEOP().then(function (gs_markers) {
                     $log.log(
                         '[map-controller] Ground Stations = '
                             + JSON.stringify(gs_markers)
-                    );
-                    $scope.markers = angular.extend(
-                        {},
-                        $scope.markers,
-                        gs_markers
                     );
                 });
             });
