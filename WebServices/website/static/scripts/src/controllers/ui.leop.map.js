@@ -24,7 +24,6 @@ angular.module(
         'broadcaster',
         'map-services',
         'marker-models',
-        'groundstation-models',
         'x-groundstation-models',
         'spacecraft-models',
         'x-spacecraft-models',
@@ -40,13 +39,9 @@ angular.module('ui-map-controllers')
     .controller('MapController', [
         '$scope',
         '$log',
-        'broadcaster',
         'maps',
         'markers',
-        'gs',
         'xgs',
-        'sc',
-        'xsc',
         'xserver',
         'LAT',
         'LNG',
@@ -54,13 +49,9 @@ angular.module('ui-map-controllers')
         function (
             $scope,
             $log,
-            broadcaster,
             maps,
             markers,
-            gs,
             xgs,
-            sc,
-            xsc,
             xserver,
             LAT,
             LNG,
@@ -92,72 +83,34 @@ angular.module('ui-map-controllers')
                     },
                     overlays: {}
                 },
-                markers: []
+                markers: {}
             });
 
             maps.createMainMap(true).then(function (data) {
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
+                $scope.layers.overlays = angular.extend(
+                    {},
+                    maps.getNgOverlays(),
+                    markers.getNgOverlays()
+                );
             });
 
             xserver.initStandalone().then(function (server) {
-                $log.log(
-                    '[map-controller] Server {'
-                        + '    identifier: ' + server.id
-                        + '    latitude: ' + server.latitude
-                        + '    longitude: ' + server.longitude
-                        + '}'
-                );
-                xgs.initAllLEOP().then(function (gss) {
+
+                $log.log('[map-controller] Server =' + JSON.stringify(server));
+                $scope.markers = angular.extend({}, $scope.markers, server);
+
+                xgs.initAllLEOP().then(function (gs_markers) {
                     $log.log(
                         '[map-controller] Ground Stations = '
-                            + gs.gssAsString(gss)
+                            + JSON.stringify(gs_markers)
+                    );
+                    $scope.markers = angular.extend(
+                        {},
+                        $scope.markers,
+                        gs_markers
                     );
                 });
-            });
-
-            $scope.layers.overlays = angular.extend(
-                {},
-                maps.getNgOverlays(),
-                markers.getNgOverlays()
-            );
-
-            $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
-                console.log(
-                    '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
-                );
-                xgs.addGS(gsId);
-            });
-            $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
-                console.log(
-                    '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
-                );
-                gs.remove(gsId);
-            });
-            $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
-                console.log(
-                    '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
-                );
-                xgs.updateGS(gsId);
-            });
-
-            $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {
-                console.log(
-                    '@on-sc-added-event, event = ' + event + 'scId = ' + scId
-                );
-                xsc.addSC(scId);
-            });
-            $scope.$on(broadcaster.SC_REMOVED_EVENT, function (event, scId) {
-                console.log(
-                    '@on-sc-removed-event, event = ' + event + 'scId = ' + scId
-                );
-                sc.remove(scId);
-            });
-            $scope.$on(broadcaster.SC_UPDATED_EVENT, function (event, scId) {
-                console.log(
-                    '@on-sc-updated-event, event = ' + event + 'scId = ' + scId
-                );
-                console.log('NOT YET IMPLEMENTED!');
-                xsc.updateSC(scId);
             });
 
         }

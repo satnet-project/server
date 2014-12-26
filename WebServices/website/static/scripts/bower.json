@@ -40,7 +40,8 @@
     "ngActivityIndicator": "~0.1.8",
     "bootstrap-select": "~1.6.3",
     "nya-bootstrap-select": "~1.2.7",
-    "moment": "~2.8.4"
+    "moment": "~2.8.4",
+    "leaflet.markercluster": "~0.4.0"
   },
   "devDependencies": {
     "qunit": "~1.15.0"

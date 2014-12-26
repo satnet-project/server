@@ -35,107 +35,96 @@ angular.module('marker-models')
 
             'use strict';
 
+            this.ids2keys = {};
+            this._KEY_HEADER = 'MK'; // "MK" stands for "marker key"
+            this._key_number = 0;
+
+            /**
+             * Creates a new key for the given identifier and adds it to the
+             * dictionary of identifiers and keys.
+             * @param identifier Identifier of the marker.
+             * @returns {string} Key for accessing to the marker.
+             */
+            this.createMarkerKey = function (identifier) {
+
+                if (this.ids2keys[identifier] !== undefined) {
+                    return this.getMarkerKey(identifier);
+                }
+
+                var key = this._KEY_HEADER + this._key_number;
+                this._key_number += 1;
+                this.ids2keys[identifier] = key;
+                return key;
+
+            };
+
+            /**
+             * Returns the key for the given object that holds a marker.
+             * @param identifier Identifier of the object.
+             * @returns {string} Key for accessing to the marker.
+             */
+            this.getMarkerKey = function (identifier) {
+                return this.ids2keys[identifier];
+            };
+
+            /**
+             * Returns the overlays to be included as markerclusters within
+             * the map.
+             *
+             * @returns {{servers: {name: string, type: string, visible: boolean}, groundstations: {name: string, type: string, visible: boolean}, spacecraft: {name: string, type: string, visible: boolean}}}
+             */
             this.getNgOverlays = function () {
                 return {
-                    'servers': {
-                        name: 'Servers',
-                        type: 'group',
-                        visible: true,
-                        layerOptions: {
-                            layers: this.serverLayers.getLayers().concat(this.connectorLayers.getLayers())
-                        }
+                    servers : {
+                        name: 'Network',
+                        type: 'markercluster',
+                        visible: true
                     },
-                    'gss' : {
+                    groundstations: {
                         name: 'Ground Stations',
-                        type: 'group',
-                        visible: true,
-                        layerOptions: {
-                            layers: this.gsLayers.getLayers()
-                        }
+                        type: 'markercluster',
+                        visible: true
                     },
-                    'sc' : {
+                    spacecraft: {
                         name: 'Spacecraft',
-                        type: 'group',
-                        visible: true,
-                        layerOptions: {
-                            layers: this.scLayers.getLayers().concat(this.trackLayers.getLayers())
-                        }
+                        type: 'markercluster',
+                        visible: true
                     }
                 };
             };
 
-            /******************************************************************/
-            /************************************************* SERVER MARKERS */
-            /******************************************************************/
-
-            this.serverLayers = L.layerGroup();
-            this.servers = {};
-
-            this.serverMarker = {
-                draggable: false,
-                icon: L.icon({
-                    iconUrl: '/static/images/icons/server-icon.svg',
-                    iconSize: [15, 15]
-                })
-            };
-
             /**
              * Creates a new marker for the given Network Server.
-             * @param {String} identifier Identifier of the server.
+             * @param {String} id Identifier of the server.
              * @param {Number} latitude Server's estimated latitude.
              * @param {Number} longitude Server's estimated longitude.
              * @return {Object} Marker for this server.
+             *
+             * TODO Check possible bug: when 'noHide = false', once the layer
+             * TODO is removed, the label does not appear again when the mouse
+             * TODO is over the icon.
              */
-            this.createServerMarker = function (
-                identifier,
-                latitude,
-                longitude
-            ) {
-                return L.marker(
-                    L.latLng(latitude, longitude),
-                    this.serverMarker
-                ).bindLabel(identifier, { noHide: false });
-            };
-
-            /**
-             * Adds a new server with the given ID and position (latitude,
-             * longitude) to the map.
-             * @param id Identifer of the server (usually the hostname).
-             * @param latitude Latitude position.
-             * @param longitude Longitude position.
-             * @returns {*} Promise that returns the configuration..
-             */
-            this.addServer = function (id, latitude, longitude) {
-
-                if (this.servers.hasOwnProperty(id)) {
-                    throw '[x-maps] SERVER Marker already exists, id = ' + id;
-                }
-                console.log(
-                    '>>> server = ' + id
-                        + '@(' + latitude + ', ' + longitude + ')'
-                );
-
-                var m = this.createServerMarker(id, latitude, longitude);
-
-                this.servers[id] = {
-                    marker: m,
-                    latitude: latitude,
-                    longitude: longitude,
+            this.createServerMarker = function (id, latitude, longitude) {
+                var key = this.createMarkerKey(id), r = {};
+                r[key] = {
+                    lat: latitude,
+                    lng: longitude,
+                    focus: true,
+                    draggable: false,
+                    layer: 'servers',
+                    icon: {
+                        iconUrl: '/static/images/icons/server-icon.svg',
+                        iconSize: [15, 15]
+                    },
+                    label: {
+                        message: id,
+                        options: {
+                            noHide: true
+                        }
+                    },
                     groundstations: []
                 };
-                this.serverLayers.addLayer(m);
-
-                return maps.getMainMap().then(function (mapInfo) {
-                    console.log('mapInfo.map + ' + mapInfo.map);
-                    m.addTo(mapInfo.map);
-                    return {
-                        id: id,
-                        latitude: latitude,
-                        longitude: longitude,
-                        marker: m
-                    };
-                });
-
+                return r;
             };
 
             /******************************************************************/
@@ -147,14 +136,6 @@ angular.module('marker-models')
             this.connectors = {};
             this.connectorLayers = L.layerGroup();
 
-            this.gsStyle = {
-                draggable: false,
-                icon: L.icon({
-                    iconUrl: '/static/images/icons/gs-icon.svg',
-                    iconSize: [15, 15]
-                })
-            };
-
             this.connectorStyle = {
                 color: '#036128',
                 weight: 2,
@@ -162,16 +143,32 @@ angular.module('marker-models')
             };
 
             /**
-             * Creates a new markerfor the given GroundStation object.
-             * @param   {Object} cfg Configuration object for the new
-             *                          GroundStation.
-             * @returns {L.Marker}
+             * Creates a new marker object for the given GroundStation.
+             *
+             * @param cfg The configuration of the GroundStation.
+             * @returns Angular leaflet marker.
              */
             this.createGSMarker = function (cfg) {
-                return L.marker(
-                    L.latLng(cfg.cfg.latitude, cfg.cfg.longitude),
-                    this.gsStyle
-                ).bindLabel(cfg.cfg.id, { noHide: true });
+                var id = cfg.groundstation_id, key, r = {};
+                key = this.createMarkerKey(id);
+                r[key] = {
+                    lat: cfg.groundstation_latlon[0],
+                    lng: cfg.groundstation_latlon[1],
+                    focus: true,
+                    draggable: false,
+                    layer: 'groundstations',
+                    icon: {
+                        iconUrl: '/static/images/icons/gs-icon.svg',
+                        iconSize: [15, 15]
+                    },
+                    label: {
+                        message: cfg.groundstation_id,
+                        options: {
+                            noHide: true
+                        }
+                    }
+                };
+                return r;
             };
 
             /**

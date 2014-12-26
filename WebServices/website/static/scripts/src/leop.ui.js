@@ -114,8 +114,8 @@ app.run([
 ]);
 
 app.controller('NotificationAreaController', [
-    '$scope', '$filter',
-    function ($scope, $filter) {
+    '$scope', '$filter', 'broadcaster', 'gs', 'sc', 'xgs', 'xsc',
+    function ($scope, $filter, broadcaster, gs, sc, xgs, xsc) {
         'use strict';
         $scope.eventLog = [];
         $scope.logEvent = function (event, message) {
@@ -137,6 +137,45 @@ app.controller('NotificationAreaController', [
         });
         $scope.$on('errEvent', function (event, message) {
             $scope.logEvent(event, message);
+        });
+
+        $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
+            console.log(
+                '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
+            );
+            xgs.addGS(gsId);
+        });
+        $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
+            console.log(
+                '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
+            );
+            gs.remove(gsId);
+        });
+        $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
+            console.log(
+                '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
+            );
+            xgs.updateGS(gsId);
+        });
+
+        $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {
+            console.log(
+                '@on-sc-added-event, event = ' + event + 'scId = ' + scId
+            );
+            xsc.addSC(scId);
+        });
+        $scope.$on(broadcaster.SC_REMOVED_EVENT, function (event, scId) {
+            console.log(
+                '@on-sc-removed-event, event = ' + event + 'scId = ' + scId
+            );
+            sc.remove(scId);
+        });
+        $scope.$on(broadcaster.SC_UPDATED_EVENT, function (event, scId) {
+            console.log(
+                '@on-sc-updated-event, event = ' + event + 'scId = ' + scId
+            );
+            console.log('NOT YET IMPLEMENTED!');
+            xsc.updateSC(scId);
         });
 
     }

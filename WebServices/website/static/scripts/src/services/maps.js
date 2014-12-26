@@ -179,81 +179,12 @@ angular.module('map-services')
 
             };
 
-            var esri_baselayer = L.tileLayer(
-                'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-                {
-                    attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
-                    maxZoom: 16
-                }
-            ),
-                osm_baselayer = L.tileLayer(
-                    'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-                    {
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }
-                ),
-                oms_admin_overlay =  L.tileLayer(
-                    'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}',
-                    {
-                        minZoom: 0,
-                        maxZoom: 19,
-                        attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }
-                ),
-                hydda_roads_labels_overlay =  L.tileLayer(
-                    'http://{s}.tile.openstreetmap.se/hydda/roads_and_labels/{z}/{x}/{y}.png',
-                    {
-                        minZoom: 0,
-                        maxZoom: 18,
-                        attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                    }
-                ),
-                stamen_toner_labels_overlay =  L.tileLayer(
-                    'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
-                    {
-                        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-                        subdomains: 'abcd',
-                        minZoom: 0,
-                        maxZoom: 20
-                    }
-                ),
-                owm_rain_overlay = L.tileLayer(
-                    'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png',
-                    {
-                        attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-                        opacity: 0.35
-                    }
-                ),
-                owm_temperature_overlay = L.tileLayer(
-                    'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png',
-                    {
-                        attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-                        opacity: 0.5
-                    }
-                );
-
-            this.getBaseLayers = function () {
-                // esri : Esri_WorldGrayCanvas
-                // osm: OpenStreetMap_Mapnik
-                return {
-                    'ESRI Maps': esri_baselayer,
-                    'OpenStret Maps': osm_baselayer
-                };
-            };
-
-            this.getOverlays = function () {
-                // oms_admin: OpenMapSurfer_AdminBounds
-                // hydda_roads_labels: Hydda_RoadsAndLabels
-                // stamen_toner_labels: Stamen_TonerLabels
-                return {
-                    'Administrative Bounds': oms_admin_overlay,
-                    'Roads and Labels': hydda_roads_labels_overlay,
-                    'Toner Labels': stamen_toner_labels_overlay,
-                    'Rain (own)': owm_rain_overlay,
-                    'Temperature (owm)': owm_temperature_overlay
-                };
-            };
-
+            /**
+             * Returns the base layers in the format required by the Angular
+             * Leaflet plugin.
+             *
+             * @returns {{esri_baselayer: {name: string, type: string, url: string, layerOptions: {attribution: string}}, osm_baselayer: {name: string, type: string, url: string, layerOptions: {attribution: string}}}}
+             */
             this.getNgBaseLayers = function () {
                 return {
                     esri_baselayer: {
@@ -275,6 +206,12 @@ angular.module('map-services')
                 };
             };
 
+            /**
+             * Returns the overlays in the format required by the Angular
+             * Leaflet plugin.
+             *
+             * @returns {{oms_admin_overlay: {name: string, type: string, url: string, visible: boolean, layerOptions: {minZoom: number, maxZoom: number, attribution: string}}, hydda_roads_labels_overlay: {name: string, type: string, url: string, layerOptions: {minZoom: number, maxZoom: number, attribution: string}}, stamen_toner_labels_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, subdomains: string, minZoom: number, maxZoom: number}}, owm_rain_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, opacity: number}}, owm_temperature_overlay: {name: string, type: string, url: string, layerOptions: {attribution: string, opacity: number}}}}
+             */
             this.getNgOverlays = function () {
                 return {
                     oms_admin_overlay: {
@@ -329,11 +266,6 @@ angular.module('map-services')
                     }
                 };
             };
-
-            this.layersControl = L.control.layers(
-                this.getBaseLayers(),
-                this.getOverlays()
-            );
 
             /**
              * Returns a string with the data from a MapInfo like structure.

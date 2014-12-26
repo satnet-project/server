@@ -18,7 +18,10 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-groundstation-models', [
-    'satnet-services', 'x-satnet-services', 'groundstation-models'
+    'satnet-services',
+    'x-satnet-services',
+    'groundstation-models',
+    'marker-models'
 ]);
 
 /**
@@ -26,8 +29,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', '$q', 'satnetRPC', 'xSatnetRPC', 'gs',
-    function ($rootScope, $q, satnetRPC, xSatnetRPC, gs) {
+    '$rootScope', '$q', 'satnetRPC', 'xSatnetRPC', 'gs', 'markers',
+    function ($rootScope, $q, satnetRPC, xSatnetRPC, gs, markers) {
         'use strict';
 
         /**
@@ -55,9 +58,15 @@ angular.module('x-groundstation-models').service('xgs', [
         this.initAllLEOP = function () {
             return xSatnetRPC.readAllLEOPGs($rootScope.leop_id)
                 .then(function (cfgs) {
-                    var p = [];
-                    angular.forEach(cfgs, function (c) { p.push(gs.add(c)); });
-                    return $q.all(p).then(function (r) { return r; });
+                    var gs_markers = {};
+                    angular.forEach(cfgs, function (cfg) {
+                        gs_markers = angular.extend(
+                            {},
+                            gs_markers,
+                            markers.createGSMarker(cfg)
+                        );
+                    });
+                    return gs_markers;
                 });
         };
 

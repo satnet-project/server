@@ -32,14 +32,15 @@ angular.module('x-server-models').service('xserver', [
         'use strict';
 
         this.initStandalone = function () {
-            var hostname = $location.host();
-            return satnetRPC.getServerLocation(hostname).then(function (data) {
-                return markers.addServer(
-                    hostname,
-                    data.latitude,
-                    data.longitude
-                );
-            });
+            var identifier = $location.host();
+            return satnetRPC.getServerLocation(identifier)
+                .then(function (data) {
+                    return markers.createServerMarker(
+                        identifier,
+                        data.latitude,
+                        data.longitude
+                    );
+                });
         };
 
     }
