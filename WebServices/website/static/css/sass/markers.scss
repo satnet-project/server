@@ -1,0 +1,71 @@
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+
+@import 'main';
+
+.marker-cluster-small {
+  background-color: $light_gray;
+}
+.marker-cluster-small div {
+  background-color: $cool_blue;
+}
+.marker-cluster-medium {
+  background-color: $light_gray;
+}
+.marker-cluster-medium div {
+  background-color: $cool_blue;
+}
+.marker-cluster-large {
+  background-color: $light_gray;
+}
+.marker-cluster-large div {
+  background-color: $cool_blue;
+}
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+  background-color: $light_gray;
+}
+.leaflet-oldie .marker-cluster-small div {
+  background-color: $cool_blue;
+}
+.leaflet-oldie .marker-cluster-medium {
+  background-color: $light_gray;
+}
+.leaflet-oldie .marker-cluster-medium div {
+  background-color: $cool_blue;
+}
+.leaflet-oldie .marker-cluster-large {
+  background-color: $light_gray;
+}
+.leaflet-oldie .marker-cluster-large div {
+  background-color: $cool_blue;
+}
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 20px;
+}
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: white;
+}
+.marker-cluster span {
+  line-height: 30px;
+}
