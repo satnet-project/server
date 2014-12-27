@@ -338,3 +338,6 @@ PASSWORD_COMPLEXITY = {
 }
 
 APPEND_SLASH = False
+
+# To prevent CSRF errors when logging in through django-rest-auth
+REST_SESSION_LOGIN = False
