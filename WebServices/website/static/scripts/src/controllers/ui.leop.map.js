@@ -92,45 +92,42 @@ angular.module('ui-map-controllers')
             markers.setMapScope($scope);
 
             maps.createMainMap(true).then(function (data) {
-
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
                 $scope.layers.overlays = angular.extend(
                     {},
                     maps.getOverlays(),
                     markers.getOverlays()
                 );
-
-                xserver.initStandalone().then(function (server) {
-
-                    $log.log(
-                        '[map-controller] Server =' + JSON.stringify(server)
-                    );
-                    xgs.initAllLEOP().then(function (gs_markers) {
+                xserver.initStandalone().then(
+                    function (server) {
                         $log.log(
-                            '[map-controller] Ground Stations = ' +
-                                JSON.stringify(gs_markers)
+                            '[map-controller] Server =' + JSON.stringify(server)
                         );
-                    });
-
-                });
-
-            });
+                    }
+                );
+            }).then(xgs.initAllLEOP()).then(
+                function (gs_markers) {
+                    $log.log(
+                        '[map-controller] GSs = ' + JSON.stringify(gs_markers)
+                    );
+                }
+            );
 
             $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-added-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.add(gsId);
             });
             $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.remove(gsId);
             });
             $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-updated-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.update(gsId);
             });

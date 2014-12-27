@@ -16,11 +16,10 @@
  * Created by rtubio on 10/24/14.
  */
 
-/** Module definition (empty array is vital!). */
+/** Module definition . */
 angular.module('x-groundstation-models', [
     'satnet-services',
     'x-satnet-services',
-    'groundstation-models',
     'marker-models'
 ]);
 
@@ -29,8 +28,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', '$q', 'satnetRPC', 'xSatnetRPC', 'gs', 'markers',
-    function ($rootScope, $q, satnetRPC, xSatnetRPC, gs, markers) {
+    '$rootScope', 'satnetRPC', 'xSatnetRPC', 'markers',
+    function ($rootScope, satnetRPC, xSatnetRPC, markers) {
         'use strict';
 
         /**
@@ -42,9 +41,13 @@ angular.module('x-groundstation-models').service('xgs', [
         this.initAll = function () {
             return xSatnetRPC.readAllGSConfiguration()
                 .then(function (cfgs) {
-                    var p = [];
-                    angular.forEach(cfgs, function (c) { p.push(gs.add(c)); });
-                    return $q.all(p).then(function (r) { return r; });
+                    var gs_markers = [];
+                    angular.forEach(cfgs, function (cfg) {
+                        gs_markers = gs_markers.concat(
+                            markers.createGSMarker(cfg)
+                        );
+                    });
+                    return gs_markers;
                 });
         };
 

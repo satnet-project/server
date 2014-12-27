@@ -23,6 +23,7 @@
 
     <link rel='stylesheet'
         href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
+    <link rel='stylesheet' href="{% static 'css/sass/markers.css' %}" />
     <link rel='stylesheet'
         href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
     <link rel='stylesheet'
@@ -93,6 +94,10 @@
     </script>
     <script type="text/javascript"
         src="{% static 'scripts/external_components/Leaflet.Geodesic.js' %}">
+    </script>
+    <link rel='stylesheet' href="{% static 'scripts/bower_components/leaflet.markercluster/dist/MarkerCluster.css' %}" />
+    <script type="text/javascript"
+        src="{% static 'scripts/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js'%}">
     </script>
     <!-- -->
 
@@ -173,9 +178,12 @@
 <div ng-app='satnet-ui'>
 
     <div ng-controller='MapController' ng-init="init()" >
-        <leaflet id='mainMap' center='center' markers='markers'
-                 style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
-            </leaflet>
+        <leaflet
+            id='mainMap'
+            center='center' markers='markers' layers='layers' paths='paths'
+            maxbounds='maxbounds'
+            style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
+        </leaflet>
     </div>
 
 <div class='left-menu'>

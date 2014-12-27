@@ -23,7 +23,7 @@ angular.module(
         'leaflet-directive',
         'broadcaster',
         'map-services',
-        'groundstation-models',
+        'marker-models',
         'x-groundstation-models',
         'spacecraft-models',
         'x-spacecraft-models',
@@ -39,14 +39,14 @@ angular.module('ui-map-controllers')
     .constant('GS_ELEVATION', 15.0)
     .controller('MapController', [
         '$scope', '$log',
-        'broadcaster', 'maps', 'gs', 'xgs', 'sc', 'xsc', 'xserver',
+        'broadcaster', 'maps', 'markers', 'xgs', 'sc', 'xsc', 'xserver',
         'LAT', 'LNG', 'ZOOM',
         function (
             $scope,
             $log,
             broadcaster,
             maps,
-            gs,
+            markers,
             xgs,
             sc,
             xsc,
@@ -60,63 +60,82 @@ angular.module('ui-map-controllers')
 
             angular.extend($scope, {
                 center: { lat: LAT, lng: LNG, zoom: ZOOM },
-                tiles: {
-                    url: "http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-                    options: {
-                        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-                        minZoom: 2,
-                        maxZoom: 12,
-                        continuousWorld: false,
-                        noWrap: true
-                    }
+                layers: {
+                    baselayers: {
+                        esri_baselayer: {
+                            name: 'ESRI Base Layer',
+                            type: 'xyz',
+                            url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                            layerOptions: {
+                                noWrap: true,
+                                attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                            }
+                        },
+                        osm_baselayer: {
+                            name: 'OSM Base Layer',
+                            type: 'xyz',
+                            url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                            layerOptions: {
+                                noWrap: true,
+                                attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            }
+                        }
+                    },
+                    overlays: {}
                 },
-                markers: []
+                markers: {},
+                paths: {},
+                maxbounds: {}
             });
+
+            markers.setMapScope($scope);
+
             maps.createMainMap(true).then(function (data) {
                 $log.log('[map-controller] <' + maps.asString(data) + '>');
-            });
-
-            xserver.initStandalone().then(function (server) {
-                $log.log(
-                    '[map-controller] Server {'
-                        + '    identifier: ' + server.id
-                        + '    latitude: ' + server.latitude
-                        + '    longitude: ' + server.longitude
-                        + '}'
+                $scope.layers.overlays = angular.extend(
+                    {},
+                    maps.getOverlays(),
+                    markers.getOverlays()
                 );
-                xgs.initAll().then(function (gss) {
+                xsc.initAll().then(function (spacecraft) {
                     $log.log(
-                        '[map-controller] Ground Stations = '
-                            + gs.gssAsString(gss)
+                        '[map-controller] Spacecraft =' +
+                            JSON.stringify(spacecraft)
                     );
                 });
-            });
-
-            xsc.initAll().then(function () {
-                $log.log(
-                    '[map-controller] Spacecraft = <' + sc.asString() + '>'
-                );
+                xserver.initStandalone().then(function (server) {
+                    $log.log(
+                        '[map-controller] Server =' +
+                            JSON.stringify(server)
+                    );
+                    xgs.initAll().then(function (gs_markers) {
+                        $log.log(
+                            '[map-controller] Ground Station(s) = ' +
+                                JSON.stringify(gs_markers)
+                        );
+                    });
+                });
             });
 
             $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-added-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.add(gsId);
             });
+
             $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.remove(gsId);
             });
             $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
                 console.log(
-                    '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
+                    '@on-gs-updated-event, event = ' + event + ', id = ' + gsId
                 );
                 xgs.update(gsId);
             });
-
             $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {
                 console.log(
                     '@on-sc-added-event, event = ' + event + 'scId = ' + scId

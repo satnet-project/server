@@ -150,12 +150,13 @@ angular.module('marker-models')
                         name: 'Ground Stations',
                         type: 'markercluster',
                         visible: true
-                    },
+                    }/*,
                     spacecraft: {
                         name: 'Spacecraft',
                         type: 'markercluster',
                         visible: true
                     }
+                    */
                 };
             };
 
@@ -212,7 +213,8 @@ angular.module('marker-models')
              */
             this.createConnectorIdentifier = function (gs_identifier) {
                 return 'connect:'
-                    + gs_identifier + '_2_'
+                    + gs_identifier
+                    + '_2_'
                     + this.getServerMarker(gs_identifier).identifier;
             };
 
@@ -338,6 +340,15 @@ angular.module('marker-models')
             this.scLayers = L.layerGroup();
             this.trackLayers = L.layerGroup();
 
+            this.initScLayers = function () {
+                var s_layers = this.scLayers,
+                    t_layers = this.trackLayers;
+                return maps.getMainMap().then(function (mapInfo) {
+                    s_layers.addTo(mapInfo.map);
+                    t_layers.addTo(mapInfo.map);
+                });
+            };
+
             this.scStyle = {
                 autostart: true,
                 draggable: false,
@@ -374,8 +385,11 @@ angular.module('marker-models')
                 this.trackStyle.color = color;
 
                 return {
-                    marker: L.Marker.movingMarker(gt.positions, gt.durations, mo)
-                        .bindLabel(id, { noHide: true }),
+                    marker: L.Marker.movingMarker(
+                        gt.positions,
+                        gt.durations,
+                        mo
+                    ).bindLabel(id, { noHide: true }),
                     track: L.geodesic([gt.geopoints], this.trackStyle)
                 };
 

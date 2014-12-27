@@ -191,6 +191,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                         layerOptions: {
+                            noWrap: true,
                             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
                         }
                     },
@@ -199,6 +200,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         layerOptions: {
+                            noWrap: true,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }
@@ -219,6 +221,7 @@ angular.module('map-services')
                         url: 'http://openmapsurfer.uni-hd.de/tiles/adminb/x={x}&y={y}&z={z}',
                         visible: true,
                         layerOptions: {
+                            noWrap: true,
                             minZoom: 0,
                             maxZoom: 19,
                             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -229,6 +232,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.openstreetmap.se/hydda/roads_and_labels/{z}/{x}/{y}.png',
                         layerOptions: {
+                            noWrap: true,
                             minZoom: 0,
                             maxZoom: 18,
                             attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
@@ -239,6 +243,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
                         layerOptions: {
+                            noWrap: true,
                             attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
                             subdomains: 'abcd',
                             minZoom: 0,
@@ -250,6 +255,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png',
                         layerOptions: {
+                            noWrap: true,
                             attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
                             opacity: 0.35
                         }
@@ -259,6 +265,7 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png',
                         layerOptions: {
+                            noWrap: true,
                             attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
                             opacity: 0.5
                         }
