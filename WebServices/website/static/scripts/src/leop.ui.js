@@ -139,25 +139,6 @@ app.controller('NotificationAreaController', [
             $scope.logEvent(event, message);
         });
 
-        $scope.$on(broadcaster.GS_ADDED_EVENT, function (event, gsId) {
-            console.log(
-                '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
-            );
-            xgs.addGS(gsId);
-        });
-        $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
-            console.log(
-                '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
-            );
-            gs.remove(gsId);
-        });
-        $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
-            console.log(
-                '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
-            );
-            xgs.updateGS(gsId);
-        });
-
         $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {
             console.log(
                 '@on-sc-added-event, event = ' + event + 'scId = ' + scId

@@ -56,7 +56,7 @@ angular.module('marker-models')
              * to.
              * @returns {null|*} The _mapScope object.
              */
-            this.getMapScope = function () {
+            this.getScope = function () {
                 if (this._mapScope === null) {
                     throw '<_mapScope> has not been set.';
                 }
@@ -107,6 +107,33 @@ angular.module('marker-models')
             };
 
             /**
+             * Returns the marker for the server, in case it exists!
+             *
+             * @param gs_identifier Identifier of the GroundStation object that
+             *                      is bound to the server.
+             * @returns {null|*} String with the key for the marker of the
+             *                      server.
+             */
+            this.getServerMarker = function (gs_identifier) {
+                if (this._serverMarkerKey === null) {
+                    throw 'No server has been defined';
+                }
+                console.log('@gs = ' + gs_identifier);
+                return this.getScope().markers[this._serverMarkerKey];
+            };
+
+            /**
+             * Returns the marker for the object with the given identifier.
+             *
+             * @param identifier Identifier of the object, which can be either
+             *                      a GroundStation, a Spacecraft or a Server.
+             * @returns {*} Marker object.
+             */
+            this.getMarker = function (identifier) {
+                return this.getScope().markers[this.getMarkerKey(identifier)];
+            };
+
+            /**
              * Returns the overlays to be included as markerclusters within
              * the map.
              *
@@ -114,7 +141,7 @@ angular.module('marker-models')
              */
             this.getOverlays = function () {
                 return {
-                    servers : {
+                    network : {
                         name: 'Network',
                         type: 'markercluster',
                         visible: true
@@ -150,12 +177,12 @@ angular.module('marker-models')
              */
             this.createServerMarker = function (id, latitude, longitude) {
                 this._serverMarkerKey = this.createMarkerKey(id);
-                this.getMapScope().markers[this._serverMarkerKey] = {
+                this.getScope().markers[this._serverMarkerKey] = {
                     lat: latitude,
                     lng: longitude,
                     focus: true,
                     draggable: false,
-                    layer: 'servers',
+                    layer: 'network',
                     icon: {
                         iconUrl: '/static/images/icons/server-icon.svg',
                         iconSize: [15, 15]
@@ -172,18 +199,6 @@ angular.module('marker-models')
                 return id;
             };
 
-            /**
-             * Returns the marker for the server, in case it exists!
-             * @returns {null|*} String with the key for the marker of the
-             *                      server.
-             */
-            this.getServerMarker = function () {
-                if (this._serverMarkerKey === null) {
-                    throw 'No server has been defined';
-                }
-                return this._serverMarkerKey;
-            };
-
             /******************************************************************/
             /***************************************** GROUND STATION MARKERS */
             /******************************************************************/
@@ -198,9 +213,7 @@ angular.module('marker-models')
             this.createConnectorIdentifier = function (gs_identifier) {
                 return 'connect:'
                     + gs_identifier + '_2_'
-                    + this.getMapScope().markers[
-                        this._serverMarkerKey
-                    ].identifier;
+                    + this.getServerMarker(gs_identifier).identifier;
             };
 
             /**
@@ -223,23 +236,26 @@ angular.module('marker-models')
              */
             this.createGSConnector = function (gs_identifier) {
 
-                var s_marker = this.getMapScope().markers[
-                        this._serverMarkerKey
-                    ],
-                    g_marker = this.getMapScope().markers[
-                        this.getMarkerKey(gs_identifier)
-                    ],
-                    c_key = this.createMarkerKey(
-                        this.createConnectorIdentifier(gs_identifier)
-                    );
+                var s_marker = this.getServerMarker(gs_identifier),
+                    g_marker = this.getMarker(gs_identifier),
+                    c_id = this.createConnectorIdentifier(gs_identifier),
+                    c_key,
+                    r = {};
 
-                this.getMapScope().paths[c_key] = {
+                c_key = this.createMarkerKey(c_id);
+                r[c_key] = {
+                    layer: 'network',
                     color: '#036128',
+                    type: 'polyline',
                     weight: 2,
                     opacity: 0.5,
-                    layer: 'servers',
-                    latlngs: [s_marker, g_marker]
+                    latlngs: [s_marker, g_marker],
+                    identifier: c_id
                 };
+
+                this.getScope().paths =
+                    angular.extend({}, this.getScope().paths, r);
+                return c_id;
 
             };
 
@@ -253,7 +269,7 @@ angular.module('marker-models')
 
                 var id = cfg.groundstation_id;
 
-                this.getMapScope().markers[this.createMarkerKey(id)] = {
+                this.getScope().markers[this.createMarkerKey(id)] = {
                     lat: cfg.groundstation_latlon[0],
                     lng: cfg.groundstation_latlon[1],
                     focus: true,
@@ -268,119 +284,50 @@ angular.module('marker-models')
                         options: {
                             noHide: true
                         }
-                    }
+                    },
+                    identifier: id
                 };
 
                 this.createGSConnector(id);
-
                 return id;
 
             };
 
             /**
-             * Adds a marker to the main map.
-             * @param id Identifier of the GroundStation.
-             * @param gs Configuration object for the groundstastion.
-             * @returns {*} Promise that returns the updated configuration.
+             * Updates the configuration for the markers of the given
+             * GroundStation object.
+             *
+             * @param cfg New configuration of the object.
+             * @returns {cfg.groundstation_id|*} Identifier.
+             *
+             * TODO Validate
              */
-            this.addGS = function (id, gs) {
-
-                if (this.gs.hasOwnProperty(id)) {
-                    throw '[x-maps] GS Marker already exists, id = ' + id;
+            this.updateGSMarker = function (cfg) {
+                var new_lat = cfg.groundstation_latlon[0],
+                    new_lng = cfg.groundstation_latlon[1],
+                    marker = this.getMarker(cfg.groundstation_id);
+                if (marker.lat !== new_lat) {
+                    marker.lat = new_lat;
                 }
-
-                var m = this.createGSMarker(gs),
-                    c = this.createGSConnector(gs);
-
-                this.gs[id] = m;
-                this.connectors[id] = c;
-                this.gsLayers.addLayer(m);
-                this.connectorLayers.addLayer(c);
-
-                return maps.getMainMap().then(function (mapInfo) {
-                    console.log('mapInfo.map + ' + mapInfo.map);
-                    c.addTo(mapInfo.map);
-                    m.addTo(mapInfo.map);
-                    gs.marker = m;
-                    gs.connector = c;
-                    return gs;
-                });
-
+                if (marker.lng !== new_lng) {
+                    marker.lng = new_lng;
+                }
+                return cfg.groundstation_id;
             };
 
             /**
-             * Updates the configuration for the marker of the given GS.
+             * Removes a given GroundStation marker, together with its
+             * associated connector path to the server and with the identifier
+             * within the servers lists of bounded GroundStations.
              *
-             * @param id The identififer of the GroundStation.
-             * @param lat The new latitude for the marker.
-             * @param lng The new longitude for the marker.
-             * @returns {String} GroundStation identifier.
+             * @param identifier Identifier of the GroundStation whose markers
+             *                      are going to be removed.
              */
-            this.updateGS = function (id, lat, lng) {
-
-                if (!this.gs.hasOwnProperty(id)) {
-                    throw '[x-maps] Marker does NOT exist, id = ' + id;
-                }
-
-                var server,
-                    s_ids = Object.keys(this.servers),
-                    gs = this.gs[id];
-                server = this.servers[s_ids[0]];
-
-                gs.setLatLng(L.latLng(lat, lng));
-                this.connectors[id].setLatLngs(
-                    this.calculateLineLatLngs(server, gs)
-                );
-
-                return id;
-
-            };
-
-            /**
-             * This function calculates the starting and ending point of the
-             * Polylines to be used as connectors in between the GroundStations
-             * and the servers of the network.
-             *
-             * @param server Server configuration object.
-             * @param gs GroundStation configuration object.
-             * @returns {[L.latlng]}
-             */
-            this.calculateLineLatLngs = function (server, gs) {
-                var s_ll = [server.latitude, server.longitude],
-                    g_ll = [gs.cfg.latitude, gs.cfg.longitude];
-                return [ L.latLng(s_ll), L.latLng(g_ll)];
-            };
-
-            /**
-             * Removes the marker from the main map and the connector associated
-             * with this GroundStation (in case it exists, flexible approach).
-             *
-             * @param id Identifier of the GroundStation whose marker is to be
-             *              removed.
-             * @returns Promise that returns the id of the just removed
-             *          GroundStation.
-             */
-            this.removeGS = function (id) {
-                var marker = null, c = null;
-                if (!this.gs.hasOwnProperty(id)) {
-                    throw '[x-maps] Marker does NOT exist, id = ' + id;
-                }
-
-                if (this.connectors.hasOwnProperty(id)) {
-                    c = this.connectors[id];
-                    this.connectorLayers.removeLayer(c);
-                    delete this.connectors[id];
-                }
-
-                marker = this.gs[id];
-                this.gsLayers.removeLayer(marker);
-                delete this.gs[id];
-
-                return maps.getMainMap().then(function (mapInfo) {
-                    mapInfo.map.removeLayer(marker);
-                    if (c !== null) { mapInfo.map.removeLayer(c); }
-                    return id;
-                });
+            this.removeGSMarker = function (identifier) {
+                delete this.getScope().paths[this.getMarkerKey(
+                    this.createConnectorIdentifier(identifier)
+                )];
+                delete this.getScope().markers[this.getMarkerKey(identifier)];
             };
 
             /******************************************************************/

@@ -102,19 +102,19 @@ angular.module('ui-map-controllers')
                 console.log(
                     '@on-gs-added-event, event = ' + event + 'gsId = ' + gsId
                 );
-                xgs.addGS(gsId);
+                xgs.add(gsId);
             });
             $scope.$on(broadcaster.GS_REMOVED_EVENT, function (event, gsId) {
                 console.log(
                     '@on-gs-removed-event, event = ' + event + 'gsId = ' + gsId
                 );
-                gs.remove(gsId);
+                xgs.remove(gsId);
             });
             $scope.$on(broadcaster.GS_UPDATED_EVENT, function (event, gsId) {
                 console.log(
                     '@on-gs-updated-event, event = ' + event + 'gsId = ' + gsId
                 );
-                xgs.updateGS(gsId);
+                xgs.update(gsId);
             });
 
             $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {

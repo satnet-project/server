@@ -71,22 +71,28 @@ angular.module('x-groundstation-models').service('xgs', [
         /**
          * Adds a new GroundStation together with its marker, using the
          * configuration object that it retrieves from the server.
-         * @param id Identififer of the GroundStation to be added.
+         *
+         * @param identifier Identififer of the GroundStation to be added.
+         * @returns String Identifier of the just-created object.
          */
-        this.addGS = function (id) {
-            satnetRPC.rCall('gs.get', [id]).then(function (data) {
-                gs.add(data);
+        this.add = function (identifier) {
+            satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
+                return markers.createGSMarker(data);
+            });
+        };
+
+        this.update = function (identifier) {
+            satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
+                return markers.updateGSMarker(data);
             });
         };
 
         /**
-         * Updates the configuration for a given GroundStation.
-         * @param id The identifier of the GroundStation.
+         * Removes the markers for the given GroundStation object.
+         * @param identifier Identifier of the GroundStation object.
          */
-        this.updateGS = function (id) {
-            satnetRPC.rCall('gs.get', [id]).then(function (data) {
-                gs.configure(data);
-            });
+        this.remove = function (identifier) {
+            markers.removeGSMarker(identifier);
         };
 
     }
