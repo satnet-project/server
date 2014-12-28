@@ -17,9 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('x-satnet-services', [
-    'satnet-services', 'celestrak-services'
-]);
+angular.module('x-satnet-services', [ 'satnet-services' ]);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network
@@ -37,7 +35,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          * @returns Promise that returns an array with the configuration
          *               for each of the GroundStation objects.
          */
-        this.readAllGSConfiguration = function () {
+        this.readAllGS = function () {
             return satnetRPC.rCall('gs.list', []).then(function (gss) {
                 var p = [];
                 angular.forEach(gss, function (gs) {
@@ -56,11 +54,33 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
         /**
          * Reads the configuration for all the GroundStation objects available
          * in the server.
+         * @returns Promise that returns an array with the configuration for
+         *          each of the GroundStation objects.
+         */
+        this.readAllSC = function () {
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (sc) {
+                    p.push(satnetRPC.readSCCfg(sc));
+                });
+                return $q.all(p).then(function (results) {
+                    var cfgs = [], j;
+                    for (j = 0; j < results.length; j += 1) {
+                        cfgs.push(results[j]);
+                    }
+                    return cfgs;
+                });
+            });
+        };
+
+        /**
+         * Reads the configuration for all the GroundStation objects available
+         * in the server.
          * @param leop_id Identifier of the LEOP cluster.
          * @returns Promise that returns an array with the configuration
          *               for each of the GroundStation objects.
          */
-        this.readAllLEOPGs = function (leop_id) {
+        this.readInUseLEOPGS = function (leop_id) {
             return satnetRPC.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
@@ -78,34 +98,12 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
         };
 
         /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @returns Promise that returns an array with the configuration for
-         *          each of the GroundStation objects.
-         */
-        this.readAllSCConfiguration = function () {
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (sc) {
-                    p.push(satnetRPC.readSCCfg(sc));
-                });
-                return $q.all(p).then(function (results) {
-                    var cfgs = [], j;
-                    for (j = 0; j < results.length; j += 1) {
-                        cfgs.push(results[j]);
-                    }
-                    return cfgs;
-                });
-            });
-        };
-
-        /**
          * Reads the configuration for all the GroundStations associated with
          * this LEOP cluster.
          * @param leop_id Identifier of the LEOP cluster.
          * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
          */
-        this.readLEOPGsOptions = function (leop_id) {
+        this.readAllLEOPGS = function (leop_id) {
             return satnetRPC.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
@@ -131,6 +129,14 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
                             leop_gs_inuse: u_cfgs
                         };
                     });
+                });
+        };
+
+        this.readLEOPCluster = function (leop_id) {
+            console.log('@readLEOPCluster, leop_id = ' + leop_id);
+            return satnetRPC.rCall('leop.sc.cluster', [leop_id])
+                .then(function (cluster) {
+                    console.log('>>> cluster_cfg = ' + JSON.stringify(cluster));
                 });
         };
 

@@ -17,7 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('satnet-services', [ 'celestrak-services' ]);
+angular.module('satnet-services', []);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network
@@ -79,7 +79,9 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.gs.add':
                 this.leop.createMethod('gs.add'),
             'leop.gs.remove':
-                this.leop.createMethod('gs.remove')
+                this.leop.createMethod('gs.remove'),
+            'leop.sc.cluster':
+                this.leop.createMethod('sc.cluster')
         };
 
         /**

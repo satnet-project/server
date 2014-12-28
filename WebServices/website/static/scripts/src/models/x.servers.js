@@ -17,9 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('x-server-models', [
-    'satnet-services', 'marker-models'
-]);
+angular.module('x-server-models', ['satnet-services', 'marker-models']);
 
 /**
  * eXtended Server models. Services built on top of the satnetRPC service and
@@ -27,8 +25,9 @@ angular.module('x-server-models', [
  * bussiness logic with the basic models.
  */
 angular.module('x-server-models').service('xserver', [
-    '$location', 'markers', 'satnetRPC',
-    function ($location, markers, satnetRPC) {
+    '$location', 'satnetRPC',  'markers',
+    function ($location, satnetRPC, markers) {
+
         'use strict';
 
         this.initStandalone = function () {

@@ -104,13 +104,6 @@
     {% block service_scripts %}
 
     <script type="text/javascript"
-            src="{% static 'scripts/src/common.js'%}">
-    </script>
-
-    <script type="text/javascript"
-        src="{% static 'scripts/src/services/common.js'%}">
-    </script>
-    <script type="text/javascript"
         src="{% static 'scripts/src/services/maps.js'%}">
     </script>
     <script type="text/javascript"
@@ -129,17 +122,13 @@
         src="{% static 'scripts/src/models/marker.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/models/groundstation.js' %}">
-    </script>
-    <script type="text/javascript"
         src="{% static 'scripts/src/models/x.groundstation.js' %}">
     </script>
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/spacecraft.js'%}">
-    </script>
+    <!-- -->
     <script type="text/javascript"
         src="{% static 'scripts/src/models/x.spacecraft.js' %}">
     </script>
+    <!-- -->
     <script type="text/javascript"
         src="{% static 'scripts/src/models/x.servers.js' %}">
     </script>
@@ -178,8 +167,7 @@
 <div ng-app='satnet-ui'>
 
     <div ng-controller='MapController' ng-init="init()" >
-        <leaflet
-            id='mainMap'
+        <leaflet id='mainMap'
             center='center' markers='markers' layers='layers' paths='paths'
             maxbounds='maxbounds'
             style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>

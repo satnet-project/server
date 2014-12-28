@@ -16,31 +16,31 @@
  * Created by rtubio on 10/1/14.
  */
 
-var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////// Main Application Module
-////////////////////////////////////////////////////////////////////////////////
-
-var app = angular.module('satnet-ui', [
+/**
+ * Main application for the LEOP operational phase.
+ * @type {ng.IModule}
+ */
+var app = angular.module('leop-ui', [
     // AngularJS libraries
+    'jsonrpc',
+    'ngCookies',
+    'ngResource',
     'leaflet-directive',
-    'ngResource', 'ngCookies',
-    'remoteValidation', 'jsonrpc',
-    // level 1 services/models
-    'common', 'map-services',
-    'celestrak-services', 'satnet-services', 'broadcaster',
+    'remoteValidation',
+    // level 1 services
+    'broadcaster',
+    'map-services',
+    'celestrak-services',
+    'satnet-services',
     'x-satnet-services',
     // level 2 services/models
     'marker-models',
-    'groundstation-models',
-    'spacecraft-models',
     // level 3 services/models
-    'x-groundstation-models',
     'x-server-models',
     'x-spacecraft-models',
+    'x-groundstation-models',
     // level 4 (controllers),
-    'ui-map-controllers',
+    'ui-leop-map-controllers',
     'ui-menu-controllers',
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
@@ -48,21 +48,19 @@ var app = angular.module('satnet-ui', [
 ]);
 
 // level 1 services
-angular.module('common');
+angular.module('broadcaster');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
 angular.module('x-satnet-services');
-angular.module('broadcaster');
-// level 2 services
+// level 2 services (bussiness logic layer)
 angular.module('marker-models');
-angular.module('groundstation-models');
-angular.module('spacecraft-models');
 // level 3 services
-angular.module('x-groundstation-models');
+angular.module('x-server-models');
 angular.module('x-spacecraft-models');
+angular.module('x-groundstation-models');
 // level 4 controllers
-angular.module('ui-map-controllers');
+angular.module('ui-leop-map-controllers');
 angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
@@ -87,10 +85,7 @@ app.config(function ($provide) {
                 rScope.$broadcast('infoEvent', args);
             },
             error: function () {
-                //$delegate.error.apply(null, ['[error] ' + args]);
                 $delegate.error.apply(null, arguments);
-                //Logging.error.apply(null,arguments)
-                //rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
                 $delegate.warn.apply(null, ['[warn] ' + args]);
@@ -104,60 +99,42 @@ app.config(function ($provide) {
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$window', '$log', '$http', '$cookies',
-    function ($rootScope, $window, $log, $http, $cookies) {
+    '$rootScope', '$log', '$http', '$cookies', '$window',
+    function ($rootScope, $log, $http, $cookies, $window) {
         'use strict';
-        $rootScope.leop_id = $window.leop_id;
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        $rootScope.leop_id = $window.leop_id;
     }
 ]);
 
-app.controller('NotificationAreaController', [
-    '$scope', '$filter', 'broadcaster', 'gs', 'sc', 'xgs', 'xsc',
-    function ($scope, $filter, broadcaster, gs, sc, xgs, xsc) {
-        'use strict';
-        $scope.eventLog = [];
-        $scope.logEvent = function (event, message) {
-            $scope.eventLog.unshift({
-                'type': event.name,
-                'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                'msg':  message
+app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
+    .controller('NotificationAreaController', [
+        '$scope', '$filter', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, TIMESTAMP_FORMAT) {
+
+            'use strict';
+            $scope.eventLog = [];
+            $scope.logEvent = function (event, message) {
+                $scope.eventLog.unshift({
+                    'type': event.name,
+                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                    'msg':  message
+                });
+            };
+
+            $scope.$on('logEvent', function (event, message) {
+                $scope.logEvent(event, message);
             });
-        };
+            $scope.$on('infoEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('warnEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('errEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
 
-        $scope.$on('logEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('infoEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('warnEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('errEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-
-        $scope.$on(broadcaster.SC_ADDED_EVENT, function (event, scId) {
-            console.log(
-                '@on-sc-added-event, event = ' + event + 'scId = ' + scId
-            );
-            xsc.addSC(scId);
-        });
-        $scope.$on(broadcaster.SC_REMOVED_EVENT, function (event, scId) {
-            console.log(
-                '@on-sc-removed-event, event = ' + event + 'scId = ' + scId
-            );
-            sc.remove(scId);
-        });
-        $scope.$on(broadcaster.SC_UPDATED_EVENT, function (event, scId) {
-            console.log(
-                '@on-sc-updated-event, event = ' + event + 'scId = ' + scId
-            );
-            console.log('NOT YET IMPLEMENTED!');
-            xsc.updateSC(scId);
-        });
-
-    }
-]);
+        }
+    ]);

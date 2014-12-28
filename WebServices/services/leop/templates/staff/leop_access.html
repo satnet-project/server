@@ -46,9 +46,6 @@
         <script type="text/javascript"
             src="{% static 'scripts/src/leop.ui.js' %}">
         </script>
-        <script type="text/javascript"
-            src="{% static 'scripts/src/models/x.servers.js'%}">
-        </script>
 
     {% endblock %}
 
@@ -68,11 +65,10 @@
 </script>
 
 {% verbatim %}
-<div ng-app='satnet-ui'>
+<div ng-app='leop-ui'>
 
-    <div ng-controller='MapController' ng-init="init()" >
-        <leaflet
-            id='mainMap'
+    <div ng-controller='LEOPMapController' >
+        <leaflet id='mainMap'
             center='center' markers='markers' layers='layers' paths='paths'
             style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
         </leaflet>

@@ -16,19 +16,6 @@
  * Created by rtubio on 11/01/14.
  */
 
-/**
- * Redraws the Terminator to its new position.
- * @returns {*} Promise that returns the updated Terminator object.
- * @private
- */
-function updateTerminator(t) {
-    'use strict';
-    var t2 = L.terminator();
-    t.setLatLngs(t2.getLatLngs());
-    t.redraw();
-    return t;
-}
-
 /** Module definition (empty array is vital!). */
 angular.module('map-services', [
     'leaflet-directive',
@@ -37,12 +24,19 @@ angular.module('map-services', [
 
 angular.module('map-services')
     .constant('T_OPACITY', 0.125)
+    .constant('LAT', 37.7833)
+    .constant('LNG', -122.4167)
     .constant('ZOOM', 7)
     .constant('DETAIL_ZOOM', 10)
     .constant('DEFAULT_MOVEME', 'Drag me!')
     .service('maps', [
-        '$q', 'leafletData', 'satnetRPC',
-        'ZOOM', 'DETAIL_ZOOM', 'T_OPACITY', 'DEFAULT_MOVEME',
+        '$q',
+        'leafletData',
+        'satnetRPC',
+        'ZOOM',
+        'DETAIL_ZOOM',
+        'T_OPACITY',
+        'DEFAULT_MOVEME',
         function (
             $q,
             leafletData,
@@ -80,17 +74,30 @@ angular.module('map-services')
             };
 
             /**
+             * Redraws the Terminator to its new position.
+             * @returns {*} Promise that returns the updated Terminator object.
+             * @private
+             */
+            this.updateTerminator = function (t) {
+                var t2 = L.terminator();
+                t.setLatLngs(t2.getLatLngs());
+                t.redraw();
+                return t;
+            };
+
+            /**
              * Creates the main map and adds a terminator for the illuminated
              * surface of the Earth.
              * @returns {$q} Promise that returns the mapInfo object
              *               {map, terminator}.
              */
             this.createTerminatorMap = function () {
+                var update_function = this.updateTerminator;
                 return this.getMainMap().then(function (mapInfo) {
                     var t = L.terminator({ fillOpacity: T_OPACITY });
                     t.addTo(mapInfo.map);
                     mapInfo.terminator = t;
-                    setInterval(function () { updateTerminator(t); }, 500);
+                    setInterval(function () { update_function(t); }, 500);
                     return mapInfo;
                 });
             };
@@ -106,7 +113,7 @@ angular.module('map-services')
              */
             this.createMainMap = function (terminator) {
 
-                var p = [];//, layers_control = this.layersControl;
+                var p = [];
 
                 if (terminator) {
                     p.push(this.createTerminatorMap());
@@ -184,7 +191,7 @@ angular.module('map-services')
              *
              * @returns {{esri_baselayer: {name: string, type: string, url: string, layerOptions: {attribution: string}}, osm_baselayer: {name: string, type: string, url: string, layerOptions: {attribution: string}}}}
              */
-            this.getNgBaseLayers = function () {
+            this.getBaseLayers = function () {
                 return {
                     esri_baselayer: {
                         name: 'ESRI Base Layer',

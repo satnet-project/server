@@ -17,9 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('marker-models', [
-    'map-services'
-]);
+angular.module('marker-models', ['map-services']);
 
 /**
  * eXtended GroundStation models. Services built on top of the satnetRPC
@@ -30,8 +28,8 @@ angular.module('marker-models')
     .constant('_SIM_DAYS', 1)
     .constant('_GEOLINE_STEPS', 5)
     .service('markers', [
-        'maps', '_RATE', '_SIM_DAYS', '_GEOLINE_STEPS',
-        function (maps, _RATE, _SIM_DAYS, _GEOLINE_STEPS) {
+        '$log', 'maps', '_RATE', '_SIM_DAYS', '_GEOLINE_STEPS',
+        function ($log, maps, _RATE, _SIM_DAYS, _GEOLINE_STEPS) {
 
             'use strict';
 
@@ -39,17 +37,11 @@ angular.module('marker-models')
             /****************************************************** MAP SCOPE */
             /******************************************************************/
 
+            // Structure that holds a reference to the map and to the
+            // associated structures.
+            this._mapInfo = null;
             // Scope where the leaflet angular pluing has its variables.
             this._mapScope = null;
-
-            /**
-             * Bounds this markers service to this scope.
-             * @param scope The Angular Leaflet plugin scope to where to bound
-             *              this service.
-             */
-            this.setMapScope = function (scope) {
-                this._mapScope = scope;
-            };
 
             /**
              * Returns the current scope to which this markers service is bound
@@ -61,6 +53,51 @@ angular.module('marker-models')
                     throw '<_mapScope> has not been set.';
                 }
                 return this._mapScope;
+            };
+
+            /**
+             * Configures the scope of the Map controller to set the variables
+             * for the angular-leaflet plugin.
+             *
+             * @param scope Scope ($scope) of the controller for the
+             *              angular-leaflet plugin.
+             */
+            this.configureMapScope = function (scope) {
+
+                this._mapScope = scope;
+
+                angular.extend(this._mapScope, {
+                    center: { lat: maps.LAT, lng: maps.LNG, zoom: maps.ZOOM },
+                    layers: {
+                        baselayers: {},
+                        overlays: {}
+                    },
+                    markers: {},
+                    paths: {},
+                    maxbounds: {}
+                });
+
+                this._mapScope.layers.baselayers = angular.extend(
+                    {},
+                    this._mapScope.layers.baselayers,
+                    maps.getBaseLayers()
+                );
+
+                this._mapScope.layers.overlays = angular.extend(
+                    {},
+                    maps.getOverlays(),
+                    this.getOverlays()
+                );
+
+                var mapInfo = this._mapInfo;
+                maps.createMainMap(true).then(function (data) {
+                    $log.log(
+                        '[map-controller] Created map = <' +
+                            maps.asString(data) + '>'
+                    );
+                    mapInfo = angular.extend({}, mapInfo, data);
+                });
+
             };
 
             /******************************************************************/
@@ -150,7 +187,8 @@ angular.module('marker-models')
                         name: 'Ground Stations',
                         type: 'markercluster',
                         visible: true
-                    }/*,
+                    }
+                    /*, TODO Native angular-leaflet support for MovingMarker
                     spacecraft: {
                         name: 'Spacecraft',
                         type: 'markercluster',
@@ -340,15 +378,6 @@ angular.module('marker-models')
             this.scLayers = L.layerGroup();
             this.trackLayers = L.layerGroup();
 
-            this.initScLayers = function () {
-                var s_layers = this.scLayers,
-                    t_layers = this.trackLayers;
-                return maps.getMainMap().then(function (mapInfo) {
-                    s_layers.addTo(mapInfo.map);
-                    t_layers.addTo(mapInfo.map);
-                });
-            };
-
             this.scStyle = {
                 autostart: true,
                 draggable: false,
@@ -364,7 +393,7 @@ angular.module('marker-models')
                 steps: _GEOLINE_STEPS
             };
 
-            this.colors = [ 'red', 'blue', 'yellow' ];
+            this.colors = ['red', 'blue', 'yellow'];
             this.color_n = 0;
 
             /**
@@ -372,13 +401,13 @@ angular.module('marker-models')
              * marker for the spacecraft, its associated label and the
              * groundtrack.
              *
-             * @param id Identifier of the Spacecraft.
              * @param cfg Configuration object.
              * @returns {{marker: L.Marker.movingMarker, track: L.polyline}}
              */
-            this.createSCMarkers = function (id, cfg) {
+            this.createSCMarkers = function (cfg) {
 
-                var gt = this.readTrack(cfg.groundtrack),
+                var id = cfg.spacecraft_id,
+                    gt = this.readTrack(cfg.groundtrack),
                     mo = this.scStyle,
                     color =  this.colors[this.color_n % this.colors.length];
                 this.color_n += 1;
@@ -507,6 +536,26 @@ angular.module('marker-models')
                         track: m.track
                     };
                 });
+
+            };
+
+            /**
+             * Updates the configuration for a given Spacecraft object.
+             *
+             * @param cfg Object with the new configuration for the Spacecraft.
+             * @returns {String} Identifier of the just-updated Spacecraft.
+             *
+             * TODO Real spacecraft update.
+             */
+            this.updateSC = function (cfg) {
+
+                var id = cfg.spacecraft_id;
+                if (!this.sc.hasOwnProperty(id)) {
+                    throw '[x-maps] SC Marker does not exist! id = ' + id;
+                }
+
+                console.log('@markers.updateSC, cfg = ' + JSON.stringify(cfg));
+                return id;
 
             };
 

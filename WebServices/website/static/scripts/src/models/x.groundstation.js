@@ -18,6 +18,7 @@
 
 /** Module definition . */
 angular.module('x-groundstation-models', [
+    'broadcaster',
     'satnet-services',
     'x-satnet-services',
     'marker-models'
@@ -28,8 +29,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', 'satnetRPC', 'xSatnetRPC', 'markers',
-    function ($rootScope, satnetRPC, xSatnetRPC, markers) {
+    '$rootScope', 'broadcaster', 'satnetRPC', 'xSatnetRPC', 'markers',
+    function ($rootScope, broadcaster, satnetRPC, xSatnetRPC, markers) {
         'use strict';
 
         /**
@@ -39,16 +40,13 @@ angular.module('x-groundstation-models').service('xgs', [
          *          configurations read.
          */
         this.initAll = function () {
-            return xSatnetRPC.readAllGSConfiguration()
-                .then(function (cfgs) {
-                    var gs_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        gs_markers = gs_markers.concat(
-                            markers.createGSMarker(cfg)
-                        );
-                    });
-                    return gs_markers;
+            return xSatnetRPC.readAllGS().then(function (cfgs) {
+                var gs_markers = [];
+                angular.forEach(cfgs, function (cfg) {
+                    gs_markers = gs_markers.concat(markers.createGSMarker(cfg));
                 });
+                return gs_markers;
+            });
         };
 
         /**
@@ -59,7 +57,7 @@ angular.module('x-groundstation-models').service('xgs', [
          *          configurations read.
          */
         this.initAllLEOP = function () {
-            return xSatnetRPC.readAllLEOPGs($rootScope.leop_id)
+            return xSatnetRPC.readInUseLEOPGS($rootScope.leop_id)
                 .then(function (cfgs) {
                     var gs_markers = [];
                     angular.forEach(cfgs, function (cfg) {
@@ -84,6 +82,10 @@ angular.module('x-groundstation-models').service('xgs', [
             });
         };
 
+        /**
+         * Updates the markers for the given GroundStation object.
+         * @param identifier Identifier of the GroundStation object.
+         */
         this.update = function (identifier) {
             satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.updateGSMarker(data);
@@ -95,7 +97,33 @@ angular.module('x-groundstation-models').service('xgs', [
          * @param identifier Identifier of the GroundStation object.
          */
         this.remove = function (identifier) {
-            markers.removeGSMarker(identifier);
+            return markers.removeGSMarker(identifier);
+        };
+
+        /**
+         * Private method that creates the event listeners for this service.
+         */
+        this.initListeners = function () {
+            var self = this;
+            $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-added-event, event = ' + event + ', id = ' + id
+                );
+                self.add(id);
+            });
+            $rootScope.$on(broadcaster.GS_REMOVED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
+                );
+                self.remove(id);
+            });
+            $rootScope.$on(broadcaster.GS_UPDATED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-updated-event, event = ' + event + ', id = ' + id
+                );
+                self.update(id);
+            });
+
         };
 
     }

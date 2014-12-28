@@ -16,12 +16,10 @@
  * Created by rtubio on 10/1/14.
  */
 
-var TIMESTAMP_FORMAT = 'HH:mm:ss.sss';
-
-////////////////////////////////////////////////////////////////////////////////
-/////////////////////////////////////////////////////// Main Application Module
-////////////////////////////////////////////////////////////////////////////////
-
+/**
+ * Main application for the norminal operational phase.
+ * @type {ng.IModule}
+ */
 var app = angular.module('satnet-ui', [
     // AngularJS libraries
     'jsonrpc',
@@ -30,16 +28,13 @@ var app = angular.module('satnet-ui', [
     'leaflet-directive',
     'remoteValidation',
     // level 1 services/models
-    'common',
     'broadcaster',
     'map-services',
+    'celestrak-services',
     'satnet-services',
     'x-satnet-services',
-    'celestrak-services',
     // level 2 services/models
     'marker-models',
-    'spacecraft-models',
-    'groundstation-models',
     // level 3 services/models
     'x-server-models',
     'x-spacecraft-models',
@@ -52,7 +47,6 @@ var app = angular.module('satnet-ui', [
 ]);
 
 // level 1 services
-angular.module('common');
 angular.module('broadcaster');
 angular.module('map-services');
 angular.module('satnet-services');
@@ -60,8 +54,6 @@ angular.module('x-satnet-services');
 angular.module('celestrak-services');
 // level 2 services
 angular.module('marker-models');
-angular.module('spacecraft-models');
-angular.module('groundstation-models');
 // level 3 services
 angular.module('x-server-models');
 angular.module('x-spacecraft-models');
@@ -116,31 +108,33 @@ app.run([
     }
 ]);
 
-app.controller('NotificationAreaController', [
-    '$scope', '$filter',
-    function ($scope, $filter) {
-        'use strict';
-        $scope.eventLog = [];
-        $scope.logEvent = function (event, message) {
-            $scope.eventLog.unshift({
-                'type': event.name,
-                'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                'msg':  message
+app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
+    .controller('NotificationAreaController', [
+        '$scope', '$filter', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, TIMESTAMP_FORMAT) {
+
+            'use strict';
+            $scope.eventLog = [];
+            $scope.logEvent = function (event, message) {
+                $scope.eventLog.unshift({
+                    'type': event.name,
+                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                    'msg':  message
+                });
+            };
+
+            $scope.$on('logEvent', function (event, message) {
+                $scope.logEvent(event, message);
             });
-        };
+            $scope.$on('infoEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('warnEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('errEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
 
-        $scope.$on('logEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('infoEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('warnEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-        $scope.$on('errEvent', function (event, message) {
-            $scope.logEvent(event, message);
-        });
-
-    }
-]);
+        }
+    ]);

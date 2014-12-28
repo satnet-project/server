@@ -20,9 +20,11 @@
 angular.module(
     'ui-modalgs-controllers',
     [
-        'ui.bootstrap', 'nya.bootstrap.select',
+        'ui.bootstrap',
+        'nya.bootstrap.select',
         'leaflet-directive',
-        'common', 'satnet-services', 'broadcaster'
+        'satnet-services',
+        'broadcaster'
     ]
 );
 
@@ -32,11 +34,26 @@ angular.module('ui-modalgs-controllers')
     .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('AddGSModalCtrl', [
-        '$scope', '$log',
+        '$scope',
+        '$log',
         '$modalInstance',
-        'common', 'satnetRPC', 'broadcaster',
-        'LAT', 'LNG', 'D_ZOOM', 'GS_ELEVATION',
-        function ($scope, $log, $modalInstance, common, satnetRPC, broadcaster, LAT, LNG, D_ZOOM, GS_ELEVATION) {
+        'satnetRPC',
+        'broadcaster',
+        'LAT',
+        'LNG',
+        'D_ZOOM',
+        'GS_ELEVATION',
+        function (
+            $scope,
+            $log,
+            $modalInstance,
+            satnetRPC,
+            broadcaster,
+            LAT,
+            LNG,
+            D_ZOOM,
+            GS_ELEVATION
+        ) {
 
             'use strict';
 
@@ -66,7 +83,7 @@ angular.module('ui-modalgs-controllers')
             });
 
             $scope.initMap = function () {
-                common.getUserLocation().then(function (location) {
+                satnetRPC.getUserLocation().then(function (location) {
                     $scope.center.lat = location.lat;
                     $scope.center.lng = location.lng;
                     $scope.markers.gsStyle.lat = location.lat;
@@ -103,10 +120,28 @@ angular.module('ui-modalgs-controllers')
     .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('EditGSModalCtrl', [
-        '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'broadcaster', 'maps', 'groundstationId',
-        'LAT', 'LNG', 'D_ZOOM',
-        function ($scope, $log, $modalInstance, satnetRPC, broadcaster, maps, groundstationId, LAT, LNG, D_ZOOM) {
+        '$scope',
+        '$log',
+        '$modalInstance',
+        'satnetRPC',
+        'broadcaster',
+        'maps',
+        'groundstationId',
+        'LAT',
+        'LNG',
+        'D_ZOOM',
+        function (
+            $scope,
+            $log,
+            $modalInstance,
+            satnetRPC,
+            broadcaster,
+            maps,
+            groundstationId,
+            LAT,
+            LNG,
+            D_ZOOM
+        ) {
             'use strict';
 
             $scope.gs = {};

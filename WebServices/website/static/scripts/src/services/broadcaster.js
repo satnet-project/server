@@ -22,8 +22,7 @@ angular.module('broadcaster', []);
 /**
  * Service used for broadcasting UI events in between controllers.
  */
-angular.module('broadcaster').service('broadcaster', [
-    '$rootScope',
+angular.module('broadcaster').service('broadcaster', [ '$rootScope',
     function ($rootScope) {
 
         'use strict';
@@ -90,5 +89,4 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast(this.SC_UPDATED_EVENT, scId);
         };
 
-    }
-]);
+    }]);

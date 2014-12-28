@@ -20,8 +20,11 @@
 angular.module(
     'ui-leop-modalufo-controllers',
     [
-        'ui.bootstrap', 'nya.bootstrap.select',
-        'celestrak-services', 'satnet-services', 'broadcaster'
+        'ui.bootstrap',
+        'nya.bootstrap.select',
+        'celestrak-services',
+        'satnet-services',
+        'broadcaster'
     ]
 );
 

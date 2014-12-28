@@ -19,9 +19,7 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
-    [
-        'broadcaster', 'satnet-services', 'x-satnet-services'
-    ]
+    [ 'broadcaster', 'satnet-services', 'x-satnet-services' ]
 );
 
 /**
@@ -29,15 +27,15 @@ angular.module(
  */
 angular.module('ui-leop-modalgs-controllers')
     .controller('ManageGSModalCtrl', [
-        '$scope',
         '$rootScope',
+        '$scope',
         '$modalInstance',
         'broadcaster',
         'satnetRPC',
         'xSatnetRPC',
         function (
-            $scope,
             $rootScope,
+            $scope,
             $modalInstance,
             broadcaster,
             satnetRPC,
@@ -55,7 +53,7 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
-                xSatnetRPC.readLEOPGsOptions($rootScope.leop_id)
+                xSatnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
                         console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }

@@ -19,9 +19,7 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-menu-controllers',
-    [
-        'ui.bootstrap', 'satnet-services'
-    ]
+    ['ui.bootstrap', 'satnet-services']
 );
 
 angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
