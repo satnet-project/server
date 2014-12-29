@@ -223,7 +223,7 @@ angular.module('marker-models')
                     draggable: false,
                     layer: 'network',
                     icon: {
-                        iconUrl: '/static/images/icons/server-icon.svg',
+                        iconUrl: '/static/src/images/icons/server-icon.svg',
                         iconSize: [15, 15]
                     },
                     label: {
@@ -314,7 +314,7 @@ angular.module('marker-models')
                     draggable: false,
                     layer: 'groundstations',
                     icon: {
-                        iconUrl: '/static/images/icons/gs-icon.svg',
+                        iconUrl: '/static/src/images/icons/gs-icon.svg',
                         iconSize: [15, 15]
                     },
                     label: {
@@ -380,7 +380,7 @@ angular.module('marker-models')
                 autostart: true,
                 draggable: false,
                 icon: L.icon({
-                    iconUrl: '/static/images/icons/sc-icon.svg',
+                    iconUrl: '/static/src/images/icons/sc-icon.svg',
                     iconSize: [10, 10]
                 })
             };

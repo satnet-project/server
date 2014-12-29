@@ -21,8 +21,8 @@
 
     {% block app_scripts %}
 
-        <link rel='stylesheet' href="{% static 'css/sass/leop.css' %}" />
-        <link rel='stylesheet' href="{% static 'css/sass/markers.css' %}" />
+        <link rel='stylesheet' href="{% static 'src/css/sass/leop.css' %}" />
+        <link rel='stylesheet' href="{% static 'src/css/sass/markers.css' %}" />
 
         <script type="text/javascript"
             src="{% static 'src/controllers/ui.menu.js'%}">
@@ -43,9 +43,7 @@
             src="{% static 'src/controllers/ui.leop.modalufo.js' %}">
         </script>
 
-        <script type="text/javascript"
-            src="{% static 'src/leop.ui.js' %}">
-        </script>
+        <script type="text/javascript" src="{% static 'src/leop.ui.js' %}"></script>
 
     {% endblock %}
 

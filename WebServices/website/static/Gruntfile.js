@@ -19,7 +19,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             // define the files to lint
-            files: ['gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
+            files: ['Gruntfile.js', 'src/**/*.js', 'test/**/*.js'],
             // configure JSHint (documented at http://www.jshint.com/docs/)
             options: {
                 // more options here if you want to override JSHint defaults
@@ -29,10 +29,6 @@ module.exports = function(grunt) {
                       module: true
                 }
             }
-        },
-        watch: {
-            files: ['<%= jshint.files %>'],
-            tasks: ['jshint']
         },
         concat: {
             options: {
@@ -44,6 +40,10 @@ module.exports = function(grunt) {
                 src: ['src/**/*.js'],
                 // the location of the resulting JS file
                 dest: 'dist/<%= pkg.name %>.js'
+            },
+            css: {
+                src: ['dist/*.css'],
+                dest: 'dist/<%= pkg.name %>.css'
             }
         },
         uglify: {
@@ -61,31 +61,40 @@ module.exports = function(grunt) {
             target: {
                 files: [
                     {
-                        'dist/output.css': ['../css/**/*.css']
-                    },
-                    {
                         expand: true,
                         cwd: 'dist',
-                        src: ['*.css', '!*.min.css'],
+                        src: ['<%= pkg.name %>.css'],
                         dest: 'dist',
                         ext: '.min.css',
                     }
                 ]
             }
         },
-        grunt.initConfig({
-            sass: {
-                dist: {
-                    files: [{
-                        expand: true,
-                        cwd: 'css/sass',
-                        src: ['*.scss'],
-                        dest: 'dist',
-                        ext: '.css'
-                    }]
-                }
+        sass: {
+            dist: {
+                files: [{
+                    expand: true,
+                    cwd: 'src/css/sass',
+                    src: ['*.scss'],
+                    dest: 'dist',
+                    ext: '.css'
+                }]
             }
-        }),
+        },
+        watch: {
+            js: {
+                files: ['<%= jshint.files %>'],
+                tasks: ['jshint']
+            },
+            sass: {
+                files: ['src/css/sass/*.scss'],
+                tasks: ['sass', 'concat']
+            },
+            cssmin: {
+                files: ['dist/<%= pkg.name %>.css'],
+                tasks: ['jshint']
+            }
+        },
         qunit: {
 	        all: {
                 options: {
@@ -110,6 +119,6 @@ module.exports = function(grunt) {
     // this would be run by typing "grunt test" on the command line
     grunt.registerTask('test', ['jshint', 'qunit']);
     // the default task can be run just by typing "grunt" on the command line
-    grunt.registerTask('default', ['concat', 'cssmin', 'uglify']);
+    grunt.registerTask('default', ['sass', 'concat', 'cssmin', 'uglify']);
     
 };
