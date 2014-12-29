@@ -250,10 +250,8 @@ angular.module('marker-models')
              * @returns {string} Identifier for the connector.
              */
             this.createConnectorIdentifier = function (gs_identifier) {
-                return 'connect:'
-                    + gs_identifier
-                    + '_2_'
-                    + this.getServerMarker(gs_identifier).identifier;
+                return 'connect:' + gs_identifier + '_2_' +
+                    this.getServerMarker(gs_identifier).identifier;
             };
 
             /**

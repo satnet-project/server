@@ -40,78 +40,78 @@
 
     <!--
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/jquery-ui/jquery-ui.min.js' %}">
+        src="{% static 'bower_components/jquery-ui/jquery-ui.min.js' %}">
     </script>
     <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/leaflet-dist/leaflet.css' %}" />
+        href="{% static 'bower_components/leaflet-dist/leaflet.css' %}" />
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/leaflet-dist/leaflet.js'%}">
+        src="{% static 'bower_components/leaflet-dist/leaflet.js'%}">
     </script>
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular/angular.js'%}">
-    </script>
-    <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
-    <script type='text/javascript'
-        src="{% static 'scripts/bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
+        src="{% static 'bower_components/angular/angular.js'%}">
     </script>
     <link rel='stylesheet'
-        href="{% static 'scripts/bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}" />
+        href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-cookies/angular-cookies.min.js'%}">
+        src="{% static 'bower_components/bootstrap/dist/js/bootstrap.min.js' %}">
+    </script>
+    <link rel='stylesheet'
+        href="{% static 'bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}" />
+    <script type='text/javascript'
+        src="{% static 'bower_components/angular-cookies/angular-cookies.min.js'%}">
     </script>
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-resource/angular-resource.min.js' %}">
+        src="{% static 'bower_components/angular-resource/angular-resource.min.js' %}">
     </script>
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js'%}">
+        src="{% static 'bower_components/angular-leaflet-directive/dist/angular-leaflet-directive.js'%}">
     </script>
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
+        src="{% static 'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/bower_components/moment/min/moment-with-locales.min.js' %}">
+        src="{% static 'bower_components/moment/min/moment-with-locales.min.js' %}">
     </script>
     <link rel='stylesheet' href="{% static 'scripts/bower_components/leaflet.markercluster/dist/MarkerCluster.css' %}" />
     <script type="text/javascript"
-        src="{% static 'scripts/bower_components/leaflet.markercluster/dist/leaflet.markercluster.js'%}">
+        src="{% static 'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js'%}">
     </script>
     -->
 
     <!-- Local depedencies (BOWER) -->
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/nya-bootstrap-select/src/nya-bootstrap-select.js' %}">
+        src="{% static 'bower_components/nya-bootstrap-select/src/nya-bootstrap-select.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}">
+        src="{% static 'bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/bower_components/angular-uuid/uuid.min.js' %}">
+        src="{% static 'bower_components/angular-uuid/uuid.min.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
+        src="{% static 'bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
     </script>
 
     <!-- NOT USED ANYMORE
     <script type='text/javascript'
-        src="{% static 'scripts/bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}">
+        src="{% static 'bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}">
     </script>
     -->
 
     <!-- NON-BOWER LIBRARIES -->
     <script type="text/javascript"
-        src="{% static 'scripts/external_components/L.Terminator.js' %}">
+        src="{% static 'external/L.Terminator.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/external_components/leaflet.label.js' %}">
+        src="{% static 'external/leaflet.label.js' %}">
     </script>
     <link rel='stylesheet'
-          href="{% static 'scripts/external_components/leaflet.label.css' %}" />
+          href="{% static 'external/leaflet.label.css' %}" />
     <script type="text/javascript"
-        src="{% static 'scripts/external_components/MovingMarker.js' %}">
+        src="{% static 'external/MovingMarker.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/external_components/Leaflet.Geodesic.js' %}">
+        src="{% static 'external/Leaflet.Geodesic.js' %}">
     </script>
     <!-- -->
 
@@ -127,33 +127,33 @@
     {% block service_scripts %}
 
     <script type="text/javascript"
-        src="{% static 'scripts/src/services/maps.js'%}">
+        src="{% static 'src/services/maps.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/services/satnet.js'%}">
+        src="{% static 'src/services/satnet.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/services/x.satnet.js'%}">
+        src="{% static 'src/services/x.satnet.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/services/celestrak.js'%}">
+        src="{% static 'src/services/celestrak.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/services/broadcaster.js'%}">
+        src="{% static 'src/services/broadcaster.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/models/marker.js' %}">
+        src="{% static 'src/models/marker.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/models/x.groundstation.js' %}">
-    </script>
-    <!-- -->
-    <script type="text/javascript"
-        src="{% static 'scripts/src/models/x.spacecraft.js' %}">
+        src="{% static 'src/models/x.groundstation.js' %}">
     </script>
     <!-- -->
     <script type="text/javascript"
-        src="{% static 'scripts/src/models/x.servers.js' %}">
+        src="{% static 'src/models/x.spacecraft.js' %}">
+    </script>
+    <!-- -->
+    <script type="text/javascript"
+        src="{% static 'src/models/x.servers.js' %}">
     </script>
 
     {% endblock %}
@@ -161,20 +161,20 @@
     {% block app_scripts %}
 
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.map.js' %}">
+        src="{% static 'src/controllers/ui.map.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.menu.js'%}">
+        src="{% static 'src/controllers/ui.menu.js'%}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalsc.js' %}">
+        src="{% static 'src/controllers/ui.modalsc.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'scripts/src/controllers/ui.modalgs.js' %}">
+        src="{% static 'src/controllers/ui.modalgs.js' %}">
     </script>
 
     <script type="text/javascript"
-        src="{% static 'scripts/src/satnet.ui.js' %}">
+        src="{% static 'src/satnet.ui.js' %}">
     </script>
 
     {% endblock %}

@@ -101,9 +101,8 @@ angular.module('satnet-services').service('satnetRPC', [
                     return data.data;
                 },
                 function (error) {
-                    var msg = '[satnetRPC] Error invoking = <'
-                        + service + '>'
-                        + ', description = <' + error + '>';
+                    var msg = '[satnetRPC] Error invoking = <' +
+                        service + '>' + ', description = <' + error + '>';
                     $log.warn(msg);
                 }
             );

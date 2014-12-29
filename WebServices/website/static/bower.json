@@ -1,9 +1,9 @@
 {
-  "name": "satellite.tracker.js",
+  "name": "satnet-ng",
   "version": "0.0.1",
-  "homepage": "https://github.com/satnet-project/satnet-release-1",
+  "homepage": "https://github.com/satnet-project",
   "description": "JavaScript-Leaflet application for satellite tracking.",
-  "main": "simulator.js",
+  "main": "satnet-ng.js",
   "moduleType": [
     "globals"
   ],

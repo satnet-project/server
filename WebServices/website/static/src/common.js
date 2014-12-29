@@ -63,35 +63,45 @@ function get_minutes(time_str)
     { return(time_str.split(__TIME_SEPARATOR)[1]); }
 
 function compare_str_time(time_a, time_b) {
-    if (__DEBUG__) { console.log('time_a = ' + time_a + ', parsed = '
-                        + Date.parse(__0_DATE + ' ' + time_a)); }
-    if (__DEBUG__) { console.log('time_b = ' + time_b + ', parsed = '
-                        + Date.parse(__0_DATE + ' ' + time_b)); }
+    if (__DEBUG__) {
+        console.log('time_a = ' + time_a + ', parsed = ' +
+            Date.parse(__0_DATE + ' ' + time_a));
+    }
+    if (__DEBUG__) {
+        console.log('time_b = ' + time_b + ', parsed = ' +
+            Date.parse(__0_DATE + ' ' + time_b));
+    }
     return  Date.parse(__0_DATE + ' ' + time_a) <
             Date.parse(__0_DATE + ' ' + time_b);
 }
 
-function get_Hi_from_date(date)
-    { return(date.getHours() + __TIME_SEPARATOR + date.getMinutes()); }
+function get_Hi_from_date(date) {
+    return (date.getHours() + __TIME_SEPARATOR + date.getMinutes());
+}
 
 function read_date(datepicker_id) {
     var date = $( '#' + datepicker_id ).datepicker('getDate');
-    if ( date == null ) { __log_error('Date not set.'); }
+    if ( date === null ) { __log_error('Date not set.'); }
     return date;
 }
 
 function read_time_only(timepicker_id) {
     var time = $( '#' + timepicker_id ).val();
-    if ( ( time == null ) || ( time.length == 0 ) )
-        { __log_error('Time not set.'); }
+    if ((time === null) || (time.length === 0)) {
+        __log_error('Time not set.');
+    }
     return time;
 }
 
 function read_time(timepicker_id, date) {
-    if ( date == null ) { date = new Date(); }
-    var time = $( '#' + timepicker_id ).val();
-    if ( ( time == null ) || ( time.length == 0 ) )
-        { __log_error('Time not set.'); }
+    'use strict';
+    if (date === null) {
+        date = new Date();
+    }
+    var time = $('#' + timepicker_id).val();
+    if ((time === null) || (time.length === 0)) {
+        __log_error('Time not set.');
+    }
     date.setHours(get_hour(time));
     date.setMinutes(get_minutes(time));
     return date;
@@ -219,24 +229,31 @@ function init_textarea(textarea_id, text, disable) {
 function erase_textarea(textarea_id) {
     var e = document.getElementById(textarea_id);
     var name = e.value;
-    if ( ( name != __NAME_initial_value) && ( name != '' ) ) { return; }
+    if ((name !== __NAME_initial_value) && (name !== '')) {
+        return;
+    }
     e.value = '';
     e.className = '';
 }
 
 function validate_textarea(textarea_id, regex) {
+    'use strict';
     var e = document.getElementById(textarea_id);
     var text = e.value;
     var matches = new RegExp(regex).exec(text);
-    if ( __DEBUG__ ) { console.log('Validating, REGEX = ' + regex
-                                    + ', text = ' + text
-                                    + ', matches = ' + matches); }
-    if ( matches == null ) {
+
+    if (__DEBUG__) {
+        console.log(
+            'Validating, REGEX = ' + regex +
+                ', text = ' + text + ', matches = ' + matches
+        );
+    }
+    if (matches === null) {
         e.style.color = 'red';
         e.style.fontWeight = 'bolder';
         return;
     }
-    if ( matches.length == 1) {
+    if (matches.length == 1) {
         e.style.color = 'green';
         e.style.fontWeight = '';
     }

@@ -20,26 +20,16 @@
     var __DEBUG__ = true;
 
     // Event binding to handlers
-    $(document).ready(function(){
+    $(document).ready(function () {
     
-        $(".userCheck")
-            .on("click", __userCheck);
-
-        $( "#verify" )
-            .on("click", __verifyUser);
-        $( "#block" )
-            .on("click", __blockUser);
-        $( "#unblock" )
-            .on("click", __unblockUser);
-        $( "#delete" )
-            .on("click", __deleteUser);
-        $( "#activate" )
-            .on("click", __activateUser);
-        $( "#deactivate" )
-            .on("click", __deactivateUser);
-
-        $( ".undo" )
-            .on("click", __undoOperation);
+        $(".userCheck").on("click", __userCheck);
+        $( "#verify" ).on("click", __verifyUser);
+        $( "#block" ).on("click", __blockUser);
+        $( "#unblock" ).on("click", __unblockUser);
+        $( "#delete" ).on("click", __deleteUser);
+        $( "#activate" ).on("click", __activateUser);
+        $( "#deactivate" ).on("click", __deactivateUser);
+        $( ".undo" ).on("click", __undoOperation);
 
     });
   
@@ -63,7 +53,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__verifyUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
         clear_user_details();
@@ -75,7 +65,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__blockUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
 
         clear_user_details();
@@ -87,7 +77,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__unblockUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
 
         clear_user_details();
@@ -99,7 +89,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__deleteUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
         clear_user_details();
@@ -111,7 +101,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__activateUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
         clear_user_details();
@@ -123,7 +113,7 @@
     {
     
         if ( __DEBUG__ ) console.log("__deactivateUser");
-        if ( user_list.length == 0 )
+        if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
         clear_user_details();
