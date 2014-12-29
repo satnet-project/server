@@ -73,6 +73,19 @@ module.exports = function(grunt) {
                 ]
             }
         },
+        grunt.initConfig({
+            sass: {
+                dist: {
+                    files: [{
+                        expand: true,
+                        cwd: 'css/sass',
+                        src: ['*.scss'],
+                        dest: 'dist',
+                        ext: '.css'
+                    }]
+                }
+            }
+        }),
         qunit: {
 	        all: {
                 options: {
@@ -84,13 +97,14 @@ module.exports = function(grunt) {
             }
         }
     });
-    
+
     // load up your plugins
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
+    grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     // register one or more task lists (you should ALWAYS have a "default" task list)
     // this would be run by typing "grunt test" on the command line
