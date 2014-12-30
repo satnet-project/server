@@ -19,39 +19,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-    {% block app_scripts %}
-
-        <link rel='stylesheet' href="{% static 'css/sass/leop.css' %}" />
-        <link rel='stylesheet' href="{% static 'css/sass/markers.css' %}" />
-
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.menu.js'%}">
-        </script>
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.leop.map.js' %}">
-        </script>
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.leop.menu.js'%}">
-        </script>
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.modalsc.js' %}">
-        </script>
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.leop.modalgs.js' %}">
-        </script>
-        <script type="text/javascript"
-            src="{% static 'src/controllers/ui.leop.modalufo.js' %}">
-        </script>
-
-        <script type="text/javascript"
-            src="{% static 'src/leop.ui.js' %}">
-        </script>
-
-    {% endblock %}
-
-    {% block specific_scripts %}
-    {% endblock %}
-
 {% block content %}
 
 <script type="text/javascript">

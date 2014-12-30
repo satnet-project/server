@@ -1,5 +1,5 @@
-bower_components
-node_modules
+.sass-cache
+stylesheets
+*.css.map
 npm-debug.log
-*.min.js
-*.min.css
+node_modules
