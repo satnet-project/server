@@ -30,6 +30,7 @@ module.exports = function(grunt) {
                 }
             }
         },
+        clean : ['dist'],
         sass: {
             main: {
                 files: [
@@ -112,17 +113,6 @@ module.exports = function(grunt) {
                 files: {
                     'dist/<%= pkg.name %>.min.js': ['<%= concat.main.dest %>']
                 }
-            },
-            lib: {
-                files: [
-                    {
-                        expand: true,
-                        cwd: 'dist/lib',
-                        src: ['*.js'],
-                        dest: 'dist/lib',
-                        ext: '.min.js',
-                    }
-                ]
             }
         },
         watch: {
@@ -160,10 +150,11 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
     // register one or more task lists (you should ALWAYS have a "default" task list)
     // this would be run by typing "grunt test" on the command line
     grunt.registerTask('test', ['jshint', 'qunit']);
     // the default task can be run just by typing "grunt" on the command line
-    grunt.registerTask('default', ['sass', 'concat', 'copy', 'cssmin', 'uglify']);
+    grunt.registerTask('default', ['clean', 'sass', 'concat', 'copy', 'cssmin', 'uglify']);
     
 };
