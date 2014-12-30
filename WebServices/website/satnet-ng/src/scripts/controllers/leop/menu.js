@@ -32,7 +32,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
 
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/leop/manageGroundStations.html',
+                templateUrl: 'templates/leop/manageGroundStations.html',
                 controller: 'ManageGSModalCtrl',
                 backdrop: 'static'
             });
@@ -60,7 +60,7 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
         $scope.ufoIds = [];
         $scope.addUFO = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/leop/manageUFO.html',
+                templateUrl: 'templates/leop/manageUFO.html',
                 controller: 'ManageUFOCtrl',
                 backdrop: 'static'
             });

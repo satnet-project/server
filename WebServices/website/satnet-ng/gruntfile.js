@@ -18,11 +18,8 @@ module.exports = function(grunt) {
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            // define the files to lint
             files: ['gruntfile.js', 'src/scripts/**/*.js', 'test/**/*.js'],
-            // configure JSHint (documented at http://www.jshint.com/docs/)
             options: {
-                // more options here if you want to override JSHint defaults
                 globals: {
                     jQuery: true,
                     console: true,
@@ -44,9 +41,22 @@ module.exports = function(grunt) {
                 ]
             }
         },
+        ngtemplates: {
+            main: {
+                cwd: 'src',
+                src: 'templates/**/*.html',
+                dest: 'dist/<%= pkg.name %>-tpls.js',
+                options: {
+                    module: 'satnet-ui',
+                    htmlmin: {
+                        collapseWhitespace: true,
+                        collapseBooleanAttributes: true
+                   }
+                }
+            }
+        },
         concat: {
             options: {
-                // define a string to put in between each file in the output
                 separator: ';'
             },
             main: {
@@ -128,12 +138,16 @@ module.exports = function(grunt) {
         },
         uglify: {
             options: {
-                // the banner is inserted at the top of the output
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
             },
             dist: {
                 files: {
                     'dist/<%= pkg.name %>.min.js': ['<%= concat.main.dest %>']
+                }
+            },
+            templates: {
+                files: {
+                    'dist/<%= pkg.name %>-tpls.min.js': ['<%= ngtemplates.main.dest %>']
                 }
             }
         },
@@ -153,6 +167,10 @@ module.exports = function(grunt) {
             libs: {
                 files: ['lib/*.js'],
                 tasks: ['copy']
+            },
+            templates: {
+                files: ['src/templates/**/*'],
+                tasks: ['ngtemplates']
             }
         },
         qunit: {
@@ -177,10 +195,24 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
-    // register one or more task lists (you should ALWAYS have a "default" task list)
-    // this would be run by typing "grunt test" on the command line
-    grunt.registerTask('test', ['jshint', 'qunit']);
-    // the default task can be run just by typing "grunt" on the command line
-    grunt.registerTask('default', ['clean', 'sass', 'concat', 'copy', 'cssmin', 'uglify']);
+    grunt.loadNpmTasks('grunt-angular-templates');
+
+    grunt.registerTask(
+        'test', [
+            'jshint',
+            'qunit'
+        ]
+    );
+    grunt.registerTask(
+        'default', [
+            'clean',
+            'sass',
+            'ngtemplates',
+            'concat',
+            'copy',
+            'cssmin',
+            'uglify'
+        ]
+   );
     
 };

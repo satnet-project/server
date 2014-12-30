@@ -24,34 +24,28 @@ angular.module(
         'nya.bootstrap.select',
         'leaflet-directive',
         'satnet-services',
+        'map-services',
         'broadcaster'
     ]
 );
 
 angular.module('ui-modalgs-controllers')
-    .constant('LAT', 32.630)
-    .constant('LNG', 8.933)
-    .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('AddGSModalCtrl', [
         '$scope',
         '$log',
         '$modalInstance',
         'satnetRPC',
+        'maps',
         'broadcaster',
-        'LAT',
-        'LNG',
-        'D_ZOOM',
         'GS_ELEVATION',
         function (
             $scope,
             $log,
             $modalInstance,
             satnetRPC,
+            maps,
             broadcaster,
-            LAT,
-            LNG,
-            D_ZOOM,
             GS_ELEVATION
         ) {
 
@@ -62,32 +56,43 @@ angular.module('ui-modalgs-controllers')
             $scope.gs.callsign = '';
             $scope.gs.elevation = GS_ELEVATION;
 
-            $scope.center = {};
-            $scope.markers = [];
-
             angular.extend($scope, {
                 center: {
-                    lat: LAT,
-                    lng: LNG,
-                    zoom: D_ZOOM
+                    lat: maps.LAT,
+                    lng: maps.LNG,
+                    zoom: maps.DETAIL_ZOOM
                 },
-                markers: {
-                    gsStyle: {
-                        lat: LAT,
-                        lng: LNG,
-                        message: 'Move me!',
-                        focus: true,
-                        draggable: true
-                    }
-                }
+                markers: {}
             });
 
             $scope.initMap = function () {
                 satnetRPC.getUserLocation().then(function (location) {
-                    $scope.center.lat = location.lat;
-                    $scope.center.lng = location.lng;
-                    $scope.markers.gsStyle.lat = location.lat;
-                    $scope.markers.gsStyle.lng = location.lng;
+
+                    console.log(
+                        '>>> satnetRPC, location = ' + JSON.stringify(location)
+                    );
+                    angular.extend($scope, {
+                        center: {
+                            lat: location.latitude,
+                            lng: location.longitude,
+                            zoom: maps.DETAIL_ZOOM
+                        },
+                        markers: {
+                            gs: {
+                                lat: location.latitude,
+                                lng: location.longitude,
+                                focus: true,
+                                draggable: true,
+                                label: {
+                                    message: 'Drag me!',
+                                    options: {
+                                        noHide: true
+                                    }
+                                }
+                            }
+                        }
+                    });
+
                 });
             };
 

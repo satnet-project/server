@@ -109,6 +109,7 @@ angular.module('ui-leop-modalgs-controllers')
             };
 
             $scope.ok = function () {
+
                 var a_ids = [], r_ids = [], i, gs_id;
 
                 if ($scope.gsIds.toAdd !== undefined) {
@@ -148,6 +149,7 @@ angular.module('ui-leop-modalgs-controllers')
                 }
 
                 $modalInstance.close();
+
             };
 
             $scope.cancel = function () {

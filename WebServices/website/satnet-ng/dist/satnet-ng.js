@@ -1823,7 +1823,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
 
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/leop/manageGroundStations.html',
+                templateUrl: 'templates/leop/manageGroundStations.html',
                 controller: 'ManageGSModalCtrl',
                 backdrop: 'static'
             });
@@ -1851,7 +1851,7 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
         $scope.ufoIds = [];
         $scope.addUFO = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/leop/manageUFO.html',
+                templateUrl: 'templates/leop/manageUFO.html',
                 controller: 'ManageUFOCtrl',
                 backdrop: 'static'
             });
@@ -1981,6 +1981,7 @@ angular.module('ui-leop-modalgs-controllers')
             };
 
             $scope.ok = function () {
+
                 var a_ids = [], r_ids = [], i, gs_id;
 
                 if ($scope.gsIds.toAdd !== undefined) {
@@ -2020,6 +2021,7 @@ angular.module('ui-leop-modalgs-controllers')
                 }
 
                 $modalInstance.close();
+
             };
 
             $scope.cancel = function () {
@@ -2281,7 +2283,7 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         $scope.gsIds = [];
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/addGroundStation.html',
+                templateUrl: 'templates/addGroundStation.html',
                 controller: 'AddGSModalCtrl',
                 backdrop: 'static'
             });
@@ -2289,7 +2291,7 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         };
         $scope.editGroundStation = function (g) {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/editGroundStation.html',
+                templateUrl: 'templates/editGroundStation.html',
                 controller: 'EditGSModalCtrl',
                 backdrop: 'static',
                 resolve: { groundstationId: function () {
@@ -2319,7 +2321,7 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
         $scope.scIds = [];
         $scope.addSpacecraft = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/addSpacecraft.html',
+                templateUrl: 'templates/addSpacecraft.html',
                 controller: 'AddSCModalCtrl',
                 backdrop: 'static'
             });
@@ -2327,7 +2329,7 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
         };
         $scope.editSpacecraft = function (s) {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/editSpacecraft.html',
+                templateUrl: 'templates/editSpacecraft.html',
                 controller: 'EditSCModalCtrl',
                 backdrop: 'static',
                 resolve: { spacecraftId: function () {
@@ -2383,34 +2385,28 @@ angular.module(
         'nya.bootstrap.select',
         'leaflet-directive',
         'satnet-services',
+        'map-services',
         'broadcaster'
     ]
 );
 
 angular.module('ui-modalgs-controllers')
-    .constant('LAT', 32.630)
-    .constant('LNG', 8.933)
-    .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('AddGSModalCtrl', [
         '$scope',
         '$log',
         '$modalInstance',
         'satnetRPC',
+        'maps',
         'broadcaster',
-        'LAT',
-        'LNG',
-        'D_ZOOM',
         'GS_ELEVATION',
         function (
             $scope,
             $log,
             $modalInstance,
             satnetRPC,
+            maps,
             broadcaster,
-            LAT,
-            LNG,
-            D_ZOOM,
             GS_ELEVATION
         ) {
 
@@ -2421,32 +2417,43 @@ angular.module('ui-modalgs-controllers')
             $scope.gs.callsign = '';
             $scope.gs.elevation = GS_ELEVATION;
 
-            $scope.center = {};
-            $scope.markers = [];
-
             angular.extend($scope, {
                 center: {
-                    lat: LAT,
-                    lng: LNG,
-                    zoom: D_ZOOM
+                    lat: maps.LAT,
+                    lng: maps.LNG,
+                    zoom: maps.DETAIL_ZOOM
                 },
-                markers: {
-                    gsStyle: {
-                        lat: LAT,
-                        lng: LNG,
-                        message: 'Move me!',
-                        focus: true,
-                        draggable: true
-                    }
-                }
+                markers: {}
             });
 
             $scope.initMap = function () {
                 satnetRPC.getUserLocation().then(function (location) {
-                    $scope.center.lat = location.lat;
-                    $scope.center.lng = location.lng;
-                    $scope.markers.gsStyle.lat = location.lat;
-                    $scope.markers.gsStyle.lng = location.lng;
+
+                    console.log(
+                        '>>> satnetRPC, location = ' + JSON.stringify(location)
+                    );
+                    angular.extend($scope, {
+                        center: {
+                            lat: location.latitude,
+                            lng: location.longitude,
+                            zoom: maps.DETAIL_ZOOM
+                        },
+                        markers: {
+                            gs: {
+                                lat: location.latitude,
+                                lng: location.longitude,
+                                focus: true,
+                                draggable: true,
+                                label: {
+                                    message: 'Drag me!',
+                                    options: {
+                                        noHide: true
+                                    }
+                                }
+                            }
+                        }
+                    });
+
                 });
             };
 

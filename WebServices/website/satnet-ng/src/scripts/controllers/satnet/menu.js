@@ -31,7 +31,7 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         $scope.gsIds = [];
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/addGroundStation.html',
+                templateUrl: 'templates/addGroundStation.html',
                 controller: 'AddGSModalCtrl',
                 backdrop: 'static'
             });
@@ -39,7 +39,7 @@ angular.module('ui-menu-controllers').controller('GSMenuCtrl', [
         };
         $scope.editGroundStation = function (g) {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/editGroundStation.html',
+                templateUrl: 'templates/editGroundStation.html',
                 controller: 'EditGSModalCtrl',
                 backdrop: 'static',
                 resolve: { groundstationId: function () {
@@ -69,7 +69,7 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
         $scope.scIds = [];
         $scope.addSpacecraft = function () {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/addSpacecraft.html',
+                templateUrl: 'templates/addSpacecraft.html',
                 controller: 'AddSCModalCtrl',
                 backdrop: 'static'
             });
@@ -77,7 +77,7 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
         };
         $scope.editSpacecraft = function (s) {
             var modalInstance = $modal.open({
-                templateUrl: '/static/satnet-ng/templates/editSpacecraft.html',
+                templateUrl: 'templates/editSpacecraft.html',
                 controller: 'EditSCModalCtrl',
                 backdrop: 'static',
                 resolve: { spacecraftId: function () {
