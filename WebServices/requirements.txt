@@ -18,7 +18,6 @@ django-jsonview==0.4.2
 django-leaflet==0.13.7
 django-passwords==0.2.0
 django-periodically==0.3.0
-django-rest-auth==0.3.2
 django-selenium==0.9.6
 django-session-security==2.2.0
 djangorestframework==2.4.3
