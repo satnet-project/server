@@ -179,8 +179,6 @@ INSTALLED_APPS = (
     'periodically',
     'rpc4django',
     'rest_framework',
-    'rest_framework.authtoken',
-    'rest_auth',
     'django_extensions',
 
     # ### developed applications
@@ -346,5 +344,5 @@ PASSWORD_COMPLEXITY = {
 
 APPEND_SLASH = False
 
-# To prevent CSRF errors when logging in through django-rest-auth
-REST_SESSION_LOGIN = False
+# XMLRequest Header formatted in JSON
+RPC4DJANGO_RESTRICT_OOTB_AUTH = False
