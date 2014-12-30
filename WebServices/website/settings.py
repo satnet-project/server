@@ -78,7 +78,10 @@ STATIC_URL = '/static/'
 # Additional locations of static files
 STATICFILES_DIRS = (
     os.path.join(
-        os.path.dirname(__file__), 'static'
+        os.path.dirname(__file__), 'static', 'dist'
+    ),
+    os.path.join(
+        os.path.dirname(__file__), 'satnet-ng', 'dist'
     ),
     os.path.join(
         os.path.dirname(__file__), '..', 'services', 'accounts', 'static'

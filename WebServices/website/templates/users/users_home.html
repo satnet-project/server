@@ -26,9 +26,11 @@
 {% block toolbar_content %}
 {% if request.user.is_authenticated %}
     <hr />
-    <div id='button_divx'><a id='button_c2c' class='toolbar_button'
-            href="{% url 'c2_interface' %}">
+    <div id='button_divx'>
+        <a id='button_c2c'
+           class='toolbar_button' href="{% url 'c2_interface' %}">
             C2 Interface
-    </a></div>
+        </a>
+    </div>
 {% endif %}
 {% endblock %}

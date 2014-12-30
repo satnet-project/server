@@ -223,7 +223,7 @@ angular.module('marker-models')
                     draggable: false,
                     layer: 'network',
                     icon: {
-                        iconUrl: '/static/satnet-ng/images/icons/server-icon.svg',
+                        iconUrl: '/static/images/server-icon.svg',
                         iconSize: [15, 15]
                     },
                     label: {
@@ -314,7 +314,7 @@ angular.module('marker-models')
                     draggable: false,
                     layer: 'groundstations',
                     icon: {
-                        iconUrl: '/static/satnet-ng/images/icons/gs-icon.svg',
+                        iconUrl: '/static/images/gs-icon.svg',
                         iconSize: [15, 15]
                     },
                     label: {
@@ -380,7 +380,7 @@ angular.module('marker-models')
                 autostart: true,
                 draggable: false,
                 icon: L.icon({
-                    iconUrl: '/static/satnet-ng/images/icons/sc-icon.svg',
+                    iconUrl: '/static/images/sc-icon.svg',
                     iconSize: [10, 10]
                 })
             };

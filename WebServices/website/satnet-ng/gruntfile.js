@@ -19,7 +19,7 @@ module.exports = function(grunt) {
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
             // define the files to lint
-            files: ['Gruntfile.js', 'src/scripts/**/*.js', 'test/**/*.js'],
+            files: ['gruntfile.js', 'src/scripts/**/*.js', 'test/**/*.js'],
             // configure JSHint (documented at http://www.jshint.com/docs/)
             options: {
                 // more options here if you want to override JSHint defaults
@@ -50,9 +50,20 @@ module.exports = function(grunt) {
                 separator: ';'
             },
             main: {
-                // the files to concatenate
-                src: ['src/scripts/**/*.js'],
-                // the location of the resulting JS file
+                src: [
+                    'src/scripts/services/celestrak.js',
+                    'src/scripts/services/broadcaster.js',
+                    'src/scripts/services/maps.js',
+                    'src/scripts/services/satnet.js',
+                    'src/scripts/services/x.satnet.js',
+                    'src/scripts/models/marker.js',
+                    'src/scripts/models/x.servers.js',
+                    'src/scripts/models/x.groundstation.js',
+                    'src/scripts/models/x.spacecraft.js',
+                    'src/scripts/controllers/**/*.js',
+                    'src/scripts/satnet.ui.js',
+                    'src/scripts/leop.ui.js'
+                ],
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
@@ -72,10 +83,21 @@ module.exports = function(grunt) {
                 files: [
                     {
                         expand: true,
+                        flatten: true,
+                        filter: 'isFile',
                         cwd: 'lib',
-                        src: ['*.js', '*.css'],
-                        dest: 'dist/lib',
-                        filter: 'isFile'
+                        src: [
+                            '*.js',
+                            '*.css',
+                            'bower/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
+                            'bower/nya-bootstrap-select/src/nya-bootstrap-select.js',
+                            'bower/ng-remote-validate/release/ngRemoteValidate.js',
+                            'bower/angular-uuid/uuid.min.js',
+                            'bower/angular-jsonrpc/jsonrpc.min.js',
+                            'bower/Leaflet.label/dist/leaflet.label.js',
+                            'bower/Leaflet.label/dist/leaflet.label.css'
+                        ],
+                        dest: 'dist/lib'
                     }
                 ]
             }
@@ -118,7 +140,7 @@ module.exports = function(grunt) {
         watch: {
             js: {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint']
+                tasks: ['jshint', 'concat', 'copy', 'uglify']
             },
             sass: {
                 files: ['src/css/sass/*.scss', 'css/sass/*.scss'],
@@ -127,6 +149,10 @@ module.exports = function(grunt) {
             cssmin: {
                 files: ['dist/<%= pkg.name %>.css'],
                 tasks: ['cssmin']
+            },
+            libs: {
+                files: ['lib/*.js'],
+                tasks: ['copy']
             }
         },
         qunit: {
