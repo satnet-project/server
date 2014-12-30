@@ -80,6 +80,9 @@ STATICFILES_DIRS = (
     os.path.join(
         os.path.dirname(__file__), 'static'
     ),
+    os.path.join(
+        os.path.dirname(__file__), '..', 'services', 'accounts', 'static'
+    )
 )
 
 # List of finder classes that know how to find static files in

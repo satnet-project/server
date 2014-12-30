@@ -43,6 +43,22 @@
         src="{% static 'bower_components/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js' %}">
     </script>
 
+    <!-- Local depedencies (BOWER) -->
+    <script type='text/javascript' src="{% static 'bower_components/nya-bootstrap-select/satnet-ng/nya-bootstrap-select.js' %}"></script>
+    <script type='text/javascript' src="{% static 'bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}"></script>
+    <script type='text/javascript' src="{% static 'bower_components/angular-uuid/uuid.min.js' %}"></script>
+    <script type='text/javascript' src="{% static 'bower_components/angular-jsonrpc/jsonrpc.min.js' %}"></script>
+    <!-- NON-BOWER LIBRARIES -->
+    <script type="text/javascript" src="{% static 'satnet-ng/lib/leaflet-terminator.js' %}"></script>
+    <script type="text/javascript" src="{% static 'satnet-ng/lib/leaflet-label.js' %}"></script>
+    <link rel='stylesheet' href="{% static 'satnet-ng/lib/leaflet-label.css' %}"/>
+    <script type="text/javascript" src="{% static 'satnet-ng/lib/leaflet-moving-marker.js' %}"></script>
+    <script type="text/javascript" src="{% static 'satnet-ng/lib/leaflet-geodesic.js' %}"></script>
+    <!-- -->
+
+    <link rel='stylesheet' href="{% static 'dist/satnet-ng.min.css' %}" />
+    <script type='text/javascript' src="{% static 'dist/satnet-ng.js'%}"></script>
+
     <!--
     <link rel='stylesheet' href="{% static 'bower_components/bootstrap-select/dist/css/bootstrap-select.min.css' %}" />
     <link rel='stylesheet' href="{% static 'bower_components/bootstrap/dist/css/bootstrap.min.css' %}" />
@@ -77,45 +93,14 @@
     </script>
     -->
 
-    <!-- Local depedencies (BOWER) -->
-    <script type='text/javascript'
-        src="{% static 'bower_components/nya-bootstrap-select/src/nya-bootstrap-select.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'bower_components/ng-remote-validate/release/ngRemoteValidate.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'bower_components/angular-uuid/uuid.min.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'bower_components/angular-jsonrpc/jsonrpc.min.js' %}">
-    </script>
-
     <!-- NOT USED ANYMORE
     <script type='text/javascript'
         src="{% static 'bower_components/bootstrap-select/dist/js/bootstrap-select.min.js' %}">
     </script>
+
+    <link rel='stylesheet' href="{% static 'satnet-ng/src/css/sass/_c2.css' %}" />
+    <link rel='stylesheet' href="{% static 'satnet-ng/src/css/sass/_markers.css' %}" />
     -->
-
-    <!-- NON-BOWER LIBRARIES -->
-    <script type="text/javascript"
-        src="{% static 'external/L.Terminator.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'external/leaflet.label.js' %}">
-    </script>
-    <link rel='stylesheet'
-          href="{% static 'external/leaflet.label.css' %}" />
-    <script type="text/javascript"
-        src="{% static 'external/MovingMarker.js' %}">
-    </script>
-    <script type="text/javascript"
-        src="{% static 'external/Leaflet.Geodesic.js' %}">
-    </script>
-    <!-- -->
-
-    <link rel='stylesheet' href="{% static 'src/css/sass/c2.css' %}" />
-    <link rel='stylesheet' href="{% static 'src/css/sass/markers.css' %}" />
 
     <script type="text/javascript">
         $(document).ready(function() {
@@ -126,33 +111,33 @@
     {% block service_scripts %}
 
     <script type="text/javascript"
-        src="{% static 'src/services/maps.js'%}">
+        src="{% static 'satnet-ng/ng/services/maps.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/services/satnet.js'%}">
+        src="{% static 'satnet-ng/ng/services/satnet.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/services/x.satnet.js'%}">
+        src="{% static 'satnet-ng/ng/services/x.satnet.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/services/celestrak.js'%}">
+        src="{% static 'satnet-ng/ng/services/celestrak.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/services/broadcaster.js'%}">
+        src="{% static 'satnet-ng/ng/services/broadcaster.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/models/marker.js' %}">
+        src="{% static 'satnet-ng/ng/models/marker.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/models/x.groundstation.js' %}">
-    </script>
-    <!-- -->
-    <script type="text/javascript"
-        src="{% static 'src/models/x.spacecraft.js' %}">
+        src="{% static 'satnet-ng/ng/models/x.groundstation.js' %}">
     </script>
     <!-- -->
     <script type="text/javascript"
-        src="{% static 'src/models/x.servers.js' %}">
+        src="{% static 'satnet-ng/ng/models/x.spacecraft.js' %}">
+    </script>
+    <!-- -->
+    <script type="text/javascript"
+        src="{% static 'satnet-ng/ng/models/x.servers.js' %}">
     </script>
 
     {% endblock %}
@@ -160,20 +145,20 @@
     {% block app_scripts %}
 
     <script type="text/javascript"
-        src="{% static 'src/controllers/ui.map.js' %}">
+        src="{% static 'satnet-ng/ng/controllers/map.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/controllers/ui.menu.js'%}">
+        src="{% static 'satnet-ng/ng/controllers/menu.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/controllers/ui.modalsc.js' %}">
+        src="{% static 'satnet-ng/ng/controllers/modalsc.js' %}">
     </script>
     <script type="text/javascript"
-        src="{% static 'src/controllers/ui.modalgs.js' %}">
+        src="{% static 'satnet-ng/ng/controllers/modalgs.js' %}">
     </script>
 
     <script type="text/javascript"
-        src="{% static 'src/satnet.ui.js' %}">
+        src="{% static 'satnet-ng/ng/satnet.ui.js' %}">
     </script>
 
     {% endblock %}

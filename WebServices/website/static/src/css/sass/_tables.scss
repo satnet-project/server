@@ -1,0 +1,98 @@
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+
+@import 'main';
+
+table.rr-table {
+  font-family: sans-serif;
+  text-align: center;
+  vertical-align: middle;
+}
+
+td.rr-e-t {
+  background-color: white;
+  opacity: 0.6;
+  border-radius: 5px;
+  color: #0F3E62;
+  font-weight: bold;
+  padding: 5px;
+}
+
+td.rr-e {
+  padding: 15px 2px;
+}
+
+td.row-separator {
+  padding: 1px;
+  background-color: #0F3E62;
+}
+
+td.col-separator {
+  background-color: #0F3E62;
+  opacity: 0.6;
+  border-radius: 5px;
+}
+
+/* User details table */
+table.table-user-details {
+  font-family: sans-serif;
+  font-size: 90%;
+  text-align: center;
+  vertical-align: middle;
+  background-color: #E8E8E8;
+  opacity: 0.6;
+}
+
+div.table-row {
+  display: table-row;
+  text-align: center;
+  padding: 10px;
+}
+
+div.table-header div {
+  border-bottom: thick solid $cool_blue;
+  font-weight: bold;
+}
+
+div.table-row div {
+  display: table-cell;
+  text-align: center;
+  padding: 10px;
+}
+
+div.table-row div:first-child {
+  font-weight: bold;
+  border-right: thick solid $cool_blue;
+}
+
+.no-items {
+  font-size: 75%;
+  font-style: italic;
+  text-align: center;
+  color: $cool_blue
+}
+
+a.edit-link {
+  cursor: pointer;
+  color: $cool_blue
+}
+a.edit-link:link, a.edit-link:visited {
+  text-decoration: none;
+}
+a.edit-link:hover {
+  text-decoration: underline;
+}
+a.edit-link:active {
+  text-decoration: underline;
+}

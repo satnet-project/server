@@ -1,0 +1,474 @@
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+a.link {
+  cursor: pointer;
+  color: #0F3E62;
+  font-weight: bold;
+  border-radius: 5px;
+  padding: 0.75em; }
+
+a.link:link, a.link:visited {
+  text-decoration: none; }
+
+a.blue-action {
+  font-weight: bold;
+  color: blue;
+  border: 2px solid blue;
+  border-radius: 5px;
+  background-color: #005CB8;
+  padding: 2px;
+  opacity: 0.6; }
+
+.action {
+  font-weight: bold;
+  color: black;
+  background-color: #FFFFA3;
+  padding: 2px;
+  border: 2px solid black;
+  border-radius: 5px;
+  opacity: 0.6; }
+
+.green-action {
+  font-weight: bold;
+  color: green;
+  border: 2px solid green;
+  background-color: #A3C2C2;
+  padding: 2px;
+  border-radius: 5px;
+  opacity: 0.6; }
+
+.red-action {
+  font-weight: bold;
+  color: darkred;
+  border: 2px solid darkred;
+  background-color: #BC6666;
+  padding: 2px;
+  border-radius: 5px;
+  opacity: 0.6; }
+
+a.action, a.green-action, a.red-action {
+  cursor: pointer; }
+
+a.undo {
+  font-weight: bold;
+  color: grey;
+  background-color: #A3A3C2;
+  padding: 2px;
+  border-radius: 5px;
+  opacity: 0.6; }
+
+a.button-light {
+  border: 2px solid;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #0F3E62;
+  color: white;
+  opacity: 0.6; }
+
+a.button-dark, a.button-red {
+  border: 2px solid #0F3E62;
+  border-radius: 5px;
+  padding: 5px;
+  background-color: #0F3E62;
+  color: white;
+  opacity: 0.9; }
+
+a.button-dark:link, a.button-red:link, a.button-dark:visited, a.button-red:visited {
+  text-decoration: none; }
+
+a.button-dark:hover, a.button-red:hover {
+  text-decoration: underline; }
+
+a.button-dark:active, a.button-red:active {
+  text-decoration: underline; }
+
+a.button {
+  padding: 5px;
+  margin-right: 0;
+  margin-left: auto; }
+
+a.button:link, a.button:visited {
+  color: white;
+  text-decoration: none; }
+
+a.button:hover {
+  color: white;
+  text-decoration: none; }
+
+a.button:active {
+  color: black;
+  text-decoration: underline; }
+
+a.button-red {
+  background-color: darkred;
+  border-color: darkred; }
+
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.my-dd-btn, .my-exit-btn {
+  background: #293542;
+  border-radius: 5px;
+  border-color: #293542;
+  opacity: 0.8; }
+
+.my-exit-btn {
+  background: darkred;
+  border-color: darkred;
+  font-weight: bolder;
+  vertical-align: middle;
+  padding: 15px 5px 5px 5px;
+  top: -5px; }
+
+.left-menu {
+  position: absolute;
+  top: 0;
+  left: 100px; }
+
+.my-menu-item {
+  color: #293542;
+  text-align: center; }
+
+.my-btn-250px {
+  display: block;
+  width: 150px; }
+
+.my-tle-menu {
+  padding: 10px;
+  float: right;
+  width: 250px; }
+
+.base-area, .n-area, .gs-area, .sc-area {
+  opacity: 0.8;
+  line-height: 40px;
+  border-radius: 5px;
+  background-color: #293542;
+  font-size: 10pt;
+  color: #A6A6A6; }
+
+.base-area-title, .n-area-title, .gs-area-title {
+  font-weight: bold;
+  font-size: 105%;
+  text-align: center;
+  vertical-align: middle;
+  height: 35px; }
+  .base-area-title a, .n-area-title a, .gs-area-title a {
+    cursor: pointer; }
+
+.base-area-content, .n-area-content, .gs-area-content {
+  text-align: left;
+  display: inline-block;
+  vertical-align: top;
+  padding: 3px 15px;
+  width: 95%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  font-family: sans-serif;
+  font-size: 95%; }
+
+.n-area {
+  width: 650px;
+  height: 275px;
+  position: absolute;
+  bottom: -5px;
+  left: -5px;
+  transition: bottom 300ms ease-in-out 125ms; }
+
+.n-area-title {
+  border-bottom: solid #A6A6A6 2px; }
+
+#n-area-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#n-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#n-area-toggle + div label:after {
+  content: "notification area"; }
+
+#n-area-toggle:checked + div label:after {
+  content: "notification area"; }
+
+#n-area-toggle:checked ~ .n-area {
+  bottom: -238px; }
+
+.n-area-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 240px; }
+
+.n-area-list {
+  list-style: none;
+  line-height: 0.95em;
+  padding-left: 12px;
+  vertical-align: middle; }
+  .n-area-list li div {
+    display: inline-block;
+    border-radius: 5px;
+    padding: 2px 1px 2px 1px;
+    line-height: 1em; }
+    .n-area-list li div p {
+      font-weight: bolder;
+      font-size: 80%;
+      padding: 3px; }
+    .n-area-list li div span {
+      padding: 3px 1em 1em 3em;
+      font-size: 85%;
+      text-wrap: normal; }
+  .n-area-list li div:hover {
+    color: white;
+    opacity: 0.5;
+    cursor: pointer; }
+
+.gs-area {
+  min-height: 275px;
+  width: 175px;
+  position: absolute;
+  top: -5px;
+  left: 300px;
+  transition: top 300ms ease-in-out 125ms; }
+
+.gs-area-title {
+  border-top: solid #A6A6A6 2px; }
+
+#gs-area-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#gs-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#gs-area-toggle + div label:after {
+  content: "ground stations"; }
+
+#gs-area-toggle:checked + div label:after {
+  content: "ground stations"; }
+
+#gs-area-toggle:checked ~ .gs-area {
+  top: -236px; }
+
+.gs-area-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 193px; }
+
+.sc-area {
+  min-height: 275px;
+  width: 175px;
+  position: absolute;
+  top: -5px;
+  left: 485px;
+  transition: top 300ms ease-in-out 125ms; }
+
+#sc-area-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#sc-area-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#sc-area-toggle + div label:after {
+  content: "spacecraft"; }
+
+#sc-area-toggle:checked + div label:after {
+  content: "spacecraft"; }
+
+#sc-area-toggle:checked ~ .sc-area {
+  top: -236px; }
+
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.leop-gs-duallist option {
+  font-size: 150%;
+  font-weight: bolder;
+  text-align: center; }
+
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.marker-cluster-small {
+  background-color: #A3A3C2; }
+
+.marker-cluster-small div {
+  background-color: #0F3E62; }
+
+.marker-cluster-medium {
+  background-color: #A3A3C2; }
+
+.marker-cluster-medium div {
+  background-color: #0F3E62; }
+
+.marker-cluster-large {
+  background-color: #A3A3C2; }
+
+.marker-cluster-large div {
+  background-color: #0F3E62; }
+
+/* IE 6-8 fallback colors */
+.leaflet-oldie .marker-cluster-small {
+  background-color: #A3A3C2; }
+
+.leaflet-oldie .marker-cluster-small div {
+  background-color: #0F3E62; }
+
+.leaflet-oldie .marker-cluster-medium {
+  background-color: #A3A3C2; }
+
+.leaflet-oldie .marker-cluster-medium div {
+  background-color: #0F3E62; }
+
+.leaflet-oldie .marker-cluster-large {
+  background-color: #A3A3C2; }
+
+.leaflet-oldie .marker-cluster-large div {
+  background-color: #0F3E62; }
+
+.marker-cluster {
+  background-clip: padding-box;
+  border-radius: 20px; }
+
+.marker-cluster div {
+  width: 30px;
+  height: 30px;
+  margin-left: 5px;
+  margin-top: 5px;
+  text-align: center;
+  border-radius: 15px;
+  font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  color: white; }
+
+.marker-cluster span {
+  line-height: 30px; }
+
+/*# sourceMappingURL=satnet-ng.css.map */
