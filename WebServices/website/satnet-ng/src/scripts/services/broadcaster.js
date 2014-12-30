@@ -34,28 +34,28 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
         /**
          * Function that broadcasts the event associated with the creation of a
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsAdded = function (gsId) {
-            $rootScope.$broadcast(this.GS_ADDED_EVENT, gsId);
+        this.gsAdded = function (identifier) {
+            $rootScope.$broadcast(this.GS_ADDED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the removal of a
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsRemoved = function (gsId) {
-            $rootScope.$broadcast(this.GS_REMOVED_EVENT, gsId);
+        this.gsRemoved = function (identifier) {
+            $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the update of
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsUpdated = function (gsId) {
-            $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
+        this.gsUpdated = function (identifier) {
+            $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
         this.SC_ADDED_EVENT = 'sc.added';
@@ -65,28 +65,28 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
         /**
          * Function that broadcasts the event associated with the creation of a
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scAdded = function (scId) {
-            $rootScope.$broadcast(this.SC_ADDED_EVENT, scId);
+        this.scAdded = function (identifier) {
+            $rootScope.$broadcast(this.SC_ADDED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the removal of a
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scRemoved = function (scId) {
-            $rootScope.$broadcast(this.SC_REMOVED_EVENT, scId);
+        this.scRemoved = function (identifier) {
+            $rootScope.$broadcast(this.SC_REMOVED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the update of
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scUpdated = function (scId) {
-            $rootScope.$broadcast(this.SC_UPDATED_EVENT, scId);
+        this.scUpdated = function (identifier) {
+            $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
 
     }]);

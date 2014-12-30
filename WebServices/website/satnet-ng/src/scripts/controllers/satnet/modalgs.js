@@ -103,8 +103,8 @@ angular.module('ui-modalgs-controllers')
                     $scope.gs.identifier,
                     $scope.gs.callsign,
                     $scope.gs.elevation.toFixed(2),
-                    $scope.markers.gsStyle.lat.toFixed(6),
-                    $scope.markers.gsStyle.lng.toFixed(6)
+                    $scope.markers.gs.lat.toFixed(6),
+                    $scope.markers.gs.lng.toFixed(6)
                 ];
                 satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
                     var gsId = data.groundstation_id;
@@ -151,7 +151,7 @@ angular.module('ui-modalgs-controllers')
 
             $scope.gs = {};
             $scope.center = {};
-            $scope.markers = [];
+            $scope.markers = {};
 
             angular.extend($scope, {
                 center: {

@@ -40,17 +40,15 @@
             <hr>
             <label for='add_gs_lat'>Latitude</label>
             <input type='text' name='add_gs_lat' readonly
-                   ng-model="markers.gsMarker.lat" style='width: 95%;' />
+                   ng-model="markers.gs.lat" style='width: 95%;' />
             <label for='add_gs_lng'>Longitude</label>
             <input type='text' name='add_gs_lng' readonly
-                   ng-model="markers.gsMarker.lng" style='width: 95%;' />
+                   ng-model="markers.gs.lng" style='width: 95%;' />
         </form>
     </div>
     <div style='display: table-cell;'>
-        <leaflet id='addGSMap' markers='markers' center='center'
-                 style='float: left; width: 365px; height: 365px;
-                 margin: 15px 15px 15px 0;'>
-            </leaflet>
+        <leaflet id='addGSMap' markers='markers' center='center' style='float: left; width: 365px; height: 365px;
+                 margin: 15px 15px 15px 0;'></leaflet>
     </div>
 </div>
 

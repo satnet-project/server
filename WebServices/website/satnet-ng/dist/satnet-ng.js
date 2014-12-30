@@ -191,28 +191,28 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
         /**
          * Function that broadcasts the event associated with the creation of a
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsAdded = function (gsId) {
-            $rootScope.$broadcast(this.GS_ADDED_EVENT, gsId);
+        this.gsAdded = function (identifier) {
+            $rootScope.$broadcast(this.GS_ADDED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the removal of a
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsRemoved = function (gsId) {
-            $rootScope.$broadcast(this.GS_REMOVED_EVENT, gsId);
+        this.gsRemoved = function (identifier) {
+            $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the update of
          * new GroundStation.
-         * @param gsId The identifier of the GroundStation.
+         * @param identifier The identifier of the GroundStation.
          */
-        this.gsUpdated = function (gsId) {
-            $rootScope.$broadcast(this.GS_UPDATED_EVENT, gsId);
+        this.gsUpdated = function (identifier) {
+            $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
         this.SC_ADDED_EVENT = 'sc.added';
@@ -222,28 +222,28 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
         /**
          * Function that broadcasts the event associated with the creation of a
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scAdded = function (scId) {
-            $rootScope.$broadcast(this.SC_ADDED_EVENT, scId);
+        this.scAdded = function (identifier) {
+            $rootScope.$broadcast(this.SC_ADDED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the removal of a
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scRemoved = function (scId) {
-            $rootScope.$broadcast(this.SC_REMOVED_EVENT, scId);
+        this.scRemoved = function (identifier) {
+            $rootScope.$broadcast(this.SC_REMOVED_EVENT, identifier);
         };
 
         /**
          * Function that broadcasts the event associated with the update of
          * new Spacececraft.
-         * @param scId The identifier of the Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
          */
-        this.scUpdated = function (scId) {
-            $rootScope.$broadcast(this.SC_UPDATED_EVENT, scId);
+        this.scUpdated = function (identifier) {
+            $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
 
     }]);;/**
@@ -633,15 +633,18 @@ angular.module('satnet-services').service('satnetRPC', [
          * Method for calling the remote service through JSON-RPC.
          * @param service The name of the service, as per the internal services
          * name definitions.
-         * @param paramArray The parameters for the service (as an array).
+         * @param params The parameters for the service (as an array).
          * @returns {*}
          */
-        this.rCall = function (service, paramArray) {
+        this.rCall = function (service, params) {
             if ((this.services.hasOwnProperty(service)) === false) {
                 throw '[satnetRPC] service not found, id = <' + service + '>';
             }
-            $log.log('[satnetRPC] Invoked service = <' + service + '>');
-            return this.services[service](paramArray).then(
+            $log.log(
+                '[satnetRPC] Invoked service = <' + service + '>' +
+                    ', params = ' + JSON.stringify(params)
+            );
+            return this.services[service](params).then(
                 function (data) {
                     return data.data;
                 },
@@ -2464,8 +2467,8 @@ angular.module('ui-modalgs-controllers')
                     $scope.gs.identifier,
                     $scope.gs.callsign,
                     $scope.gs.elevation.toFixed(2),
-                    $scope.markers.gsStyle.lat.toFixed(6),
-                    $scope.markers.gsStyle.lng.toFixed(6)
+                    $scope.markers.gs.lat.toFixed(6),
+                    $scope.markers.gs.lng.toFixed(6)
                 ];
                 satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
                     var gsId = data.groundstation_id;
@@ -2512,7 +2515,7 @@ angular.module('ui-modalgs-controllers')
 
             $scope.gs = {};
             $scope.center = {};
-            $scope.markers = [];
+            $scope.markers = {};
 
             angular.extend($scope, {
                 center: {
