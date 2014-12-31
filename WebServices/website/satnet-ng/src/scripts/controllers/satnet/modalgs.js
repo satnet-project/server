@@ -51,52 +51,24 @@ angular.module('ui-modalgs-controllers')
 
             'use strict';
 
-            $scope.gs = {};
-            $scope.gs.identifier = '';
-            $scope.gs.callsign = '';
-            $scope.gs.elevation = GS_ELEVATION;
-
-            angular.extend($scope, {
-                center: {
-                    lat: maps.LAT,
-                    lng: maps.LNG,
-                    zoom: maps.DETAIL_ZOOM
-                },
-                markers: {}
-            });
-
-            $scope.initMap = function () {
-                satnetRPC.getUserLocation().then(function (location) {
-
-                    console.log(
-                        '>>> satnetRPC, location = ' + JSON.stringify(location)
-                    );
-                    angular.extend($scope, {
-                        center: {
-                            lat: location.latitude,
-                            lng: location.longitude,
-                            zoom: maps.DETAIL_ZOOM
-                        },
-                        markers: {
-                            gs: {
-                                lat: location.latitude,
-                                lng: location.longitude,
-                                focus: true,
-                                draggable: true,
-                                label: {
-                                    message: 'Drag me!',
-                                    options: {
-                                        noHide: true
-                                    }
-                                }
-                            }
-                        }
-                    });
-
-                });
+            $scope.gs = {
+                identifier: '',
+                callsign: '',
+                elevation: GS_ELEVATION
             };
 
-            $scope.initMap();
+            angular.extend($scope, {
+                center: {},
+                markers: {},
+                layers: {
+                    baselayers: {},
+                    overlays: {}
+                }
+            });
+
+            maps.autocenterMap($scope, 8).then(function () {
+                $log.info('[map-ctrl] GS Modal dialog loaded.');
+            });
 
             $scope.ok = function () {
                 var newGsCfg = [
@@ -113,16 +85,13 @@ angular.module('ui-modalgs-controllers')
                     $modalInstance.close();
                 });
             };
-            $scope.cancel = function () {
-                $modalInstance.close();
-            };
+
+            $scope.cancel = function () { $modalInstance.close(); };
+
         }
     ]);
 
 angular.module('ui-modalgs-controllers')
-    .constant('LAT', 32.630)
-    .constant('LNG', 8.933)
-    .constant('D_ZOOM', 10)
     .constant('GS_ELEVATION', 15.0)
     .controller('EditGSModalCtrl', [
         '$scope',
@@ -132,9 +101,6 @@ angular.module('ui-modalgs-controllers')
         'broadcaster',
         'maps',
         'groundstationId',
-        'LAT',
-        'LNG',
-        'D_ZOOM',
         function (
             $scope,
             $log,
@@ -142,63 +108,41 @@ angular.module('ui-modalgs-controllers')
             satnetRPC,
             broadcaster,
             maps,
-            groundstationId,
-            LAT,
-            LNG,
-            D_ZOOM
+            groundstationId
         ) {
+
             'use strict';
 
-            $scope.gs = {};
-            $scope.center = {};
-            $scope.markers = {};
+            $scope.gs = {
+                identifier: '',
+                callsign: '',
+                elevation: 0
+            };
 
             angular.extend($scope, {
-                center: {
-                    lat: LAT,
-                    lng: LNG,
-                    zoom: D_ZOOM
-                },
-                markers: {
-                    gsStyle: {
-                        lat: LAT,
-                        lng: LNG,
-                        message: 'Move me!',
-                        focus: true,
-                        draggable: true
-                    }
+                center: {},
+                markers: {},
+                layers: {
+                    baselayers: {},
+                    overlays: {}
                 }
             });
 
-            satnetRPC.rCall('gs.get', [groundstationId]).then(function (cfg) {
-                $scope.gs.identifier = groundstationId;
-                $scope.gs.callsign = cfg.groundstation_callsign;
-                $scope.gs.elevation = cfg.groundstation_elevation;
-                angular.extend($scope, {
-                    center: {
-                        lat: cfg.groundstation_latlon[0],
-                        lng: cfg.groundstation_latlon[1],
-                        zoom: maps.DEFAULT_ZOOM
-                    },
-                    markers: {
-                        gsStyle: {
-                            lat: cfg.groundstation_latlon[0],
-                            lng: cfg.groundstation_latlon[1],
-                            message: 'Move me!',
-                            focus: true,
-                            draggable: true
-                        }
-                    }
-                });
+            maps.centerAtGs($scope, groundstationId, 8).then(function (gs) {
+                $scope.gs.identifier = gs.groundstation_id;
+                $scope.gs.callsign = gs.groundstation_callsign;
+                $scope.gs.elevation = gs.groundstation_elevation;
+                $log.info('[map-ctrl] GS Modal dialog loaded.');
             });
+
             $scope.update = function () {
                 var newGsCfg = {
                     'groundstation_id': groundstationId,
                     'groundstation_callsign': $scope.gs.callsign,
                     'groundstation_elevation': $scope.gs.elevation.toFixed(2),
                     'groundstation_latlon': [
-                        $scope.markers.gsStyle.lat.toFixed(6),
-                        $scope.markers.gsStyle.lng.toFixed(6)
+                        $scope.markers.gs.lat.toFixed(6),
+                        $scope.markers.gs.lng.toFixed(6)
                     ]
                 };
                 satnetRPC.rCall(
@@ -210,9 +154,9 @@ angular.module('ui-modalgs-controllers')
                     $modalInstance.close();
                 });
             };
-            $scope.cancel = function () {
-                $modalInstance.close();
-            };
+
+            $scope.cancel = function () { $modalInstance.close(); };
+
             $scope.erase = function () {
                 if (confirm('Delete this ground station?') === true) {
                     satnetRPC.rCall(

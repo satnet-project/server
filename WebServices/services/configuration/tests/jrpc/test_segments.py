@@ -110,6 +110,33 @@ class JRPCSegmentsTest(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
+    def test_gs_create(self):
+        """JRPC method unit test.
+        This test validates the creation of a new GroundStation through the
+        JRPC interface.
+        NOTE: test especifically created for issue #3 on GitHub server's
+        repository. Parameters that triggered that bug:
+        "params":["gs-kam","kam88xx","15.00","56.559482","-199.687500"]
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_gs_list)'
+
+        gs_id = jrpc_gs.create(
+            identifier='gs-kam',
+            callsign='kam88xx',
+            elevation='15.00',
+            latitude='56.559482',
+            longitude='-199.687500',
+            request=self.__http_request
+        )
+        print 'gs_id = ' + str(gs_id)
+
+        self.assertIsNotNone(gs_id, 'Wrong GS identifier')
+        self.assertIsNotNone(
+            segments.GroundStation.objects.get(identifier=gs_id),
+            'GroundStation object has not been created'
+        )
+
     def test_gs_list(self):
         """
         This test validates the list of configuration objects returned through

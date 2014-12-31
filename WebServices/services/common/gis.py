@@ -142,14 +142,9 @@ def get_altitude(latitude, longitude):
     interpolated.
     """
     # noinspection PyDeprecation
-    r = json.loads(
-        urllib2.urlopen(
-            ___G_API_ALTITUDE_URL__
-            + ___G_API_ALTITUDE_OUTPUT__[0]
-            + '?locations='
-            + str(latitude) + ',' + str(longitude)
-        ).read()
-    )
+    url = ___G_API_ALTITUDE_URL__ + ___G_API_ALTITUDE_OUTPUT__[0] + \
+        '?locations=' + str(latitude) + ',' + str(longitude)
+    r = json.loads(urllib2.urlopen(url).read())
     return r['results'][0]['elevation'], r['results'][0]['resolution']
 
 

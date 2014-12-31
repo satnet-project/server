@@ -27,24 +27,18 @@ angular.module('map-services')
     .constant('LAT', 37.7833)
     .constant('LNG', -122.4167)
     .constant('ZOOM', 7)
-    .constant('DETAIL_ZOOM', 10)
-    .constant('DEFAULT_MOVEME', 'Drag me!')
     .service('maps', [
         '$q',
         'leafletData',
         'satnetRPC',
         'ZOOM',
-        'DETAIL_ZOOM',
         'T_OPACITY',
-        'DEFAULT_MOVEME',
         function (
             $q,
             leafletData,
             satnetRPC,
             ZOOM,
-            DETAIL_ZOOM,
-            T_OPACITY,
-            DEFAULT_MOVEME
+            T_OPACITY
         ) {
 
             'use strict';
@@ -52,23 +46,11 @@ angular.module('map-services')
             /**
              * Returns the mapInfo structure for the rest of the chained
              * promises.
-             * @returns {$q} Promise that returns the mapInfo structure with
+             * @returns {*} Promise that returns the mapInfo structure with
              *               a reference to the Leaflet map object.
              */
             this.getMainMap = function () {
                 return leafletData.getMap('mainMap').then(function (m) {
-                    return { map: m };
-                });
-            };
-
-            this.getAddGSMap = function () {
-                return leafletData.getMap('addGSMap').then(function (m) {
-                    return { map: m };
-                });
-            };
-
-            this.getEditGSMap = function () {
-                return leafletData.getMap('editGSMap').then(function (m) {
                     return { map: m };
                 });
             };
@@ -88,7 +70,7 @@ angular.module('map-services')
             /**
              * Creates the main map and adds a terminator for the illuminated
              * surface of the Earth.
-             * @returns {$q} Promise that returns the mapInfo object
+             * @returns {*} Promise that returns the mapInfo object
              *               {map, terminator}.
              */
             this.createTerminatorMap = function () {
@@ -107,7 +89,7 @@ angular.module('map-services')
              * just created map.
              *
              * @param terminator If 'true' adds the overlaying terminator line.
-             * @returns {$q} Promise that returns the 'mapData' structure with
+             * @returns {*} Promise that returns the 'mapData' structure with
              *               a reference to the Leaflet map and to the
              *               terminator overlaying line (if requested).
              */
@@ -145,44 +127,85 @@ angular.module('map-services')
             };
 
             /**
-             * Initializes the map, centers it with the estimated position
-             * of the user (GeoIP) and adds a "move-me" draggable marker.
+             * Creates a map centered at the estimated user position.
              *
-             * @param {L} map Reference to the Leaflet map.
-             * @param {String} message Message to be added to the marker.
-             * @returns {$q} Promise that returns the 'mapData' structure with
-             *               an additional marker.
+             * @param scope $scope to be configured
+             * @param zoom Zoom level
+             * @returns {ng.IPromise<{empty}>|*}
              */
-            this.createMoveMeMap = function (map, message) {
-
-                if (message === null) { message = DEFAULT_MOVEME; }
-
+            this.autocenterMap = function (scope, zoom) {
+                var self = this;
                 return satnetRPC.getUserLocation().then(function (location) {
-                    var lat = location.lat,
-                        lng = location.lng,
-                        ll = new L.LatLng(lat, lng),
-                        marker = L.marker({
-                            lat: lat,
-                            lng: lng,
-                            message: message,
-                            focus: true,
-                            draggable: true
-                        });
-
-                    map.setView(ll, DETAIL_ZOOM);
-                    marker.addTo(map);
-
-                    return ({
-                        map: map,
-                        marker: marker,
-                        center: {
-                            lat: location.lat,
-                            lng: location.lng
-                        }
-                    });
-
+                    self.centerMap(
+                        scope,
+                        location.latitude,
+                        location.longitude,
+                        zoom
+                    );
                 });
+            };
 
+            /**
+             * Creates a map centered at the position of the given
+             * GroundStation.
+             *
+             * @param scope $scope to be configured
+             * @param identifier Identifier of the GroundStation
+             * @param zoom Zoom level
+             * @returns {ng.IPromise<{}>|*}
+             */
+            this.centerAtGs = function (scope, identifier, zoom) {
+                var self = this;
+                return satnetRPC.rCall('gs.get', [identifier])
+                    .then(function (cfg) {
+                        self.centerMap(
+                            scope,
+                            cfg.groundstation_latlon[0],
+                            cfg.groundstation_latlon[1],
+                            zoom
+                        );
+                        return cfg;
+                    });
+            };
+
+            /**
+             * Configures the given scope variable to correctly hold a map. It
+             * zooms with the provided level, at the center given through the
+             * latitude and longitude parameters. It also adds a draggable
+             * marker at the center of the map.
+             *
+             * @param scope Scope to be configured (main variables passed as
+             *              instances to angular-leaflet should have been
+             *              already created, at least, as empty objects before
+             *              calling this function)
+             * @param latitude Latitude of the map center
+             * @param longitude Longitude of the map center
+             * @param zoom Zoom level
+             */
+            this.centerMap = function (scope, latitude, longitude, zoom) {
+                angular.extend(scope.center, {
+                    lat: latitude,
+                    lng: longitude,
+                    zoom: zoom
+                });
+                angular.extend(scope.markers, {
+                    gs: {
+                        lat: latitude,
+                        lng: longitude,
+                        focus: true,
+                        draggable: true,
+                        label: {
+                            message: 'Drag me!',
+                            options: {
+                                noHide: true
+                            }
+                        }
+                    }
+                });
+                angular.extend(
+                    scope.layers.baselayers,
+                    this.getOSMBaseLayer()
+                );
             };
 
             /**
@@ -199,6 +222,7 @@ angular.module('map-services')
                         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                         layerOptions: {
                             noWrap: true,
+                            continuousWorld: false,
                             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
                         }
                     },
@@ -208,6 +232,27 @@ angular.module('map-services')
                         url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
+                            continuousWorld: false,
+                            attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                        }
+                    }
+                };
+            };
+
+            /**
+             * Returns the OSM baselayer for Angular Leaflet.
+             *
+             * @returns {{osm_baselayer: {name: string, type: string, url: string, layerOptions: {noWrap: boolean, attribution: string}}}}
+             */
+            this.getOSMBaseLayer = function () {
+                return {
+                    osm_baselayer: {
+                        name: 'OSM Base Layer',
+                        type: 'xyz',
+                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            noWrap: true,
+                            continuousWorld: false,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }

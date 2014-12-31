@@ -16,12 +16,12 @@
 
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django.core import exceptions as django_exceptions
 from rpc4django import rpcmethod
-
+import logging
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization
 
-import logging
 
 logger = logging.getLogger('jrpc')
 
@@ -59,10 +59,14 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
 
     Creates a new ground station with the given configuration.
     """
-
     request = kwargs.get('request', None)
+
     if request is None:
-        return
+        raise django_exceptions.PermissionDenied(
+            'User identity could not be verified ' +
+            'since no HTTP request was provided.'
+        )
+
     username = request.user.username
 
     gs = segments.GroundStation.objects.create(

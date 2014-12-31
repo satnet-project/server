@@ -66,6 +66,22 @@ class TestGis(TestCase):
             + ', actual = ' + str(actual_r_1)
         )
 
+    def test_get_altitude_bug_3(self):
+        """UNIT test for BUG#3 (Kamchatka bug).
+        This test validates the utilization of the GIS method for obtaining
+        the altitude of a given location, for the case of the Kamchatka
+        peninsula. This case triggers an error while invoking this method.
+        Parameters for the invocation of this method that trigger the bug are
+        the following:
+            { latitude='56.559482', longitude='-199.687500' }
+        """
+        location = ('56.559482', '-199.687500')
+        print '>>> location = ' + str(location)
+        (actual_h, actual_r) = gis.get_altitude(
+            location[0], location[1]
+        )
+        print 'results: h = ' + str(actual_h) + ', r = ' + str(actual_r)
+
     def test_dms2dec(self):
         """DMS2Decimal test.
         Test to validate the method that transforms a DMS coordinate into a

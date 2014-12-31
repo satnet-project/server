@@ -14,16 +14,62 @@
    limitations under the License.
 */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
+
+    'use strict';
+
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
         jshint: {
-            files: ['gruntfile.js', 'src/scripts/**/*.js', 'test/**/*.js'],
+            files: [
+                'gruntfile.js',
+                'src/scripts/**/*.js',
+                'specs/services/**/*.spec.js',
+                'specs/helpers/**/*.js'
+            ],
             options: {
                 globals: {
                     jQuery: true,
                     console: true,
                     module: true
+                }
+            }
+        },
+        concat: {
+            options: {
+                separator: ';'
+            },
+            main: {
+                src: [
+                    'src/scripts/services/celestrak.js',
+                    'src/scripts/services/broadcaster.js',
+                    'src/scripts/services/satnet.js',
+                    'src/scripts/services/x.satnet.js',
+                    'src/scripts/services/maps.js',
+                    'src/scripts/models/marker.js',
+                    'src/scripts/models/x.servers.js',
+                    'src/scripts/models/x.groundstation.js',
+                    'src/scripts/models/x.spacecraft.js',
+                    'src/scripts/controllers/**/*.js',
+                    'src/scripts/satnet.ui.js',
+                    'src/scripts/leop.ui.js'
+                ],
+                dest: 'dist/<%= pkg.name %>.js'
+            }
+        },
+        jasmine: {
+            main: {
+                src: '<%= concat.main.src %>',
+                options: {
+                    keepRunner: true,
+                    outfile: 'specs/_SpecRunner.html',
+                    specs: 'specs/**/*.spec.js',
+                    helpers: 'specs/helpers/**/*.js',
+                    vendor: [
+                        'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js',
+                        'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js',
+                        'node_modules/angular-mocks/angular-mocks.js'
+                    ]
                 }
             }
         },
@@ -51,30 +97,8 @@ module.exports = function(grunt) {
                     htmlmin: {
                         collapseWhitespace: true,
                         collapseBooleanAttributes: true
-                   }
+                    }
                 }
-            }
-        },
-        concat: {
-            options: {
-                separator: ';'
-            },
-            main: {
-                src: [
-                    'src/scripts/services/celestrak.js',
-                    'src/scripts/services/broadcaster.js',
-                    'src/scripts/services/maps.js',
-                    'src/scripts/services/satnet.js',
-                    'src/scripts/services/x.satnet.js',
-                    'src/scripts/models/marker.js',
-                    'src/scripts/models/x.servers.js',
-                    'src/scripts/models/x.groundstation.js',
-                    'src/scripts/models/x.spacecraft.js',
-                    'src/scripts/controllers/**/*.js',
-                    'src/scripts/satnet.ui.js',
-                    'src/scripts/leop.ui.js'
-                ],
-                dest: 'dist/<%= pkg.name %>.js'
             }
         },
         copy: {
@@ -120,7 +144,7 @@ module.exports = function(grunt) {
                         cwd: 'dist',
                         src: ['<%= pkg.name %>.css'],
                         dest: 'dist',
-                        ext: '.min.css',
+                        ext: '.min.css'
                     }
                 ]
             },
@@ -131,7 +155,7 @@ module.exports = function(grunt) {
                         cwd: 'lib',
                         src: ['*.css'],
                         dest: 'dist/lib',
-                        ext: '.min.css',
+                        ext: '.min.css'
                     }
                 ]
             }
@@ -171,16 +195,10 @@ module.exports = function(grunt) {
             templates: {
                 files: ['src/templates/**/*'],
                 tasks: ['ngtemplates']
-            }
-        },
-        qunit: {
-	        all: {
-                options: {
-                    urls: ['tests/index.html'],
-                    '--web-security' : false,
-                    '--local-to-remote-url-access' : true,
-                    '--ignore-ssl-errors' : true
-                }
+            },
+            tests : {
+                files: ['<%= jshint.files %>', 'specs/**/*.js'],
+                tasks: ['jasmine']
             }
         }
     });
@@ -188,7 +206,6 @@ module.exports = function(grunt) {
     // load up your plugins
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-jshint');
-    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-contrib-concat');
     grunt.loadNpmTasks('grunt-contrib-sass');
@@ -196,15 +213,13 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-angular-templates');
+    grunt.loadNpmTasks('grunt-contrib-jasmine');
 
+    // register your tasks
+    grunt.registerTask('test', ['jshint']);
     grunt.registerTask(
-        'test', [
-            'jshint',
-            'qunit'
-        ]
-    );
-    grunt.registerTask(
-        'default', [
+        'default',
+        [
             'clean',
             'sass',
             'ngtemplates',
@@ -213,6 +228,6 @@ module.exports = function(grunt) {
             'cssmin',
             'uglify'
         ]
-   );
-    
+    );
+
 };

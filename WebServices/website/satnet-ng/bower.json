@@ -41,7 +41,8 @@
     "nya-bootstrap-select": "~1.2.7",
     "moment": "~2.8.4",
     "leaflet.markercluster": "~0.4.0",
-    "Leaflet.label": "~0.2.1"
+    "Leaflet.label": "~0.2.1",
+    "pace": "~1.0.2"
   },
   "devDependencies": {
     "qunit": "~1.15.0"

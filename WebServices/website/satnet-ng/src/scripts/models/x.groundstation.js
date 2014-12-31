@@ -104,7 +104,9 @@ angular.module('x-groundstation-models').service('xgs', [
          * Private method that creates the event listeners for this service.
          */
         this.initListeners = function () {
+
             var self = this;
+
             $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
                 console.log(
                     '@on-gs-added-event, event = ' + event + ', id = ' + id
