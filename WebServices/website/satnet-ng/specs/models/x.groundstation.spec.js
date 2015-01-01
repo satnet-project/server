@@ -23,6 +23,7 @@ describe("Unit: Testing Services", function () {
     describe("eXtended Ground Stations:", function () {
 
         beforeEach(module('x-groundstation-models'));
+
         /*
         it('should contain a xgs object',
             inject(function (markers) {

@@ -57,23 +57,27 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
-        jasmine: {
-            main: {
-                src: '<%= concat.main.src %>',
-                options: {
-                    keepRunner: true,
-                    outfile: 'specs/_SpecRunner.html',
-                    specs: 'specs/**/*.spec.js',
-                    helpers: 'specs/helpers/**/*.js',
-                    vendor: [
-                        'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js',
-                        'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js',
-                        'node_modules/angular-mocks/angular-mocks.js'
-                    ]
-                }
+        karma: {
+            unit: {
+                configFile: 'karma.conf.js'
             }
-        },
-        clean : ['dist'],
+        }, 
+//        jasmine: {
+//            main: {
+//                src: '<%= concat.main.src %>',
+//                options: {
+//                    keepRunner: true,
+//                    outfile: 'specs/_SpecRunner.html',
+//                    specs: 'specs/**/*.spec.js',
+//                    helpers: 'specs/helpers/**/*.js',
+//                    vendor: [
+//                        'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js',
+//                        'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js',
+//                        'node_modules/angular-mocks/angular-mocks.js'
+//                    ]
+//                }
+//            }
+//        },
         sass: {
             main: {
                 files: [
@@ -213,10 +217,10 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-angular-templates');
-    grunt.loadNpmTasks('grunt-contrib-jasmine');
+    grunt.loadNpmTasks('grunt-karma');
 
     // register your tasks
-    grunt.registerTask('test', ['jshint']);
+    grunt.registerTask('test', ['jshint', 'karma']);
     grunt.registerTask(
         'default',
         [
