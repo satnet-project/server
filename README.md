@@ -7,4 +7,4 @@ To install the software for the server of the SATNet network, follow the instruc
 
 The wiki together with documentation of the project can be found at:
 
-	https://github.com/satnet-project/satnet-main/wiki.
+	https://github.com/satnet-project/satnet-main/wiki
