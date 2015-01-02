@@ -61,7 +61,7 @@ module.exports = function (grunt) {
             unit: {
                 configFile: 'karma.conf.js'
             }
-        }, 
+        },
 //        jasmine: {
 //            main: {
 //                src: '<%= concat.main.src %>',

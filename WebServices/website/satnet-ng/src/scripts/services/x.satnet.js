@@ -81,7 +81,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          *               for each of the GroundStation objects.
          */
         this.readInUseLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('leop.gs.list', [leop_id])
+            return satnetRPC.rCall('_leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
                     angular.forEach(gss.leop_gs_inuse, function (gs) {
@@ -104,7 +104,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
          */
         this.readAllLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('leop.gs.list', [leop_id])
+            return satnetRPC.rCall('_leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
                     angular.forEach(gss.leop_gs_available, function (gs) {
@@ -134,7 +134,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
 
         this.readLEOPCluster = function (leop_id) {
             console.log('@readLEOPCluster, leop_id = ' + leop_id);
-            return satnetRPC.rCall('leop.sc.cluster', [leop_id])
+            return satnetRPC.rCall('_leop.sc.cluster', [leop_id])
                 .then(function (cluster) {
                     console.log('>>> cluster_cfg = ' + JSON.stringify(cluster));
                 });

@@ -29,59 +29,59 @@ angular.module('satnet-services').service('satnetRPC', [
     function (jsonrpc, $location, $log, $q, $http) {
         'use strict';
 
-        var rpc = $location.protocol() + '://' +
+        var _rpc = $location.protocol() + '://' +
             $location.host() + ':' + $location.port() +
             '/jrpc/';
 
-        this.configuration = jsonrpc.newService('configuration', rpc);
-        this.simulation = jsonrpc.newService('simulation', rpc);
-        this.leop = jsonrpc.newService('leop', rpc);
+        this._configuration = jsonrpc.newService('_configuration', _rpc);
+        this._simulation = jsonrpc.newService('_simulation', _rpc);
+        this._leop = jsonrpc.newService('_leop', _rpc);
 
-        this.services = {
+        this._services = {
             // Configuration methods (Ground Stations)
             'gs.list':
-                this.configuration.createMethod('gs.list'),
+                this._configuration.createMethod('gs.list'),
             'gs.add':
-                this.configuration.createMethod('gs.create'),
+                this._configuration.createMethod('gs.create'),
             'gs.get':
-                this.configuration.createMethod('gs.getConfiguration'),
+                this._configuration.createMethod('gs.getConfiguration'),
             'gs.update':
-                this.configuration.createMethod('gs.setConfiguration'),
+                this._configuration.createMethod('gs.setConfiguration'),
             'gs.delete':
-                this.configuration.createMethod('gs.delete'),
+                this._configuration.createMethod('gs.delete'),
             // Configuration methods (Spacecraft)
             'sc.list':
-                this.configuration.createMethod('sc.list'),
+                this._configuration.createMethod('sc.list'),
             'sc.add':
-                this.configuration.createMethod('sc.create'),
+                this._configuration.createMethod('sc.create'),
             'sc.get':
-                this.configuration.createMethod('sc.getConfiguration'),
+                this._configuration.createMethod('sc.getConfiguration'),
             'sc.update':
-                this.configuration.createMethod('sc.setConfiguration'),
+                this._configuration.createMethod('sc.setConfiguration'),
             'sc.delete':
-                this.configuration.createMethod('sc.delete'),
+                this._configuration.createMethod('sc.delete'),
             // User configuration
             'user.getLocation':
-                this.configuration.createMethod('user.getLocation'),
+                this._configuration.createMethod('user.getLocation'),
             // TLE methods
             'tle.celestrak.getSections':
-                this.configuration.createMethod('tle.celestrak.getSections'),
+                this._configuration.createMethod('tle.celestrak.getSections'),
             'tle.celestrak.getResource':
-                this.configuration.createMethod('tle.celestrak.getResource'),
+                this._configuration.createMethod('tle.celestrak.getResource'),
             'tle.celestrak.getTle':
-                this.configuration.createMethod('tle.celestrak.getTle'),
+                this._configuration.createMethod('tle.celestrak.getTle'),
             // Simulation methods
             'sc.getGroundtrack':
-                this.simulation.createMethod('spacecraft.getGroundtrack'),
+                this._simulation.createMethod('spacecraft.getGroundtrack'),
             // LEOP services
             'leop.gs.list':
-                this.leop.createMethod('gs.list'),
+                this._leop.createMethod('gs.list'),
             'leop.gs.add':
-                this.leop.createMethod('gs.add'),
+                this._leop.createMethod('gs.add'),
             'leop.gs.remove':
-                this.leop.createMethod('gs.remove'),
+                this._leop.createMethod('gs.remove'),
             'leop.sc.cluster':
-                this.leop.createMethod('sc.cluster')
+                this._leop.createMethod('sc.cluster')
         };
 
         /**
@@ -92,14 +92,14 @@ angular.module('satnet-services').service('satnetRPC', [
          * @returns {*}
          */
         this.rCall = function (service, params) {
-            if ((this.services.hasOwnProperty(service)) === false) {
+            if ((this._services.hasOwnProperty(service)) === false) {
                 throw '[satnetRPC] service not found, id = <' + service + '>';
             }
             $log.log(
                 '[satnetRPC] Invoked service = <' + service + '>' +
                     ', params = ' + JSON.stringify(params)
             );
-            return this.services[service](params).then(
+            return this._services[service](params).then(
                 function (data) {
                     return data.data;
                 },

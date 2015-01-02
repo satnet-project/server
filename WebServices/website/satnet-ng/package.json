@@ -41,6 +41,7 @@
     "karma-chrome-launcher": "^0.1.7",
     "karma-jasmine": "^0.3.3",
     "karma-phantomjs-launcher": "^0.1.4",
-    "karma-script-launcher": "^0.1.0"
+    "karma-script-launcher": "^0.1.0",
+    "require.js": "^0.3.97"
   }
 }

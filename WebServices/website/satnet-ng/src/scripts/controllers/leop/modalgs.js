@@ -55,7 +55,7 @@ angular.module('ui-leop-modalgs-controllers')
                 console.log('init, leop_id = ' + $rootScope.leop_id);
                 xSatnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
+                        console.log('_leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
@@ -119,7 +119,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsAdded(gs_id);
                     }
                     satnetRPC.rCall(
-                        'leop.gs.add',
+                        '_leop.gs.add',
                         [$rootScope.leop_id, a_ids]
                     ).then(
                         function (data) {
@@ -137,7 +137,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsRemoved(gs_id);
                     }
                     satnetRPC.rCall(
-                        'leop.gs.remove',
+                        '_leop.gs.remove',
                         [$rootScope.leop_id, r_ids]
                     ).then(
                         function (data) {

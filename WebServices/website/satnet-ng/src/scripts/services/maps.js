@@ -18,7 +18,6 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('map-services', [
-    'leaflet-directive',
     'satnet-services'
 ]);
 
@@ -60,7 +59,7 @@ angular.module('map-services')
              * @returns {*} Promise that returns the updated Terminator object.
              * @private
              */
-            this.updateTerminator = function (t) {
+            this._updateTerminator = function (t) {
                 var t2 = L.terminator();
                 t.setLatLngs(t2.getLatLngs());
                 t.redraw();
@@ -73,8 +72,8 @@ angular.module('map-services')
              * @returns {*} Promise that returns the mapInfo object
              *               {map, terminator}.
              */
-            this.createTerminatorMap = function () {
-                var update_function = this.updateTerminator;
+            this._createTerminatorMap = function () {
+                var update_function = this._updateTerminator;
                 return this.getMainMap().then(function (mapInfo) {
                     var t = L.terminator({ fillOpacity: T_OPACITY });
                     t.addTo(mapInfo.map);
@@ -98,7 +97,7 @@ angular.module('map-services')
                 var p = [];
 
                 if (terminator) {
-                    p.push(this.createTerminatorMap());
+                    p.push(this._createTerminatorMap());
                 } else {
                     p.push(this.getMainMap());
                 }
@@ -183,11 +182,14 @@ angular.module('map-services')
              * @param zoom Zoom level
              */
             this.centerMap = function (scope, latitude, longitude, zoom) {
-                angular.extend(scope.center, {
-                    lat: latitude,
-                    lng: longitude,
-                    zoom: zoom
-                });
+                angular.extend(
+                    scope.center,
+                    {
+                        lat: latitude,
+                        lng: longitude,
+                        zoom: zoom
+                    }
+                );
                 angular.extend(scope.markers, {
                     gs: {
                         lat: latitude,

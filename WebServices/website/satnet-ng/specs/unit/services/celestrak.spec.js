@@ -16,22 +16,23 @@
  * Created by rtubio on 10/24/14.
  */
 
-describe("Unit: Testing Services", function () {
-
+describe('Test Celestrak Service', function () {
     'use strict';
 
-    describe("eXtended Ground Stations:", function () {
+    var celestrak;
 
-        beforeEach(module('x-groundstation-models'));
+    beforeEach(function () {
+        module('celestrak-services');
+    });
+    beforeEach(inject(function (_celestrak_) {
+        celestrak = _celestrak_;
+    }));
 
-        /*
-        it('should contain a xgs object',
-            inject(function (markers) {
-                console.log('>>> markers = ' + JSON.stringify(markers));
-                expect(markers).not.toBeNull();
-            }));
-        */
-
+    it('should return a celestrak object', function () {
+        expect(celestrak).not.toBeNull();
+    });
+    it('should implement a proper API', function () {
+        expect(celestrak.CELESTRAK_SELECT_SECTIONS).not.toBeNull();
     });
 
 });
