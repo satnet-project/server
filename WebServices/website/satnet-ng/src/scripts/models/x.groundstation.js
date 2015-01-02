@@ -76,7 +76,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * @param identifier Identififer of the GroundStation to be added.
          * @returns String Identifier of the just-created object.
          */
-        this.add = function (identifier) {
+        this.addGS = function (identifier) {
             satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.createGSMarker(data);
             });
@@ -86,7 +86,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * Updates the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
-        this.update = function (identifier) {
+        this.updateGS = function (identifier) {
             satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.updateGSMarker(data);
             });
@@ -96,7 +96,8 @@ angular.module('x-groundstation-models').service('xgs', [
          * Removes the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
-        this.remove = function (identifier) {
+        this.removeGS = function (identifier) {
+            console.log('@x-gs: remove, id = ' + identifier);
             return markers.removeGSMarker(identifier);
         };
 
@@ -104,28 +105,26 @@ angular.module('x-groundstation-models').service('xgs', [
          * Private method that creates the event listeners for this service.
          */
         this.initListeners = function () {
-
             var self = this;
-
             $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
                 console.log(
                     '@on-gs-added-event, event = ' + event + ', id = ' + id
                 );
-                self.add(id);
+                self.addGS(id);
             });
             $rootScope.$on(broadcaster.GS_REMOVED_EVENT, function (event, id) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
+                    '@on-gs-removed-event, event = ' + JSON.stringify(event) +
+                        ', id = ' + JSON.stringify(id)
                 );
-                self.remove(id);
+                self.removeGS(id);
             });
             $rootScope.$on(broadcaster.GS_UPDATED_EVENT, function (event, id) {
                 console.log(
                     '@on-gs-updated-event, event = ' + event + ', id = ' + id
                 );
-                self.update(id);
+                self.updateGS(id);
             });
-
         };
 
     }

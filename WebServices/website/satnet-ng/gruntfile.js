@@ -20,12 +20,12 @@ module.exports = function (grunt) {
 
     grunt.initConfig({
         pkg: grunt.file.readJSON('package.json'),
+        clean: ['dist'],
         jshint: {
             files: [
                 'gruntfile.js',
                 'src/scripts/**/*.js',
-                'specs/services/**/*.spec.js',
-                'specs/helpers/**/*.js'
+                'specs/**/*.js'
             ],
             options: {
                 globals: {
@@ -62,22 +62,6 @@ module.exports = function (grunt) {
                 configFile: 'karma.conf.js'
             }
         },
-//        jasmine: {
-//            main: {
-//                src: '<%= concat.main.src %>',
-//                options: {
-//                    keepRunner: true,
-//                    outfile: 'specs/_SpecRunner.html',
-//                    specs: 'specs/**/*.spec.js',
-//                    helpers: 'specs/helpers/**/*.js',
-//                    vendor: [
-//                        'http://cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.8/angular.min.js',
-//                        'https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.15/require.min.js',
-//                        'node_modules/angular-mocks/angular-mocks.js'
-//                    ]
-//                }
-//            }
-//        },
         sass: {
             main: {
                 files: [
@@ -131,7 +115,6 @@ module.exports = function (grunt) {
                             'bower/nya-bootstrap-select/src/nya-bootstrap-select.js',
                             'bower/ng-remote-validate/release/ngRemoteValidate.js',
                             'bower/angular-uuid/uuid.min.js',
-                            'bower/angular-jsonrpc/jsonrpc.min.js',
                             'bower/Leaflet.label/dist/leaflet.label.js',
                             'bower/Leaflet.label/dist/leaflet.label.css'
                         ],
@@ -202,7 +185,7 @@ module.exports = function (grunt) {
             },
             tests : {
                 files: ['<%= jshint.files %>', 'specs/**/*.js'],
-                tasks: ['jasmine']
+                tasks: ['karma']
             }
         }
     });

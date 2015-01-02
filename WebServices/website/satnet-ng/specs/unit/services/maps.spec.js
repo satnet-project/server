@@ -19,13 +19,27 @@
 describe('Test Maps Service', function () {
     'use strict';
 
-    var maps, satnetRPCMock, leafletDataMock;
+    var maps, jsonrpcMock, leafletDataMock;
 
     beforeEach(module('map-services', function ($provide) {
-        satnetRPCMock = {};
-        satnetRPCMock.rCall = jasmine.createSpy();
+        jsonrpcMock = {};
+        jsonrpcMock.results = {};
+        jsonrpcMock.newService = function (name, rpc) {
+            return {
+                jsonrpc_mock: this,
+                service: name,
+                rpc: rpc,
+                createMethod: function (name) {
+                    return function (params) {
+                        jsonrpcMock.results[name] = '@createMethod, name = ' +
+                            name + ', params = ' + JSON.stringify(params);
+                        return jsonrpcMock.results[name];
+                    };
+                }
+            };
+        };
+        $provide.value('jsonrpc', jsonrpcMock);
         leafletDataMock = {};
-        $provide.value('satnetRPC', satnetRPCMock);
         $provide.value('leafletData', leafletDataMock);
     }));
 
@@ -38,6 +52,7 @@ describe('Test Maps Service', function () {
         console.log('>>> maps = ' + JSON.stringify(maps));
     });
 
+    /*
     it('should declare constants: LAT, LNG, ZOOM and T_OPACITY', function () {
         expect(maps.T_OPACITY).toBe(0.125);
         expect(maps.LAT).toBe(37.7833);
@@ -45,7 +60,6 @@ describe('Test Maps Service', function () {
         expect(maps.ZOOM).toBe(7);
     });
 
-    /*
     it('should center a map according to angular-leaflet', function () {
         var __scope__ = {},
             __lat__ = 37.7833,

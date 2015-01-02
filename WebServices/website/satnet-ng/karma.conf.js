@@ -9,7 +9,6 @@ module.exports = function (config) {
         files: [
             'lib/bower/angular/angular.js',
             'node_modules/angular-mocks/angular-mocks.js',
-            //'node_modules/require.js/build/require.js',
             'src/scripts/services/celestrak.js',
             'src/scripts/services/broadcaster.js',
             'src/scripts/services/satnet.js',

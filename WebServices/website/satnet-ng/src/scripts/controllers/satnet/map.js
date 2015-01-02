@@ -35,8 +35,8 @@ angular.module('ui-map-controllers')
             'use strict';
 
             markers.configureMapScope($scope);
-            xsc.initListeners();
             xgs.initListeners();
+            xsc.initListeners();
 
             xsc.initAll().then(function (spacecraft) {
                 $log.log(

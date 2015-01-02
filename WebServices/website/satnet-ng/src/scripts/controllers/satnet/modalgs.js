@@ -159,14 +159,16 @@ angular.module('ui-modalgs-controllers')
 
             $scope.erase = function () {
                 if (confirm('Delete this ground station?') === true) {
-                    satnetRPC.rCall(
-                        'gs.delete',
-                        [groundstationId]
-                    ).then(function (gsId) {
-                        $log.info('[map-ctrl] GS removed, id = ' + gsId);
-                        broadcaster.gsRemoved(gsId);
-                        $modalInstance.close();
-                    });
+                    satnetRPC.rCall('gs.delete', [groundstationId]).then(
+                        function (gsId) {
+                            $log.info(
+                                '[modalgs] GS removed, id = ' +
+                                    JSON.stringify(gsId)
+                            );
+                            broadcaster.gsRemoved(gsId);
+                            $modalInstance.close();
+                        }
+                    );
                 }
             };
 

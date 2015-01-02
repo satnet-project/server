@@ -33,9 +33,9 @@ angular.module('satnet-services').service('satnetRPC', [
             $location.host() + ':' + $location.port() +
             '/jrpc/';
 
-        this._configuration = jsonrpc.newService('_configuration', _rpc);
-        this._simulation = jsonrpc.newService('_simulation', _rpc);
-        this._leop = jsonrpc.newService('_leop', _rpc);
+        this._configuration = jsonrpc.newService('configuration', _rpc);
+        this._simulation = jsonrpc.newService('simulation', _rpc);
+        this._leop = jsonrpc.newService('leop', _rpc);
 
         this._services = {
             // Configuration methods (Ground Stations)
@@ -101,6 +101,10 @@ angular.module('satnet-services').service('satnetRPC', [
             );
             return this._services[service](params).then(
                 function (data) {
+                    $log.debug(
+                        '[satnetRPC] data received = ' +
+                            JSON.stringify(data)
+                    );
                     return data.data;
                 },
                 function (error) {

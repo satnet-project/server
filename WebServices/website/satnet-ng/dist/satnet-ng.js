@@ -203,6 +203,7 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
          * @param identifier The identifier of the GroundStation.
          */
         this.gsRemoved = function (identifier) {
+            console.log('@broadcaster.gsRemoved, id = ' + identifier);
             $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
@@ -277,59 +278,59 @@ angular.module('satnet-services').service('satnetRPC', [
     function (jsonrpc, $location, $log, $q, $http) {
         'use strict';
 
-        var rpc = $location.protocol() + '://' +
+        var _rpc = $location.protocol() + '://' +
             $location.host() + ':' + $location.port() +
             '/jrpc/';
 
-        this.configuration = jsonrpc.newService('configuration', rpc);
-        this.simulation = jsonrpc.newService('simulation', rpc);
-        this.leop = jsonrpc.newService('leop', rpc);
+        this._configuration = jsonrpc.newService('configuration', _rpc);
+        this._simulation = jsonrpc.newService('simulation', _rpc);
+        this._leop = jsonrpc.newService('leop', _rpc);
 
-        this.services = {
+        this._services = {
             // Configuration methods (Ground Stations)
             'gs.list':
-                this.configuration.createMethod('gs.list'),
+                this._configuration.createMethod('gs.list'),
             'gs.add':
-                this.configuration.createMethod('gs.create'),
+                this._configuration.createMethod('gs.create'),
             'gs.get':
-                this.configuration.createMethod('gs.getConfiguration'),
+                this._configuration.createMethod('gs.getConfiguration'),
             'gs.update':
-                this.configuration.createMethod('gs.setConfiguration'),
+                this._configuration.createMethod('gs.setConfiguration'),
             'gs.delete':
-                this.configuration.createMethod('gs.delete'),
+                this._configuration.createMethod('gs.delete'),
             // Configuration methods (Spacecraft)
             'sc.list':
-                this.configuration.createMethod('sc.list'),
+                this._configuration.createMethod('sc.list'),
             'sc.add':
-                this.configuration.createMethod('sc.create'),
+                this._configuration.createMethod('sc.create'),
             'sc.get':
-                this.configuration.createMethod('sc.getConfiguration'),
+                this._configuration.createMethod('sc.getConfiguration'),
             'sc.update':
-                this.configuration.createMethod('sc.setConfiguration'),
+                this._configuration.createMethod('sc.setConfiguration'),
             'sc.delete':
-                this.configuration.createMethod('sc.delete'),
+                this._configuration.createMethod('sc.delete'),
             // User configuration
             'user.getLocation':
-                this.configuration.createMethod('user.getLocation'),
+                this._configuration.createMethod('user.getLocation'),
             // TLE methods
             'tle.celestrak.getSections':
-                this.configuration.createMethod('tle.celestrak.getSections'),
+                this._configuration.createMethod('tle.celestrak.getSections'),
             'tle.celestrak.getResource':
-                this.configuration.createMethod('tle.celestrak.getResource'),
+                this._configuration.createMethod('tle.celestrak.getResource'),
             'tle.celestrak.getTle':
-                this.configuration.createMethod('tle.celestrak.getTle'),
+                this._configuration.createMethod('tle.celestrak.getTle'),
             // Simulation methods
             'sc.getGroundtrack':
-                this.simulation.createMethod('spacecraft.getGroundtrack'),
+                this._simulation.createMethod('spacecraft.getGroundtrack'),
             // LEOP services
             'leop.gs.list':
-                this.leop.createMethod('gs.list'),
+                this._leop.createMethod('gs.list'),
             'leop.gs.add':
-                this.leop.createMethod('gs.add'),
+                this._leop.createMethod('gs.add'),
             'leop.gs.remove':
-                this.leop.createMethod('gs.remove'),
+                this._leop.createMethod('gs.remove'),
             'leop.sc.cluster':
-                this.leop.createMethod('sc.cluster')
+                this._leop.createMethod('sc.cluster')
         };
 
         /**
@@ -340,15 +341,19 @@ angular.module('satnet-services').service('satnetRPC', [
          * @returns {*}
          */
         this.rCall = function (service, params) {
-            if ((this.services.hasOwnProperty(service)) === false) {
+            if ((this._services.hasOwnProperty(service)) === false) {
                 throw '[satnetRPC] service not found, id = <' + service + '>';
             }
             $log.log(
                 '[satnetRPC] Invoked service = <' + service + '>' +
                     ', params = ' + JSON.stringify(params)
             );
-            return this.services[service](params).then(
+            return this._services[service](params).then(
                 function (data) {
+                    $log.info(
+                        '[satnetRPC] data received = ' +
+                            JSON.stringify(data)
+                    );
                     return data.data;
                 },
                 function (error) {
@@ -484,7 +489,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          *               for each of the GroundStation objects.
          */
         this.readInUseLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('leop.gs.list', [leop_id])
+            return satnetRPC.rCall('_leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
                     angular.forEach(gss.leop_gs_inuse, function (gs) {
@@ -507,7 +512,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
          */
         this.readAllLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('leop.gs.list', [leop_id])
+            return satnetRPC.rCall('_leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
                     angular.forEach(gss.leop_gs_available, function (gs) {
@@ -537,7 +542,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
 
         this.readLEOPCluster = function (leop_id) {
             console.log('@readLEOPCluster, leop_id = ' + leop_id);
-            return satnetRPC.rCall('leop.sc.cluster', [leop_id])
+            return satnetRPC.rCall('_leop.sc.cluster', [leop_id])
                 .then(function (cluster) {
                     console.log('>>> cluster_cfg = ' + JSON.stringify(cluster));
                 });
@@ -564,7 +569,6 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
 
 /** Module definition (empty array is vital!). */
 angular.module('map-services', [
-    'leaflet-directive',
     'satnet-services'
 ]);
 
@@ -606,7 +610,7 @@ angular.module('map-services')
              * @returns {*} Promise that returns the updated Terminator object.
              * @private
              */
-            this.updateTerminator = function (t) {
+            this._updateTerminator = function (t) {
                 var t2 = L.terminator();
                 t.setLatLngs(t2.getLatLngs());
                 t.redraw();
@@ -619,8 +623,8 @@ angular.module('map-services')
              * @returns {*} Promise that returns the mapInfo object
              *               {map, terminator}.
              */
-            this.createTerminatorMap = function () {
-                var update_function = this.updateTerminator;
+            this._createTerminatorMap = function () {
+                var update_function = this._updateTerminator;
                 return this.getMainMap().then(function (mapInfo) {
                     var t = L.terminator({ fillOpacity: T_OPACITY });
                     t.addTo(mapInfo.map);
@@ -644,7 +648,7 @@ angular.module('map-services')
                 var p = [];
 
                 if (terminator) {
-                    p.push(this.createTerminatorMap());
+                    p.push(this._createTerminatorMap());
                 } else {
                     p.push(this.getMainMap());
                 }
@@ -729,11 +733,14 @@ angular.module('map-services')
              * @param zoom Zoom level
              */
             this.centerMap = function (scope, latitude, longitude, zoom) {
-                angular.extend(scope.center, {
-                    lat: latitude,
-                    lng: longitude,
-                    zoom: zoom
-                });
+                angular.extend(
+                    scope.center,
+                    {
+                        lat: latitude,
+                        lng: longitude,
+                        zoom: zoom
+                    }
+                );
                 angular.extend(scope.markers, {
                     gs: {
                         lat: latitude,
@@ -1594,7 +1601,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * @param identifier Identififer of the GroundStation to be added.
          * @returns String Identifier of the just-created object.
          */
-        this.add = function (identifier) {
+        this.addGS = function (identifier) {
             satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.createGSMarker(data);
             });
@@ -1604,7 +1611,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * Updates the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
-        this.update = function (identifier) {
+        this.updateGS = function (identifier) {
             satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.updateGSMarker(data);
             });
@@ -1614,7 +1621,8 @@ angular.module('x-groundstation-models').service('xgs', [
          * Removes the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
-        this.remove = function (identifier) {
+        this.removeGS = function (identifier) {
+            console.log('@x-gs: remove, id = ' + identifier);
             return markers.removeGSMarker(identifier);
         };
 
@@ -1622,28 +1630,26 @@ angular.module('x-groundstation-models').service('xgs', [
          * Private method that creates the event listeners for this service.
          */
         this.initListeners = function () {
-
             var self = this;
-
             $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
                 console.log(
                     '@on-gs-added-event, event = ' + event + ', id = ' + id
                 );
-                self.add(id);
+                self.addGS(id);
             });
             $rootScope.$on(broadcaster.GS_REMOVED_EVENT, function (event, id) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
+                    '@on-gs-removed-event, event = ' + JSON.stringify(event) +
+                        ', id = ' + JSON.stringify(id)
                 );
-                self.remove(id);
+                self.removeGS(id);
             });
             $rootScope.$on(broadcaster.GS_UPDATED_EVENT, function (event, id) {
                 console.log(
                     '@on-gs-updated-event, event = ' + event + ', id = ' + id
                 );
-                self.update(id);
+                self.updateGS(id);
             });
-
         };
 
     }
@@ -1880,7 +1886,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshGSList = function () {
-            satnetRPC.rCall('leop.gs.list', [$rootScope.leop_id])
+            satnetRPC.rCall('_leop.gs.list', [$rootScope.leop_id])
                 .then(function (data) {
                     if ((data !== null) && (data.leop_gs_inuse !== undefined)) {
                         $scope.gsIds = data.leop_gs_inuse.slice(0);
@@ -1908,10 +1914,10 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshUFOList = function () {
-            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
+            satnetRPC.rCall('_leop.ufo.list', []).then(function (data) {
                 if (data !== null) {
                     console.log(
-                        'leop.ufo.list >>> data = ' + JSON.stringify(data)
+                        '_leop.ufo.list >>> data = ' + JSON.stringify(data)
                     );
                     $scope.scIds = data.slice(0);
                 }
@@ -1977,7 +1983,7 @@ angular.module('ui-leop-modalgs-controllers')
                 console.log('init, leop_id = ' + $rootScope.leop_id);
                 xSatnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
+                        console.log('_leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
@@ -2041,7 +2047,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsAdded(gs_id);
                     }
                     satnetRPC.rCall(
-                        'leop.gs.add',
+                        '_leop.gs.add',
                         [$rootScope.leop_id, a_ids]
                     ).then(
                         function (data) {
@@ -2059,7 +2065,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsRemoved(gs_id);
                     }
                     satnetRPC.rCall(
-                        'leop.gs.remove',
+                        '_leop.gs.remove',
                         [$rootScope.leop_id, r_ids]
                     ).then(
                         function (data) {
@@ -2279,8 +2285,8 @@ angular.module('ui-map-controllers')
             'use strict';
 
             markers.configureMapScope($scope);
-            xsc.initListeners();
             xgs.initListeners();
+            xsc.initListeners();
 
             xsc.initAll().then(function (spacecraft) {
                 $log.log(
@@ -2570,14 +2576,16 @@ angular.module('ui-modalgs-controllers')
 
             $scope.erase = function () {
                 if (confirm('Delete this ground station?') === true) {
-                    satnetRPC.rCall(
-                        'gs.delete',
-                        [groundstationId]
-                    ).then(function (gsId) {
-                        $log.info('[map-ctrl] GS removed, id = ' + gsId);
-                        broadcaster.gsRemoved(gsId);
-                        $modalInstance.close();
-                    });
+                    satnetRPC.rCall('gs.delete', [groundstationId]).then(
+                        function (gsId) {
+                            $log.info(
+                                '[modalgs] GS removed, id = ' +
+                                    JSON.stringify(gsId)
+                            );
+                            broadcaster.gsRemoved(gsId);
+                            $modalInstance.close();
+                        }
+                    );
                 }
             };
 

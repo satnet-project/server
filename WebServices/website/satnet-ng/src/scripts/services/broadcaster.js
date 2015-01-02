@@ -46,6 +46,7 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
          * @param identifier The identifier of the GroundStation.
          */
         this.gsRemoved = function (identifier) {
+            console.log('@broadcaster.gsRemoved, id = ' + identifier);
             $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
