@@ -38,16 +38,14 @@ angular.module('jsonrpc', ['uuid']).provider('jsonrpc', function() {
         transforms.push(t);
       });
       transforms.push(function(data) {
-        if (data.error === null) {
-            if (data.id !== id) {
-                throw '[jsonrpc] Communication problem: ' +
-                    'JSON-RPC wrong response ID, id = ' + data.id;
-            } else {
-                return data.result;
-            }
-        } else {
+        //return data.id === id ? data.result || data.error : null;
+        if (data.error !== null) {
             throw data.error;
         }
+        if (data.id !== id) {
+            throw '[json-rpc] wrong response ID, expected = ' + id + ', received = ' + data.id;
+        }
+        return data.result;
       });
 
       config = config || {};

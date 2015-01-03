@@ -184,7 +184,7 @@ class TestMisc(test.TestCase):
         """
         This test validates the function that gets the current hostname.
         """
-        self.__verbose_testing = True
+        self.__verbose_testing = False
         if self.__verbose_testing:
             print '>>> test_get_fqdn:'
 

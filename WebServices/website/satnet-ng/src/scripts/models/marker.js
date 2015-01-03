@@ -155,7 +155,7 @@ angular.module('marker-models')
                 if (this._serverMarkerKey === null) {
                     throw 'No server has been defined';
                 }
-                console.log('@gs = ' + gs_identifier);
+                console.log('@markers.getServerMarker, id = ' + gs_identifier);
                 return this.getScope().markers[this._serverMarkerKey];
             };
 
@@ -362,10 +362,16 @@ angular.module('marker-models')
              *                      are going to be removed.
              */
             this.removeGSMarker = function (identifier) {
-                delete this.getScope().paths[this.getMarkerKey(
-                    this.createConnectorIdentifier(identifier)
-                )];
-                delete this.getScope().markers[this.getMarkerKey(identifier)];
+                console.log('@removeGSMarker!!!');
+                var p_key = this.getMarkerKey(
+                        this.createConnectorIdentifier(identifier)
+                    ),
+                    m_key = this.getMarkerKey(identifier);
+                console.log('@removeGSMarker, c_id = ' +  this.createConnectorIdentifier(identifier));
+                console.log('@removeGSMarker, p_key = ' + p_key);
+                console.log('@removeGSMarker, m_key = ' + m_key);
+                delete this.getScope().paths[p_key];
+                delete this.getScope().markers[m_key];
             };
 
             /******************************************************************/

@@ -76,11 +76,13 @@ class TestGis(TestCase):
             { latitude='56.559482', longitude='-199.687500' }
         """
         location = ('56.559482', '-199.687500')
-        print '>>> location = ' + str(location)
-        (actual_h, actual_r) = gis.get_altitude(
-            location[0], location[1]
-        )
-        print 'results: h = ' + str(actual_h) + ', r = ' + str(actual_r)
+        try:
+            (actual_h, actual_r) = gis.get_altitude(
+                location[0], location[1]
+            )
+            self.fail('Invalid longitude value.')
+        except Exception:
+            pass
 
     def test_dms2dec(self):
         """DMS2Decimal test.

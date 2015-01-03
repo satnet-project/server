@@ -114,8 +114,7 @@ angular.module('x-groundstation-models').service('xgs', [
             });
             $rootScope.$on(broadcaster.GS_REMOVED_EVENT, function (event, id) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + JSON.stringify(event) +
-                        ', id = ' + JSON.stringify(id)
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
                 );
                 self.removeGS(id);
             });

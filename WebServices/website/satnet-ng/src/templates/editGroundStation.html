@@ -40,6 +40,10 @@
             <label for='edit_gs_lng'>Longitude</label>
             <input type='text' name='edit_gs_lng' id='edit_gs_lng' readonly
                    ng-model="markers.gs.lng" style='width: 95%;' />
+
+            <input type='hidden' name='hidden_lat' ng-model="markers.gs.lat" />
+            <input type='hidden' name='hidden_lng' ng-model="markers.gs.lng" />
+
         </form>
     </div>
     <div style='display: table-cell;'>

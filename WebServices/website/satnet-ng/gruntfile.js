@@ -165,7 +165,7 @@ module.exports = function (grunt) {
         watch: {
             js: {
                 files: ['<%= jshint.files %>'],
-                tasks: ['jshint', 'concat', 'copy', 'uglify']
+                tasks: ['jshint', 'concat', 'copy', 'uglify', 'karma']
             },
             sass: {
                 files: ['src/css/sass/*.scss', 'css/sass/*.scss'],
@@ -182,10 +182,6 @@ module.exports = function (grunt) {
             templates: {
                 files: ['src/templates/**/*'],
                 tasks: ['ngtemplates']
-            },
-            tests : {
-                files: ['<%= jshint.files %>', 'specs/**/*.js'],
-                tasks: ['karma']
             }
         }
     });

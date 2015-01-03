@@ -109,33 +109,57 @@ class JRPCSegmentsTest(test.TestCase):
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
+            logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
     def test_gs_create(self):
         """JRPC method unit test.
         This test validates the creation of a new GroundStation through the
         JRPC interface.
-        NOTE: test especifically created for issue #3 on GitHub server's
+        NOTE: test specifically created for issue #3 on GitHub server's
         repository. Parameters that triggered that bug:
         "params":["gs-kam","kam88xx","15.00","56.559482","-199.687500"]
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_list)'
+            print '>>> TEST (test_gs_create)'
 
         gs_id = jrpc_gs.create(
             identifier='gs-kam',
             callsign='kam88xx',
             elevation='15.00',
             latitude='56.559482',
-            longitude='-199.687500',
+            longitude='-169.687500',
             request=self.__http_request
         )
-        print 'gs_id = ' + str(gs_id)
 
         self.assertIsNotNone(gs_id, 'Wrong GS identifier')
         self.assertIsNotNone(
-            segments.GroundStation.objects.get(identifier=gs_id),
+            segments.GroundStation.objects.get(identifier='gs-kam'),
             'GroundStation object has not been created'
         )
+
+    def test_gs_create_2(self):
+        """JRPC method unit test.
+        This test validates the creation of a new GroundStation through the
+        JRPC interface.
+        NOTE: test specifically create for issue (bug-2) manually reported. The
+        paramters that triggered this bug were:
+            "params":["afdasf","asdfafd","15.00","34.786739","-120.997925"]
+        """
+        if self.__verbose_testing:
+            print '>>> TEST (test_gs_create_2)'
+
+        try:
+            jrpc_gs.create(
+                identifier='afdasf',
+                callsign='asdfafd',
+                elevation='15.00',
+                latitude='34.786739',
+                longitude='-120.997925',
+                request=self.__http_request
+            )
+            self.fail('Exception should have been thrown!')
+        except Exception:
+            pass
 
     def test_gs_list(self):
         """

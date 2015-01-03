@@ -17,6 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import json
 import urllib2
+import logging
+
+logger = logging.getLogger('common')
 
 __SLO_LAT__ = 35.347099
 __SLO_LON__ = -120.455299
@@ -76,25 +79,35 @@ def get_region(latitude, longitude):
         + '&sensor=true'
 
     r = json.loads(urllib2.urlopen(service_url).read())
-
-    address_list = r[__G_API_RESULTS_ARRAY__]\
-                    [__G_API_ADDRESS_ITEM__]\
-                    [__G_API_ADDRESS_ARRAY__]
-
     country_l, country_s, region_l, region_s = '', '', '', ''
     country_found = False
     region_found = False
 
-    for a in address_list:
-        for t in a[__G_API_TYPES_ARRAY__]:
-            if t == __G_API_ADDRESS_COUNTRY_AREA__:
-                country_l = a[__G_API_LONG_NAME__]
-                country_s = a[__G_API_SHORT_NAME__]
-                country_found = True
-            if t == __G_API_ADDRESS_REGION_AREA__:
-                region_l = a[__G_API_LONG_NAME__]
-                region_s = a[__G_API_SHORT_NAME__]
-                region_found = True
+    try:
+
+        address_list = r[__G_API_RESULTS_ARRAY__]\
+                        [__G_API_ADDRESS_ITEM__]\
+                        [__G_API_ADDRESS_ARRAY__]
+
+        for a in address_list:
+            for t in a[__G_API_TYPES_ARRAY__]:
+                if t == __G_API_ADDRESS_COUNTRY_AREA__:
+                    country_l = a[__G_API_LONG_NAME__]
+                    country_s = a[__G_API_SHORT_NAME__]
+                    country_found = True
+                if t == __G_API_ADDRESS_REGION_AREA__:
+                    region_l = a[__G_API_LONG_NAME__]
+                    region_s = a[__G_API_SHORT_NAME__]
+                    region_found = True
+
+    except IndexError as ex:
+        logger.warn(
+            'IndexError thrown, region information not consistent for' +
+            ': (lat = ' + str(latitude) + ', lng = ' + str(longitude) + ')' +
+            ', ex = ' + str(ex)
+        )
+        # country_found and region_found flags should do the job
+        pass
 
     if not country_found and not region_found:
         raise Exception('Could not find country and region information.')

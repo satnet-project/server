@@ -100,16 +100,11 @@ angular.module('satnet-services').service('satnetRPC', [
                     ', params = ' + JSON.stringify(params)
             );
             return this._services[service](params).then(
-                function (data) {
-                    $log.debug(
-                        '[satnetRPC] data received = ' +
-                            JSON.stringify(data)
-                    );
-                    return data.data;
-                },
+                function (data) { return data.data; },
                 function (error) {
-                    var msg = '[satnetRPC] Error invoking = <' +
-                        service + '>' + ', description = <' + error + '>';
+                    var msg = '[satnetRPC] Error invoking = <' + service +
+                        '>, with params = <' + JSON.stringify(params) +
+                        '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
                 }
             );

@@ -349,16 +349,11 @@ angular.module('satnet-services').service('satnetRPC', [
                     ', params = ' + JSON.stringify(params)
             );
             return this._services[service](params).then(
-                function (data) {
-                    $log.info(
-                        '[satnetRPC] data received = ' +
-                            JSON.stringify(data)
-                    );
-                    return data.data;
-                },
+                function (data) { return data.data; },
                 function (error) {
-                    var msg = '[satnetRPC] Error invoking = <' +
-                        service + '>' + ', description = <' + error + '>';
+                    var msg = '[satnetRPC] Error invoking = <' + service +
+                        '>, with params = <' + JSON.stringify(params) +
+                        '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
                 }
             );
@@ -1050,7 +1045,7 @@ angular.module('marker-models')
                 if (this._serverMarkerKey === null) {
                     throw 'No server has been defined';
                 }
-                console.log('@gs = ' + gs_identifier);
+                console.log('@markers.getServerMarker, id = ' + gs_identifier);
                 return this.getScope().markers[this._serverMarkerKey];
             };
 
@@ -1257,10 +1252,16 @@ angular.module('marker-models')
              *                      are going to be removed.
              */
             this.removeGSMarker = function (identifier) {
-                delete this.getScope().paths[this.getMarkerKey(
-                    this.createConnectorIdentifier(identifier)
-                )];
-                delete this.getScope().markers[this.getMarkerKey(identifier)];
+                console.log('@removeGSMarker!!!');
+                var p_key = this.getMarkerKey(
+                        this.createConnectorIdentifier(identifier)
+                    ),
+                    m_key = this.getMarkerKey(identifier);
+                console.log('@removeGSMarker, c_id = ' +  this.createConnectorIdentifier(identifier));
+                console.log('@removeGSMarker, p_key = ' + p_key);
+                console.log('@removeGSMarker, m_key = ' + m_key);
+                delete this.getScope().paths[p_key];
+                delete this.getScope().markers[m_key];
             };
 
             /******************************************************************/
@@ -1639,8 +1640,7 @@ angular.module('x-groundstation-models').service('xgs', [
             });
             $rootScope.$on(broadcaster.GS_REMOVED_EVENT, function (event, id) {
                 console.log(
-                    '@on-gs-removed-event, event = ' + JSON.stringify(event) +
-                        ', id = ' + JSON.stringify(id)
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
                 );
                 self.removeGS(id);
             });
