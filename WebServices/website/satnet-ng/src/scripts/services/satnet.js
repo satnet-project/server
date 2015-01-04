@@ -95,7 +95,7 @@ angular.module('satnet-services').service('satnetRPC', [
             if ((this._services.hasOwnProperty(service)) === false) {
                 throw '[satnetRPC] service not found, id = <' + service + '>';
             }
-            $log.log(
+            $log.info(
                 '[satnetRPC] Invoked service = <' + service + '>' +
                     ', params = ' + JSON.stringify(params)
             );

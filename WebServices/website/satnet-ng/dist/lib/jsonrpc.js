@@ -1,10 +1,12 @@
-'use strict';
+/* global angular */
 
 /**
  * Provides and configures the jsonrpc service.
  */
 angular.module('jsonrpc', ['uuid']).provider('jsonrpc', function() {
-  var defaults = this.defaults = {};
+    
+    'use strict';
+    var defaults = this.defaults = {};
 
 
   // defaults

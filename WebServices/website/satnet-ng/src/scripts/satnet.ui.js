@@ -75,23 +75,31 @@ app.config(function ($provide) {
         return {
             setScope: function (scope) { rScope = scope; },
             log: function (args) {
+                console.log('@log event');
                 $delegate.log.apply(null, ['[log] ' + args]);
                 rScope.$broadcast('logEvent', args);
             },
             info: function (args) {
+                console.log('@info event');
                 $delegate.info.apply(null, ['[info] ' + args]);
                 rScope.$broadcast('infoEvent', args);
             },
             error: function () {
+                console.log('@error event');
                 //$delegate.error.apply(null, ['[error] ' + args]);
                 $delegate.error.apply(null, arguments);
                 //Logging.error.apply(null,arguments)
-                //rScope.$broadcast('errEvent', arguments);
+                rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
+                console.log('@warn event');
                 $delegate.warn.apply(null, ['[warn] ' + args]);
                 rScope.$broadcast('warnEvent', args);
-            }
+            },
+            debug: function (args) {
+                console.log('@debug event');
+                rScope.$broadcast('debugEvent', args);
+            },
         };
     });
 });

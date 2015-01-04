@@ -136,11 +136,12 @@
         <div class='n-area-content'>
             <ul class='n-area-list'>
                 <li ng-repeat="e in eventLog">
-                <div>
-                    <div><p class="{{ e.type }}">
-                        [{{ e.type }}@{{ e.timestamp }}]
-                    </p></div>
-                    <div><span class="{{ e.type }}">{{ e.msg }}</span></div>
+                <div class='n-area-info-row'>
+                    <div class='n-area-type-cell'>
+                        <p class="{{ e.type }}">[@{{ e.timestamp }}]</p></div>
+                    <div class='n-area-content-cell'>
+                        <span class="{{ e.type }}">{{ e.msg }}</span>
+                    </div>
                 </div>
                 </li>
             </ul>

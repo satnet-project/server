@@ -344,7 +344,7 @@ angular.module('satnet-services').service('satnetRPC', [
             if ((this._services.hasOwnProperty(service)) === false) {
                 throw '[satnetRPC] service not found, id = <' + service + '>';
             }
-            $log.log(
+            $log.info(
                 '[satnetRPC] Invoked service = <' + service + '>' +
                     ', params = ' + JSON.stringify(params)
             );
@@ -1045,7 +1045,7 @@ angular.module('marker-models')
                 if (this._serverMarkerKey === null) {
                     throw 'No server has been defined';
                 }
-                console.log('@markers.getServerMarker, id = ' + gs_identifier);
+                console.log('@getServerMarker, gs = ' + gs_identifier);
                 return this.getScope().markers[this._serverMarkerKey];
             };
 
@@ -1063,8 +1063,7 @@ angular.module('marker-models')
             /**
              * Returns the overlays to be included as markerclusters within
              * the map.
-             *
-             * @returns {{servers: {name: string, type: string, visible: boolean}, groundstations: {name: string, type: string, visible: boolean}, spacecraft: {name: string, type: string, visible: boolean}}}
+             * @returns {{network: {name: string, type: string, visible: boolean}, groundstations: {name: string, type: string, visible: boolean}}}
              */
             this.getOverlays = function () {
                 return {
@@ -1172,7 +1171,7 @@ angular.module('marker-models')
 
                 c_key = this.createMarkerKey(c_id);
                 r[c_key] = {
-                    layer: 'network',
+                    //layer: 'network',
                     color: '#036128',
                     type: 'polyline',
                     weight: 2,
@@ -1252,14 +1251,10 @@ angular.module('marker-models')
              *                      are going to be removed.
              */
             this.removeGSMarker = function (identifier) {
-                console.log('@removeGSMarker!!!');
                 var p_key = this.getMarkerKey(
                         this.createConnectorIdentifier(identifier)
                     ),
                     m_key = this.getMarkerKey(identifier);
-                console.log('@removeGSMarker, c_id = ' +  this.createConnectorIdentifier(identifier));
-                console.log('@removeGSMarker, p_key = ' + p_key);
-                console.log('@removeGSMarker, m_key = ' + m_key);
                 delete this.getScope().paths[p_key];
                 delete this.getScope().markers[m_key];
             };
@@ -1447,8 +1442,6 @@ angular.module('marker-models')
                 if (!this.sc.hasOwnProperty(id)) {
                     throw '[x-maps] SC Marker does not exist! id = ' + id;
                 }
-
-                console.log('@markers.updateSC, cfg = ' + JSON.stringify(cfg));
                 return id;
 
             };
@@ -2820,23 +2813,31 @@ app.config(function ($provide) {
         return {
             setScope: function (scope) { rScope = scope; },
             log: function (args) {
+                console.log('@log event');
                 $delegate.log.apply(null, ['[log] ' + args]);
                 rScope.$broadcast('logEvent', args);
             },
             info: function (args) {
+                console.log('@info event');
                 $delegate.info.apply(null, ['[info] ' + args]);
                 rScope.$broadcast('infoEvent', args);
             },
             error: function () {
+                console.log('@error event');
                 //$delegate.error.apply(null, ['[error] ' + args]);
                 $delegate.error.apply(null, arguments);
                 //Logging.error.apply(null,arguments)
-                //rScope.$broadcast('errEvent', arguments);
+                rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
+                console.log('@warn event');
                 $delegate.warn.apply(null, ['[warn] ' + args]);
                 rScope.$broadcast('warnEvent', args);
-            }
+            },
+            debug: function (args) {
+                console.log('@debug event');
+                rScope.$broadcast('debugEvent', args);
+            },
         };
     });
 });
