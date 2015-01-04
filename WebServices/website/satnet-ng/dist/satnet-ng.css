@@ -474,7 +474,7 @@ a.button-red {
   overflow-y: auto;
   height: 240px; }
 
-.n-area-info-base, .n-area-info-row div p.infoEvent, .n-area-info-row div p.logEvent, .n-area-info-row div p.errorEvent, .n-area-info-row div p.debugEvent {
+.n-area-info-base, .n-area-info-row div p.infoEvent, .n-area-info-row div p.logEvent, .n-area-info-row div p.errEvent, .n-area-info-row div p.debEvent {
   opacity: 0.5; }
 
 .n-area-info-row div p.infoEvent {
@@ -483,10 +483,10 @@ a.button-red {
 .n-area-info-row div p.logEvent {
   color: #ffffff; }
 
-.n-area-info-row div p.errorEvent {
+.n-area-info-row div p.errEvent {
   color: #ff0000; }
 
-.n-area-info-row div p.debugEvent {
+.n-area-info-row div p.debEvent {
   color: greenyellow; }
 
 .n-area-list {

@@ -2736,7 +2736,65 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
         };
 
     }
-]);;/**
+]);;/*
+   Copyright 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+angular.module('logNotifierDirective', [])
+    .constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
+    .controller('logNotifierCtrl', [
+        '$scope', '$filter', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, TIMESTAMP_FORMAT) {
+            'use strict';
+
+            $scope.eventLog = [];
+            $scope.logEvent = function (event, message) {
+                $scope.eventLog.unshift({
+                    'type': event.name,
+                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                    'msg':  message
+                });
+            };
+
+            $scope.$on('logEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('infoEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('warnEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('errEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+            $scope.$on('debEvent', function (event, message) {
+                $scope.logEvent(event, message);
+            });
+
+        }
+    ])
+    .directive('logNotifier', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            templateUrl: 'templates/notifier/logNotifier.html'
+        };
+
+    });;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2765,6 +2823,7 @@ var app = angular.module('satnet-ui', [
     'ngResource',
     'leaflet-directive',
     'remoteValidation',
+    'nya.bootstrap.select',
     // level 1 services/models
     'broadcaster',
     'map-services',
@@ -2781,7 +2840,9 @@ var app = angular.module('satnet-ui', [
     'ui-map-controllers',
     'ui-menu-controllers',
     'ui-modalsc-controllers',
-    'ui-modalgs-controllers'
+    'ui-modalgs-controllers',
+    // directives
+    'logNotifierDirective'
 ]);
 
 // level 1 services
@@ -2801,6 +2862,8 @@ angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');
 angular.module('ui-modalsc-controllers');
 angular.module('ui-modalgs-controllers');
+// level 5 (directives)
+angular.module('logNotifierDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
@@ -2808,6 +2871,7 @@ angular.module('ui-modalgs-controllers');
  */
 app.config(function ($provide) {
     'use strict';
+
     $provide.decorator('$log', function ($delegate) {
         var rScope = null;
         return {
@@ -2824,22 +2888,17 @@ app.config(function ($provide) {
             },
             error: function () {
                 console.log('@error event');
-                //$delegate.error.apply(null, ['[error] ' + args]);
                 $delegate.error.apply(null, arguments);
-                //Logging.error.apply(null,arguments)
                 rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
                 console.log('@warn event');
                 $delegate.warn.apply(null, ['[warn] ' + args]);
                 rScope.$broadcast('warnEvent', args);
-            },
-            debug: function (args) {
-                console.log('@debug event');
-                rScope.$broadcast('debugEvent', args);
-            },
+            }
         };
     });
+
 });
 
 /**
@@ -2852,38 +2911,7 @@ app.run([
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     }
-]);
-
-app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
-    .controller('NotificationAreaController', [
-        '$scope', '$filter', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, TIMESTAMP_FORMAT) {
-
-            'use strict';
-            $scope.eventLog = [];
-            $scope.logEvent = function (event, message) {
-                $scope.eventLog.unshift({
-                    'type': event.name,
-                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                    'msg':  message
-                });
-            };
-
-            $scope.$on('logEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('infoEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('warnEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('errEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-
-        }
-    ]);;/**
+]);;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2929,7 +2957,9 @@ var app = angular.module('leop-ui', [
     'ui-menu-controllers',
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
-    'ui-leop-modalgs-controllers'
+    'ui-leop-modalgs-controllers',
+    // directives
+    'logNotifierDirective'
 ]);
 
 // level 1 services
@@ -2950,6 +2980,8 @@ angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
+// level 5 (directives)
+angular.module('logNotifierDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
@@ -2992,34 +3024,3 @@ app.run([
         $rootScope.leop_id = $window.leop_id;
     }
 ]);
-
-app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
-    .controller('NotificationAreaController', [
-        '$scope', '$filter', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, TIMESTAMP_FORMAT) {
-
-            'use strict';
-            $scope.eventLog = [];
-            $scope.logEvent = function (event, message) {
-                $scope.eventLog.unshift({
-                    'type': event.name,
-                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                    'msg':  message
-                });
-            };
-
-            $scope.$on('logEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('infoEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('warnEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('errEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-
-        }
-    ]);

@@ -41,12 +41,13 @@
     <!-- KEPT BACK FOR COMPATIBILITY -->
     <script type='text/javascript' src="{% static 'lib/ui-bootstrap-tpls.min.js' %}"></script>
     <!-- Local depedencies (BOWER) -->
-    <script type='text/javascript' src="{% static 'lib/nya-bootstrap-select.js' %}"></script>
+    <link rel='stylesheet' href="{% static 'lib/nya-bs-select.min.css' %}"/>
+    <script type='text/javascript' src="{% static 'lib/nya-bs-select.min.js' %}"></script>
     <script type='text/javascript' src="{% static 'lib/ngRemoteValidate.js' %}"></script>
     <script type='text/javascript' src="{% static 'lib/uuid.min.js' %}"></script>
     <script type='text/javascript' src="{% static 'lib/jsonrpc.js' %}"></script>
-    <script type='text/javascript' src="{% static 'lib/leaflet.label.js' %}"></script>
     <link rel='stylesheet' href="{% static 'lib/leaflet.label.css' %}"/>
+    <script type='text/javascript' src="{% static 'lib/leaflet.label.js' %}"></script>
     <!-- NON-BOWER LIBRARIES -->
     <script type="text/javascript" src="{% static 'lib/L.Terminator.js' %}"></script>
     <script type="text/javascript" src="{% static 'lib/MovingMarker.js' %}"></script>
@@ -127,27 +128,7 @@
 
 </div>
 
-<div>
-    <input type='checkbox' name='n-area-toggle' id='n-area-toggle' />
-    <div ng-controller="NotificationAreaController" class='n-area'>
-        <div class='n-area-title'>
-            <label for='n-area-toggle'></label>
-        </div>
-        <div class='n-area-content'>
-            <ul class='n-area-list'>
-                <li ng-repeat="e in eventLog">
-                <div class='n-area-info-row'>
-                    <div class='n-area-type-cell'>
-                        <p class="{{ e.type }}">[@{{ e.timestamp }}]</p></div>
-                    <div class='n-area-content-cell'>
-                        <span class="{{ e.type }}">{{ e.msg }}</span>
-                    </div>
-                </div>
-                </li>
-            </ul>
-        </div>
-    </div>
-</div>
+<log-notifier></log-notifier>
 
 </div>
 {% endverbatim %}

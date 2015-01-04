@@ -54,10 +54,10 @@
 .n-area-info-row div p.logEvent { @extend .n-area-info-base;
   color: #ffffff;
 }
-.n-area-info-row div p.errorEvent { @extend .n-area-info-base;
+.n-area-info-row div p.errEvent { @extend .n-area-info-base;
   color: #ff0000;
 }
-.n-area-info-row div p.debugEvent { @extend .n-area-info-base;
+.n-area-info-row div p.debEvent { @extend .n-area-info-base;
   color: greenyellow;
 }
 

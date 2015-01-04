@@ -33,20 +33,32 @@
             <div class='control-group'
                     ng-class="{ 'has-error': form.tlegroup.$pristine }">
                 <label class='control-label' for='tlegroup'>TLE Group (Celestrak)</label>
-                <select name='tlegroup' class='nya-selectpicker'
-                        ng-model="sc.tlegroup"
-                        ng-init="initTles('Weather')"
-                        ng-change="groupChanged(sc.tlegroup)"
-                        ng-options="t.subsection group by t.section for t in tlegroups" >
-                </select>
+                <ol id='tlegroup' class='nya-bs-select'
+                    ng-model='sc.tlegroup'
+                    ng-change="groupChanged(sc.tlegroup)">
+                    <li nya-bs-option='t in tlegroups group by t.section'>
+                        <span class="dropdown-header">{{$group}}</span>
+                        <a>{{t.subsection}}</a>
+                    </li>
+                </ol>
             </div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.tleid.$pristine }">
-                <label class='control-label' for='tleid'>TLE Identifier</label>
-                <select name='tleid' class='nya-selectpicker'
-                        ng-model="sc.tleid"
-                        ng-options="t.spacecraft_tle_id for t in tles" >
-                </select>
+                <label class='control-label' for='tleid'>
+                    <div style='display: inline-block'>
+                        <div style='float: left, padding: 20px;'><p>TLE Id</p></div>
+                        <div>
+                            <p style='font-size:70%'>(Current: {{ sc.savedTleId }})</p>
+                        </div>
+                    </div>
+                </label>
+                <ol id='tleid' class='nya-bs-select'
+                    ng-model='sc.tleid'>
+                    <li nya-bs-option='t in tles'>
+                        <span class='dropdown-header'>{{$group}}</span>
+                        <a>{{t.spacecraft_tle_id}}</a>
+                    </li>
+                </ol>
             </div>
         </div>
     </div></form>

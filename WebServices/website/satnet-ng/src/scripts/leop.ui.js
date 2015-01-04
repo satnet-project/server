@@ -44,7 +44,9 @@ var app = angular.module('leop-ui', [
     'ui-menu-controllers',
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
-    'ui-leop-modalgs-controllers'
+    'ui-leop-modalgs-controllers',
+    // directives
+    'logNotifierDirective'
 ]);
 
 // level 1 services
@@ -65,6 +67,8 @@ angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
+// level 5 (directives)
+angular.module('logNotifierDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
@@ -107,34 +111,3 @@ app.run([
         $rootScope.leop_id = $window.leop_id;
     }
 ]);
-
-app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
-    .controller('NotificationAreaController', [
-        '$scope', '$filter', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, TIMESTAMP_FORMAT) {
-
-            'use strict';
-            $scope.eventLog = [];
-            $scope.logEvent = function (event, message) {
-                $scope.eventLog.unshift({
-                    'type': event.name,
-                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                    'msg':  message
-                });
-            };
-
-            $scope.$on('logEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('infoEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('warnEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('errEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-
-        }
-    ]);

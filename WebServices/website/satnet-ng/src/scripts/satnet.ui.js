@@ -27,6 +27,7 @@ var app = angular.module('satnet-ui', [
     'ngResource',
     'leaflet-directive',
     'remoteValidation',
+    'nya.bootstrap.select',
     // level 1 services/models
     'broadcaster',
     'map-services',
@@ -43,7 +44,9 @@ var app = angular.module('satnet-ui', [
     'ui-map-controllers',
     'ui-menu-controllers',
     'ui-modalsc-controllers',
-    'ui-modalgs-controllers'
+    'ui-modalgs-controllers',
+    // directives
+    'logNotifierDirective'
 ]);
 
 // level 1 services
@@ -63,6 +66,8 @@ angular.module('ui-map-controllers');
 angular.module('ui-menu-controllers');
 angular.module('ui-modalsc-controllers');
 angular.module('ui-modalgs-controllers');
+// level 5 (directives)
+angular.module('logNotifierDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
@@ -70,6 +75,7 @@ angular.module('ui-modalgs-controllers');
  */
 app.config(function ($provide) {
     'use strict';
+
     $provide.decorator('$log', function ($delegate) {
         var rScope = null;
         return {
@@ -86,22 +92,17 @@ app.config(function ($provide) {
             },
             error: function () {
                 console.log('@error event');
-                //$delegate.error.apply(null, ['[error] ' + args]);
                 $delegate.error.apply(null, arguments);
-                //Logging.error.apply(null,arguments)
                 rScope.$broadcast('errEvent', arguments);
             },
             warn: function (args) {
                 console.log('@warn event');
                 $delegate.warn.apply(null, ['[warn] ' + args]);
                 rScope.$broadcast('warnEvent', args);
-            },
-            debug: function (args) {
-                console.log('@debug event');
-                rScope.$broadcast('debugEvent', args);
-            },
+            }
         };
     });
+
 });
 
 /**
@@ -115,34 +116,3 @@ app.run([
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
     }
 ]);
-
-app.constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
-    .controller('NotificationAreaController', [
-        '$scope', '$filter', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, TIMESTAMP_FORMAT) {
-
-            'use strict';
-            $scope.eventLog = [];
-            $scope.logEvent = function (event, message) {
-                $scope.eventLog.unshift({
-                    'type': event.name,
-                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                    'msg':  message
-                });
-            };
-
-            $scope.$on('logEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('infoEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('warnEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-            $scope.$on('errEvent', function (event, message) {
-                $scope.logEvent(event, message);
-            });
-
-        }
-    ]);

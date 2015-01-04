@@ -51,6 +51,7 @@ module.exports = function (grunt) {
                     'src/scripts/models/x.groundstation.js',
                     'src/scripts/models/x.spacecraft.js',
                     'src/scripts/controllers/**/*.js',
+                    'src/scripts/directives/**/*.js',
                     'src/scripts/satnet.ui.js',
                     'src/scripts/leop.ui.js'
                 ],
@@ -112,7 +113,8 @@ module.exports = function (grunt) {
                             '*.js',
                             '*.css',
                             'bower/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
-                            'bower/nya-bootstrap-select/src/nya-bootstrap-select.js',
+                            'bower/nya-bootstrap-select/dist/css/nya-bs-select.min.css',
+                            'bower/nya-bootstrap-select/dist/js/nya-bs-select.min.js',
                             'bower/ng-remote-validate/release/ngRemoteValidate.js',
                             'bower/angular-uuid/uuid.min.js',
                             'bower/Leaflet.label/dist/leaflet.label.js',
