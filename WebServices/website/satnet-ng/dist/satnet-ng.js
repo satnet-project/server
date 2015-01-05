@@ -367,8 +367,11 @@ angular.module('satnet-services').service('satnetRPC', [
             return $http
                 .get('/configuration/user/geoip')
                 .then(function (data) {
-                    $log.info('[satnet] user location ~ ' + JSON.stringify(data.data));
-                    return data.data;
+                    $log.info('[satnet] user@(' + JSON.stringify(data.data) + ')');
+                    return {
+                        latitude: parseFloat(data.data.latitude),
+                        longitude: parseFloat(data.data.longitude)
+                    };
                 });
         };
 
