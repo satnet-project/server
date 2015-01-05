@@ -1197,8 +1197,8 @@ angular.module('marker-models')
             };
 
             this.trackStyle = {
-                weight: 3,
-                opacity: 0.25,
+                weight: 2,
+                opacity: 0.75,
                 steps: _GEOLINE_STEPS
             };
 

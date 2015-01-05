@@ -117,7 +117,10 @@ angular.module('satnet-services').service('satnetRPC', [
         this.getUserLocation = function () {
             return $http
                 .get('/configuration/user/geoip')
-                .then(function (data) { return data.data; });
+                .then(function (data) {
+                    $log.info('[satnet] User estimated position = ' + JSON.stringify(data.data));
+                    return data.data;
+                });
         };
 
         /**
