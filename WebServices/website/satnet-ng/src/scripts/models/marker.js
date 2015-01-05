@@ -471,7 +471,10 @@ angular.module('marker-models')
 
                 var startIndex, endIndex, j, p0,
                     nowUs = Date.now() * 1000,
-                    endUs = moment().add(_SIM_DAYS, "days").toDate().getTime() * 1000,
+                    endUs = moment().add(
+                        _SIM_DAYS,
+                        "days"
+                    ).toDate().getTime() * 1000,
                     durations = [],
                     positions = [],
                     geopoints = [];
@@ -484,19 +487,9 @@ angular.module('marker-models')
                     $log.warn('Groundtrack tail about to expire!');
                     endIndex = groundtrack.length - 1;
                 }
-
                 if ((endIndex - startIndex) < 2) {
                     throw 'Not enough points in the groundtrack';
                 }
-
-                /*
-                if (startIndex !== 0) {
-                    startIndex = startIndex - 1;
-                }
-                */
-
-                console.log('@@@ startIndex = ' + startIndex);
-                console.log('@@@ endIndex = ' + endIndex);
 
                 p0 = [
                     groundtrack[startIndex].latitude,
@@ -505,9 +498,7 @@ angular.module('marker-models')
                 positions.push(p0);
                 geopoints.push(new L.LatLng(p0[0], p0[1]));
 
-                console.log('@@@ positions = ' + JSON.stringify(positions));
-
-                for (j = startIndex; j < endIndex; j += 1) {
+                for (j = startIndex; j <= endIndex; j += 1) {
                     durations.push((
                         groundtrack[j + 1].timestamp - groundtrack[j].timestamp
                     ) / 1000);
@@ -523,6 +514,68 @@ angular.module('marker-models')
                             )
                         );
                     }
+                }
+
+                return {
+                    durations: durations,
+                    positions: positions,
+                    geopoints: geopoints
+                };
+
+            };
+
+            this.readTrackOptimized = function (groundtrack) {
+
+                var i, gt_i,
+                    positions = [], durations = [], geopoints = [],
+                    first = true,
+                    valid = false,
+                    t0 = Date.now() * 1000,
+                    tf = moment().add(_SIM_DAYS, "days").toDate().getTime() * 1000;
+
+                if ((groundtrack === null) || (groundtrack.length === 0)) {
+                    throw 'Groundtrack is empty!';
+                }
+
+                for (i = 0; i < groundtrack.length; i += 1) {
+                    gt_i = groundtrack[i];
+                    /*
+                    console.log(
+                        '>>> i = ' + i +
+                            ', t0 = ' + t0 +
+                            ', ti = ' + gt_i.timestamp +
+                            ', tf = ' + tf +
+                            ', diff1 = ' + (gt_i.timestamp - t0) +
+                            ', diff2 = ' + (gt_i.timestamp - tf)
+                    );
+                    */
+                    if (gt_i.timestamp < t0) {
+                        continue;
+                    }
+                    if (gt_i.timestamp > tf) {
+                        break;
+                    }
+
+                    positions.push([gt_i.latitude, gt_i.longitude]);
+                    geopoints.push(
+                        new L.LatLng(gt_i.latitude, gt_i.longitude)
+                    );
+
+                    if (first === true) {
+                        first = false;
+                        continue;
+                    }
+
+                    durations.push(
+                        gt_i.timestamp - groundtrack[i - 1].timestamp
+                    );
+                    valid = true;
+
+                }
+
+                console.log('valid = ' + valid);
+                if (valid === false) {
+                    throw 'No valid points in the groundtrack';
                 }
 
                 return {
