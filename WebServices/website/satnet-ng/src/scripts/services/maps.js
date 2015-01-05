@@ -26,17 +26,23 @@ angular.module('map-services')
     .constant('T_OPACITY', 0.125)
     .constant('LAT', 37.7833)
     .constant('LNG', -122.4167)
+    .constant('MIN_ZOOM', 2)
+    .constant('MAX_ZOOM', 12)
     .constant('ZOOM', 7)
     .service('maps', [
         '$q',
         'leafletData',
         'satnetRPC',
+        'MIN_ZOOM',
+        'MAX_ZOOM',
         'ZOOM',
         'T_OPACITY',
         function (
             $q,
             leafletData,
             satnetRPC,
+            MIN_ZOOM,
+            MAX_ZOOM,
             ZOOM,
             T_OPACITY
         ) {
@@ -224,8 +230,10 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                         layerOptions: {
-                            noWrap: true,
+                            noWrap: false,
                             continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
                         }
                     },
@@ -234,8 +242,10 @@ angular.module('map-services')
                         type: 'xyz',
                         url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         layerOptions: {
-                            noWrap: true,
+                            noWrap: false,
                             continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }
@@ -256,6 +266,8 @@ angular.module('map-services')
                         layerOptions: {
                             noWrap: true,
                             continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }
@@ -277,8 +289,9 @@ angular.module('map-services')
                         visible: true,
                         layerOptions: {
                             noWrap: true,
-                            minZoom: 0,
-                            maxZoom: 19,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             attribution: 'Imagery from <a href="http://giscience.uni-hd.de/">GIScience Research Group @ University of Heidelberg</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     },
@@ -288,8 +301,9 @@ angular.module('map-services')
                         url: 'http://{s}.tile.openstreetmap.se/hydda/roads_and_labels/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
-                            minZoom: 0,
-                            maxZoom: 18,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             attribution: 'Tiles courtesy of <a href="http://openstreetmap.se/" target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     },
@@ -299,10 +313,11 @@ angular.module('map-services')
                         url: 'http://{s}.tile.stamen.com/toner-labels/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
-                            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
                             subdomains: 'abcd',
-                            minZoom: 0,
-                            maxZoom: 20
+                            attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     },
                     owm_rain_overlay: {
@@ -311,8 +326,11 @@ angular.module('map-services')
                         url: 'http://{s}.tile.openweathermap.org/map/rain/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
-                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-                            opacity: 0.35
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            opacity: 0.325,
+                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>'
                         }
                     },
                     owm_temperature_overlay: {
@@ -321,8 +339,10 @@ angular.module('map-services')
                         url: 'http://{s}.tile.openweathermap.org/map/temp/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
-                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>',
-                            opacity: 0.5
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            attribution: 'Map data &copy; <a href="http://openweathermap.org">OpenWeatherMap</a>'
                         }
                     }
                 };

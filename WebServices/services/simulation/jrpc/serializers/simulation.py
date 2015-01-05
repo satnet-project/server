@@ -15,11 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import datetime
+from services.common import misc
+
 
 class SimulationSerializer(object):
     """JSON-RPC serializer.
     Serializer for the Simulation-related objects from the database.
     """
+
+    _DECIMATION_RATE = 1
+    _PERIOD = datetime.timedelta(hours=12)
 
     TIMESTAMP_K = 'timestamp'
     LATITUDE_K = 'latitude'
@@ -35,15 +41,26 @@ class SimulationSerializer(object):
         """
         result = []
         index = 0
+        gt_length = len(groundtrack.timestamp)
+        start_date = misc.get_now_utc()
+        end_date = start_date + self._PERIOD
+        start_ts = misc.get_utc_timestamp(start_date)
+        end_ts = misc.get_utc_timestamp(end_date)
 
-        for ts in groundtrack.timestamp:
+        while index < gt_length:
 
-            result.append({
-                SimulationSerializer.TIMESTAMP_K: ts,
-                SimulationSerializer.LATITUDE_K: groundtrack.latitude[index],
-                SimulationSerializer.LONGITUDE_K: groundtrack.longitude[index]
-            })
+            ts_i = groundtrack.timestamp[index]
 
-            index += 1
+            if ts_i > end_ts:
+                break
+
+            if ts_i > start_ts:
+                result.append({
+                    SimulationSerializer.TIMESTAMP_K: ts_i,
+                    SimulationSerializer.LATITUDE_K: groundtrack.latitude[index],
+                    SimulationSerializer.LONGITUDE_K: groundtrack.longitude[index]
+                })
+
+            index += self._DECIMATION_RATE
 
         return result

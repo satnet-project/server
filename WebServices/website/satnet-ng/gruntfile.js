@@ -167,7 +167,7 @@ module.exports = function (grunt) {
             }
         },
         watch: {
-            compile: {
+            build: {
                 files: ['<%= jshint.files %>'],
                 tasks: ['default']
             },
