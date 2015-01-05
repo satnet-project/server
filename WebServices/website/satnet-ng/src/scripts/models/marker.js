@@ -28,9 +28,8 @@ angular.module('marker-models')
     .constant('_SIM_DAYS', 1)
     .constant('_GEOLINE_STEPS', 5)
     .service('markers', [
-        '$log', 'maps', '_RATE', '_SIM_DAYS', '_GEOLINE_STEPS',
-        function ($log, maps, _RATE, _SIM_DAYS, _GEOLINE_STEPS) {
-
+        '$log', 'maps', '_SIM_DAYS', '_GEOLINE_STEPS',
+        function ($log, maps, _SIM_DAYS, _GEOLINE_STEPS) {
             'use strict';
 
             /******************************************************************/
@@ -39,9 +38,9 @@ angular.module('marker-models')
 
             // Structure that holds a reference to the map and to the
             // associated structures.
-            this._mapInfo = null;
+            this._mapInfo = {};
             // Scope where the leaflet angular pluing has its variables.
-            this._mapScope = null;
+            this._mapScope = {};
 
             /**
              * Returns the current scope to which this markers service is bound
@@ -66,26 +65,33 @@ angular.module('marker-models')
 
                 this._mapScope = scope;
 
-                angular.extend(this._mapScope, {
-                    center: { lat: maps.LAT, lng: maps.LNG, zoom: maps.ZOOM },
-                    layers: {
-                        baselayers: {},
-                        overlays: {}
-                    },
-                    markers: {},
-                    paths: {},
-                    maxbounds: {}
-                });
-
-                this._mapScope.layers.baselayers = angular.extend(
-                    {},
+                angular.extend(
+                    this._mapScope,
+                    {
+                        center: {
+                            lat: maps.LAT,
+                            lng: maps.LNG,
+                            zoom: maps.ZOOM
+                        },
+                        layers: {
+                            baselayers: {},
+                            overlays: {}
+                        },
+                        markers: {},
+                        paths: {},
+                        maxbounds: {}
+                    }
+                );
+                angular.extend(
                     this._mapScope.layers.baselayers,
                     maps.getBaseLayers()
                 );
-
-                this._mapScope.layers.overlays = angular.extend(
-                    {},
-                    maps.getOverlays(),
+                angular.extend(
+                    this._mapScope.layers.overlays,
+                    maps.getOverlays()
+                );
+                angular.extend(
+                    this._mapScope.layers.overlays,
                     this.getOverlays()
                 );
 
@@ -95,7 +101,8 @@ angular.module('marker-models')
                         '[map-controller] Created map = <' +
                             maps.asString(data) + '>'
                     );
-                    mapInfo = angular.extend({}, mapInfo, data);
+                    angular.extend(mapInfo, data);
+                    return mapInfo;
                 });
 
             };
@@ -281,7 +288,7 @@ angular.module('marker-models')
 
                 c_key = this.createMarkerKey(c_id);
                 r[c_key] = {
-                    //layer: 'network',
+                    layer: 'network',
                     color: '#036128',
                     type: 'polyline',
                     weight: 2,
@@ -290,8 +297,7 @@ angular.module('marker-models')
                     identifier: c_id
                 };
 
-                this.getScope().paths =
-                    angular.extend({}, this.getScope().paths, r);
+                angular.extend(this.getScope().paths, r);
                 return c_id;
 
             };
@@ -336,8 +342,6 @@ angular.module('marker-models')
              *
              * @param cfg New configuration of the object.
              * @returns {cfg.groundstation_id|*} Identifier.
-             *
-             * TODO Validate
              */
             this.updateGSMarker = function (cfg) {
                 var new_lat = cfg.groundstation_latlon[0],
@@ -401,16 +405,17 @@ angular.module('marker-models')
              * groundtrack.
              *
              * @param cfg Configuration object.
-             * @returns {{marker: L.Marker.movingMarker, track: L.polyline}}
+             * @returns {{marker: L.Marker, track: L.polyline}}
              */
             this.createSCMarkers = function (cfg) {
 
                 var id = cfg.spacecraft_id,
-                    gt = this.readTrack(cfg.groundtrack),
+                    gt,
                     mo = this.scStyle,
                     color =  this.colors[this.color_n % this.colors.length];
                 this.color_n += 1;
                 this.trackStyle.color = color;
+                gt = this.readTrack(cfg.groundtrack);
 
                 return {
                     marker: L.Marker.movingMarker(
@@ -424,114 +429,23 @@ angular.module('marker-models')
             };
 
             /**
-             * Finds the current point at which the marker has to be positioned.
-             * Using the parameter {nowUs}, this function searchs for the
-             * following point of the GroundTrack at which the Spacecraft is
-             * supposed to be positioned.
-             *
-             * TODO Best unit testing for this algorithm.
-             *
-             * @param groundtrack RAW groundtrack from the server.
-             * @param nowUs Now time in microsecnods.
-             * @returns {number} Position of the array.
-             */
-            this.findPrevious = function (groundtrack, nowUs) {
-
-                var i;
-                if ((groundtrack === null) || (groundtrack.length === 0)) {
-                    throw 'Groundtrack is empty!';
-                }
-                if (nowUs < 0) {
-                    throw 'nowUs should be > 0, current value = ' + nowUs;
-                }
-
-                for (i = 0; i < groundtrack.length; i += 1) {
-                    if (groundtrack[i].timestamp > nowUs) {
-                        if (i === 0) {
-                            throw 'GroundTrack only has future values!';
-                        }
-                        return i - 1;
-                    }
-                }
-
-                throw 'GroundTrack is too old!';
-            };
-
-            /**
              * Function that reads the RAW groundtrack from the server and
              * transforms it into a usable one for the JS client.
-             *
-             * TODO What if the groundtrack has not started yet?
-             * TODO A better unit testing for this algorithm.
              *
              * @param groundtrack RAW groundtrack from the server.
              * @returns {{durations: Array, positions: Array, geopoints: Array}}
              */
             this.readTrack = function (groundtrack) {
 
-                var startIndex, endIndex, j, p0,
-                    nowUs = Date.now() * 1000,
-                    endUs = moment().add(
-                        _SIM_DAYS,
-                        "days"
-                    ).toDate().getTime() * 1000,
-                    durations = [],
-                    positions = [],
-                    geopoints = [];
-
-                startIndex = this.findPrevious(groundtrack, nowUs);
-
-                try {
-                    endIndex = this.findPrevious(groundtrack, endUs);
-                } catch (e) {
-                    $log.warn('Groundtrack tail about to expire!');
-                    endIndex = groundtrack.length - 1;
-                }
-                if ((endIndex - startIndex) < 2) {
-                    throw 'Not enough points in the groundtrack';
-                }
-
-                p0 = [
-                    groundtrack[startIndex].latitude,
-                    groundtrack[startIndex].longitude
-                ];
-                positions.push(p0);
-                geopoints.push(new L.LatLng(p0[0], p0[1]));
-
-                for (j = startIndex; j <= endIndex; j += 1) {
-                    durations.push((
-                        groundtrack[j + 1].timestamp - groundtrack[j].timestamp
-                    ) / 1000);
-                    positions.push([
-                        groundtrack[j + 1].latitude,
-                        groundtrack[j + 1].longitude
-                    ]);
-                    if (j % _RATE === 0) {
-                        geopoints.push(
-                            new L.LatLng(
-                                groundtrack[j + 1].latitude,
-                                groundtrack[j + 1].longitude
-                            )
-                        );
-                    }
-                }
-
-                return {
-                    durations: durations,
-                    positions: positions,
-                    geopoints: geopoints
-                };
-
-            };
-
-            this.readTrackOptimized = function (groundtrack) {
-
                 var i, gt_i,
                     positions = [], durations = [], geopoints = [],
                     first = true,
                     valid = false,
                     t0 = Date.now() * 1000,
-                    tf = moment().add(_SIM_DAYS, "days").toDate().getTime() * 1000;
+                    tf = moment().add(
+                        _SIM_DAYS,
+                        "days"
+                    ).toDate().getTime() * 1000;
 
                 if ((groundtrack === null) || (groundtrack.length === 0)) {
                     throw 'Groundtrack is empty!';
@@ -539,16 +453,7 @@ angular.module('marker-models')
 
                 for (i = 0; i < groundtrack.length; i += 1) {
                     gt_i = groundtrack[i];
-                    /*
-                    console.log(
-                        '>>> i = ' + i +
-                            ', t0 = ' + t0 +
-                            ', ti = ' + gt_i.timestamp +
-                            ', tf = ' + tf +
-                            ', diff1 = ' + (gt_i.timestamp - t0) +
-                            ', diff2 = ' + (gt_i.timestamp - tf)
-                    );
-                    */
+
                     if (gt_i.timestamp < t0) {
                         continue;
                     }
@@ -557,9 +462,7 @@ angular.module('marker-models')
                     }
 
                     positions.push([gt_i.latitude, gt_i.longitude]);
-                    geopoints.push(
-                        new L.LatLng(gt_i.latitude, gt_i.longitude)
-                    );
+                    geopoints.push(new L.LatLng(gt_i.latitude, gt_i.longitude));
 
                     if (first === true) {
                         first = false;
@@ -567,13 +470,12 @@ angular.module('marker-models')
                     }
 
                     durations.push(
-                        gt_i.timestamp - groundtrack[i - 1].timestamp
+                        (gt_i.timestamp - groundtrack[i - 1].timestamp) / 1000
                     );
                     valid = true;
 
                 }
 
-                console.log('valid = ' + valid);
                 if (valid === false) {
                     throw 'No valid points in the groundtrack';
                 }
@@ -596,8 +498,8 @@ angular.module('marker-models')
              * @returns {{
              *              id: String,
              *              cfg: Object,
-             *              marker: m.L.Marker.movingMarker,
-             *              track: m.L.geodesic
+             *              marker: m.L.Marker,
+             *              track: m.L
              *          }}
              */
             this.addSC = function (id, cfg) {
@@ -606,7 +508,7 @@ angular.module('marker-models')
                     throw '[x-maps] SC Marker already exists, id = ' + id;
                 }
 
-                var m = this.createSCMarkers(id, cfg);
+                var m = this.createSCMarkers(cfg);
                 this.sc[id] = m;
                 this.scLayers.addLayer(m.marker);
                 this.trackLayers.addLayer(m.track);
@@ -614,12 +516,7 @@ angular.module('marker-models')
                 return maps.getMainMap().then(function (mapInfo) {
                     m.track.addTo(mapInfo.map);
                     m.marker.addTo(mapInfo.map);
-                    return {
-                        id: id,
-                        cfg: cfg,
-                        marker: m.marker,
-                        track: m.track
-                    };
+                    return id;
                 });
 
             };
@@ -627,17 +524,18 @@ angular.module('marker-models')
             /**
              * Updates the configuration for a given Spacecraft object.
              *
+             * @param id Identifier of the spacecraft.
              * @param cfg Object with the new configuration for the Spacecraft.
              * @returns {String} Identifier of the just-updated Spacecraft.
              *
              * TODO Real spacecraft update.
              */
-            this.updateSC = function (cfg) {
+            this.updateSC = function (id, cfg) {
 
-                var id = cfg.spacecraft_id;
                 if (!this.sc.hasOwnProperty(id)) {
                     throw '[x-maps] SC Marker does not exist! id = ' + id;
                 }
+                console.log('@updateSC, cfg = ' + cfg);
                 return id;
 
             };

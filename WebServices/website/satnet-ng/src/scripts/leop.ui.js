@@ -32,7 +32,6 @@ var app = angular.module('leop-ui', [
     'map-services',
     'celestrak-services',
     'satnet-services',
-    'x-satnet-services',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -54,7 +53,6 @@ angular.module('broadcaster');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
-angular.module('x-satnet-services');
 // level 2 services (bussiness logic layer)
 angular.module('marker-models');
 // level 3 services

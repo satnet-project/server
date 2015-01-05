@@ -39,7 +39,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshGSList = function () {
-            satnetRPC.rCall('_leop.gs.list', [$rootScope.leop_id])
+            satnetRPC.rCall('leop.gs.list', [$rootScope.leop_id])
                 .then(function (data) {
                     if ((data !== null) && (data.leop_gs_inuse !== undefined)) {
                         $scope.gsIds = data.leop_gs_inuse.slice(0);
@@ -67,10 +67,10 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshUFOList = function () {
-            satnetRPC.rCall('_leop.ufo.list', []).then(function (data) {
+            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
                 if (data !== null) {
                     console.log(
-                        '_leop.ufo.list >>> data = ' + JSON.stringify(data)
+                        'leop.ufo.list >>> data = ' + JSON.stringify(data)
                     );
                     $scope.scIds = data.slice(0);
                 }

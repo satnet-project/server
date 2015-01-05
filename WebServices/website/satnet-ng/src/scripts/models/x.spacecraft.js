@@ -18,7 +18,7 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'broadcaster', 'satnet-services', 'x-satnet-services', 'marker-models'
+    'broadcaster', 'satnet-services', 'marker-models'
 ]);
 
 /**
@@ -26,55 +26,25 @@ angular.module('x-spacecraft-models', [
  * service and the basic Spacecraft models.
  */
 angular.module('x-spacecraft-models').service('xsc', [
-    '$rootScope',
-    'broadcaster',
-    'satnetRPC',
-    'xSatnetRPC',
-    'markers',
-    function (
-        $rootScope,
-        broadcaster,
-        satnetRPC,
-        xSatnetRPC,
-        markers
-    ) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
 
         'use strict';
 
         /**
          * Initializes all the configuration objects for the available
          * spacecraft.
-         * @returns {[Object]} Array with the configuration objects.
+         * @returns {ng.IPromise<[String]>} Identifier of the read SC.
          */
         this.initAll = function () {
-            return xSatnetRPC.readAllSC()
-                .then(function (cfgs) {
-                    var sc_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        sc_markers = sc_markers.concat(markers.addSC(cfg));
-                    });
-                    return sc_markers;
+            var self = this;
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                return $q.all(p).then(function (sc_ids) {
+                    return sc_ids;
                 });
-        };
-
-        /**
-         * Initializes all the Spacecraft reading the information from the
-         * server, for all those that are registered for this LEOP cluster.
-         * Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
-         */
-        this.initAllLEOP = function () {
-            return xSatnetRPC.readLEOPCluster($rootScope.leop_id)
-                .then(function (cfgs) {
-                    var cluster_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        cluster_markers = cluster_markers.concat(
-                            markers.addSC(cfg)
-                        );
-                    });
-                    return cluster_markers;
-                });
+            });
         };
 
         /**
@@ -84,7 +54,6 @@ angular.module('x-spacecraft-models').service('xsc', [
          */
         this.addSC = function (identifier) {
             return satnetRPC.readSCCfg(identifier).then(function (data) {
-                console.log('>> readSCCfg, data = ' + JSON.stringify(data));
                 return markers.addSC(identifier, data);
             });
         };
@@ -94,8 +63,17 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.updateSC = function (identifier) {
-            return satnetRPC.rCall('sc.get', [identifier])
-                .then(function (data) { return markers.updateSC(data); });
+            this.removeSC(identifier).then(function (data) {
+                $log.info(
+                    '[x-sc] (UPDATING) Removed spacecraft, id = ' + identifier
+                );
+                console.log(
+                    '[x-sc] (UPDATING), data = ' + JSON.stringify(data)
+                );
+            });
+            return satnetRPC.readSCCfg(identifier).then(function (data) {
+                return markers.updateSC(identifier, data);
+            });
         };
 
         /**

@@ -33,7 +33,6 @@ var app = angular.module('satnet-ui', [
     'map-services',
     'celestrak-services',
     'satnet-services',
-    'x-satnet-services',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -53,7 +52,6 @@ var app = angular.module('satnet-ui', [
 angular.module('broadcaster');
 angular.module('map-services');
 angular.module('satnet-services');
-angular.module('x-satnet-services');
 angular.module('celestrak-services');
 // level 2 services
 angular.module('marker-models');

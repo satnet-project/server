@@ -19,7 +19,7 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
-    [ 'broadcaster', 'satnet-services', 'x-satnet-services' ]
+    [ 'broadcaster', 'satnet-services' ]
 );
 
 /**
@@ -32,14 +32,12 @@ angular.module('ui-leop-modalgs-controllers')
         '$modalInstance',
         'broadcaster',
         'satnetRPC',
-        'xSatnetRPC',
         function (
             $rootScope,
             $scope,
             $modalInstance,
             broadcaster,
-            satnetRPC,
-            xSatnetRPC
+            satnetRPC
         ) {
 
             'use strict';
@@ -53,9 +51,9 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
-                xSatnetRPC.readAllLEOPGS($rootScope.leop_id)
+                satnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('_leop.gs.list, data = ' + JSON.stringify(data));
+                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
@@ -119,7 +117,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsAdded(gs_id);
                     }
                     satnetRPC.rCall(
-                        '_leop.gs.add',
+                        'leop.gs.add',
                         [$rootScope.leop_id, a_ids]
                     ).then(
                         function (data) {
@@ -137,7 +135,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsRemoved(gs_id);
                     }
                     satnetRPC.rCall(
-                        '_leop.gs.remove',
+                        'leop.gs.remove',
                         [$rootScope.leop_id, r_ids]
                     ).then(
                         function (data) {

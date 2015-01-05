@@ -137,7 +137,7 @@ angular.module('satnet-services').service('satnetRPC', [
          * @returns Promise that resturns the Spacecraft configuration object.
          */
         this.readSCCfg = function (scId) {
-            var cfg = null,
+            var cfg = {},
                 p = [
                     this.rCall('sc.get', [scId]),
                     this.rCall('sc.getGroundtrack', [scId]),
@@ -145,11 +145,49 @@ angular.module('satnet-services').service('satnetRPC', [
                 ];
             return $q.all(p).then(function (results) {
                 cfg = results[0];
-                cfg.id = results[0].spacecraft_id;
                 cfg.groundtrack = results[1];
                 cfg.tle = results[2];
+                angular.extend(cfg, results[0]);
+                angular.extend(cfg.groundtrack, results[1]);
+                angular.extend(cfg.tle, results[2]);
                 return cfg;
             });
+        };
+
+        /**
+         * Reads the configuration for all the GroundStations associated with
+         * this LEOP cluster.
+         * @param leop_id Identifier of the LEOP cluster.
+         * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
+         */
+        this.readAllLEOPGS = function (leop_id) {
+            var self = this;
+            return this.rCall('leop.gs.list', [leop_id])
+                .then(function (gss) {
+                    var p = [];
+                    angular.forEach(gss.leop_gs_available, function (gs) {
+                        p.push(self.rCall('gs.get', [gs]));
+                    });
+                    angular.forEach(gss.leop_gs_inuse, function (gs) {
+                        p.push(self.rCall('gs.get', [gs]));
+                    });
+                    return $q.all(p).then(function (results) {
+                        var a_cfgs = [], u_cfgs = [], j, r_j, r_j_id;
+                        for (j = 0; j < results.length; j += 1) {
+                            r_j = results[j];
+                            r_j_id = r_j.groundstation_id;
+                            if (gss.leop_gs_available.indexOf(r_j_id) >= 0) {
+                                a_cfgs.push(r_j);
+                            } else {
+                                u_cfgs.push(r_j);
+                            }
+                        }
+                        return {
+                            leop_gs_available: a_cfgs,
+                            leop_gs_inuse: u_cfgs
+                        };
+                    });
+                });
         };
 
     }]);

@@ -20,7 +20,6 @@
 angular.module('x-groundstation-models', [
     'broadcaster',
     'satnet-services',
-    'x-satnet-services',
     'marker-models'
 ]);
 
@@ -29,23 +28,19 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', 'broadcaster', 'satnetRPC', 'xSatnetRPC', 'markers',
-    function ($rootScope, broadcaster, satnetRPC, xSatnetRPC, markers) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
         'use strict';
 
         /**
          * Initializes all the GroundStations reading the information from
          * the server. Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
         this.initAll = function () {
-            return xSatnetRPC.readAllGS().then(function (cfgs) {
-                var gs_markers = [];
-                angular.forEach(cfgs, function (cfg) {
-                    gs_markers = gs_markers.concat(markers.createGSMarker(cfg));
-                });
-                return gs_markers;
+            var self = this;
+            return satnetRPC.rCall('gs.list', []).then(function (gss) {
+                return self._initAll(gss);
             });
         };
 
@@ -53,20 +48,29 @@ angular.module('x-groundstation-models').service('xgs', [
          * Initializes all the GroundStations reading the information from
          * the server, for all those that are registered for this LEOP cluster.
          * Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
-        this.initAllLEOP = function () {
-            return xSatnetRPC.readInUseLEOPGS($rootScope.leop_id)
-                .then(function (cfgs) {
-                    var gs_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        gs_markers = gs_markers.concat(
-                            markers.createGSMarker(cfg)
-                        );
-                    });
-                    return gs_markers;
-                });
+        this.initAllLEOP = function (leop_id) {
+            var self = this;
+            return satnetRPC.rCall('leop.gs.list', [leop_id]).then(function (gss) {
+                return self._initAll(gss.leop_gs_inuse);
+            });
+        };
+
+        /**
+         * Common and private method for GroundStation initializers.
+         * @param list The list of identifiers of the GroundStation objects.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
+         * @private
+         */
+        this._initAll = function (list) {
+            var self = this, p = [];
+            angular.forEach(list, function (gs) { p.push(self.addGS(gs)); });
+            return $q.all(p).then(function (gs_ids) {
+                var ids = [];
+                angular.forEach(gs_ids, function (id) { ids.push(id); });
+                return ids;
+            });
         };
 
         /**
@@ -77,7 +81,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * @returns String Identifier of the just-created object.
          */
         this.addGS = function (identifier) {
-            satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
+            return satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.createGSMarker(data);
             });
         };

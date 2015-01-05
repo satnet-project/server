@@ -386,7 +386,7 @@ angular.module('satnet-services').service('satnetRPC', [
          * @returns Promise that resturns the Spacecraft configuration object.
          */
         this.readSCCfg = function (scId) {
-            var cfg = null,
+            var cfg = {},
                 p = [
                     this.rCall('sc.get', [scId]),
                     this.rCall('sc.getGroundtrack', [scId]),
@@ -394,110 +394,13 @@ angular.module('satnet-services').service('satnetRPC', [
                 ];
             return $q.all(p).then(function (results) {
                 cfg = results[0];
-                cfg.id = results[0].spacecraft_id;
                 cfg.groundtrack = results[1];
                 cfg.tle = results[2];
+                angular.extend(cfg, results[0]);
+                angular.extend(cfg.groundtrack, results[1]);
+                angular.extend(cfg.tle, results[2]);
                 return cfg;
             });
-        };
-
-    }]);;/**
- * Copyright 2014 Ricardo Tubio-Pardavila
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *
- * Created by rtubio on 10/24/14.
- */
-
-/** Module definition (empty array is vital!). */
-angular.module('x-satnet-services', [ 'satnet-services' ]);
-
-/**
- * Service that defines the basic calls to the services of the SATNET network
- * through JSON RPC. It defines a common error handler for all the errors that
- * can be overriden by users.
- */
-angular.module('x-satnet-services').service('xSatnetRPC', [
-    '$q', 'satnetRPC', function ($q, satnetRPC) {
-
-        'use strict';
-
-        /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @returns Promise that returns an array with the configuration
-         *               for each of the GroundStation objects.
-         */
-        this.readAllGS = function () {
-            return satnetRPC.rCall('gs.list', []).then(function (gss) {
-                var p = [];
-                angular.forEach(gss, function (gs) {
-                    p.push(satnetRPC.rCall('gs.get', [gs]));
-                });
-                return $q.all(p).then(function (results) {
-                    var cfgs = [], j;
-                    for (j = 0; j < results.length; j += 1) {
-                        cfgs.push(results[j]);
-                    }
-                    return cfgs;
-                });
-            });
-        };
-
-        /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @returns Promise that returns an array with the configuration for
-         *          each of the GroundStation objects.
-         */
-        this.readAllSC = function () {
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (sc) {
-                    p.push(satnetRPC.readSCCfg(sc));
-                });
-                return $q.all(p).then(function (results) {
-                    var cfgs = [], j;
-                    for (j = 0; j < results.length; j += 1) {
-                        cfgs.push(results[j]);
-                    }
-                    return cfgs;
-                });
-            });
-        };
-
-        /**
-         * Reads the configuration for all the GroundStation objects available
-         * in the server.
-         * @param leop_id Identifier of the LEOP cluster.
-         * @returns Promise that returns an array with the configuration
-         *               for each of the GroundStation objects.
-         */
-        this.readInUseLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('_leop.gs.list', [leop_id])
-                .then(function (gss) {
-                    var p = [];
-                    angular.forEach(gss.leop_gs_inuse, function (gs) {
-                        p.push(satnetRPC.rCall('gs.get', [gs]));
-                    });
-                    return $q.all(p).then(function (results) {
-                        var cfgs = [], j;
-                        for (j = 0; j < results.length; j += 1) {
-                            cfgs.push(results[j]);
-                        }
-                        return cfgs;
-                    });
-                });
         };
 
         /**
@@ -507,14 +410,15 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
          * @returns {*} { leop_gs_available: [gs_cfg], leop_gs_inuse: [gs_cfg]}
          */
         this.readAllLEOPGS = function (leop_id) {
-            return satnetRPC.rCall('_leop.gs.list', [leop_id])
+            var self = this;
+            return this.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
                     var p = [];
                     angular.forEach(gss.leop_gs_available, function (gs) {
-                        p.push(satnetRPC.rCall('gs.get', [gs]));
+                        p.push(self.rCall('gs.get', [gs]));
                     });
                     angular.forEach(gss.leop_gs_inuse, function (gs) {
-                        p.push(satnetRPC.rCall('gs.get', [gs]));
+                        p.push(self.rCall('gs.get', [gs]));
                     });
                     return $q.all(p).then(function (results) {
                         var a_cfgs = [], u_cfgs = [], j, r_j, r_j_id;
@@ -535,16 +439,7 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
                 });
         };
 
-        this.readLEOPCluster = function (leop_id) {
-            console.log('@readLEOPCluster, leop_id = ' + leop_id);
-            return satnetRPC.rCall('_leop.sc.cluster', [leop_id])
-                .then(function (cluster) {
-                    console.log('>>> cluster_cfg = ' + JSON.stringify(cluster));
-                });
-        };
-
-    }
-]);;/**
+    }]);;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -919,9 +814,8 @@ angular.module('marker-models')
     .constant('_SIM_DAYS', 1)
     .constant('_GEOLINE_STEPS', 5)
     .service('markers', [
-        '$log', 'maps', '_RATE', '_SIM_DAYS', '_GEOLINE_STEPS',
-        function ($log, maps, _RATE, _SIM_DAYS, _GEOLINE_STEPS) {
-
+        '$log', 'maps', '_SIM_DAYS', '_GEOLINE_STEPS',
+        function ($log, maps, _SIM_DAYS, _GEOLINE_STEPS) {
             'use strict';
 
             /******************************************************************/
@@ -930,9 +824,9 @@ angular.module('marker-models')
 
             // Structure that holds a reference to the map and to the
             // associated structures.
-            this._mapInfo = null;
+            this._mapInfo = {};
             // Scope where the leaflet angular pluing has its variables.
-            this._mapScope = null;
+            this._mapScope = {};
 
             /**
              * Returns the current scope to which this markers service is bound
@@ -957,26 +851,33 @@ angular.module('marker-models')
 
                 this._mapScope = scope;
 
-                angular.extend(this._mapScope, {
-                    center: { lat: maps.LAT, lng: maps.LNG, zoom: maps.ZOOM },
-                    layers: {
-                        baselayers: {},
-                        overlays: {}
-                    },
-                    markers: {},
-                    paths: {},
-                    maxbounds: {}
-                });
-
-                this._mapScope.layers.baselayers = angular.extend(
-                    {},
+                angular.extend(
+                    this._mapScope,
+                    {
+                        center: {
+                            lat: maps.LAT,
+                            lng: maps.LNG,
+                            zoom: maps.ZOOM
+                        },
+                        layers: {
+                            baselayers: {},
+                            overlays: {}
+                        },
+                        markers: {},
+                        paths: {},
+                        maxbounds: {}
+                    }
+                );
+                angular.extend(
                     this._mapScope.layers.baselayers,
                     maps.getBaseLayers()
                 );
-
-                this._mapScope.layers.overlays = angular.extend(
-                    {},
-                    maps.getOverlays(),
+                angular.extend(
+                    this._mapScope.layers.overlays,
+                    maps.getOverlays()
+                );
+                angular.extend(
+                    this._mapScope.layers.overlays,
                     this.getOverlays()
                 );
 
@@ -986,7 +887,8 @@ angular.module('marker-models')
                         '[map-controller] Created map = <' +
                             maps.asString(data) + '>'
                     );
-                    mapInfo = angular.extend({}, mapInfo, data);
+                    angular.extend(mapInfo, data);
+                    return mapInfo;
                 });
 
             };
@@ -1172,7 +1074,7 @@ angular.module('marker-models')
 
                 c_key = this.createMarkerKey(c_id);
                 r[c_key] = {
-                    //layer: 'network',
+                    layer: 'network',
                     color: '#036128',
                     type: 'polyline',
                     weight: 2,
@@ -1181,8 +1083,7 @@ angular.module('marker-models')
                     identifier: c_id
                 };
 
-                this.getScope().paths =
-                    angular.extend({}, this.getScope().paths, r);
+                angular.extend(this.getScope().paths, r);
                 return c_id;
 
             };
@@ -1227,8 +1128,6 @@ angular.module('marker-models')
              *
              * @param cfg New configuration of the object.
              * @returns {cfg.groundstation_id|*} Identifier.
-             *
-             * TODO Validate
              */
             this.updateGSMarker = function (cfg) {
                 var new_lat = cfg.groundstation_latlon[0],
@@ -1292,16 +1191,17 @@ angular.module('marker-models')
              * groundtrack.
              *
              * @param cfg Configuration object.
-             * @returns {{marker: L.Marker.movingMarker, track: L.polyline}}
+             * @returns {{marker: L.Marker, track: L.polyline}}
              */
             this.createSCMarkers = function (cfg) {
 
                 var id = cfg.spacecraft_id,
-                    gt = this.readTrack(cfg.groundtrack),
+                    gt,
                     mo = this.scStyle,
                     color =  this.colors[this.color_n % this.colors.length];
                 this.color_n += 1;
                 this.trackStyle.color = color;
+                gt = this.readTrack(cfg.groundtrack);
 
                 return {
                     marker: L.Marker.movingMarker(
@@ -1315,114 +1215,23 @@ angular.module('marker-models')
             };
 
             /**
-             * Finds the current point at which the marker has to be positioned.
-             * Using the parameter {nowUs}, this function searchs for the
-             * following point of the GroundTrack at which the Spacecraft is
-             * supposed to be positioned.
-             *
-             * TODO Best unit testing for this algorithm.
-             *
-             * @param groundtrack RAW groundtrack from the server.
-             * @param nowUs Now time in microsecnods.
-             * @returns {number} Position of the array.
-             */
-            this.findPrevious = function (groundtrack, nowUs) {
-
-                var i;
-                if ((groundtrack === null) || (groundtrack.length === 0)) {
-                    throw 'Groundtrack is empty!';
-                }
-                if (nowUs < 0) {
-                    throw 'nowUs should be > 0, current value = ' + nowUs;
-                }
-
-                for (i = 0; i < groundtrack.length; i += 1) {
-                    if (groundtrack[i].timestamp > nowUs) {
-                        if (i === 0) {
-                            throw 'GroundTrack only has future values!';
-                        }
-                        return i - 1;
-                    }
-                }
-
-                throw 'GroundTrack is too old!';
-            };
-
-            /**
              * Function that reads the RAW groundtrack from the server and
              * transforms it into a usable one for the JS client.
-             *
-             * TODO What if the groundtrack has not started yet?
-             * TODO A better unit testing for this algorithm.
              *
              * @param groundtrack RAW groundtrack from the server.
              * @returns {{durations: Array, positions: Array, geopoints: Array}}
              */
             this.readTrack = function (groundtrack) {
 
-                var startIndex, endIndex, j, p0,
-                    nowUs = Date.now() * 1000,
-                    endUs = moment().add(
-                        _SIM_DAYS,
-                        "days"
-                    ).toDate().getTime() * 1000,
-                    durations = [],
-                    positions = [],
-                    geopoints = [];
-
-                startIndex = this.findPrevious(groundtrack, nowUs);
-
-                try {
-                    endIndex = this.findPrevious(groundtrack, endUs);
-                } catch (e) {
-                    $log.warn('Groundtrack tail about to expire!');
-                    endIndex = groundtrack.length - 1;
-                }
-                if ((endIndex - startIndex) < 2) {
-                    throw 'Not enough points in the groundtrack';
-                }
-
-                p0 = [
-                    groundtrack[startIndex].latitude,
-                    groundtrack[startIndex].longitude
-                ];
-                positions.push(p0);
-                geopoints.push(new L.LatLng(p0[0], p0[1]));
-
-                for (j = startIndex; j <= endIndex; j += 1) {
-                    durations.push((
-                        groundtrack[j + 1].timestamp - groundtrack[j].timestamp
-                    ) / 1000);
-                    positions.push([
-                        groundtrack[j + 1].latitude,
-                        groundtrack[j + 1].longitude
-                    ]);
-                    if (j % _RATE === 0) {
-                        geopoints.push(
-                            new L.LatLng(
-                                groundtrack[j + 1].latitude,
-                                groundtrack[j + 1].longitude
-                            )
-                        );
-                    }
-                }
-
-                return {
-                    durations: durations,
-                    positions: positions,
-                    geopoints: geopoints
-                };
-
-            };
-
-            this.readTrackOptimized = function (groundtrack) {
-
                 var i, gt_i,
                     positions = [], durations = [], geopoints = [],
                     first = true,
                     valid = false,
                     t0 = Date.now() * 1000,
-                    tf = moment().add(_SIM_DAYS, "days").toDate().getTime() * 1000;
+                    tf = moment().add(
+                        _SIM_DAYS,
+                        "days"
+                    ).toDate().getTime() * 1000;
 
                 if ((groundtrack === null) || (groundtrack.length === 0)) {
                     throw 'Groundtrack is empty!';
@@ -1430,16 +1239,7 @@ angular.module('marker-models')
 
                 for (i = 0; i < groundtrack.length; i += 1) {
                     gt_i = groundtrack[i];
-                    /*
-                    console.log(
-                        '>>> i = ' + i +
-                            ', t0 = ' + t0 +
-                            ', ti = ' + gt_i.timestamp +
-                            ', tf = ' + tf +
-                            ', diff1 = ' + (gt_i.timestamp - t0) +
-                            ', diff2 = ' + (gt_i.timestamp - tf)
-                    );
-                    */
+
                     if (gt_i.timestamp < t0) {
                         continue;
                     }
@@ -1448,9 +1248,7 @@ angular.module('marker-models')
                     }
 
                     positions.push([gt_i.latitude, gt_i.longitude]);
-                    geopoints.push(
-                        new L.LatLng(gt_i.latitude, gt_i.longitude)
-                    );
+                    geopoints.push(new L.LatLng(gt_i.latitude, gt_i.longitude));
 
                     if (first === true) {
                         first = false;
@@ -1458,13 +1256,12 @@ angular.module('marker-models')
                     }
 
                     durations.push(
-                        gt_i.timestamp - groundtrack[i - 1].timestamp
+                        (gt_i.timestamp - groundtrack[i - 1].timestamp) / 1000
                     );
                     valid = true;
 
                 }
 
-                console.log('valid = ' + valid);
                 if (valid === false) {
                     throw 'No valid points in the groundtrack';
                 }
@@ -1487,8 +1284,8 @@ angular.module('marker-models')
              * @returns {{
              *              id: String,
              *              cfg: Object,
-             *              marker: m.L.Marker.movingMarker,
-             *              track: m.L.geodesic
+             *              marker: m.L.Marker,
+             *              track: m.L
              *          }}
              */
             this.addSC = function (id, cfg) {
@@ -1497,7 +1294,7 @@ angular.module('marker-models')
                     throw '[x-maps] SC Marker already exists, id = ' + id;
                 }
 
-                var m = this.createSCMarkers(id, cfg);
+                var m = this.createSCMarkers(cfg);
                 this.sc[id] = m;
                 this.scLayers.addLayer(m.marker);
                 this.trackLayers.addLayer(m.track);
@@ -1505,12 +1302,7 @@ angular.module('marker-models')
                 return maps.getMainMap().then(function (mapInfo) {
                     m.track.addTo(mapInfo.map);
                     m.marker.addTo(mapInfo.map);
-                    return {
-                        id: id,
-                        cfg: cfg,
-                        marker: m.marker,
-                        track: m.track
-                    };
+                    return id;
                 });
 
             };
@@ -1518,17 +1310,18 @@ angular.module('marker-models')
             /**
              * Updates the configuration for a given Spacecraft object.
              *
+             * @param id Identifier of the spacecraft.
              * @param cfg Object with the new configuration for the Spacecraft.
              * @returns {String} Identifier of the just-updated Spacecraft.
              *
              * TODO Real spacecraft update.
              */
-            this.updateSC = function (cfg) {
+            this.updateSC = function (id, cfg) {
 
-                var id = cfg.spacecraft_id;
                 if (!this.sc.hasOwnProperty(id)) {
                     throw '[x-maps] SC Marker does not exist! id = ' + id;
                 }
+                console.log('@updateSC, cfg = ' + cfg);
                 return id;
 
             };
@@ -1626,7 +1419,6 @@ angular.module('x-server-models').service('xserver', [
 angular.module('x-groundstation-models', [
     'broadcaster',
     'satnet-services',
-    'x-satnet-services',
     'marker-models'
 ]);
 
@@ -1635,23 +1427,19 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', 'broadcaster', 'satnetRPC', 'xSatnetRPC', 'markers',
-    function ($rootScope, broadcaster, satnetRPC, xSatnetRPC, markers) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
         'use strict';
 
         /**
          * Initializes all the GroundStations reading the information from
          * the server. Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
         this.initAll = function () {
-            return xSatnetRPC.readAllGS().then(function (cfgs) {
-                var gs_markers = [];
-                angular.forEach(cfgs, function (cfg) {
-                    gs_markers = gs_markers.concat(markers.createGSMarker(cfg));
-                });
-                return gs_markers;
+            var self = this;
+            return satnetRPC.rCall('gs.list', []).then(function (gss) {
+                return self._initAll(gss);
             });
         };
 
@@ -1659,20 +1447,29 @@ angular.module('x-groundstation-models').service('xgs', [
          * Initializes all the GroundStations reading the information from
          * the server, for all those that are registered for this LEOP cluster.
          * Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
-        this.initAllLEOP = function () {
-            return xSatnetRPC.readInUseLEOPGS($rootScope.leop_id)
-                .then(function (cfgs) {
-                    var gs_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        gs_markers = gs_markers.concat(
-                            markers.createGSMarker(cfg)
-                        );
-                    });
-                    return gs_markers;
-                });
+        this.initAllLEOP = function (leop_id) {
+            var self = this;
+            return satnetRPC.rCall('leop.gs.list', [leop_id]).then(function (gss) {
+                return self._initAll(gss.leop_gs_inuse);
+            });
+        };
+
+        /**
+         * Common and private method for GroundStation initializers.
+         * @param list The list of identifiers of the GroundStation objects.
+         * @returns {ng.IPromise<[String]>} Identifier of the read GS.
+         * @private
+         */
+        this._initAll = function (list) {
+            var self = this, p = [];
+            angular.forEach(list, function (gs) { p.push(self.addGS(gs)); });
+            return $q.all(p).then(function (gs_ids) {
+                var ids = [];
+                angular.forEach(gs_ids, function (id) { ids.push(id); });
+                return ids;
+            });
         };
 
         /**
@@ -1683,7 +1480,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * @returns String Identifier of the just-created object.
          */
         this.addGS = function (identifier) {
-            satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
+            return satnetRPC.rCall('gs.get', [identifier]).then(function (data) {
                 return markers.createGSMarker(data);
             });
         };
@@ -1753,7 +1550,7 @@ angular.module('x-groundstation-models').service('xgs', [
 
 /** Module definition (empty array is vital!). */
 angular.module('x-spacecraft-models', [
-    'broadcaster', 'satnet-services', 'x-satnet-services', 'marker-models'
+    'broadcaster', 'satnet-services', 'marker-models'
 ]);
 
 /**
@@ -1761,55 +1558,25 @@ angular.module('x-spacecraft-models', [
  * service and the basic Spacecraft models.
  */
 angular.module('x-spacecraft-models').service('xsc', [
-    '$rootScope',
-    'broadcaster',
-    'satnetRPC',
-    'xSatnetRPC',
-    'markers',
-    function (
-        $rootScope,
-        broadcaster,
-        satnetRPC,
-        xSatnetRPC,
-        markers
-    ) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
 
         'use strict';
 
         /**
          * Initializes all the configuration objects for the available
          * spacecraft.
-         * @returns {[Object]} Array with the configuration objects.
+         * @returns {ng.IPromise<[String]>} Identifier of the read SC.
          */
         this.initAll = function () {
-            return xSatnetRPC.readAllSC()
-                .then(function (cfgs) {
-                    var sc_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        sc_markers = sc_markers.concat(markers.addSC(cfg));
-                    });
-                    return sc_markers;
+            var self = this;
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                return $q.all(p).then(function (sc_ids) {
+                    return sc_ids;
                 });
-        };
-
-        /**
-         * Initializes all the Spacecraft reading the information from the
-         * server, for all those that are registered for this LEOP cluster.
-         * Markers are indirectly initialized.
-         * @returns Promise that returns an array with all the
-         *          configurations read.
-         */
-        this.initAllLEOP = function () {
-            return xSatnetRPC.readLEOPCluster($rootScope.leop_id)
-                .then(function (cfgs) {
-                    var cluster_markers = [];
-                    angular.forEach(cfgs, function (cfg) {
-                        cluster_markers = cluster_markers.concat(
-                            markers.addSC(cfg)
-                        );
-                    });
-                    return cluster_markers;
-                });
+            });
         };
 
         /**
@@ -1819,7 +1586,6 @@ angular.module('x-spacecraft-models').service('xsc', [
          */
         this.addSC = function (identifier) {
             return satnetRPC.readSCCfg(identifier).then(function (data) {
-                console.log('>> readSCCfg, data = ' + JSON.stringify(data));
                 return markers.addSC(identifier, data);
             });
         };
@@ -1829,8 +1595,17 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.updateSC = function (identifier) {
-            return satnetRPC.rCall('sc.get', [identifier])
-                .then(function (data) { return markers.updateSC(data); });
+            this.removeSC(identifier).then(function (data) {
+                $log.info(
+                    '[x-sc] (UPDATING) Removed spacecraft, id = ' + identifier
+                );
+                console.log(
+                    '[x-sc] (UPDATING), data = ' + JSON.stringify(data)
+                );
+            });
+            return satnetRPC.readSCCfg(identifier).then(function (data) {
+                return markers.updateSC(identifier, data);
+            });
         };
 
         /**
@@ -1898,8 +1673,8 @@ angular.module(
 
 angular.module('ui-leop-map-controllers')
     .controller('LEOPMapController', [
-        '$scope', '$log', 'markers', 'xsc', 'xserver', 'xgs',
-        function ($scope, $log, markers, xsc, xserver, xgs) {
+        '$rootScope', '$scope', '$log', 'markers', 'xsc', 'xserver', 'xgs',
+        function ($rootScope, $scope, $log, markers, xsc, xserver, xgs) {
 
             'use strict';
 
@@ -1916,10 +1691,10 @@ angular.module('ui-leop-map-controllers')
                 $log.log(
                     '[map-controller] Server =' + JSON.stringify(server)
                 );
-                xgs.initAllLEOP().then(function (gs_markers) {
+                xgs.initAllLEOP($rootScope.leop_id).then(function (gss) {
                     $log.log(
                         '[map-controller] Ground Station(s) = ' +
-                            JSON.stringify(gs_markers)
+                            JSON.stringify(gss)
                     );
                 });
             });
@@ -1966,7 +1741,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshGSList = function () {
-            satnetRPC.rCall('_leop.gs.list', [$rootScope.leop_id])
+            satnetRPC.rCall('leop.gs.list', [$rootScope.leop_id])
                 .then(function (data) {
                     if ((data !== null) && (data.leop_gs_inuse !== undefined)) {
                         $scope.gsIds = data.leop_gs_inuse.slice(0);
@@ -1994,10 +1769,10 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
             console.log('Created modalInstance = ' + modalInstance);
         };
         $scope.refreshUFOList = function () {
-            satnetRPC.rCall('_leop.ufo.list', []).then(function (data) {
+            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
                 if (data !== null) {
                     console.log(
-                        '_leop.ufo.list >>> data = ' + JSON.stringify(data)
+                        'leop.ufo.list >>> data = ' + JSON.stringify(data)
                     );
                     $scope.scIds = data.slice(0);
                 }
@@ -2027,7 +1802,7 @@ angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
-    [ 'broadcaster', 'satnet-services', 'x-satnet-services' ]
+    [ 'broadcaster', 'satnet-services' ]
 );
 
 /**
@@ -2040,14 +1815,12 @@ angular.module('ui-leop-modalgs-controllers')
         '$modalInstance',
         'broadcaster',
         'satnetRPC',
-        'xSatnetRPC',
         function (
             $rootScope,
             $scope,
             $modalInstance,
             broadcaster,
-            satnetRPC,
-            xSatnetRPC
+            satnetRPC
         ) {
 
             'use strict';
@@ -2061,9 +1834,9 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
-                xSatnetRPC.readAllLEOPGS($rootScope.leop_id)
+                satnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('_leop.gs.list, data = ' + JSON.stringify(data));
+                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
@@ -2127,7 +1900,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsAdded(gs_id);
                     }
                     satnetRPC.rCall(
-                        '_leop.gs.add',
+                        'leop.gs.add',
                         [$rootScope.leop_id, a_ids]
                     ).then(
                         function (data) {
@@ -2145,7 +1918,7 @@ angular.module('ui-leop-modalgs-controllers')
                         broadcaster.gsRemoved(gs_id);
                     }
                     satnetRPC.rCall(
-                        '_leop.gs.remove',
+                        'leop.gs.remove',
                         [$rootScope.leop_id, r_ids]
                     ).then(
                         function (data) {
@@ -2377,10 +2150,10 @@ angular.module('ui-map-controllers')
                 $log.log(
                     '[map-controller] Server =' + JSON.stringify(server)
                 );
-                xgs.initAll().then(function (gs_markers) {
+                xgs.initAll().then(function (gs_cfgs) {
                     $log.log(
                         '[map-controller] Ground Station(s) = ' +
-                            JSON.stringify(gs_markers)
+                            JSON.stringify(gs_cfgs)
                     );
                 });
             });
@@ -2728,7 +2501,6 @@ angular.module('ui-modalsc-controllers').controller('AddSCModalCtrl', [
             satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
                 .then(function (tleIds) {
                     $scope.tles = tleIds.tle_list.slice(0);
-                    console.log('$scope.tles = ' + JSON.stringify($scope.tles));
                 });
         };
         $scope.ok = function () {
@@ -2783,10 +2555,6 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
         };
 
         $scope.groupChanged = function (value) {
-            console.log(
-                'value = ' + JSON.stringify(value) +
-                    ', ss = ' + JSON.stringify(value.subsection)
-            );
             satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
                 .then(function (tleIds) {
                     $scope.tles = tleIds.tle_list.slice(0);
@@ -2814,7 +2582,8 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
             if (confirm('Delete this spacecraft?') === true) {
                 satnetRPC.rCall('sc.delete', [spacecraftId]).then(function (data) {
                     $log.info(
-                        '[map-ctrl] Spacecraft removed, id = ' + JSON.stringify(data)
+                        '[map-ctrl] Spacecraft removed, id = ' +
+                            JSON.stringify(data)
                     );
                     broadcaster.scRemoved(data);
                 });
@@ -2916,7 +2685,6 @@ var app = angular.module('satnet-ui', [
     'map-services',
     'celestrak-services',
     'satnet-services',
-    'x-satnet-services',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -2936,7 +2704,6 @@ var app = angular.module('satnet-ui', [
 angular.module('broadcaster');
 angular.module('map-services');
 angular.module('satnet-services');
-angular.module('x-satnet-services');
 angular.module('celestrak-services');
 // level 2 services
 angular.module('marker-models');
@@ -3032,7 +2799,6 @@ var app = angular.module('leop-ui', [
     'map-services',
     'celestrak-services',
     'satnet-services',
-    'x-satnet-services',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -3054,7 +2820,6 @@ angular.module('broadcaster');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
-angular.module('x-satnet-services');
 // level 2 services (bussiness logic layer)
 angular.module('marker-models');
 // level 3 services

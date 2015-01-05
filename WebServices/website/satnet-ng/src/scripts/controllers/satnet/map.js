@@ -47,10 +47,10 @@ angular.module('ui-map-controllers')
                 $log.log(
                     '[map-controller] Server =' + JSON.stringify(server)
                 );
-                xgs.initAll().then(function (gs_markers) {
+                xgs.initAll().then(function (gs_cfgs) {
                     $log.log(
                         '[map-controller] Ground Station(s) = ' +
-                            JSON.stringify(gs_markers)
+                            JSON.stringify(gs_cfgs)
                     );
                 });
             });

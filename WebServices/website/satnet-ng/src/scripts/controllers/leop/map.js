@@ -29,8 +29,8 @@ angular.module(
 
 angular.module('ui-leop-map-controllers')
     .controller('LEOPMapController', [
-        '$scope', '$log', 'markers', 'xsc', 'xserver', 'xgs',
-        function ($scope, $log, markers, xsc, xserver, xgs) {
+        '$rootScope', '$scope', '$log', 'markers', 'xsc', 'xserver', 'xgs',
+        function ($rootScope, $scope, $log, markers, xsc, xserver, xgs) {
 
             'use strict';
 
@@ -47,10 +47,10 @@ angular.module('ui-leop-map-controllers')
                 $log.log(
                     '[map-controller] Server =' + JSON.stringify(server)
                 );
-                xgs.initAllLEOP().then(function (gs_markers) {
+                xgs.initAllLEOP($rootScope.leop_id).then(function (gss) {
                     $log.log(
                         '[map-controller] Ground Station(s) = ' +
-                            JSON.stringify(gs_markers)
+                            JSON.stringify(gss)
                     );
                 });
             });

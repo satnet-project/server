@@ -28,69 +28,31 @@ module('marker.unit', {
     }
 });
 
-test('findPrevious', function () {
-    'use strict';
-
-    var groundtrack = [];
-
-    throws(
-        function () {
-            markerModels.findPrevious(null, 0);
-        },
-        /is empty/,
-        "Empty groundtrack array, throws exception"
+    /*
+    console.log(
+        '>>> groundtrack = ' +
+            JSON.stringify(groundtrack)
+                .replace(/\[/g, '[\n')
+                .replace(/\]/g, '\n]')
+                .replace(/\}\,/g, '},\n')
+                .replace(/\{/g, '    {')
     );
-    throws(
-        function () {
-            markerModels.findPrevious(groundtrack, 0);
-        },
-        /is empty/,
-        "Empty groundtrack array, throws exception"
+    */
+    /*
+    console.log(
+        '### result = ' +
+            JSON.stringify(_result)
+                .replace(/"durations/, '\n\t"durations')
+                .replace(/"positions/, '\n\t"positions')
+                .replace(/"geopoints/, '\n\t"geopoints')
     );
-    throws(
-        function () {
-            markerModels.findPrevious([{ timestamp: 5000 }], 0);
-        },
-        /future values/,
-        "Groundtrack with future values ONLY, throws exception"
-    );
+    */
 
-    groundtrack = [
-        {
-            timestamp: 0
-        },
-        {
-            timestamp: 1000
-        },
-        {
-            timestamp: 2000
-        }
-    ];
-    equal(markerModels.findPrevious(groundtrack, 0), 0);
-    equal(markerModels.findPrevious(groundtrack, 1100), 1);
-    equal(markerModels.findPrevious(groundtrack, 1999), 1);
-
-    throws(
-        function () {
-            markerModels.findPrevious(groundtrack, 2000);
-        },
-        /too old/,
-        "Groundtrack too old, throws exception"
-    );
-    throws(
-        function () {
-            markerModels.findPrevious(groundtrack, 5000);
-        },
-        /too old/,
-        "Groundtrack too old, throws exception"
-    );
-
-});
-
-test('basic readTrack tests', function () {
+test('basic readTrackOptimized tests', function () {
     'use strict';
 
     var groundtrack = [],
+        nowUs = Date.now() * 1000,
         tomorrowUs = moment().add(1, "days").toDate().getTime() * 1000;
 
     throws(
@@ -103,114 +65,6 @@ test('basic readTrack tests', function () {
     throws(
         function () {
             markerModels.readTrack(groundtrack);
-        },
-        /is empty/,
-        "Empty groundtrack array, throws exception"
-    );
-    groundtrack = [
-        { timestamp: tomorrowUs, latitude: 12.00, longitude: 145.00 }
-    ];
-    throws(
-        function () {
-            markerModels.readTrack(groundtrack);
-        },
-        /future values/,
-        "Groundtrack with future values ONLY, throws exception"
-    );
-});
-
-test('extended readTrack tests', function () {
-    'use strict';
-
-    var _result, groundtrack = [],
-        nowUs = Date.now() * 1000;
-
-    groundtrack = [ { timestamp: 0, latitude: 11.00, longitude: 144.00 } ];
-    throws(
-        function () {
-            markerModels.readTrack(groundtrack);
-        },
-        /too old/,
-        "Groundtrack too old, throws exception"
-    );
-    groundtrack.push(
-        { timestamp: nowUs, latitude: 12.00, longitude: 145.00 }
-    );
-    throws(
-        function () {
-            markerModels.readTrack(groundtrack);
-        },
-        /too old/,
-        "Groundtrack too old, throws exception"
-    );
-
-    groundtrack.push(
-        { timestamp: nowUs, latitude: 13.00, longitude: 146.00 }
-    );
-    throws(
-        function () { markerModels.readTrack(groundtrack); },
-        /too old/,
-        "Groundtrack too old, throws exception"
-    );
-
-    groundtrack.push(
-        { timestamp: nowUs + 40000000000, latitude: 14.00, longitude: 147.00 }
-    );
-    throws(
-        function () { markerModels.readTrack(groundtrack); },
-        /Not enough/,
-        "Groundtrack without enough points, throws exception"
-    );
-
-    groundtrack.push(
-        { timestamp: nowUs + 50000000000, latitude: 15.00, longitude: 148.00 }
-    );
-    groundtrack.push(
-        { timestamp: nowUs + 400000000000, latitude: 16.00, longitude: 149.00 }
-    );
-    /*
-    console.log(
-        '>>> groundtrack = ' +
-            JSON.stringify(groundtrack)
-                .replace(/\[/g, '[\n')
-                .replace(/\]/g, '\n]')
-                .replace(/\}\,/g, '},\n')
-                .replace(/\{/g, '    {')
-    );
-    */
-
-    _result = markerModels.readTrack(groundtrack);
-    /*
-    console.log(
-        '### result = ' +
-            JSON.stringify(_result)
-                .replace(/"durations/, '\n\t"durations')
-                .replace(/"positions/, '\n\t"positions')
-                .replace(/"geopoints/, '\n\t"geopoints')
-    );
-    */
-    deepEqual(_result.durations, [40000000, 10000000, 350000000]);
-    deepEqual(_result.positions, [[13, 146], [14, 147], [15, 148], [16, 149]]);
-
-});
-
-test('basic readTrackOptimized tests', function () {
-    'use strict';
-
-    var groundtrack = [],
-        nowUs = Date.now() * 1000,
-        tomorrowUs = moment().add(1, "days").toDate().getTime() * 1000;
-
-    throws(
-        function () {
-            markerModels.readTrackOptimized(null);
-        },
-        /is empty/,
-        "Empty groundtrack array, throws exception"
-    );
-    throws(
-        function () {
-            markerModels.readTrackOptimized(groundtrack);
         },
         /is empty/,
         "Empty groundtrack array, throws exception"
@@ -231,7 +85,7 @@ test('basic readTrackOptimized tests', function () {
     */
     throws(
         function () {
-            markerModels.readTrackOptimized(groundtrack);
+            markerModels.readTrack(groundtrack);
         },
         /No valid points/,
         "No valid points, throws exception"
@@ -239,7 +93,7 @@ test('basic readTrackOptimized tests', function () {
 
     groundtrack = [ { timestamp: 0, latitude: 11.00, longitude: 144.00 } ];
     throws(
-        function () { markerModels.readTrackOptimized(groundtrack); },
+        function () { markerModels.readTrack(groundtrack); },
         /No valid points/,
         "No valid points, throws exception"
     );
@@ -258,7 +112,7 @@ test('basic readTrackOptimized tests', function () {
     );
     */
     throws(
-        function () { markerModels.readTrackOptimized(groundtrack); },
+        function () { markerModels.readTrack(groundtrack); },
         /No valid points/,
         "No valid points, throws exception"
     );
@@ -275,7 +129,7 @@ test('extended readTrackOptimized tests', function () {
         { timestamp:  nowUs - 10000, latitude: 12.00, longitude: 145.00 }
     );
     throws(
-        function () { markerModels.readTrackOptimized(groundtrack); },
+        function () { markerModels.readTrack(groundtrack); },
         /No valid points/,
         "No valid points, throws exception"
     );
@@ -285,7 +139,7 @@ test('extended readTrackOptimized tests', function () {
     );
     throws(
         function () {
-            markerModels.readTrackOptimized(groundtrack);
+            markerModels.readTrack(groundtrack);
         },
         /No valid points/,
         "No valid points, throws exception"
@@ -296,7 +150,7 @@ test('extended readTrackOptimized tests', function () {
     );
     throws(
         function () {
-            markerModels.readTrackOptimized(groundtrack);
+            markerModels.readTrack(groundtrack);
         },
         /No valid points/,
         "No valid points, throws exception"
@@ -305,15 +159,15 @@ test('extended readTrackOptimized tests', function () {
     groundtrack.push(
         { timestamp: nowUs + 50000000000, latitude: 15.00, longitude: 148.00 }
     );
-    _result = markerModels.readTrackOptimized(groundtrack);
-    deepEqual(_result.durations, [10000000000]);
+    _result = markerModels.readTrack(groundtrack);
+    deepEqual(_result.durations, [10000000]);
     deepEqual(_result.positions, [[14, 147], [15, 148]]);
 
     groundtrack.push(
         { timestamp: nowUs + 400000000000, latitude: 16.00, longitude: 149.00 }
     );
-    _result = markerModels.readTrackOptimized(groundtrack);
-    deepEqual(_result.durations, [10000000000]);
+    _result = markerModels.readTrack(groundtrack);
+    deepEqual(_result.durations, [10000000]);
     deepEqual(_result.positions, [[14, 147], [15, 148]]);
 
 });
