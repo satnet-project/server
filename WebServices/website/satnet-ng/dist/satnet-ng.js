@@ -366,7 +366,10 @@ angular.module('satnet-services').service('satnetRPC', [
         this.getUserLocation = function () {
             return $http
                 .get('/configuration/user/geoip')
-                .then(function (data) { return data.data; });
+                .then(function (data) {
+                    $log.info('[satnet] user location ~ ' + JSON.stringify(data.data));
+                    return data.data;
+                });
         };
 
         /**
@@ -2341,19 +2344,12 @@ angular.module('ui-modalgs-controllers')
 
             'use strict';
 
-            $scope.gs = {
-                identifier: '',
-                callsign: '',
-                elevation: GS_ELEVATION
-            };
+            $scope.gs = { identifier: '', callsign: '', elevation: GS_ELEVATION };
 
             angular.extend($scope, {
                 center: {},
                 markers: {},
-                layers: {
-                    baselayers: {},
-                    overlays: {}
-                }
+                layers: { baselayers: {}, overlays: {} }
             });
 
             maps.autocenterMap($scope, 8).then(function () {
@@ -2384,38 +2380,16 @@ angular.module('ui-modalgs-controllers')
 angular.module('ui-modalgs-controllers')
     .constant('GS_ELEVATION', 15.0)
     .controller('EditGSModalCtrl', [
-        '$scope',
-        '$log',
-        '$modalInstance',
-        'satnetRPC',
-        'broadcaster',
-        'maps',
-        'groundstationId',
-        function (
-            $scope,
-            $log,
-            $modalInstance,
-            satnetRPC,
-            broadcaster,
-            maps,
-            groundstationId
-        ) {
-
+        '$scope', '$log', '$modalInstance', 'satnetRPC', 'broadcaster', 'maps', 'groundstationId',
+        function ($scope, $log, $modalInstance, satnetRPC, broadcaster, maps, groundstationId) {
             'use strict';
 
-            $scope.gs = {
-                identifier: '',
-                callsign: '',
-                elevation: 0
-            };
+            $scope.gs = { identifier: '', callsign: '', elevation: 0 };
 
             angular.extend($scope, {
                 center: {},
                 markers: {},
-                layers: {
-                    baselayers: {},
-                    overlays: {}
-                }
+                layers: { baselayers: {}, overlays: {} }
             });
 
             maps.centerAtGs($scope, groundstationId, 8).then(function (gs) {
@@ -2435,14 +2409,12 @@ angular.module('ui-modalgs-controllers')
                         $scope.markers.gs.lng.toFixed(6)
                     ]
                 };
-                satnetRPC.rCall(
-                    'gs.update',
-                    [groundstationId, newGsCfg]
-                ).then(function (data) {
-                    $log.info('[map-ctrl] GS updated, id = ' + data);
-                    broadcaster.gsUpdated(groundstationId);
-                    $modalInstance.close();
-                });
+                satnetRPC.rCall('gs.update', [groundstationId, newGsCfg])
+                    .then(function (data) {
+                        $log.info('[map-ctrl] GS updated, id = ' + data);
+                        broadcaster.gsUpdated(groundstationId);
+                        $modalInstance.close();
+                    });
             };
 
             $scope.cancel = function () { $modalInstance.close(); };
@@ -2451,10 +2423,7 @@ angular.module('ui-modalgs-controllers')
                 if (confirm('Delete this ground station?') === true) {
                     satnetRPC.rCall('gs.delete', [groundstationId]).then(
                         function (gsId) {
-                            $log.info(
-                                '[modalgs] GS removed, id = ' +
-                                    JSON.stringify(gsId)
-                            );
+                            $log.info('[modalgs] GS removed, id = ' + JSON.stringify(gsId));
                             broadcaster.gsRemoved(gsId);
                             $modalInstance.close();
                         }
