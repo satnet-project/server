@@ -17,7 +17,7 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('satnet-services', []);
+angular.module('satnet-services', ['jsonrpc']);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network

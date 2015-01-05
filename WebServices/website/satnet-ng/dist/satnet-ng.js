@@ -266,7 +266,7 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('satnet-services', []);
+angular.module('satnet-services', ['jsonrpc']);
 
 /**
  * Service that defines the basic calls to the services of the SATNET network
@@ -564,7 +564,8 @@ angular.module('x-satnet-services').service('xSatnetRPC', [
 
 /** Module definition (empty array is vital!). */
 angular.module('map-services', [
-    'satnet-services'
+    'satnet-services',
+    'leaflet-directive'
 ]);
 
 angular.module('map-services')
@@ -1326,12 +1327,21 @@ angular.module('marker-models')
              * @returns {number} Position of the array.
              */
             this.findPrevious = function (groundtrack, nowUs) {
+
                 var i;
+                if ((groundtrack === null) || (groundtrack.length === 0)) {
+                    throw 'Groundtrack is empty!';
+                }
+                if (nowUs < 0) {
+                    throw 'nowUs should be > 0, current value = ' + nowUs;
+                }
+
                 for (i = 0; i < groundtrack.length; i += 1) {
                     if (groundtrack[i].timestamp > nowUs) {
                         return i - 1;
                     }
                 }
+
                 throw 'GroundTrack is too old!';
             };
 

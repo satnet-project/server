@@ -436,12 +436,24 @@ angular.module('marker-models')
              * @returns {number} Position of the array.
              */
             this.findPrevious = function (groundtrack, nowUs) {
+
                 var i;
+                if ((groundtrack === null) || (groundtrack.length === 0)) {
+                    throw 'Groundtrack is empty!';
+                }
+                if (nowUs < 0) {
+                    throw 'nowUs should be > 0, current value = ' + nowUs;
+                }
+
                 for (i = 0; i < groundtrack.length; i += 1) {
                     if (groundtrack[i].timestamp > nowUs) {
+                        if (i === 0) {
+                            throw 'GroundTrack only has future values!';
+                        }
                         return i - 1;
                     }
                 }
+
                 throw 'GroundTrack is too old!';
             };
 
@@ -457,23 +469,44 @@ angular.module('marker-models')
              */
             this.readTrack = function (groundtrack) {
 
-                var nowUs = Date.now() * 1000,
-                    endUs = moment().add(_SIM_DAYS, "days")
-                        .toDate().getTime() * 1000,
-                    startIndex = this.findPrevious(groundtrack, nowUs),
-                    endIndex = this.findPrevious(groundtrack, endUs),
-                    j,
+                var startIndex, endIndex, j, p0,
+                    nowUs = Date.now() * 1000,
+                    endUs = moment().add(_SIM_DAYS, "days").toDate().getTime() * 1000,
                     durations = [],
                     positions = [],
                     geopoints = [];
 
+                startIndex = this.findPrevious(groundtrack, nowUs);
+
+                try {
+                    endIndex = this.findPrevious(groundtrack, endUs);
+                } catch (e) {
+                    $log.warn('Groundtrack tail about to expire!');
+                    endIndex = groundtrack.length - 1;
+                }
+
+                if ((endIndex - startIndex) < 2) {
+                    throw 'Not enough points in the groundtrack';
+                }
+
+                /*
                 if (startIndex !== 0) {
                     startIndex = startIndex - 1;
                 }
-                positions.push([
+                */
+
+                console.log('@@@ startIndex = ' + startIndex);
+                console.log('@@@ endIndex = ' + endIndex);
+
+                p0 = [
                     groundtrack[startIndex].latitude,
                     groundtrack[startIndex].longitude
-                ]);
+                ];
+                positions.push(p0);
+                geopoints.push(new L.LatLng(p0[0], p0[1]));
+
+                console.log('@@@ positions = ' + JSON.stringify(positions));
+
                 for (j = startIndex; j < endIndex; j += 1) {
                     durations.push((
                         groundtrack[j + 1].timestamp - groundtrack[j].timestamp

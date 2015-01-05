@@ -3,8 +3,9 @@
 </div>
 
 <div class='modal-body' style='display: inline-block;'>
-     <form name='form'><div style='display: inline-block; padding: 20px;'>
-        <div style='float: left; width: 250px;'>
+    <form name='form'>
+    <div style='display: table-row; padding: 5px; margin: 5px'>
+        <div style='display: table-cell; width: 300px'>
             <div class='control-group'
                     ng-class="{ 'has-error': form.identifier.$invalid }">
                 <label class='control-label'
@@ -29,39 +30,51 @@
                        required />
             </div>
         </div>
-        <div class='my-tle-menu' >
+        <div style='display: table-cell; width: 300px' >
             <div class='control-group'
                     ng-class="{ 'has-error': form.tlegroup.$pristine }">
-                <label class='control-label' for='tlegroup'>TLE Group (Celestrak)</label>
-                <ol id='tlegroup' class='nya-bs-select'
-                    ng-model='sc.tlegroup'
-                    ng-change="groupChanged(sc.tlegroup)">
-                    <li nya-bs-option='t in tlegroups group by t.section'>
-                        <span class="dropdown-header">{{$group}}</span>
-                        <a>{{t.subsection}}</a>
-                    </li>
-                </ol>
+                <div>
+                    <label class='control-label' for='tlegroup'>TLE Group (Celestrak)</label>
+                </div>
+                <div>
+                    <ol id='tlegroup' class='nya-bs-select'
+                        ng-model='sc.tlegroup'
+                        ng-change="groupChanged(sc.tlegroup)">
+                        <li nya-bs-option='t in tlegroups group by t.section'>
+                            <span class="dropdown-header">{{$group}}</span>
+                            <a>{{t.subsection}}</a>
+                        </li>
+                    </ol>
+                </div>
             </div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.tleid.$pristine }">
-                <label class='control-label' for='tleid'>
-                    <div style='display: inline-block'>
-                        <div style='float: left, padding: 20px;'><p>TLE Id</p></div>
-                        <div>
-                            <p style='font-size:70%'>(Current: {{ sc.savedTleId }})</p>
+                <div>
+                    <label class='control-label' for='tleid'>
+                        <div style='display: table-row'>
+                            <div style='display: table-cell'>
+                                <span>TLE Id</span>
+                            </div>
+                            <div style='display: table-cell'
+                                 ng-show="sc.savedTleId">
+                                <p style='font-size:70%'>(Current:{{ sc.savedTleId }})</p>
+                            </div>
                         </div>
-                    </div>
-                </label>
-                <ol id='tleid' class='nya-bs-select'
-                    ng-model='sc.tleid'>
-                    <li nya-bs-option='t in tles'>
-                        <span class='dropdown-header'>{{$group}}</span>
-                        <a>{{t.spacecraft_tle_id}}</a>
-                    </li>
-                </ol>
+                    </label>
+                </div>
+                <div>
+                    <ol id='tleid' class='nya-bs-select'
+                        ng-model="sc.tleid" ng-disabled="sc.tlegroup">
+                        <li nya-bs-option="t in tles">
+                            <span class='dropdown-header'>{{$group}}</span>
+                            <a>{{t.spacecraft_tle_id}}</a>
+                        </li>
+                    </ol>
+                </div>
             </div>
         </div>
-    </div></form>
+    </div>
+    </form>
 </div>
 
 <div class='modal-footer'>

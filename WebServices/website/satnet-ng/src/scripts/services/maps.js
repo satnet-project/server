@@ -18,7 +18,8 @@
 
 /** Module definition (empty array is vital!). */
 angular.module('map-services', [
-    'satnet-services'
+    'satnet-services',
+    'leaflet-directive'
 ]);
 
 angular.module('map-services')

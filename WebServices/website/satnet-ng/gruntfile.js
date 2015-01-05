@@ -58,11 +58,13 @@ module.exports = function (grunt) {
                 dest: 'dist/<%= pkg.name %>.js'
             }
         },
+        /*
         karma: {
             unit: {
                 configFile: 'karma.conf.js'
             }
         },
+        */
         sass: {
             main: {
                 files: [
@@ -149,6 +151,9 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        qunit: {
+            all: ['tests/**/*.html']
+        },
         uglify: {
             options: {
                 banner: '/*! <%= pkg.name %> <%= grunt.template.today("dd-mm-yyyy") %> */\n'
@@ -177,6 +182,14 @@ module.exports = function (grunt) {
                 files: ['dist/<%= pkg.name %>.css'],
                 tasks: ['cssmin']
             },
+            test: {
+                files: [
+                    '<%= jshint.files %>',
+                    'tests/**/*.js',
+                    'tests/**/*.html'
+                ],
+                tasks: ['test']
+            },
             libs: {
                 files: ['lib/*.js'],
                 tasks: ['copy']
@@ -197,11 +210,12 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-angular-templates');
-    grunt.loadNpmTasks('grunt-karma');
+    //grunt.loadNpmTasks('grunt-karma');
 
     // register your tasks
-    grunt.registerTask('test', ['jshint', 'karma']);
+    grunt.registerTask('test', ['qunit']);
     grunt.registerTask(
         'default',
         [
