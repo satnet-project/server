@@ -16,8 +16,6 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
-import socket
-from services.common import gis
 from services.common.testing import helpers as db_tools
 from services.configuration.ajax import views as configuration_ajax
 
@@ -43,13 +41,3 @@ class JRPCSegmentsTest(test.TestCase):
             'Expected CalPoly location = ' + str(expected_ll)
             + ', found = ' + str(ll.content)
         )
-
-    def test_hostname_geoip(self):
-        """JUnit AJAX test.
-        Test that validates the functioning of the hostname_geoip AJAX method.
-        """
-        hostname = 'satnet.aero.calpoly.edu'
-        host_ip = socket.gethostbyname(hostname)
-        lat, lng = gis.get_remote_user_location(ip=host_ip)
-        print '>>> name = ' + str(hostname) + ', ip = ' + str(host_ip) +\
-              ', lat = ' + str(lat) + ', lng = ' + str(lng)
