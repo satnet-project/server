@@ -687,7 +687,7 @@ angular.module('map-services')
                     esri_baselayer: {
                         name: 'ESRI Base Layer',
                         type: 'xyz',
-                        url: 'http://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
                         layerOptions: {
                             noWrap: false,
                             continuousWorld: false,
@@ -699,7 +699,7 @@ angular.module('map-services')
                     osm_baselayer: {
                         name: 'OSM Base Layer',
                         type: 'xyz',
-                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: false,
                             continuousWorld: false,
@@ -721,7 +721,7 @@ angular.module('map-services')
                     osm_baselayer: {
                         name: 'OSM Base Layer',
                         type: 'xyz',
-                        url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
                         layerOptions: {
                             noWrap: true,
                             continuousWorld: false,
