@@ -288,7 +288,8 @@ angular.module('marker-models')
 
                 c_key = this.createMarkerKey(c_id);
                 r[c_key] = {
-                    layer: 'network',
+                    // TODO BUG: path removal if added as a layer (angular-leaflet)
+                    // layer: 'network',
                     color: '#036128',
                     type: 'polyline',
                     weight: 2,
@@ -369,8 +370,11 @@ angular.module('marker-models')
                         this.createConnectorIdentifier(identifier)
                     ),
                     m_key = this.getMarkerKey(identifier);
-                delete this.getScope().paths[p_key];
+                console.log('>>> m_key = ' + m_key);
+                console.log('>>> p_key = ' + p_key);
+                console.log('>>> m_keys = ' + JSON.stringify(this._ids2keys));
                 delete this.getScope().markers[m_key];
+                delete this.getScope().paths[p_key];
             };
 
             /******************************************************************/
@@ -391,8 +395,8 @@ angular.module('marker-models')
             };
 
             this.trackStyle = {
-                weight: 2,
-                opacity: 0.75,
+                weight: 1,
+                opacity: 0.725,
                 steps: _GEOLINE_STEPS
             };
 

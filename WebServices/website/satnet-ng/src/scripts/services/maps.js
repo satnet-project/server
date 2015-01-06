@@ -266,8 +266,6 @@ angular.module('map-services')
                         layerOptions: {
                             noWrap: true,
                             continuousWorld: false,
-                            minZoom: MIN_ZOOM,
-                            maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }

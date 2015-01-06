@@ -106,6 +106,9 @@ angular.module('satnet-services').service('satnetRPC', [
                         '>, with params = <' + JSON.stringify(params) +
                         '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
+                    throw error.message
+                        .replace(/Exception\('/g, '')
+                        .replace(/',\)/g, '');
                 }
             );
         };
@@ -133,7 +136,13 @@ angular.module('satnet-services').service('satnetRPC', [
         this.getServerLocation = function (hostname) {
             return $http
                 .post('/configuration/hostname/geoip', {'hostname': hostname})
-                .then(function (data) { return data.data; });
+                .then(function (data) {
+                    $log.info('[satnet] server@(' + JSON.stringify(data.data) + ')');
+                    return {
+                        latitude: parseFloat(data.data.latitude),
+                        longitude: parseFloat(data.data.longitude)
+                    };
+                });
         };
 
         /**

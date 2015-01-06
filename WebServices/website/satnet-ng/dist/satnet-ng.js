@@ -355,6 +355,9 @@ angular.module('satnet-services').service('satnetRPC', [
                         '>, with params = <' + JSON.stringify(params) +
                         '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
+                    throw error.message
+                        .replace(/Exception\('/g, '')
+                        .replace(/',\)/g, '');
                 }
             );
         };
@@ -382,7 +385,13 @@ angular.module('satnet-services').service('satnetRPC', [
         this.getServerLocation = function (hostname) {
             return $http
                 .post('/configuration/hostname/geoip', {'hostname': hostname})
-                .then(function (data) { return data.data; });
+                .then(function (data) {
+                    $log.info('[satnet] server@(' + JSON.stringify(data.data) + ')');
+                    return {
+                        latitude: parseFloat(data.data.latitude),
+                        longitude: parseFloat(data.data.longitude)
+                    };
+                });
         };
 
         /**
@@ -713,8 +722,6 @@ angular.module('map-services')
                         layerOptions: {
                             noWrap: true,
                             continuousWorld: false,
-                            minZoom: MIN_ZOOM,
-                            maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
                     }
@@ -1100,7 +1107,8 @@ angular.module('marker-models')
 
                 c_key = this.createMarkerKey(c_id);
                 r[c_key] = {
-                    layer: 'network',
+                    // TODO BUG: path removal if added as a layer (angular-leaflet)
+                    // layer: 'network',
                     color: '#036128',
                     type: 'polyline',
                     weight: 2,
@@ -1181,8 +1189,11 @@ angular.module('marker-models')
                         this.createConnectorIdentifier(identifier)
                     ),
                     m_key = this.getMarkerKey(identifier);
-                delete this.getScope().paths[p_key];
+                console.log('>>> m_key = ' + m_key);
+                console.log('>>> p_key = ' + p_key);
+                console.log('>>> m_keys = ' + JSON.stringify(this._ids2keys));
                 delete this.getScope().markers[m_key];
+                delete this.getScope().paths[p_key];
             };
 
             /******************************************************************/
@@ -1203,8 +1214,8 @@ angular.module('marker-models')
             };
 
             this.trackStyle = {
-                weight: 2,
-                opacity: 0.75,
+                weight: 1,
+                opacity: 0.725,
                 steps: _GEOLINE_STEPS
             };
 
@@ -2367,12 +2378,15 @@ angular.module('ui-modalgs-controllers')
                     $scope.markers.gs.lat.toFixed(6),
                     $scope.markers.gs.lng.toFixed(6)
                 ];
-                satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
-                    var gsId = data.groundstation_id;
-                    $log.info('[map-ctrl] GS added, id = ' + gsId);
-                    broadcaster.gsAdded(gsId);
-                    $modalInstance.close();
-                });
+                satnetRPC.rCall('gs.add', newGsCfg).then(
+                    function (data) {
+                        var gsId = data.groundstation_id;
+                        $log.info('[map-ctrl] GS added, id = ' + gsId);
+                        broadcaster.gsAdded(gsId);
+                        $modalInstance.close();
+                    },
+                    function (error) { window.alert(error); }
+                );
             };
 
             $scope.cancel = function () { $modalInstance.close(); };
@@ -2403,7 +2417,7 @@ angular.module('ui-modalgs-controllers')
             });
 
             $scope.update = function () {
-                var newGsCfg = {
+                var cfg = {
                     'groundstation_id': groundstationId,
                     'groundstation_callsign': $scope.gs.callsign,
                     'groundstation_elevation': $scope.gs.elevation.toFixed(2),
@@ -2412,12 +2426,14 @@ angular.module('ui-modalgs-controllers')
                         $scope.markers.gs.lng.toFixed(6)
                     ]
                 };
-                satnetRPC.rCall('gs.update', [groundstationId, newGsCfg])
-                    .then(function (data) {
+                satnetRPC.rCall('gs.update', [groundstationId, cfg]).then(
+                    function (data) {
                         $log.info('[map-ctrl] GS updated, id = ' + data);
                         broadcaster.gsUpdated(groundstationId);
                         $modalInstance.close();
-                    });
+                    },
+                    function (error) { window.alert(error); }
+                );
             };
 
             $scope.cancel = function () { $modalInstance.close(); };
@@ -2429,7 +2445,8 @@ angular.module('ui-modalgs-controllers')
                             $log.info('[modalgs] GS removed, id = ' + JSON.stringify(gsId));
                             broadcaster.gsRemoved(gsId);
                             $modalInstance.close();
-                        }
+                        },
+                        function (error) { window.alert(error); }
                     );
                 }
             };

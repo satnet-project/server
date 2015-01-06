@@ -71,12 +71,15 @@ angular.module('ui-modalgs-controllers')
                     $scope.markers.gs.lat.toFixed(6),
                     $scope.markers.gs.lng.toFixed(6)
                 ];
-                satnetRPC.rCall('gs.add', newGsCfg).then(function (data) {
-                    var gsId = data.groundstation_id;
-                    $log.info('[map-ctrl] GS added, id = ' + gsId);
-                    broadcaster.gsAdded(gsId);
-                    $modalInstance.close();
-                });
+                satnetRPC.rCall('gs.add', newGsCfg).then(
+                    function (data) {
+                        var gsId = data.groundstation_id;
+                        $log.info('[map-ctrl] GS added, id = ' + gsId);
+                        broadcaster.gsAdded(gsId);
+                        $modalInstance.close();
+                    },
+                    function (error) { window.alert(error); }
+                );
             };
 
             $scope.cancel = function () { $modalInstance.close(); };
@@ -107,7 +110,7 @@ angular.module('ui-modalgs-controllers')
             });
 
             $scope.update = function () {
-                var newGsCfg = {
+                var cfg = {
                     'groundstation_id': groundstationId,
                     'groundstation_callsign': $scope.gs.callsign,
                     'groundstation_elevation': $scope.gs.elevation.toFixed(2),
@@ -116,12 +119,14 @@ angular.module('ui-modalgs-controllers')
                         $scope.markers.gs.lng.toFixed(6)
                     ]
                 };
-                satnetRPC.rCall('gs.update', [groundstationId, newGsCfg])
-                    .then(function (data) {
+                satnetRPC.rCall('gs.update', [groundstationId, cfg]).then(
+                    function (data) {
                         $log.info('[map-ctrl] GS updated, id = ' + data);
                         broadcaster.gsUpdated(groundstationId);
                         $modalInstance.close();
-                    });
+                    },
+                    function (error) { window.alert(error); }
+                );
             };
 
             $scope.cancel = function () { $modalInstance.close(); };
@@ -133,7 +138,8 @@ angular.module('ui-modalgs-controllers')
                             $log.info('[modalgs] GS removed, id = ' + JSON.stringify(gsId));
                             broadcaster.gsRemoved(gsId);
                             $modalInstance.close();
-                        }
+                        },
+                        function (error) { window.alert(error); }
                     );
                 }
             };
