@@ -16,20 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import urlresolvers as django_resolvers
-from django.template import response as django_response
 from django.views.generic import list as list_views, edit as edit_views
 from services.accounts import models as account_models
 from services.leop import forms as leop_forms
 from services.leop.models import leop as leop_models
-
-
-def redirect_leop(request, identifier):
-    """Redirect method.
-    Redirects staff either to the LEOP interface or to the login page.
-    """
-    return django_response.TemplateResponse(
-        request, 'staff/leop_access.html', {'leop_id': identifier}
-    )
 
 
 class LeopCreateView(edit_views.CreateView):

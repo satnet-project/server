@@ -76,12 +76,24 @@ module.exports = function (grunt) {
             }
         },
         ngtemplates: {
-            main: {
+            satnet: {
                 cwd: 'src',
                 src: 'templates/**/*.html',
                 dest: 'dist/<%= pkg.name %>-tpls.js',
                 options: {
                     module: 'satnet-ui',
+                    htmlmin: {
+                        collapseWhitespace: true,
+                        collapseBooleanAttributes: true
+                    }
+                }
+            },
+            leop: {
+                cwd: 'src',
+                src: 'templates/**/*.html',
+                dest: 'dist/<%= pkg.name %>-leop-tpls.js',
+                options: {
+                    module: 'leop-ui',
                     htmlmin: {
                         collapseWhitespace: true,
                         collapseBooleanAttributes: true
@@ -162,7 +174,8 @@ module.exports = function (grunt) {
             },
             templates: {
                 files: {
-                    'dist/<%= pkg.name %>-tpls.min.js': ['<%= ngtemplates.main.dest %>']
+                    'dist/<%= pkg.name %>-tpls.min.js': ['<%= ngtemplates.satnet.dest %>'],
+                    'dist/<%= pkg.name %>-leop-tpls.min.js': ['<%= ngtemplates.leop.dest %>']
                 }
             }
         },
@@ -174,8 +187,8 @@ module.exports = function (grunt) {
             test: {
                 files: [
                     '<%= jshint.files %>',
-                    'tests/**/*.js',
-                    'tests/**/*.html'
+                    'tests/models/*.js',
+                    'tests/models/*.html'
                 ],
                 tasks: ['test']
             }

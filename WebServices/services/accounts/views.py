@@ -59,14 +59,6 @@ def redirect_home(request):
         return TemplateResponse(request, 'users/users_home.html')
 
 
-@login_required
-def redirect_c2(request):
-    """Redirect method.
-    Redirects users either to their C2 interface or to the login window.
-    """
-    return TemplateResponse(request, 'users/users_c2.html')
-
-
 class UserProfileView(UpdateView):
     """
     This class shows a view for users to edit the details of their profiles.

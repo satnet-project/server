@@ -41,9 +41,4 @@ urlpatterns = urls.patterns(
         decorators.login_required(leop_views.LeopDeleteView.as_view()),
         name='leop_delete'
     ),
-    urls.url(
-        r'^access/(?P<identifier>\w+)$',
-        decorators.login_required(leop_views.redirect_leop),
-        name='leop_access'
-    ),
 )

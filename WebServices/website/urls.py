@@ -17,8 +17,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
 from django.contrib import admin
+from django.contrib.auth import decorators
 from django.views.generic.base import RedirectView
-from services.accounts import views
+from services.accounts import views as account_views
+from website import views as website_views
 
 admin.autodiscover()
 
@@ -29,11 +31,20 @@ urlpatterns = urls.patterns(
     # ### ################################################## OVERRIDEN MAIN URLS
     # ### ######################################################################
     urls.url(
-        r'^$', views.redirect_login, name='index'
+        r'^$',
+        account_views.redirect_login,
+        name='index'
     ),
     # ### Command and Control Interface
     urls.url(
-        r'^c2/', views.redirect_c2, name='c2_interface'
+        r'^operations/',
+        decorators.login_required(website_views.redirect_operations),
+        name='operations_interface'
+    ),
+    urls.url(
+        r'^leop_staff/(?P<identifier>\w+)$',
+        decorators.login_required(website_views.redirect_leop),
+        name='leop_access'
     ),
     # django-registration
     urls.url(

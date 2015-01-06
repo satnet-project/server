@@ -1,4 +1,4 @@
-{% extends 'users/users_home.html' %}
+{% extends "users/users_operations.html" %}
 
 {% comment %}
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
@@ -54,24 +54,28 @@
     <script type="text/javascript" src="{% static 'lib/Leaflet.Geodesic.min.js' %}"></script>
     <!-- -->
 
-    <link rel='stylesheet' href="{% static 'satnet-ng.min.css' %}" />
-    <script type='text/javascript' src="{% static 'satnet-ng.js'%}"></script>
-    <script type='text/javascript' src="{% static 'satnet-ng-tpls.js'%}"></script>
-
     <script type="text/javascript">
         $(document).ready(function() {
             $("#toolbar").toggle('slide', { direction: 'left' }, 500);
         });
     </script>
 
+    <link rel='stylesheet' href="{% static 'satnet-ng.min.css' %}" />
+    <script type='text/javascript' src="{% static 'satnet-ng.js'%}"></script>
+    <script type='text/javascript' src="{% static 'satnet-ng-leop-tpls.js'%}"></script>
+
 {% endblock %}
 
 {% block content %}
 
-{% verbatim %}
-<div ng-app='satnet-ui'>
+<script type="text/javascript">
+   var leop_id = "{{ leop_id }}"
+</script>
 
-    <div ng-controller='MapController' ng-init="init()" >
+{% verbatim %}
+<div ng-app='leop-ui'>
+
+    <div ng-controller='LEOPMapController' >
         <leaflet id='mainMap'
             center='center' markers='markers' layers='layers' paths='paths'
             style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
@@ -89,7 +93,7 @@
 
     <!-- Single button -->
     <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="GSMenuCtrl">
+            ng-controller="LEOPGSMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshGSList()">
@@ -102,16 +106,16 @@
             </li>
             <li class='divider'></li>
             <li>
-                <a href='#' ng-click="addGroundStation()">(+) ground station</a>
+                <a href='#' ng-click="addGroundStation()">manage</a>
             </li>
         </ul>
     </div>
     <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="SCMenuCtrl">
+            ng-controller="UFOMenuCtrl">
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshSCList()">
-            <p>Spacecraft</p><span class='caret'></span>
+            <p>UFO Objects</p><span class='caret'></span>
         </button>
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="s in scIds">
@@ -134,5 +138,7 @@
 
 {% endblock %}
 
+{% block content_footer %}
+{% endblock %}
 {% block license_footer %}
 {% endblock %}

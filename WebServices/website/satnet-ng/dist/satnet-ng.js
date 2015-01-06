@@ -1619,6 +1619,23 @@ angular.module('x-spacecraft-models').service('xsc', [
             });
         };
 
+
+        /**
+         * Initializes all the configuration objects for the available
+         * spacecraft.
+         * @returns {ng.IPromise<[String]>} Identifier of the read SC.
+         */
+        this.initAllLEOP = function () {
+            var self = this;
+            return satnetRPC.rCall('sc.list', []).then(function (scs) {
+                var p = [];
+                angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                return $q.all(p).then(function (sc_ids) {
+                    return sc_ids;
+                });
+            });
+        };
+
         /**
          * Adds a new Spacecraft together with its marker, using the
          * configuration object that it retrieves from the server.
