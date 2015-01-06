@@ -386,8 +386,10 @@ angular.module('satnet-services').service('satnetRPC', [
             return $http
                 .post('/configuration/hostname/geoip', {'hostname': hostname})
                 .then(function (data) {
-                    $log.info('[satnet] server name = ' + hostname);
-                    $log.info('[satnet] server@(' + JSON.stringify(data.data) + ')');
+                    $log.info(
+                        '[satnet] server name = ' + hostname +
+                            '@(' + JSON.stringify(data.data) + ')'
+                    );
                     return {
                         latitude: parseFloat(data.data.latitude),
                         longitude: parseFloat(data.data.longitude)

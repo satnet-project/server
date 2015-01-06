@@ -96,11 +96,12 @@ def hostname_geoip(request):
                 "'hostname' not found as a parameter of the request."
             )
 
-    print '>>> hostname = ' + str(hostname)
     host_ip = socket.gethostbyname(hostname)
-    print '>>> host_ip = ' + str(host_ip)
-
     lat, lng = gis.get_remote_user_location(ip=host_ip)
+
+    print '>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +\
+          ', @(' + str(lat) + ', ' + str(lng) + ')'
+
     return {'latitude': lat, 'longitude': lng}
 
 
