@@ -24,6 +24,12 @@ a.link {
 a.link:link, a.link:visited {
   text-decoration:none;
 }
+a.green-link { @extend a.link;
+  color: darkgreen;
+}
+a.red-link { @extend a.link;
+  color: darkred;
+}
 
 a.blue-action {
     font-weight:bold;

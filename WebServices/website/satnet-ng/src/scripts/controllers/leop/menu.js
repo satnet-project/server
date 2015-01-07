@@ -19,13 +19,15 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-menu-controllers',
-    ['ui.bootstrap', 'satnet-services']
+    [
+        'ui.bootstrap',
+        'satnet-services'
+    ]
 );
 
 angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
     '$rootScope', '$scope', '$modal', 'satnetRPC',
     function ($rootScope, $scope, $modal, satnetRPC) {
-
         'use strict';
 
         $scope.gsIds = [];
@@ -36,7 +38,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
                 controller: 'ManageGSModalCtrl',
                 backdrop: 'static'
             });
-            console.log('Created modalInstance = ' + modalInstance);
+            console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
         };
         $scope.refreshGSList = function () {
             satnetRPC.rCall('leop.gs.list', [$rootScope.leop_id])
@@ -51,27 +53,24 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
     }
 ]);
 
-angular.module('ui-leop-menu-controllers').controller('UFOMenuCtrl', [
+angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
     '$scope', '$modal', 'satnetRPC',
     function ($scope, $modal, satnetRPC) {
-
         'use strict';
 
         $scope.ufoIds = [];
-        $scope.addUFO = function () {
+        $scope.openManageCluster = function () {
             var modalInstance = $modal.open({
-                templateUrl: 'templates/leop/manageUFO.html',
-                controller: 'ManageUFOCtrl',
+                templateUrl: 'templates/leop/manageCluster.html',
+                controller: 'manageClusterModal',
                 backdrop: 'static'
             });
-            console.log('Created modalInstance = ' + modalInstance);
+            console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
         };
         $scope.refreshUFOList = function () {
             satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
                 if (data !== null) {
-                    console.log(
-                        'leop.ufo.list >>> data = ' + JSON.stringify(data)
-                    );
+                    console.log('leop.ufo.list >>> data = ' + JSON.stringify(data));
                     $scope.scIds = data.slice(0);
                 }
             });

@@ -105,7 +105,7 @@ class TwoLineElementsManager(models.Manager):
 
 
 class TwoLineElement(models.Model):
-    """
+    """TLE database model.
     Class that models the TLE elements within the database.
     """
     class Meta:
@@ -130,12 +130,26 @@ class TwoLineElement(models.Model):
     )
 
     first_line = models.CharField(
-        'First line of a given two-line element (line 1)',
-        max_length=69
+        'First line of this TLE',
+        max_length=69,
+        validators=[
+            validators.RegexValidator(
+                regex='^[a-zA-Z0-9.\s-]{69}$',
+                message="Alphanumeric or '.-_' required",
+                code='invalid_tle_line_1'
+            )
+        ]
     )
     second_line = models.CharField(
-        'Second line of a given two-line element (line 2)',
-        max_length=69
+        'Second line of this TLE',
+        max_length=69,
+        validators=[
+            validators.RegexValidator(
+                regex='^[a-zA-Z0-9.\s-]{69}$',
+                message="Alphanumeric or '.-_' required",
+                code='invalid_tle_line_2'
+            )
+        ]
     )
 
     def dirty_update(self, source, identifier, l1, l2):

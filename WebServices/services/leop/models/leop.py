@@ -19,13 +19,14 @@ from django.core import validators
 from django.db import models as django_models
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
+from services.configuration.models import tle as tle_models
 from services.leop.models import ufo as ufo_models
 
 
 class LEOP(django_models.Model):
     """LEOP Cluster database model.
-    Database model that manages the information relative to a given leop
-    of satellites during the LEOP phases.
+    Database model that manages the information relative to a given leop of
+    satellites during the LEOP phases.
     """
     class Meta:
         app_label = 'leop'
@@ -39,16 +40,24 @@ class LEOP(django_models.Model):
         'LEOP identifier',
         max_length=30,
         unique=True,
-        validators=[validators.RegexValidator(
-            regex='^[a-zA-Z0-9.\-_]*$',
-            message="Alphanumeric or '.-_' required",
-            code='invalid_leop_identifier'
-        )]
+        validators=[
+            validators.RegexValidator(
+                regex='^[a-zA-Z0-9.\-_]*$',
+                message="Alphanumeric or '.-_' required",
+                code='invalid_leop_identifier'
+            )
+        ]
     )
 
     groundstations = django_models.ManyToManyField(
         segment_models.GroundStation,
-        verbose_name='LEOP ground stations',
+        verbose_name='LEOP ground stations'
+    )
+
+    cluster_tle = django_models.ForeignKey(
+        tle_models.TwoLineElement,
+        verbose_name='TLE for the cluster objects as a whole',
+        null=True
     )
     cluster = django_models.ManyToManyField(
         ufo_models.UFO,

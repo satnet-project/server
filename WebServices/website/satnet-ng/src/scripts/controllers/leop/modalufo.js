@@ -20,143 +20,58 @@
 angular.module(
     'ui-leop-modalufo-controllers',
     [
-        'ui.bootstrap',
-        'nya.bootstrap.select',
-        'celestrak-services',
-        'satnet-services',
-        'broadcaster'
+        'ui.bootstrap'
     ]
 );
 
-angular.module('ui-leop-modalufo-controllers').controller('ManageUFOSModalCtrl', [
-    '$scope', '$log', '$modalInstance', 'satnetRPC', 'celestrak', 'broadcaster',
-    function ($scope, $log, $modalInstance, satnetRPC, celestrak, broadcaster) {
+angular.module('ui-leop-modalufo-controllers')
+    .constant('MAX_UFOS', 24)
+    .controller('manageClusterModal', [
+        '$rootScope', '$scope', '$log', '$modalInstance', 'MAX_UFOS',
+        function ($rootScope, $scope, $log, $modalInstance, MAX_UFOS) {
+            'use strict';
 
-        'use strict';
-
-        $scope.sc = {
-            identifier: '',
-            callsign: '',
-            tlegroup: '',
-            tleid: ''
-        };
-
-        $scope.tlegroups = celestrak.CELESTRAK_SELECT_SECTIONS;
-        $scope.tles = [];
-
-        $scope.initTles = function (defaultOption) {
-            satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
-                .then(function (tleIds) {
-                    $scope.tles = tleIds.tle_list.slice(0);
-                    console.log('$scope.tles = ' + JSON.stringify($scope.tles));
-                });
-            $scope.sc.tlegroup = defaultOption;
-        };
-
-        $scope.groupChanged = function (value) {
-            satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
-                .then(function (tleIds) {
-                    $scope.tles = tleIds.tle_list.slice(0);
-                    console.log('$scope.tles = ' + JSON.stringify($scope.tles));
-                });
-        };
-
-        $scope.ok = function () {
-            var newScCfg = [
-                $scope.sc.identifier,
-                $scope.sc.callsign,
-                $scope.sc.tleid.spacecraft_tle_id
-            ];
-            satnetRPC.rCall('sc.add', newScCfg).then(function (data) {
-                $log.info(
-                    '[map-ctrl] SC added, id = ' + data.spacecraft_id
-                );
-                broadcaster.scAdded(data.spacecraft_id);
-            });
-            $modalInstance.close();
-        };
-
-        $scope.cancel = function () {
-            $modalInstance.close();
-        };
-
-    }
-]);
-
-angular.module('ui-leop-modalufo-controllers').controller('EditSCModalCtrl', [
-    '$scope', '$log', '$modalInstance',
-    'satnetRPC', 'celestrak', 'spacecraftId', 'broadcaster',
-    function ($scope, $log, $modalInstance, satnetRPC, celestrak, spacecraftId, broadcaster) {
-
-        'use strict';
-
-        $scope.sc = {
-            identifier: spacecraftId,
-            callsign: '',
-            tlegroup: '',
-            tleid: '',
-            savedTleId: ''
-        };
-
-        $scope.tlegroups = celestrak.CELESTRAK_SELECT_SECTIONS;
-        $scope.tles = [];
-
-        satnetRPC.rCall('sc.get', [spacecraftId]).then(function (data) {
-            $scope.sc.identifier = spacecraftId;
-            $scope.sc.callsign = data.spacecraft_callsign;
-            $scope.sc.savedTleId = data.spacecraft_tle_id;
-        });
-
-        $scope.initTles = function (defaultOption) {
-            satnetRPC.rCall('tle.celestrak.getResource', [defaultOption])
-                .then(function (tleIds) {
-                    $scope.tles = tleIds.tle_list.slice(0);
-                });
-            $scope.sc.tlegroup = defaultOption;
-        };
-
-        $scope.groupChanged = function (value) {
-            console.log(
-                'value = ' + JSON.stringify(value) +
-                    ', ss = ' + JSON.stringify(value.subsection)
+            angular.extend(
+                $scope,
+                {
+                    cluster: {
+                        identifier: '',
+                        tle: { l1: '', l2: '' },
+                        max_ufos: MAX_UFOS,
+                        ufos: [],
+                        identified: []
+                    }
+                }
             );
-            satnetRPC.rCall('tle.celestrak.getResource', [value.subsection])
-                .then(function (tleIds) {
-                    $scope.tles = tleIds.tle_list.slice(0);
-                });
-        };
 
-        $scope.update = function () {
-            var newScCfg = {
-                'spacecraft_id': spacecraftId,
-                'spacecraft_callsign': $scope.sc.callsign,
-                'spacecraft_tle_id': $scope.sc.tleid.id
+            $scope.init = function () {
+                $scope.cluster.identifier = $rootScope.leop_id;
             };
-            satnetRPC.rCall(
-                'sc.update',
-                [spacecraftId, newScCfg]
-            ).then(function (data) {
-                $log.info('[map-ctrl] SC updated, id = ' + data);
-                broadcaster.scUpdated(data);
-            });
-            $modalInstance.close();
-        };
 
-        $scope.cancel = function () {
-            $modalInstance.close();
-        };
-
-        $scope.erase = function () {
-            if (confirm('Delete this spacecraft?') === true) {
-                satnetRPC.rCall('sc.delete', [spacecraftId]).then(function (data) {
-                    $log.info(
-                        '[map-ctrl] Spacecraft removed, id = ' + JSON.stringify(data)
-                    );
-                    broadcaster.scRemoved(data);
+            $scope.add = function () {
+                var id;
+                if ($scope.cluster.ufos.length === 0) {
+                    id = 0;
+                } else {
+                    id = $scope.cluster.ufos[$scope.cluster.ufos.length - 1].object_id + 1;
+                }
+                $scope.cluster.ufos.push({
+                    object_id: id
                 });
-                $modalInstance.close();
-            }
-        };
+            };
+            $scope.remove = function () {
+                $scope.cluster.ufos.splice([$scope.cluster.ufos.length - 1], 1);
+            };
 
-    }
-]);
+            $scope.ok = function () {
+                $log.info('[modal-ufo] cfg changed');
+                $modalInstance.close();
+            };
+            $scope.cancel = function () {
+                $modalInstance.close();
+            };
+
+            $scope.init();
+
+        }
+    ]);

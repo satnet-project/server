@@ -13,11 +13,12 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
+<!-- coolBlue: 0F3E62; cramberry: A52A2A; -->
 <svg version='1.1' xmlns="http://www.w3.org/2000/svg"
-    name='gs-icon' preserveAspectRatio='xMinYMin'
+    name='sc-icon' preserveAspectRatio='xMinYMin'
     width='150px' height='150px' style='opacity:0.85;'>
 
-    <circle cx='50%' cy='50%' r='47%'
+    <rect x='3%' y='3%' height='94%' width='94%'
         stroke-width='6%' stroke='black'
         style='fill:#0F3E62;'
     />
@@ -26,6 +27,6 @@
             font-family='sans-serif' font-size='400%'
             font-weight='bold'
             fill='white'
-            text-anchor='middle'>gs</text>
+            text-anchor='middle'>sc</text>
 
 </svg>

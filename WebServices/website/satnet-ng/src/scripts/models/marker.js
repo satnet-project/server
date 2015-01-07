@@ -230,7 +230,7 @@ angular.module('marker-models')
                     layer: 'network',
                     icon: {
                         iconUrl: '/static/images/server-icon.svg',
-                        iconSize: [15, 15]
+                        iconSize: [10, 10]
                     },
                     label: {
                         message: id,
@@ -290,10 +290,11 @@ angular.module('marker-models')
                 r[c_key] = {
                     // TODO BUG: path removal if added as a layer (angular-leaflet)
                     // layer: 'network',
-                    color: '#036128',
+                    //color: '#A52A2A',
+                    color: 'gray',
                     type: 'polyline',
-                    weight: 2,
-                    opacity: 0.5,
+                    weight: 3,
+                    opacity: 0.25,
                     latlngs: [s_marker, g_marker],
                     identifier: c_id
                 };
@@ -321,7 +322,7 @@ angular.module('marker-models')
                     layer: 'groundstations',
                     icon: {
                         iconUrl: '/static/images/gs-icon.svg',
-                        iconSize: [15, 15]
+                        iconSize: [10, 10]
                     },
                     label: {
                         message: cfg.groundstation_id,
@@ -370,9 +371,6 @@ angular.module('marker-models')
                         this.createConnectorIdentifier(identifier)
                     ),
                     m_key = this.getMarkerKey(identifier);
-                console.log('>>> m_key = ' + m_key);
-                console.log('>>> p_key = ' + p_key);
-                console.log('>>> m_keys = ' + JSON.stringify(this._ids2keys));
                 delete this.getScope().markers[m_key];
                 delete this.getScope().paths[p_key];
             };
@@ -400,7 +398,7 @@ angular.module('marker-models')
                 steps: _GEOLINE_STEPS
             };
 
-            this.colors = ['red', 'blue', 'yellow'];
+            this.colors = ['green', 'blue', 'purple'];
             this.color_n = 0;
 
             /**

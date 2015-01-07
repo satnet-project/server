@@ -20,6 +20,17 @@ from django.db import models as django_models
 from services.configuration.models import tle as tle_models
 
 
+class UFOManager(django_models.Manager):
+    """UFO database manager.
+    Manager for helping in handling ufo objects.
+    """
+    class Meta:
+        app_label = 'leop'
+
+    def add(self, identifier, tle):
+        pass
+
+
 class UFO(django_models.Model):
     """UFO database model.
     Database model that manages the information relative to a spacecraft that
@@ -38,9 +49,19 @@ class UFO(django_models.Model):
             code='invalid_leop_identifier'
         )]
     )
+    alias = django_models.CharField(
+        'LEOP alias',
+        max_length=30,
+        unique=True,
+        validators=[validators.RegexValidator(
+            regex='^[a-zA-Z0-9.\-_]*$',
+            message="Alphanumeric or '.-_' required",
+            code='invalid_leop_identifier'
+        )]
+    )
 
     tle = django_models.ForeignKey(
         tle_models.TwoLineElement,
-        verbose_name='TLE (empty if not yet found a proper TLE for the UFO).',
+        verbose_name='TLE for this UFO object',
         blank=True
     )

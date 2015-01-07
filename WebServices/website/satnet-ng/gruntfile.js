@@ -174,14 +174,22 @@ module.exports = function (grunt) {
             },
             templates: {
                 files: {
-                    'dist/<%= pkg.name %>-tpls.min.js': ['<%= ngtemplates.satnet.dest %>'],
-                    'dist/<%= pkg.name %>-leop-tpls.min.js': ['<%= ngtemplates.leop.dest %>']
+                    'dist/<%= pkg.name %>-tpls.min.js': [
+                        '<%= ngtemplates.satnet.dest %>'
+                    ],
+                    'dist/<%= pkg.name %>-leop-tpls.min.js': [
+                        '<%= ngtemplates.leop.dest %>'
+                    ]
                 }
             }
         },
         watch: {
             build: {
-                files: ['<%= jshint.files %>'],
+                files: [
+                    '<%= jshint.files %>',
+                    'src/images/**/*',
+                    'src/templates/**/*'
+                ],
                 tasks: ['default']
             },
             test: {

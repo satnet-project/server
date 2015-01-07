@@ -24,6 +24,11 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -50,15 +55,26 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
-a.link {
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
+a.link, a.green-link, a.red-link {
   cursor: pointer;
   color: #0F3E62;
   font-weight: bold;
   border-radius: 5px;
   padding: 0.75em; }
 
-a.link:link, a.link:visited {
+a.link:link, a.green-link:link, a.red-link:link, a.link:visited, a.green-link:visited, a.red-link:visited {
   text-decoration: none; }
+
+a.green-link {
+  color: darkgreen; }
+
+a.red-link {
+  color: darkred; }
 
 a.blue-action {
   font-weight: bold;
@@ -179,6 +195,11 @@ a.button-red {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 .my-dd-btn, .my-exit-btn {
   background: #293542;
   border-radius: 5px;
@@ -327,6 +348,11 @@ a.button-red {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 .leop-gs-duallist option {
   font-size: 150%;
   font-weight: bolder;
@@ -358,6 +384,11 @@ a.button-red {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 .marker-cluster-small {
   background-color: #A3A3C2; }
 
@@ -439,6 +470,11 @@ a.button-red {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 .n-area {
   width: 650px;
   height: 275px;
@@ -537,6 +573,11 @@ a.button-red {
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
 /* This is a compiled file, you should be editing the file in the templates directory */
 .pace {
   -webkit-pointer-events: none;

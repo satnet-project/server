@@ -51,7 +51,6 @@ class AvailableBitrates(models.Model):
         (600, '600 bps'),
         (900, '900 bps'),
     )
-
     """
     class Meta:
         app_label = 'configuration'
@@ -69,7 +68,6 @@ class AvailableBandwidths(models.Model):
         (12.5, '12.500 kHz'),
         (25.0, '25.000 kHz'),
     )
-
     """
     class Meta:
         app_label = 'configuration'
