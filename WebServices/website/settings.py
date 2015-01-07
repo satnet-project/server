@@ -263,17 +263,22 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'leop': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
+        'network': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'scheduling': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
         },
         'simulation': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'leop': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,

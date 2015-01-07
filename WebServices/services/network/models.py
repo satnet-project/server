@@ -17,9 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
 from django.db import models as django_models
+import logging
 from services.accounts import models as account_models
 from services.common import gis, misc
 from services.configuration.models import segments as segment_models
+
+logger = logging.getLogger('network')
 
 
 class ServerManager(django_models.Manager):
@@ -40,18 +43,18 @@ class ServerManager(django_models.Manager):
         try:
 
             s_local = self.get_local()
-            print '>>> Local server found'
+            logger.log('>>> Local server found: ' + str(s_local))
             hostname, ip_address = misc.get_fqdn_ip()
 
             if s_local.ip_address != ip_address:
 
-                print '>>> Updating ip_address to: ' + str(ip_address)
+                logger.log('>>> Updating ip_address to: ' + str(ip_address))
                 s_local.ip_address = ip_address
                 s_local.save()
 
         except Server.DoesNotExist:
 
-            print '>>> Local server NOT found, creating the first instance'
+            logger.warn('>>> Local server NOT found, creating instance')
             Server.objects.create(is_me=True)
 
     def get_local(self):

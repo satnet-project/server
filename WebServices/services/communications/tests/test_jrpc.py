@@ -15,15 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import base64
+import difflib
 from django.core import exceptions
 from django.test import TestCase
-
+from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.communications import jrpc as jrpc_comms
-from services.configuration import signals
-from services.configuration.jrpc.serializers import serialization as jrpc_keys
-from services.configuration.jrpc.views import channels as jrpc_channels_if
-from services.scheduling.models import operational
+from services.communications import jrpc as comms_jrpc, models as comms_models
 
 
 class TestPassiveCommunications(TestCase):
@@ -34,83 +32,89 @@ class TestPassiveCommunications(TestCase):
     def setUp(self):
 
         self.__verbose_testing = False
-
         self.__gs_1_id = 'gs-la'
-        self.__gs_1_ch_1_id = 'gs-la-fm'
-        self.__gs_1_ch_1_cfg = {
-            jrpc_keys.BAND_K:
-            'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_keys.AUTOMATED_K: False,
-            jrpc_keys.MODULATIONS_K: ['FM'],
-            jrpc_keys.POLARIZATIONS_K: ['LHCP'],
-            jrpc_keys.BITRATES_K: [300, 600, 900],
-            jrpc_keys.BANDWIDTHS_K: [12.500000000, 25.000000000]
-        }
-
-        signals.connect_availability_2_operational()
-        signals.connect_channels_2_compatibility()
-        signals.connect_compatibility_2_operational()
-        signals.connect_rules_2_availability()
-
-        self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        jrpc_channels_if.gs_channel_create(
-            ground_station_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id,
-            configuration=self.__gs_1_ch_1_cfg
-        )
-        operational.OperationalSlot.objects.get_simulator().set_debug()
+        self.__short_message = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+        self.__long_message = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAAAAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7dRKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQkRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJDJhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
 
-    def test_communications_null(self):
+    def test_store_message_null(self):
         """Unit test method.
         Basic unit testing method for checking the behavior of the passive
         communications service under null or empty parameters.
         """
         if self.__verbose_testing:
-            print '>>> communications_null'
+            print '>>> test_store_message_null'
 
         # 1) GS does not exist
         self.assertRaises(
             exceptions.ObjectDoesNotExist,
-            jrpc_comms.store_passive_message,
+            comms_jrpc.store_passive_message,
             groundstation_id='AAA',
-            gs_channel_id='AAAA',
             timestamp=0,
             doppler_shift=0,
             message='000'
         )
 
-        # 2) channel does not belong to GS
+        # 2) Empty message
         self.assertRaises(
             Exception,
-            jrpc_comms.store_passive_message,
+            comms_jrpc.store_passive_message,
             groundstation_id=self.__gs_1_id,
-            gs_channel_id=0,
-            timestamp=0,
-            doppler_shift=0,
-            message='000'
-        )
-
-        # 3) correct storage of a basic message
-        self.assertRaises(
-            Exception,
-            jrpc_comms.store_passive_message,
-            groundstation_id=self.__gs_1_id,
-            gs_channel_id=0,
             timestamp=0,
             doppler_shift=0,
             message=None
         )
 
-        # 4) correct message is stored
-        #message_1_id = jrpc_comms.store_passive_message(
-        #    groundstation_id=self.__gs_1_id,
-        #    gs_channel_id=self.__gs_1_ch_1_id,
-        #    timestamp=0,
-        #    doppler_shift=0.0,
-        #    message=None
-        #)
-        #print 'message_1_id = ' + str(message_1_id)
+    def test_store_message(self):
+        """UNIT test method.
+        Simple test for validating the storage of passive messages.
+        """
+        if self.__verbose_testing:
+            print '>>> test_store_message'
+
+        self.assertEquals(
+            comms_jrpc.store_passive_message(
+                groundstation_id=self.__gs_1_id,
+                timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
+                doppler_shift=0.0,
+                message=self.__short_message
+            ),
+            1,
+            'Message ID expected to be 1'
+        )
+
+        message = comms_models.PassiveMessage.objects.get(pk=1).message
+        self.assertEquals(
+            self.__short_message, message,
+            'In-database stored message differs, diff = ' + str(
+                difflib.ndiff(self.__short_message, message))
+        )
+
+        if self.__verbose_testing:
+            print '>>> message_1 (RAW) = ' + str(message)
+            print '>>> message_1 (STR) = ' + str(base64.b64decode(message))
+
+        self.assertEquals(
+            comms_jrpc.store_passive_message(
+                groundstation_id=self.__gs_1_id,
+                timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
+                doppler_shift=0.0,
+                message=self.__long_message
+            ),
+            2,
+            'Message ID expected to be 2'
+        )
+
+        message = comms_models.PassiveMessage.objects.get(pk=2).message
+        self.assertEquals(
+            self.__long_message, message,
+            'In-database stored message differs, diff = ' + str(
+                difflib.ndiff(self.__long_message, message))
+        )
+
+        if self.__verbose_testing:
+            print '>>> message_2 (RAW) = ' + str(message)
+            print '>>> message_2 (STR) = ' + str(base64.b64decode(message))
