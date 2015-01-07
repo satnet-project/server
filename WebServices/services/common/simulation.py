@@ -270,7 +270,7 @@ class OrbitalSimulator(object):
     @staticmethod
     def arrays_2_groundtrack(timestamps, latitudes, longitudes):
         """
-        Converts the 3 arrays into a single groundtrack array with objects as
+        Converts the 3 objectArrays into a single groundtrack array with objects as
         items.
         :param timestamps: array with the timestamps
         :param latitudes: array with the latitudes

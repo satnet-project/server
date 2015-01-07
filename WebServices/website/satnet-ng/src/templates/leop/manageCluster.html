@@ -33,7 +33,7 @@
                 <ol class='unsalted-list'>
                 <li class='ufo-item' ng-repeat="u in cluster.ufos">
                     <span style='margin-left: 10px'>Object #{{ u.object_id }}</span>
-                    <a class='no-items' style='margin-left: 50px' ng-click="identify(u.object_id)">(identify)</a>
+                    <a class='link' style='margin-left: 50px' ng-click="identify(u.object_id)">(identify)</a>
                 </li>
                 </ol>
             <div style='display: table-row'>
@@ -47,15 +47,18 @@
             </div>
             <div><h4>Identified Objects</h4></div>
             <div ng-hide="cluster.identified.length"><p class='no-items'>(none identified)</p></div>
+                <ol class='unsalted-list'>
+                <li class='ufo-item' ng-repeat="i in cluster.identified">
+                    <span style='margin-left: 10px'>Object #{{ i.object_id }}</span>
+                    <a class='link' style='margin-left: 50px' ng-click="forget(i.object_id)">(forget)</a>
+                </li>
+                </ol>
         </div>
     </div>
     </form>
 </div>
 
 <div class='modal-footer'>
-    <button class='btn btn-primary'
-        ng-click="ok()" ng-disabled="form.$invalid">
-        (ok)
-    </button>
+    <button class='btn btn-primary' ng-click="ok()" ng-disabled="form.$invalid">(ok)</button>
     <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
 </div>

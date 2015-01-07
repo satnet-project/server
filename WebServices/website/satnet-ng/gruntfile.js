@@ -195,8 +195,8 @@ module.exports = function (grunt) {
             test: {
                 files: [
                     '<%= jshint.files %>',
-                    'tests/models/*.js',
-                    'tests/models/*.html'
+                    'tests/**/*.js',
+                    'tests/**/*.html'
                 ],
                 tasks: ['test']
             }
