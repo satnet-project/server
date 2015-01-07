@@ -51,11 +51,11 @@ urlpatterns = urls.patterns(
         r'^leop/',
         urls.include('services.leop.urls')
     ),
-    urls.url(
-        r'^phppgadmin/$',
-        RedirectView.as_view(url='/phppgadmin'),
-        name='phppgadmin'
-    ),
+    #urls.url(
+    #    r'^phppgadmin/$',
+    #    RedirectView.as_view(url='/phppgadmin'),
+    #    name='phppgadmin'
+    #),
 
     # ### ######################################################################
     # ### ############################################ ACCOUNTS AND REGISTRATION
