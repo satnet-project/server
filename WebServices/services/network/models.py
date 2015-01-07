@@ -43,18 +43,18 @@ class ServerManager(django_models.Manager):
         try:
 
             s_local = self.get_local()
-            logger.log('>>> Local server found: ' + str(s_local))
+            logger.info('>>> Local server found: ' + str(s_local))
             hostname, ip_address = misc.get_fqdn_ip()
 
             if s_local.ip_address != ip_address:
 
-                logger.log('>>> Updating ip_address to: ' + str(ip_address))
+                logger.info('>>> Updating ip_address to: ' + str(ip_address))
                 s_local.ip_address = ip_address
                 s_local.save()
 
         except Server.DoesNotExist:
 
-            logger.warn('>>> Local server NOT found, creating instance')
+            logger.warning('>>> Local server NOT found, creating instance')
             Server.objects.create(is_me=True)
 
     def get_local(self):
