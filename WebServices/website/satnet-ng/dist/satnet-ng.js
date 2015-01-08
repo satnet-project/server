@@ -2146,6 +2146,10 @@ angular.module('ui-leop-modalufo-controllers')
                 $scope.cluster.ufos.splice([$scope.cluster.ufos.length - 1], 1);
             };
 
+            /**
+             * Turns an UFO into an object who has been temporary identified.
+             * @param object_id Identifier of the object
+             */
             $scope.identify = function (object_id) {
 
                 var idx_obj = objectArrays.getObject(
@@ -2154,7 +2158,10 @@ angular.module('ui-leop-modalufo-controllers')
                     object_id
                 );
 
-                $log.info('@identify(' + JSON.stringify(idx_obj) + ')');
+                $log.info(
+                    '[modal-ufo] <Object#' +
+                        object_id + '> promted to the identified objects list.'
+                );
 
                 angular.extend(
                     idx_obj.object,
@@ -2171,7 +2178,20 @@ angular.module('ui-leop-modalufo-controllers')
 
             };
 
+            /**
+             * "Forgets" the temporal identity of a given UFO.
+             * @param object_id Identifier of the object
+             */
             $scope.forget = function (object_id) {
+
+                if (confirm('Are you sure that you want to return <Object#' +
+                        object_id + '> back to the UFO list?') === false) {
+                    $log.warn(
+                        '[modal-ufo] <Object#' +
+                            object_id + '> kept in the identified objects list.'
+                    );
+                    return;
+                }
 
                 var idx_obj = objectArrays.getObject(
                     $scope.cluster.identified,
@@ -2179,7 +2199,10 @@ angular.module('ui-leop-modalufo-controllers')
                     object_id
                 );
 
-                $log.info('@identify(' + JSON.stringify(idx_obj) + ')');
+                $log.info(
+                    '[modal-ufo] <Object#' +
+                        object_id + '> back in the UFO list.'
+                );
 
                 $scope.cluster.ufos.push(idx_obj.object);
                 $scope.cluster.identified.splice(idx_obj.index, 1);
