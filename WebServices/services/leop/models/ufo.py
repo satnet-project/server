@@ -27,8 +27,19 @@ class UFOManager(django_models.Manager):
     class Meta:
         app_label = 'leop'
 
-    def add(self, identifier, tle):
-        pass
+    def identify(self, identifier, alias, tle_l1, tle_l2):
+        """Manager method.
+        Promotes a given UFO object into the <identified> state by associating a
+        TLE and alias to it. Basically, it permits detaching this object from
+        the cluster and generates the associated GroundTrack for its simulation.
+        :param identifier: Identifier of the UFO object to be promoted
+        :param alias: Alias for the new <identified> object
+        :param tle_l1: First line of the TLE for this object
+        :param tle_l2: Second line of the TLE for this object
+        :return: 'True' if it was succesfully created
+        """
+        ufo = self.get(identifier=identifier)
+        ufo.alias = alias
 
 
 class UFO(django_models.Model):
@@ -39,20 +50,15 @@ class UFO(django_models.Model):
     class Meta:
         app_label = 'leop'
 
-    identifier = django_models.CharField(
-        'LEOP identifier',
-        max_length=30,
+    identifier = django_models.PositiveSmallIntegerField(
+        'Object sequential identifier',
         unique=True,
-        validators=[validators.RegexValidator(
-            regex='^[a-zA-Z0-9.\-_]*$',
-            message="Alphanumeric or '.-_' required",
-            code='invalid_leop_identifier'
-        )]
     )
     alias = django_models.CharField(
-        'LEOP alias',
+        'Object alias (future name as a celestrak object?)',
         max_length=30,
         unique=True,
+        blank=True,
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",
@@ -62,6 +68,6 @@ class UFO(django_models.Model):
 
     tle = django_models.ForeignKey(
         tle_models.TwoLineElement,
-        verbose_name='TLE for this UFO object',
-        blank=True
+        verbose_name='TLE for this object',
+        null=True
     )

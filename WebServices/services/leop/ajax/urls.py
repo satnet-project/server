@@ -16,29 +16,13 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
-from django.contrib.auth import decorators
-from services.leop import views as leop_views
+from services.leop.ajax import views
 
 urlpatterns = urls.patterns(
     '',
     urls.url(
-        r'^management$',
-        decorators.login_required(leop_views.LeopManagementView.as_view()),
-        name='leop_management'
-    ),
-    urls.url(
-        r'^create$',
-        decorators.login_required(leop_views.LeopCreateView.as_view()),
-        name='leop_create'
-    ),
-    urls.url(
-        r'^update/(?P<identifier>\w+)$',
-        decorators.login_required(leop_views.LeopUpdateView.as_view()),
-        name='leop_update'
-    ),
-    urls.url(
-        r'^delete/(?P<identifier>\w+)$',
-        decorators.login_required(leop_views.LeopDeleteView.as_view()),
-        name='leop_delete'
+        r'^ufo/valid_id$',
+        views.ufo_valid_id,
+        name='ajax-leop-ufo-valid-id'
     )
 )

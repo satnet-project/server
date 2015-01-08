@@ -87,6 +87,11 @@ urlpatterns = urls.patterns(
         r'configuration/',
         urls.include('services.configuration.ajax.urls')
     ),
+    # ### AJAX services
+    urls.url(
+        r'^ajax/',
+        urls.include('services.leop.ajax.urls')
+    ),
     # ### JSON-Rpc API
     urls.url(
         r'^jrpc/$',

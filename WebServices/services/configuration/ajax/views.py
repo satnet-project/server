@@ -21,7 +21,7 @@ from ipware.ip import get_real_ip as ipware_get_ip
 import json
 from jsonview import decorators, exceptions
 import socket
-from services.common import gis, misc
+from services.common import gis
 from services.configuration.models import segments
 
 logger = logging.getLogger('configuration')
@@ -78,7 +78,7 @@ def spacecraft_valid_id(request):
 def hostname_geoip(request):
     """AJAX method
     Retrieves the location of the given hostname using the GEO IP services.
-    :param hostname: String with the name of the host to be GEO located.
+    :param request: HTTP request
     :return: JSON object, { latitude: $lat, longitude: $lng }
     """
     hostname = None

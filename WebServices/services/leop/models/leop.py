@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
+from django import db as django_db
 from django.db import models as django_models
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
@@ -30,6 +31,19 @@ class LEOP(django_models.Model):
     """
     class Meta:
         app_label = 'leop'
+
+    def add_ufo(self, ufo_id):
+        """Database model
+        Adds a UFO object to this LEOP cluster by creating it first at the
+        related UFO table
+        :param ufo_id: The identifier for the UFO object
+        :return: The just created UFO object
+        """
+        with django_db.transaction.atomic():
+            ufo = ufo_models.UFO.objects.create(identifier=ufo_id)
+        self.cluster.add(ufo)
+        self.save()
+        return ufo
 
     admin = django_models.ForeignKey(
         account_models.UserProfile,
