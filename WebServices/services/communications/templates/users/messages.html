@@ -1,0 +1,74 @@
+{% extends 'users/users_home.html' %}
+
+{% comment %}
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+{% endcomment %}
+
+{% load i18n %}
+{% load staticfiles %}
+
+{% block head %}
+    <style> div#content div { margin: 25px; } </style>
+{% endblock %}
+
+{% block content %}
+
+    <div><h1>Passive Messages Reported</h1></div>
+
+    <div>
+        <p>
+            The table below permits the visualization of the messages reported
+            in passive mode by any of the groundstations registered with this
+            user.
+        </p>
+    </div>
+
+    <div>
+
+    {% if message_list %}
+        <div class='table-row table-header'>
+            <div style='width: 100px'>Ground Station</div>
+            <div style='width: 50px'>Read?</div>
+            <div style='width: 100px'>Doppler Shift (Hz)</div>
+            <div style='width: 100px'>Rx@(UTC us)</div>
+            <div style='width: 50px'>Length</div>
+            <div style='width: 200px'>Message (BASE64)</div>
+        </div>
+        {% for m in message_list %}
+        <div class='table-row'>
+            <div><p>{{ m.groundstation.identifier }}</p></div>
+            <div><p>{{ m.retrieved }}</p></div>
+            <div><p>{{ m.doppler_shift }}</p></div>
+            <div><p>{{ m.groundstation_timestamp }}</p></div>
+            <div><p>{{ m.message|length }}</p></div>
+            <div>
+                <p style='width: 200px; font-size: 75%; text-align: left; word-wrap: break-word'>
+                    {{ m.message }}
+                </p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div><p class='no-items'>(no messages received)</p></div>
+    {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block content_footer %}
+{% endblock %}
+{% block license_footer %}
+{% endblock %}

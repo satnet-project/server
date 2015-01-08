@@ -144,14 +144,17 @@ TEMPLATE_DIRS = (
         os.path.dirname(__file__), 'templates'
     ),
     os.path.join(
-        os.path.dirname(__file__), '..', 'services', 'accounts', 'templates'
+        os.path.dirname(__file__),
+        '..', 'services', 'accounts', 'templates'
     ),
     os.path.join(
-        os.path.dirname(__file__), '..', 'services', 'leop', 'templates'
+        os.path.dirname(__file__),
+        '..', 'services', 'communications', 'templates'
     ),
     os.path.join(
-        os.path.dirname(__file__), '..', 'services', 'network', 'templates'
-    ),
+        os.path.dirname(__file__),
+        '..', 'services', 'leop', 'templates'
+    )
 )
 
 TEST_RUNNER = 'website.tests.SatnetTestRunner'

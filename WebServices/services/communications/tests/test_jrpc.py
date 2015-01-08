@@ -30,7 +30,8 @@ class TestPassiveCommunications(TestCase):
     """
 
     def setUp(self):
-
+        """Database setup
+        """
         self.__verbose_testing = False
         self.__gs_1_id = 'gs-la'
         self.__user_profile = db_tools.create_user_profile()
@@ -38,7 +39,11 @@ class TestPassiveCommunications(TestCase):
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
         self.__short_message = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
-        self.__long_message = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAAAAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7dRKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQkRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJDJhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
+        self.__long_message = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
+                              'AAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7d' \
+                              'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
+                              'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
+                              'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
 
     def test_store_message_null(self):
         """Unit test method.

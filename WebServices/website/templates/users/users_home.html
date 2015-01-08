@@ -27,9 +27,15 @@
 {% if request.user.is_authenticated %}
     <hr />
     <div id='button_divx'>
-        <a id='button_c2c'
+        <a id='button_operations'
            class='toolbar_button' href="{% url 'operations_interface' %}">
             Operations
+        </a>
+    </div>
+    <div id='button_divx'>
+        <a id='button_messages'
+           class='toolbar_button' href="{% url 'comms_passive_messages' %}">
+            Passive Messages
         </a>
     </div>
 {% endif %}

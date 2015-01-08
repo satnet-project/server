@@ -46,10 +46,13 @@ urlpatterns = urls.patterns(
         decorators.login_required(website_views.redirect_leop),
         name='leop_access'
     ),
-    # django-registration
-    urls.url(
+   urls.url(
         r'^leop/',
         urls.include('services.leop.urls')
+    ),
+    urls.url(
+        r'^communications/',
+        urls.include('services.communications.urls')
     ),
     urls.url(
         r'^phppgadmin/$',
@@ -62,12 +65,10 @@ urlpatterns = urls.patterns(
     # ### ######################################################################
 
     # ### for overriding default 'accounts' urls from
-    # django-registration
     urls.url(
         r'^accounts/',
         urls.include('services.accounts.urls')
     ),
-    # ### django-registration
     urls.url(
         r'^accounts/',
         urls.include('allauth.urls')

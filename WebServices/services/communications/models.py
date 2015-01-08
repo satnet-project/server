@@ -53,3 +53,13 @@ class PassiveMessage(models.Model):
         'Message raw data in base64',
         max_length=4000
     )
+
+    def __unicode__(self):
+        """Human readable unicode string
+        Human readable representation of this object as an unicode string.
+        :return: Unicode string
+        """
+        return '>>> message (#' + str(self.pk) + '), gs = ' +\
+               str(self.groundstation) + '@' +\
+               str(self.groundstation_timestamp) + ', (BASE64)=' +\
+               str(self.message)
