@@ -1793,7 +1793,8 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
             var modalInstance = $modal.open({
                 templateUrl: 'templates/leop/manageGroundStations.html',
                 controller: 'ManageGSModalCtrl',
-                backdrop: 'static'
+                backdrop: 'static',
+                size: 'lg'
             });
             console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
         };
@@ -2122,7 +2123,8 @@ angular.module('ui-leop-modalufo-controllers')
                         max_ufos: MAX_UFOS,
                         ufos: [],
                         identified: []
-                    }
+                    },
+                    identified_objects: {}
                 }
             );
 
@@ -2132,13 +2134,11 @@ angular.module('ui-leop-modalufo-controllers')
 
             $scope.add = function () {
                 var id_ufos, id_identified, id;
-
                 id_ufos = ($scope.cluster.ufos.length === 0) ? 0
                     : objectArrays.findMaxTuple($scope.cluster.ufos, 'object_id').value;
                 id_identified = ($scope.cluster.identified.length === 0) ? 0
                     : objectArrays.findMaxTuple($scope.cluster.identified, 'object_id').value;
                 id = (id_ufos > id_identified) ? id_ufos + 1 : id_identified + 1;
-
                 $scope.cluster.ufos.push({ object_id: id });
             };
 
@@ -2156,6 +2156,16 @@ angular.module('ui-leop-modalufo-controllers')
 
                 $log.info('@identify(' + JSON.stringify(idx_obj) + ')');
 
+                angular.extend(
+                    idx_obj.object,
+                    {
+                        tle: {
+                            l1: '',
+                            l2: ''
+                        },
+                        alias: ''
+                    }
+                );
                 $scope.cluster.identified.push(idx_obj.object);
                 $scope.cluster.ufos.splice(idx_obj.index, 1);
 

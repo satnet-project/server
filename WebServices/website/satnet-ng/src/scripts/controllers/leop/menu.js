@@ -36,7 +36,8 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
             var modalInstance = $modal.open({
                 templateUrl: 'templates/leop/manageGroundStations.html',
                 controller: 'ManageGSModalCtrl',
-                backdrop: 'static'
+                backdrop: 'static',
+                size: 'lg'
             });
             console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
         };

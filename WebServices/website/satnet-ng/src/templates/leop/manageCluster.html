@@ -2,10 +2,12 @@
     <h3 class='modal-title'>Manage Cluster ({{ cluster.identifier }})</h3>
 </div>
 
+<style>label.control-label { font-size: 85%; }</style>
+
 <div class='modal-body' style='display: inline-block; width: 100%'>
     <form name='form'>
     <div style='display: table; table-layout: fixed; border-spacing: 5px; width: 100%'>
-        <div style='display: table-cell; width: 50%'>
+        <div style='display: table-cell; width: 30%'>
             <div><h4>Cluster TLE</h4></div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.tle_l1.$invalid }">
@@ -27,13 +29,13 @@
             </div>
         </div>
         <div style='display: table-cell; width: 10px'></div>
-        <div style='display: table-cell; width: 50%'>
+        <div style='display: table-cell; width: 60%'>
             <div style='display: table-cell'><h4>UFO Objects</h4></div>
             <div ng-hide="cluster.ufos.length"><p class='no-items'>(no ufos)</p></div>
                 <ol class='unsalted-list'>
                 <li class='ufo-item' ng-repeat="u in cluster.ufos">
                     <span style='margin-left: 10px'>Object #{{ u.object_id }}</span>
-                    <a class='link' style='margin-left: 50px' ng-click="identify(u.object_id)">(identify)</a>
+                    <a class='link' style='margin-left: 50px; font-size: 75%' ng-click="identify(u.object_id)">(identify)</a>
                 </li>
                 </ol>
             <div style='display: table-row'>
@@ -49,8 +51,49 @@
             <div ng-hide="cluster.identified.length"><p class='no-items'>(none identified)</p></div>
                 <ol class='unsalted-list'>
                 <li class='ufo-item' ng-repeat="i in cluster.identified">
-                    <span style='margin-left: 10px'>Object #{{ i.object_id }}</span>
-                    <a class='link' style='margin-left: 50px' ng-click="forget(i.object_id)">(forget)</a>
+                    <div class="bottom-cell">
+                    <div style='display: table-row'>
+                        <div style='display: table-cell'>
+                            <h4>Object #{{ i.object_id }}</h4>
+                            <a class='link' style='margin-left: 50px; font-size: 75%; display: table-cell' ng-click="forget(i.object_id)">(forget)</a>
+                        </div>
+                        <div class='control-group' style='display: table-cell'
+                            ng-class="{ 'has-error': form.i_alias.$invalid }">
+                            <label class='control-label' for='i_alias'>Alias</label>
+                            <input type='text' name='i_alias'
+                                class='form-control' style='width: 100%'
+                                ng-model="i.alias"
+                                ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
+                                required />
+                        </div>
+                    </div>
+                    <div style='display: table-row'>
+
+                        <div style='display: table-cell'>
+                            <div class='control-group'
+                                ng-class="{ 'has-error': form.i_tle_l1.$invalid }">
+                                <label class='control-label' for='i_tle_l1'>First line</label>
+                                <input type='text' name='i_tle_l1'
+                                    class='form-control' style='width: 100%'
+                                    ng-model="i.tle.l1"
+                                    ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
+                                    required />
+                            </div>
+                        </div>
+                        <div style='display: table-cell'>
+                            <div class='control-group'
+                                ng-class="{ 'has-error': form.i_tle_l2.$invalid }">
+                                <label class='control-label' for='i_tle_l2'>Second line</label>
+                                <input type='text' name='i_tle_l2'
+                                    class='form-control' style='width: 100%'
+                                    ng-model="i.tle.l2"
+                                    ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
+                                    required />
+                            </div>
+                        </div>
+
+                    </div>
+                    </div>
                 </li>
                 </ol>
         </div>

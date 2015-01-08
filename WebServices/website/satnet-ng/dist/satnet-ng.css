@@ -29,6 +29,9 @@
   padding: 0px;
   margin: 0px; }
 
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
+
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -59,6 +62,9 @@
   list-style-type: none;
   padding: 0px;
   margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
 
 a.link, a.green-link, a.red-link {
   cursor: pointer;
@@ -199,6 +205,9 @@ a.button-red {
   list-style-type: none;
   padding: 0px;
   margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
 
 .my-dd-btn, .my-exit-btn {
   background: #293542;
@@ -353,6 +362,9 @@ a.button-red {
   padding: 0px;
   margin: 0px; }
 
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
+
 .leop-gs-duallist option {
   font-size: 150%;
   font-weight: bolder;
@@ -388,6 +400,9 @@ a.button-red {
   list-style-type: none;
   padding: 0px;
   margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
 
 .marker-cluster-small {
   background-color: #A3A3C2; }
@@ -474,6 +489,9 @@ a.button-red {
   list-style-type: none;
   padding: 0px;
   margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
 
 .n-area {
   width: 650px;
@@ -577,6 +595,9 @@ a.button-red {
   list-style-type: none;
   padding: 0px;
   margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
 
 /* This is a compiled file, you should be editing the file in the templates directory */
 .pace {
