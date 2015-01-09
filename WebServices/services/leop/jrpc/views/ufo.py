@@ -32,7 +32,8 @@ def add(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop_models.LEOP.objects.add_ufo(leop_identifier, identifier)
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop.add_ufo(identifier)
     return identifier
 
 
@@ -49,9 +50,8 @@ def remove(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop_models.LEOP.objects.get(
-        identifier=leop_identifier
-    ).cluster.get(identifier=identifier).delete()
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop.cluster.get(identifier=identifier).delete()
     return identifier
 
 
@@ -63,7 +63,7 @@ def remove(leop_identifier, identifier):
 def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     """JRPC method
     Promotes a given UFO object into the <identified> state by associating a
-    TLE and alias to it. Basically, it permits detaching this object from the
+    TLE and callsign to it. Basically, it permits detaching this object from the
     cluster and generates the associated GroundTrack for its simulation.
     :param leop_identifier: Identifier of the LEOP operation that the object
                             belongs to
@@ -73,9 +73,10 @@ def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     :param tle_l2: Second line of the TLE for this object
     :return: Identifier of the just created UFO object
     """
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
     http_request = kwargs.get('request', None)
-    leop_models.LEOP.objects.identify_ufo(
-        leop_identifier, http_request.user, identifier,
+    leop.identify_ufo(
+        http_request.user, identifier,
         callsign, tle_l1, tle_l2
     )
     return identifier
@@ -98,9 +99,8 @@ def update(leop_identifier, identifier, callsign, tle_l1, tle_l2):
     :param tle_l2: Second line of the TLE for this object
     :return: Identifier of the just created UFO object
     """
-    leop_models.LEOP.objects.update_ufo(
-        leop_identifier, identifier, callsign, tle_l1, tle_l2
-    )
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop.update_ufo(identifier, callsign, tle_l1, tle_l2)
     return identifier
 
 
@@ -117,5 +117,6 @@ def forget(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop_models.LEOP.objects.forget_ufo(leop_identifier, identifier)
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop.forget_ufo(identifier)
     return identifier

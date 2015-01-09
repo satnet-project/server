@@ -74,14 +74,24 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.getGroundtrack':
                 this._simulation.createMethod('spacecraft.getGroundtrack'),
             // LEOP services
+            'leop.cfg':
+                this._leop.createMethod('getConfiguration'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
             'leop.gs.add':
                 this._leop.createMethod('gs.add'),
             'leop.gs.remove':
                 this._leop.createMethod('gs.remove'),
-            'leop.sc.cluster':
-                this._leop.createMethod('sc.cluster')
+            'leop.ufo.add':
+                this._leop.createMethod('ufo.add'),
+            'leop.ufo.remove':
+                this._leop.createMethod('ufo.remove'),
+            'leop.ufo.identify':
+                this._leop.createMethod('ufo.identify'),
+            'leop.ufo.forget':
+                this._leop.createMethod('ufo.forget'),
+            'leop.ufo.update':
+                this._leop.createMethod('ufo.update')
         };
 
         /**

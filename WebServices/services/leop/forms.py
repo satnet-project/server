@@ -15,13 +15,26 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import forms
+from django import forms as django_forms
 from services.leop.models import leop as leop_models
 
 
-class LeopForm(forms.ModelForm):
-    """Form for creating a manager for the LEOP operations phase.
+class LeopForm(django_forms.ModelForm):
+    """Form
+    Form for creating a manager for the LEOP operations phase.
     """
+
+    tle_l1 = django_forms.RegexField(
+        label='TLE - First Line',
+        regex=r'^[a-zA-Z0-9.\s-]{69}$',
+        error_messages={'invalid': "Not a valid TLE line."}
+    )
+    tle_l2 = django_forms.RegexField(
+        label='TLE - Second Line',
+        regex=r'^[a-zA-Z0-9.\s-]{69}$',
+        error_messages={'invalid': "Not a valid TLE line."}
+    )
+
     class Meta:
         """Model to be used from within this form."""
         model = leop_models.LEOP

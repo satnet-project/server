@@ -323,14 +323,24 @@ angular.module('satnet-services').service('satnetRPC', [
             'sc.getGroundtrack':
                 this._simulation.createMethod('spacecraft.getGroundtrack'),
             // LEOP services
+            'leop.cfg':
+                this._leop.createMethod('getConfiguration'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
             'leop.gs.add':
                 this._leop.createMethod('gs.add'),
             'leop.gs.remove':
                 this._leop.createMethod('gs.remove'),
-            'leop.sc.cluster':
-                this._leop.createMethod('sc.cluster')
+            'leop.ufo.add':
+                this._leop.createMethod('ufo.add'),
+            'leop.ufo.remove':
+                this._leop.createMethod('ufo.remove'),
+            'leop.ufo.identify':
+                this._leop.createMethod('ufo.identify'),
+            'leop.ufo.forget':
+                this._leop.createMethod('ufo.forget'),
+            'leop.ufo.update':
+                this._leop.createMethod('ufo.update')
         };
 
         /**
@@ -2017,7 +2027,8 @@ angular.module('ui-leop-modalgs-controllers')
 angular.module(
     'ui-leop-modalufo-controllers',
     [
-        'ui.bootstrap'
+        'ui.bootstrap',
+        'satnet-services'
     ]
 );
 
@@ -2030,9 +2041,8 @@ angular.module('ui-leop-modalufo-controllers')
             /**
              * Function that checks whether the input parameters represent a
              * proper object array or not.
-             * @param array Array of objects
-             * @param property Property of the objects within the array used
-             *                  during the comparison process
+             * @param array Array for the operation
+             * @param property The property for the operation
              */
             this.check = function (array, property) {
                 if ((array === null) || (array.length === 0)) {
@@ -2046,9 +2056,8 @@ angular.module('ui-leop-modalufo-controllers')
             /**
              * Function that searches for the give pair (property, value) within
              * this array of objects.
-             * @param array Array of objects
-             * @param property Property that belongs to all of the objects of
-             *                  the array
+             * @param array Array for the operation
+             * @param property The property for the operation
              * @param value Value that the property equals to
              * @returns {number} Index of the object whose property has the
              *                      desired value
@@ -2068,9 +2077,8 @@ angular.module('ui-leop-modalufo-controllers')
             /**
              * Function that returns a tuple (index, object) with the object
              * whose property equals to the given value.
-             * @param array Array of objects
-             * @param property Property that belongs to all of the objects of
-             *                  the array
+             * @param array Array for the operation
+             * @param property The property for the operation
              * @param value Value that the property equals to
              * @returns {{index: (number|Number), object: *}}
              */
@@ -2085,8 +2093,8 @@ angular.module('ui-leop-modalufo-controllers')
             /**
              * Function that returns the tuple (index, value) that has the
              * biggest value within the given array.
-             * @param array Array for the search.
-             * @param property The property of the object for the comparison.
+             * @param array Array for the operation
+             * @param property The property for the operation
              * @returns {{index: number, value: number}}
              */
             this.findMaxTuple = function (array, property) {
@@ -2107,43 +2115,87 @@ angular.module('ui-leop-modalufo-controllers')
 
             };
 
+            /**
+             * Function that returns the same array but changing the strings of
+             * the values at the given property by the result of parseInt'ing
+             * them.
+             * @param array Array for the operation
+             * @param property The property for the operation
+             * @returns {*}
+             */
+            this.parseInt = function (array, property) {
+                this.check(array, property);
+                var i;
+                for (i = 0; i < array.length; i += 1) {
+                    array[i][property] = parseInt(array[i][property], 10);
+                }
+                return array;
+            };
+
         }
     ])
     .controller('manageClusterModal', [
-        '$rootScope', '$scope', '$log', '$modalInstance', 'objectArrays', 'MAX_UFOS',
-        function ($rootScope, $scope, $log, $modalInstance, objectArrays, MAX_UFOS) {
+        '$rootScope', '$scope', '$log', '$modalInstance',
+        'satnetRPC', 'objectArrays', 'MAX_UFOS',
+        function (
+            $rootScope,
+            $scope,
+            $log,
+            $modalInstance,
+            satnetRPC,
+            objectArrays,
+            MAX_UFOS
+        ) {
             'use strict';
 
-            angular.extend(
-                $scope,
-                {
-                    cluster: {
-                        identifier: '',
-                        tle: { l1: '', l2: '' },
-                        max_ufos: MAX_UFOS,
-                        ufos: [],
-                        identified: []
-                    },
-                    identified_objects: {}
-                }
-            );
 
             $scope.init = function () {
-                $scope.cluster.identifier = $rootScope.leop_id;
+                var scope = $scope;
+                angular.extend($scope, { cluster: {}, identified_objects: {} });
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id])
+                    .then(function (data) {
+                        console.log(
+                            '[modal-ufo] cluster cfg = ' + JSON.stringify(data)
+                        );
+                        objectArrays.parseInt(data.ufos, 'object_id');
+                        angular.extend(scope.cluster, data);
+                        scope.cluster.max_ufos = MAX_UFOS;
+                    });
             };
 
             $scope.add = function () {
+
                 var id_ufos, id_identified, id;
+
                 id_ufos = ($scope.cluster.ufos.length === 0) ? 0
                     : objectArrays.findMaxTuple($scope.cluster.ufos, 'object_id').value;
                 id_identified = ($scope.cluster.identified.length === 0) ? 0
                     : objectArrays.findMaxTuple($scope.cluster.identified, 'object_id').value;
                 id = (id_ufos > id_identified) ? id_ufos + 1 : id_identified + 1;
-                $scope.cluster.ufos.push({ object_id: id });
+
+                satnetRPC.rCall('leop.ufo.add', [$rootScope.leop_id, id])
+                    .then(function (data) {
+                        $log.info('[modal-ufo] New ufo, id = ' + data);
+                        $scope.cluster.ufos.push({ object_id: id });
+                    });
             };
 
             $scope.remove = function () {
-                $scope.cluster.ufos.splice([$scope.cluster.ufos.length - 1], 1);
+
+                if ($scope.cluster.ufos.length === 0) {
+                    $log.warn('[modal-ufo] removing from empty ufos?');
+                    return;
+                }
+
+                var i = $scope.cluster.ufos.length - 1,
+                    id = $scope.cluster.ufos[i].object_id;
+
+                satnetRPC.rCall('leop.ufo.remove', [$rootScope.leop_id, id])
+                    .then(function (data) {
+                        $log.info('[modal-ufo] Removed ufo, id = ' + data);
+                        $scope.cluster.ufos.splice(i, 1);
+                    });
+
             };
 
             /**
@@ -2170,7 +2222,7 @@ angular.module('ui-leop-modalufo-controllers')
                             l1: '',
                             l2: ''
                         },
-                        alias: ''
+                        callsign: ''
                     }
                 );
                 $scope.cluster.identified.push(idx_obj.object);

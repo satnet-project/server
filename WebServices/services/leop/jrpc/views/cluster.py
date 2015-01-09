@@ -135,3 +135,18 @@ def remove_groundstations(leop_id, groundstations, **kwargs):
 
     # Serialization to a JSON-RPC-like object
     return cluster_serial.serialize_leop_id(leop_id)
+
+
+@rpc4django.rpcmethod(
+    name='leop.getConfiguration',
+    signature=['String'],
+    login_required=True
+)
+def get_configuration(leop_id):
+    """JRPC method
+    Serializes the configuration for the requested LEOP cluster and returns it.
+    :param leop_id: The identifier of the LEOP cluster
+    :return: JSON-like serialized structure
+    """
+    leop = leop_models.LEOP.objects.get(identifier=leop_id)
+    return cluster_serial.serialize_leop_cfg(leop)

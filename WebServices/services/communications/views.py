@@ -30,6 +30,7 @@ class PassiveMessages(list_views.ListView):
     model = comms_models.PassiveMessage
     context_object_name = 'message_list'
     template_name = 'users/messages.html'
+    paginate_by = 10
 
     def get_queryset(self):
         """QuerySet handler.

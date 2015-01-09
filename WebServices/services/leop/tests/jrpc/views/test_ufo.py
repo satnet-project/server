@@ -58,6 +58,7 @@ class TestUFOJRPCViews(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_add_ufo(self):
         """UNIT JRPC test
@@ -66,17 +67,17 @@ class TestUFOJRPCViews(test.TestCase):
         try:
             jrpc_ufo.add(None, -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except django_db.IntegrityError:
+        except leop_models.LEOP.DoesNotExist:
             pass
         try:
             jrpc_ufo.add('', -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except django_db.IntegrityError:
+        except leop_models.LEOP.DoesNotExist:
             pass
         try:
             jrpc_ufo.add('open:sesame', -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except django_db.IntegrityError:
+        except leop_models.LEOP.DoesNotExist:
             pass
         try:
             jrpc_ufo.add(self.__leop_id, -1)
@@ -164,25 +165,17 @@ class TestUFOJRPCViews(test.TestCase):
         """UNIT JRPC test
         Validates the process for <forgetting> about a given UFO.
         """
-        self.assertEquals(
-            jrpc_ufo.add(self.__leop_id, self.__ufo_2_id),
-            self.__ufo_2_id,
-            'Identifiers should not differ'
+        actual_id = jrpc_ufo.add(self.__leop_id, self.__ufo_2_id)
+        self.assertEquals(actual_id, self.__ufo_2_id, 'Identifiers differ!')
+        actual_id = jrpc_ufo.identify(
+            self.__leop_id, self.__ufo_2_id, self.__ufo_callsign,
+            self.__ufo_tle_l1, self.__ufo_tle_l2,
+            request=self.__request
         )
-        self.assertEquals(
-            jrpc_ufo.identify(
-                self.__leop_id, self.__ufo_2_id, self.__ufo_callsign,
-                self.__ufo_tle_l1, self.__ufo_tle_l2,
-                request=self.__request
-            ),
-            self.__ufo_2_id,
-            'Wrong ID returned!'
-        )
-        self.assertEquals(
-            jrpc_ufo.forget(self.__leop_id, self.__ufo_2_id),
-            self.__ufo_2_id,
-            'Wrong ID returned!'
-        )
+        self.assertEquals(actual_id, self.__ufo_2_id, 'Wrong ID returned!')
+        actual_id = jrpc_ufo.forget(self.__leop_id, self.__ufo_2_id)
+        self.assertEquals(actual_id, self.__ufo_2_id, 'Wrong ID returned!')
+
         t_id = (
             'leop:' + str(self.__leop_id) + ':ufo:' + str(self.__ufo_2_id) +
             ':cs:' + str(self.__ufo_callsign)
@@ -203,4 +196,17 @@ class TestUFOJRPCViews(test.TestCase):
     def test_update_ufo(self):
         """UNIT JRPC test
         """
-        pass
+        self.assertEquals(
+            jrpc_ufo.add(self.__leop_id, self.__ufo_id),
+            self.__ufo_id,
+            'Identifiers should not differ'
+        )
+        jrpc_ufo.identify(
+            self.__leop_id, self.__ufo_id, self.__ufo_callsign,
+            self.__ufo_tle_l1, self.__ufo_tle_l2,
+            request=self.__request
+        )
+        jrpc_ufo.update(
+            self.__leop_id, self.__ufo_id,
+            'NEWXCCXXC', self.__ufo_tle_l1, self.__ufo_tle_l2
+        )

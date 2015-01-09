@@ -127,7 +127,13 @@ def create_sc(
 def create_cluster(
     username='admin-cluster-1',
     admin=None,
-    identifier='cluster-1'
+    identifier='cluster-1',
+    tle_source='test-source-tle',
+    tle_id='test-tle-id',
+    tle_l1=
+        '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108',
+    tle_l2=
+        '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601'
 ):
 
     try:
@@ -139,7 +145,10 @@ def create_cluster(
 
     return leop_models.LEOP.objects.create(
         admin=admin,
-        identifier=identifier
+        identifier=identifier,
+        cluster_tle=tle.TwoLineElement.objects.create(
+            source=tle_source, l0=tle_id, l1=tle_l1, l2=tle_l2
+        )
     )
 
 
