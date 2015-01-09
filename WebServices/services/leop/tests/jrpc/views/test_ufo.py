@@ -25,7 +25,7 @@ from services.leop.models import ufo as ufo_models
 from services.leop.jrpc.views import ufo as jrpc_ufo
 
 
-class TestUFOViews(test.TestCase):
+class TestUFOJRPCViews(test.TestCase):
     """Test class for the UFO JRPC methods.
     """
 
@@ -66,17 +66,17 @@ class TestUFOViews(test.TestCase):
         try:
             jrpc_ufo.add(None, -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except leop_models.LEOP.DoesNotExist:
+        except django_db.IntegrityError:
             pass
         try:
             jrpc_ufo.add('', -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except leop_models.LEOP.DoesNotExist:
+        except django_db.IntegrityError:
             pass
         try:
             jrpc_ufo.add('open:sesame', -1)
             self.fail('An exception should have been rised, ufo_id < 0')
-        except leop_models.LEOP.DoesNotExist:
+        except django_db.IntegrityError:
             pass
         try:
             jrpc_ufo.add(self.__leop_id, -1)
@@ -199,3 +199,8 @@ class TestUFOViews(test.TestCase):
             segment_models.Spacecraft.objects.filter(identifier=x_id).exists(),
             'A spacecraft should NOT have been found, id = ' + str(x_id)
         )
+
+    def test_update_ufo(self):
+        """UNIT JRPC test
+        """
+        pass

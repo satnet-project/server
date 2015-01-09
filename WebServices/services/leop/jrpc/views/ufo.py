@@ -32,7 +32,7 @@ def add(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop_models.LEOP.objects.get(identifier=leop_identifier).add_ufo(identifier)
+    leop_models.LEOP.objects.add_ufo(leop_identifier, identifier)
     return identifier
 
 
@@ -73,12 +73,12 @@ def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     :param tle_l2: Second line of the TLE for this object
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
     http_request = kwargs.get('request', None)
-    ufo = leop.identify_ufo(
-        http_request.user, identifier, callsign, tle_l1, tle_l2
+    leop_models.LEOP.objects.identify_ufo(
+        leop_identifier, http_request.user, identifier,
+        callsign, tle_l1, tle_l2
     )
-    return ufo.identifier
+    return identifier
 
 
 @rpc4django.rpcmethod(
@@ -87,7 +87,21 @@ def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     login_required=True
 )
 def update(leop_identifier, identifier, callsign, tle_l1, tle_l2):
-    pass
+    """JRPC method
+    Updates a given UFO object with the value that change in this new
+    configuration.
+    :param leop_identifier: Identifier of the LEOP operation that the object
+                            belongs to
+    :param identifier: Identifier of the object (numerical)
+    :param callsign: Alias for the new <identified> object
+    :param tle_l1: First line of the TLE for this object
+    :param tle_l2: Second line of the TLE for this object
+    :return: Identifier of the just created UFO object
+    """
+    leop_models.LEOP.objects.update_ufo(
+        leop_identifier, identifier, callsign, tle_l1, tle_l2
+    )
+    return identifier
 
 
 @rpc4django.rpcmethod(
@@ -103,6 +117,5 @@ def forget(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    ufo = leop.forget_ufo(identifier)
-    return ufo.identifier
+    leop_models.LEOP.objects.forget_ufo(leop_identifier, identifier)
+    return identifier
