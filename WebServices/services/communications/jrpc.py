@@ -27,13 +27,8 @@ from services.configuration.models import segments as segment_models
     signature=['String', 'int', 'float', 'String'],
     login_required=True
 )
-def store_passive_message(
-        groundstation_id,
-        timestamp, doppler_shift,
-        message
-):
+def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
     """Stores a passive message from a Ground Station.
-
     This method stores a message obtained in a passive manner (this is, without
     requiring from any remote operation to be scheduled) by a given Ground
     Station in the database.

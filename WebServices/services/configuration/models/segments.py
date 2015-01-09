@@ -33,17 +33,7 @@ class SpacecraftManager(models.Manager):
     contents of the SpacecraftConfiguration database models.
     """
 
-    def create_ufo(self, **kwargs):
-        """
-        Method that creates a new Spacecraft object as an UFO object. Necessary
-        for the LEOP phase.
-        :param kwargs: All the other arguments necessary for the creation of
-                        the object.
-        :return: Reference to the newly created object.
-        """
-        return self.create(is_ufo=True, **kwargs)
-
-    def create(self, tle_id, is_ufo=False, **kwargs):
+    def create(self, tle_id, **kwargs):
         """
         Overriden "create" that receives an identifier for a TLE, gets the
         correspondent TLE object from within the CELESTRAK TLE database and
@@ -55,7 +45,7 @@ class SpacecraftManager(models.Manager):
         """
         tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
         return super(SpacecraftManager, self).create(
-            tle=tle, is_ufo=is_ufo, **kwargs
+            tle=tle, **kwargs
         )
 
     def add_channel(self, sc_identifier=None, **kwargs):
@@ -95,6 +85,8 @@ class Spacecraft(models.Model):
     class Meta:
         app_label = 'configuration'
 
+    MAX_SC_ID_LEN = 30
+
     objects = SpacecraftManager()
 
     user = models.ForeignKey(
@@ -131,6 +123,10 @@ class Spacecraft(models.Model):
         verbose_name='TLE object for this Spacecraft'
     )
 
+    is_cluster = models.BooleanField(
+        'Flag that indicates whether this object is a cluster or not',
+        default=False
+    )
     is_ufo = models.BooleanField(
         'Flag that defines whether this object is an UFO or not',
         default=False

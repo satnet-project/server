@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
-from services.leop.models import leop as leop_models, ufo as ufo_models
+from services.leop.models import leop as leop_models
 
 
 @rpc4django.rpcmethod(
@@ -25,7 +25,7 @@ from services.leop.models import leop as leop_models, ufo as ufo_models
     login_required=True
 )
 def add(leop_identifier, identifier):
-    """JRPC method.
+    """JRPC method
     Adds a new UFO object to the cluster.
     :param leop_identifier: Identifier of the LEOP operation that the object
                             belongs to
@@ -42,12 +42,12 @@ def add(leop_identifier, identifier):
     login_required=True
 )
 def remove(leop_identifier, identifier):
-    """JRPC method.
+    """JRPC method
     Removes an UFO object from the cluster
     :param leop_identifier: Identifier of the LEOP operation that the object
                             belongs to
     :param identifier: Identifier of the object (numerical)
-    :return: True if the operation was completed correctly
+    :return: Identifier of the just created UFO object
     """
     leop_models.LEOP.objects.get(
         identifier=leop_identifier
@@ -57,39 +57,52 @@ def remove(leop_identifier, identifier):
 
 @rpc4django.rpcmethod(
     name='leop.ufo.identify',
-    signature=['int', 'String', 'String', 'String'],
+    signature=['String', 'int', 'String', 'String', 'String'],
     login_required=True
 )
-def identify(leop_identifier, identifier, alias, tle_l1, tle_l2):
-    """JRPC method.
+def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
+    """JRPC method
     Promotes a given UFO object into the <identified> state by associating a
     TLE and alias to it. Basically, it permits detaching this object from the
     cluster and generates the associated GroundTrack for its simulation.
     :param leop_identifier: Identifier of the LEOP operation that the object
                             belongs to
     :param identifier: Identifier of the object (numerical)
-    :param alias: Alias for the new <identified> object
+    :param callsign: Alias for the new <identified> object
     :param tle_l1: First line of the TLE for this object
     :param tle_l2: Second line of the TLE for this object
-    :return: 'True' if it was succesfully created
+    :return: Identifier of the just created UFO object
     """
-    ufo_models.UFO.objects.identify(identifier, alias, tle_l1, tle_l2)
-    return True
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    http_request = kwargs.get('request', None)
+    ufo = leop.identify_ufo(
+        http_request.user, identifier, callsign, tle_l1, tle_l2
+    )
+    return ufo.identifier
 
 
 @rpc4django.rpcmethod(
     name='leop.ufo.update',
-    signature=['int', 'String', 'String', 'String'],
+    signature=['String', 'int', 'String', 'String', 'String'],
     login_required=True
 )
-def update(leop_identifier, identifier, alias, tle_l1, tle_l2):
+def update(leop_identifier, identifier, callsign, tle_l1, tle_l2):
     pass
 
 
 @rpc4django.rpcmethod(
     name='leop.ufo.forget',
-    signature=['int'],
+    signature=['String', 'int'],
     login_required=True
 )
 def forget(leop_identifier, identifier):
-    pass
+    """JRPC method
+    Anonymizes a given UFO object that had previously been identified.
+    :param leop_identifier: Identifier of the LEOP operation that the object
+                            belongs to
+    :param identifier: Identifier of the object (numerical)
+    :return: Identifier of the just created UFO object
+    """
+    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    ufo = leop.forget_ufo(identifier)
+    return ufo.identifier

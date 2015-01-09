@@ -31,7 +31,6 @@ class TwoLineElementsManager(models.Manager):
     """
     Class that handles all actions related with the TLE database table.
     """
-
     def create(self, source, l0, l1, l2):
         """
         Overriden create method that adds a new entry in the TLE database
@@ -110,6 +109,8 @@ class TwoLineElement(models.Model):
     """
     class Meta:
         app_label = 'configuration'
+
+    MAX_TLE_ID_LEN = 24
 
     objects = TwoLineElementsManager()
 

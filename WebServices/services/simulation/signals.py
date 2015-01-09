@@ -17,8 +17,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
+import logging
 from services.configuration.models import segments
 from services.simulation.models import simulation
+logger = logging.getLogger('simulation')
 
 
 @receiver(post_save, sender=segments.Spacecraft)
@@ -76,5 +78,11 @@ def spacecraft_deleted(sender, instance, **kwargs):
                     triggered the execution of this handler.
     :param kwargs: Additional arguments.
     """
-    gt = simulation.GroundTrack.objects.get(spacecraft=instance)
-    gt.delete()
+    try:
+        gt = simulation.GroundTrack.objects.get(spacecraft=instance)
+        gt.delete()
+    except simulation.GroundTrack.DoesNotExist:
+        logger.warn(
+            '>>> Spacecraft did not have an associated GT, id = ' +
+                str(instance.identifier)
+        )

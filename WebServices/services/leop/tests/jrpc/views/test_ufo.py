@@ -16,15 +16,13 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
-import datadiff
 from django import test, db as django_db
-from django.core import exceptions as django_ex
 from services.common.testing import helpers as db_tools
+from services.configuration.models import segments as segment_models
+from services.configuration.models import tle as tle_models
 from services.leop.models import leop as leop_models
 from services.leop.models import ufo as ufo_models
-from services.leop.jrpc.views import cluster as jrpc_leop
 from services.leop.jrpc.views import ufo as jrpc_ufo
-from services.leop.jrpc.serializers import cluster as cluster_serial
 
 
 class TestUFOViews(test.TestCase):
@@ -44,10 +42,19 @@ class TestUFOViews(test.TestCase):
         )
 
         self.__request = db_tools.create_request(user_profile=self.__user)
-        self.__leop_id = 'leop_cluster_4testing'
+        self.__leop_id = 'elana'
         self.__leop = db_tools.create_cluster(
             admin=self.__admin, identifier=self.__leop_id
         )
+
+        self.__ufo_id = 50
+        self.__ufo_callsign = 'Scully'
+        self.__ufo_tle_l1 = '1 27844U 03031E   15007.47529781  .00000328' \
+                            '  00000-0  16930-3 0  1108'
+        self.__ufo_tle_l2 = '2 27844  98.6976  18.3001 0010316' \
+                            '  50.6742 104.9393 14.21678727597601'
+
+        self.__ufo_2_id = 60
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
@@ -92,4 +99,103 @@ class TestUFOViews(test.TestCase):
         Validates the removal of an existing UFO object from a given LEOP
         cluster.
         """
-        pass
+        try:
+            jrpc_ufo.remove(None, -1)
+            self.fail('An exception should have been rised, ufo_id < 0')
+        except leop_models.LEOP.DoesNotExist:
+            pass
+        try:
+            jrpc_ufo.remove('', -1)
+            self.fail('An exception should have been rised, ufo_id < 0')
+        except leop_models.LEOP.DoesNotExist:
+            pass
+        try:
+            jrpc_ufo.remove('open:sesame', -1)
+            self.fail('An exception should have been rised, ufo_id < 0')
+        except leop_models.LEOP.DoesNotExist:
+            pass
+        try:
+            jrpc_ufo.remove(self.__leop_id, -1)
+            self.fail('An exception should have been rised, ufo_id < 0')
+        except ufo_models.UFO.DoesNotExist:
+            pass
+
+        expected = 1
+        expected = jrpc_ufo.add(self.__leop_id, expected)
+        actual = jrpc_ufo.remove(self.__leop_id, expected)
+        self.assertEquals(actual, expected, 'Identifiers should not differ')
+
+    def test_identify_ufo(self):
+        """UNIT JRPC test
+        Validates the identification of a given UFO.
+        """
+        self.assertEquals(
+            jrpc_ufo.add(self.__leop_id, self.__ufo_id),
+            self.__ufo_id,
+            'Identifiers should not differ'
+        )
+
+        self.assertEquals(
+            jrpc_ufo.identify(
+                self.__leop_id, self.__ufo_id, self.__ufo_callsign,
+                self.__ufo_tle_l1, self.__ufo_tle_l2,
+                request=self.__request
+            ),
+            self.__ufo_id
+        )
+        t_id = (
+            'leop:' + str(self.__leop_id) + ':ufo:' + str(self.__ufo_id) +
+            ':cs:' + str(self.__ufo_callsign)
+        )[0:23]
+        self.assertTrue(
+            tle_models.TwoLineElement.objects.filter(identifier=t_id).exists(),
+            'A TLE should have been found, id = ' + str(t_id)
+        )
+        x_id = (
+            'leop:' + str(self.__leop_id) + ':ufo:' + str(self.__ufo_id) +
+            ':cs:' + str(self.__ufo_callsign)
+        )[0:29]
+        self.assertTrue(
+            segment_models.Spacecraft.objects.filter(identifier=x_id).exists(),
+            'A spacecraft should have been found, id = ' + str(x_id)
+        )
+
+    def test_forget_ufo(self):
+        """UNIT JRPC test
+        Validates the process for <forgetting> about a given UFO.
+        """
+        self.assertEquals(
+            jrpc_ufo.add(self.__leop_id, self.__ufo_2_id),
+            self.__ufo_2_id,
+            'Identifiers should not differ'
+        )
+        self.assertEquals(
+            jrpc_ufo.identify(
+                self.__leop_id, self.__ufo_2_id, self.__ufo_callsign,
+                self.__ufo_tle_l1, self.__ufo_tle_l2,
+                request=self.__request
+            ),
+            self.__ufo_2_id,
+            'Wrong ID returned!'
+        )
+        self.assertEquals(
+            jrpc_ufo.forget(self.__leop_id, self.__ufo_2_id),
+            self.__ufo_2_id,
+            'Wrong ID returned!'
+        )
+        t_id = (
+            'leop:' + str(self.__leop_id) + ':ufo:' + str(self.__ufo_2_id) +
+            ':cs:' + str(self.__ufo_callsign)
+        )[0:23]
+        self.assertFalse(
+            tle_models.TwoLineElement.objects.filter(identifier=t_id).exists(),
+            'A TLE should NOT have been found, id = ' + str(t_id)
+        )
+        x_id = (
+            'leop:' + str(self.__leop_id) + ':ufo:' + str(self.__ufo_2_id) +
+            ':cs:' + str(self.__ufo_callsign)
+        )[0:29]
+        self.assertFalse(
+            segment_models.Spacecraft.objects.filter(identifier=x_id).exists(),
+            'A spacecraft should NOT have been found, id = ' + str(x_id)
+        )

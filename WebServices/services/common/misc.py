@@ -37,7 +37,7 @@ def get_fqdn_ip():
     """
     Function that returns the hostname as read from the socket library and
     the IP address for that hostname.
-    :return: String with the name of the current host.
+    :return: (String with the name of the current host, IP)
     """
     hn = 'localhost'
     try:
