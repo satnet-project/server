@@ -15,10 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
 import datadiff
 from django import test
 from django.core import exceptions as django_ex
+import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.leop.models import leop as leop_models
@@ -315,7 +315,9 @@ class TestLeopViews(test.TestCase):
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: ['1'],
+            cluster_serial.JRPC_K_UFOS: [
+                {cluster_serial.JRPC_K_UFO_ID: '1'}
+            ],
             cluster_serial.JRPC_K_IDENTIFIED: []
         }
         self.assertEquals(
@@ -332,6 +334,7 @@ class TestLeopViews(test.TestCase):
             self.__ufo_tle_l1, self.__ufo_tle_l2,
             request=self.__request_1
         )
+
         a_cfg = cluster_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             cluster_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
@@ -343,9 +346,11 @@ class TestLeopViews(test.TestCase):
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: [str(2)],
+            cluster_serial.JRPC_K_UFOS: [
+                {cluster_serial.JRPC_K_UFO_ID: '2'}
+            ],
             cluster_serial.JRPC_K_IDENTIFIED: [{
-                cluster_serial.JRPC_K_UFO_ID: str(1),
+                cluster_serial.JRPC_K_UFO_ID: '1',
                 cluster_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
                 cluster_serial.JRPC_K_TLE: {
                     cluster_serial.JRPC_K_TLE_L1:
@@ -376,7 +381,10 @@ class TestLeopViews(test.TestCase):
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: ['2', '1'],
+            cluster_serial.JRPC_K_UFOS: [
+                {cluster_serial.JRPC_K_UFO_ID: '2'},
+                {cluster_serial.JRPC_K_UFO_ID: '1'}
+            ],
             cluster_serial.JRPC_K_IDENTIFIED: []
         }
 

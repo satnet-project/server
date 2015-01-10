@@ -86,8 +86,9 @@ app.config(function ($provide) {
                 $delegate.info.apply(null, ['[info] ' + args]);
                 rScope.$broadcast('infoEvent', args);
             },
-            error: function () {
+            error: function (args) {
                 $delegate.error.apply(null, arguments);
+                rScope.$broadcast('errEvent', args);
             },
             warn: function (args) {
                 $delegate.warn.apply(null, ['[warn] ' + args]);

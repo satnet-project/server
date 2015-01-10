@@ -15,14 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import validators
-from django import db as django_db
 from django.db import models as django_models
 from services.configuration.models import segments as segment_models
-from services.configuration.models import tle as tle_models
 
 
-class UFO(django_models.Model):
+class UFO(segment_models.Spacecraft):
     """UFO database model.
     Database model that manages the information relative to a spacecraft that
     has not being identified completely yet.
@@ -40,30 +37,32 @@ class UFO(django_models.Model):
         :param spacecraft: Spacecraft object created for this UFO
         :return: Reference to this "updated" object
         """
-        with django_db.transaction.atomic():
-            self.callsign = callsign
-            self.tle = tle
-            self.spacecraft = spacecraft
-            self.is_identified = True
-            self.save()
-            return self
+        self.callsign = callsign
+        self.tle = tle
+        self.spacecraft = spacecraft
+        self.is_identified = True
+        self.save()
+        return self
 
     def forget(self):
         """Object method
         Forgets the configuration for this UFO and transforms it in an unknow.
         :return: Reference to this object
         """
-        with django_db.transaction.atomic():
+        if not self.is_identified:
+            raise Exception('UFO object has not been identified yet')
 
-            self.callsign = ''
-            self.tle.delete()
-            self.spacecraft.delete()
-            self.is_identified = False
+        self.callsign = ''
+        self.tle.delete()
+        self.spacecraft.delete()
+        self.is_identified = False
+        self.save()
 
-            self.save()
-            return self
+        return self
 
-    def update(self, callsign, tle_l1, tle_l2):
+    def update(
+        self, callsign=None, tle_id=None, tle_l1=None, tle_l2=None, **kwargs
+    ):
         """Object method
         Updates the configuration for this UFO object.
         :param callsign: Callsign for the UFO
@@ -71,53 +70,24 @@ class UFO(django_models.Model):
         :param tle_l2: Second line of the UFO's TLE
         :return: Reference to this object
         """
-        with django_db.transaction.atomic():
+        # Callsign dirty check
+        if self.callsign != callsign:
+            self.callsign = callsign
+            self.save()
 
-            # Callsign dirty check
-            if self.callsign != callsign:
-                self.callsign = callsign
-                self.save()
+        if tle_id and self.tle.identifier != tle_id:
+            return super(UFO, self).update(callsign=callsign, tle_id=tle_id)
 
-            # TLE dirty check
-            if (self.tle.first_line != tle_l1) or (
-                self.tle.second_line != tle_l2
-            ):
+        # TLE dirty check
+        if (self.tle.first_line != tle_l1) or (self.tle.second_line != tle_l2):
 
-                self.tle.first_line = tle_l1
-                self.tle.second_line = tle_l2
-                self.tle.save(update_fields=['first_line', 'second_line'])
+            self.tle.first_line = tle_l1
+            self.tle.second_line = tle_l2
+            self.tle.save(update_fields=['first_line', 'second_line'])
 
-            self.spacecraft.update(callsign, self.tle.identifier)
+        return self
 
-            return self
-
-    identifier = django_models.PositiveSmallIntegerField(
-        'Object sequential identifier'
-    )
-    callsign = django_models.CharField(
-        'Object callsign (future name as a celestrak object?)',
-        max_length=30,
-        blank=True,
-        validators=[validators.RegexValidator(
-            regex='^[a-zA-Z0-9.\-_]*$',
-            message="Alphanumeric or '.-_' required",
-            code='invalid_leop_identifier'
-        )]
-    )
     is_identified = django_models.BooleanField(
         'Flag that indicates whether this UFO has been identified or not',
         default=False
-    )
-
-    spacecraft = django_models.ForeignKey(
-        segment_models.Spacecraft,
-        verbose_name='UFO spacecraft for simulation purposes',
-        on_delete=django_models.SET_NULL,
-        null=True
-    )
-    tle = django_models.ForeignKey(
-        tle_models.TwoLineElement,
-        verbose_name='TLE object for simulation purposes',
-        on_delete=django_models.SET_NULL,
-        null=True
     )

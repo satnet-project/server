@@ -24,9 +24,9 @@ angular.module('logNotifierDirective', [])
             $scope.eventLog = [];
             $scope.logEvent = function (event, message) {
                 $scope.eventLog.unshift({
-                    'type': event.name,
-                    'timestamp': $filter('date')(new Date(), TIMESTAMP_FORMAT),
-                    'msg':  message
+                    type: event.name,
+                    timestamp: $filter('date')(new Date(), TIMESTAMP_FORMAT),
+                    msg:  message
                 });
             };
 

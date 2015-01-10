@@ -47,12 +47,14 @@
 .n-area-info-base {
   opacity: 0.5;
 }
-
 .n-area-info-row div p.infoEvent { @extend .n-area-info-base;
   color: yellow;
 }
 .n-area-info-row div p.logEvent { @extend .n-area-info-base;
   color: #ffffff;
+}
+.n-area-info-row div p.warnEvent { @extend .n-area-info-base;
+  color: orange;
 }
 .n-area-info-row div p.errEvent { @extend .n-area-info-base;
   color: #ff0000;

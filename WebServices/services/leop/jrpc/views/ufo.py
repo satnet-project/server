@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
-from services.leop.models import leop as leop_models
+from services.accounts import models as account_models
+from services.leop.models import leop as leop_models, ufo as ufo_models
 
 
 @rpc4django.rpcmethod(
@@ -33,7 +34,11 @@ def add(leop_identifier, identifier):
     :return: Identifier of the just created UFO object
     """
     leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    leop.add_ufo(identifier)
+    if leop.cluster.all().filter(identifier=identifier).exists():
+        raise Exception('UFO already exists, identifier = ' + str(identifier))
+    ufo = ufo_models.UFO.objects.create(identifier=identifier)
+    leop.cluster.add(ufo)
+    leop.save()
     return identifier
 
 
@@ -51,7 +56,7 @@ def remove(leop_identifier, identifier):
     :return: Identifier of the just created UFO object
     """
     leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    leop.cluster.get(identifier=identifier).delete()
+    leop.cluster.all().get(identifier=identifier).delete()
     return identifier
 
 
@@ -74,11 +79,9 @@ def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     :return: Identifier of the just created UFO object
     """
     leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    http_request = kwargs.get('request', None)
-    leop.identify_ufo(
-        http_request.user, identifier,
-        callsign, tle_l1, tle_l2
-    )
+    user = kwargs.get('request', None).user
+    profile = account_models.UserProfile.objects.get(username=user)
+    leop.identify_ufo(profile, identifier, callsign, tle_l1, tle_l2)
     return identifier
 
 
@@ -118,5 +121,7 @@ def forget(leop_identifier, identifier):
     :return: Identifier of the just created UFO object
     """
     leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    leop.forget_ufo(identifier)
+    ufo = leop.cluster.all().get(identifier=identifier)
+    x = ufo.spacecraft.identifier
+    ufo.forget()
     return identifier

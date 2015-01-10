@@ -16,21 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
-from django.db import transaction
 from django.db import models as django_models
 import socket
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
 from services.leop.models import ufo as ufo_models
-
-
-class LEOPManager(django_models.Manager):
-    """LEOP Cluster database manager
-    Database manager for the LEOP cluster objects.
-    """
-    class Meta:
-        app_label = 'leop'
 
 
 class LEOP(django_models.Model):
@@ -40,19 +31,6 @@ class LEOP(django_models.Model):
     """
     class Meta:
         app_label = 'leop'
-
-    def add_ufo(self, ufo_id):
-        """Database model
-        Adds a UFO object to this LEOP cluster by creating it first at the
-        related UFO table
-        :param ufo_id: The identifier for the UFO object
-        :return: The just created UFO object
-        """
-        with transaction.atomic():
-            ufo = ufo_models.UFO.objects.create(identifier=ufo_id)
-            self.cluster.add(ufo)
-            self.save()
-            return ufo
 
     def generate_sc_identifier(self, ufo_id, ufo_callsign):
         """Generates SC ID
@@ -129,14 +107,14 @@ class LEOP(django_models.Model):
         back to a single UFO without callsign or associated TLE/SC pair.
         :param ufo_id: Identifier of the UFO
         """
-        ufo = self.cluster.get(identifier=ufo_id)
+        ufo = self.cluster.all().get(identifier=ufo_id)
         if not ufo.is_identified:
             raise Exception('UFO object has not been identified yet')
 
         #print '>>> ufo = ' + str(ufo.identifier) +\
         #      ', spacecraft = ' + str(ufo.spacecraft.identifier)
         # TODO: Review problem of accessing <ufo.spacecraft.delete>
-        x = ufo.spacecraft.identifier
+        # x = ufo.spacecraft.identifier
         # time.sleep(2)
         ufo.forget()
 
@@ -150,7 +128,7 @@ class LEOP(django_models.Model):
         :param tle_l2: Second line of the UFO's TLE
         :return: Reference to the UFO object
         """
-        ufo = self.cluster.get(identifier=ufo_id)
+        ufo = self.cluster.all().get(identifier=ufo_id)
         if not ufo.is_identified:
             raise Exception('UFO object has not been identified yet')
         ufo.update(ufo_callsign, tle_l1, tle_l2)

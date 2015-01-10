@@ -15,8 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
 from django import test, db as django_db
+import logging
 from services.common.testing import helpers as db_tools
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
@@ -80,7 +80,8 @@ class TestUFOJRPCViews(test.TestCase):
         except leop_models.LEOP.DoesNotExist:
             pass
         try:
-            jrpc_ufo.add(self.__leop_id, -1)
+            with django_db.transaction.atomic():
+                jrpc_ufo.add(self.__leop_id, -1)
             self.fail('An exception should have been rised, ufo_id < 0')
         except django_db.IntegrityError:
             pass
@@ -90,9 +91,10 @@ class TestUFOJRPCViews(test.TestCase):
         self.assertEquals(actual, expected, 'Identifiers should not differ')
 
         try:
+            x = self.__leop_id
             jrpc_ufo.add(self.__leop_id, expected)
             self.fail('UFO object exists, exception should have been raised')
-        except django_db.IntegrityError:
+        except Exception:
             pass
 
     def test_remove_ufo(self):
