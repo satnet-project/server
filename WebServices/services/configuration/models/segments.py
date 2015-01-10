@@ -43,7 +43,11 @@ class SpacecraftManager(models.Manager):
         :param kwargs: Arguments to be used for this spacecraft object.
         :return: Spacecraft object reference.
         """
-        tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
+        tle = None
+
+        if tle_id:
+            tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
+
         return super(SpacecraftManager, self).create(
             tle=tle, **kwargs
         )
@@ -86,6 +90,7 @@ class Spacecraft(models.Model):
         app_label = 'configuration'
 
     MAX_SC_ID_LEN = 30
+    MAX_CALLSIGN_LEN = 10
 
     objects = SpacecraftManager()
 
@@ -96,7 +101,7 @@ class Spacecraft(models.Model):
 
     identifier = models.CharField(
         'Identifier',
-        max_length=30,
+        max_length=MAX_SC_ID_LEN,
         unique=True,
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
@@ -106,7 +111,7 @@ class Spacecraft(models.Model):
     )
     callsign = models.CharField(
         'Radio amateur callsign',
-        max_length=10,
+        max_length=MAX_CALLSIGN_LEN,
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",

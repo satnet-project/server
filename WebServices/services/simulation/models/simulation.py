@@ -165,12 +165,11 @@ class GroundTrack(models.Model):
     )
 
     latitude = pgarray_fields.FloatArrayField(
-        'Latitude for the points of the GroundTrack.'
+        'Latitude for the points of the GroundTrack'
     )
     longitude = pgarray_fields.FloatArrayField(
-        'Longitude for the points of the GroundTrack.'
+        'Longitude for the points of the GroundTrack'
     )
     timestamp = pgarray_fields.BigIntegerArrayField(
-        'UTC time at which the spacecraft is going to pass over the given point'
-        ' of its GroundTrack.'
+        'UTC time at which the spacecraft is going to pass over this point'
     )

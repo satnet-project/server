@@ -21,9 +21,9 @@ from django.core import exceptions as django_ex
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.leop.models import leop as leop_models
-from services.leop.jrpc.views import cluster as cluster_jrpc, ufo as ufo_jrpc
-from services.leop.jrpc.serializers import cluster as cluster_serial
+from services.leop.models import launch as leop_models
+from services.leop.jrpc.views import launch as cluster_jrpc, objects as ufo_jrpc
+from services.leop.jrpc.serializers import launch as cluster_serial
 
 
 class TestLeopViews(test.TestCase):
@@ -158,7 +158,7 @@ class TestLeopViews(test.TestCase):
                 'FAKE', None, **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.LEOP.DoesNotExist:
+        except leop_models.Launch.DoesNotExist:
             pass
         # Basic parameters test (2)
         actual = cluster_jrpc.add_groundstations(
@@ -190,7 +190,7 @@ class TestLeopViews(test.TestCase):
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        cluster = leop_models.LEOP.objects.get(identifier=self.__leop_id)
+        cluster = leop_models.Launch.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
@@ -224,7 +224,7 @@ class TestLeopViews(test.TestCase):
                 'FAKE', None, **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.LEOP.DoesNotExist:
+        except leop_models.Launch.DoesNotExist:
             pass
         # Basic parameters test (2)
         actual = cluster_jrpc.remove_groundstations(
@@ -251,7 +251,7 @@ class TestLeopViews(test.TestCase):
         cluster_jrpc.add_groundstations(
             self.__leop_id, gss, **{'request': self.__request_2}
         )
-        cluster = leop_models.LEOP.objects.get(identifier=self.__leop_id)
+        cluster = leop_models.Launch.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
@@ -278,7 +278,7 @@ class TestLeopViews(test.TestCase):
         try:
             cluster_jrpc.get_configuration('')
             self.fail('LEOP doesnt exist, an exception should have been raised')
-        except leop_models.LEOP.DoesNotExist:
+        except leop_models.Launch.DoesNotExist:
             pass
 
         # 1) No ufos

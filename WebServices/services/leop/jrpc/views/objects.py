@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from services.accounts import models as account_models
-from services.leop.models import leop as leop_models, ufo as ufo_models
+from services.leop.models import launch as leop_models
 
 
 @rpc4django.rpcmethod(
@@ -33,12 +33,14 @@ def add(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
-    if leop.cluster.all().filter(identifier=identifier).exists():
-        raise Exception('UFO already exists, identifier = ' + str(identifier))
-    ufo = ufo_models.UFO.objects.create(identifier=identifier)
-    leop.cluster.add(ufo)
-    leop.save()
+    leop = leop_models.Launch.objects.get(identifier=leop_identifier)
+    if leop.ufos.filter(identifier=identifier).exists():
+        raise Exception(
+            'UFO identifier already exists, id = ' + str(identifier)
+        )
+
+    leop.ufos = leop.ufos + identifier
+    leop.save(update_fields=['ufos'])
     return identifier
 
 
@@ -55,7 +57,7 @@ def remove(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop = leop_models.Launch.objects.get(identifier=leop_identifier)
     leop.cluster.all().get(identifier=identifier).delete()
     return identifier
 
@@ -78,7 +80,7 @@ def identify(leop_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
     :param tle_l2: Second line of the TLE for this object
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop = leop_models.Launch.objects.get(identifier=leop_identifier)
     user = kwargs.get('request', None).user
     profile = account_models.UserProfile.objects.get(username=user)
     leop.identify_ufo(profile, identifier, callsign, tle_l1, tle_l2)
@@ -102,7 +104,7 @@ def update(leop_identifier, identifier, callsign, tle_l1, tle_l2):
     :param tle_l2: Second line of the TLE for this object
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop = leop_models.Launch.objects.get(identifier=leop_identifier)
     leop.update_ufo(identifier, callsign, tle_l1, tle_l2)
     return identifier
 
@@ -120,7 +122,7 @@ def forget(leop_identifier, identifier):
     :param identifier: Identifier of the object (numerical)
     :return: Identifier of the just created UFO object
     """
-    leop = leop_models.LEOP.objects.get(identifier=leop_identifier)
+    leop = leop_models.Launch.objects.get(identifier=leop_identifier)
     ufo = leop.cluster.all().get(identifier=identifier)
     x = ufo.spacecraft.identifier
     ufo.forget()

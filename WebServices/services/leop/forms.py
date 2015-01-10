@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import forms as django_forms
-from services.leop.models import leop as leop_models
+from services.leop.models import launch as leop_models
 
 
 class LeopForm(django_forms.ModelForm):
@@ -37,5 +37,5 @@ class LeopForm(django_forms.ModelForm):
 
     class Meta:
         """Model to be used from within this form."""
-        model = leop_models.LEOP
-        fields = ('identifier',)
+        model = leop_models.Launch
+        fields = ('identifier', 'date')

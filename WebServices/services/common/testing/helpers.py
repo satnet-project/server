@@ -26,7 +26,7 @@ from services.common import misc, gis
 from services.common import serialization as common_serial
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
-from services.leop.models import leop as leop_models
+from services.leop.models import launch as leop_models
 
 
 def create_user(
@@ -143,12 +143,13 @@ def create_cluster(
         print 'User already exists, getting a reference to it...'
         admin = UserProfile.objects.get(username=username)
 
-    return leop_models.LEOP.objects.create(
+    return leop_models.Launch.objects.create(
         admin=admin,
         identifier=identifier,
-        cluster_tle=tle.TwoLineElement.objects.create(
-            source=tle_source, l0=tle_id, l1=tle_l1, l2=tle_l2
-        )
+        ufos=[]
+        #cluster_tle=tle.TwoLineElement.objects.create(
+        #    source=tle_source, l0=tle_id, l1=tle_l1, l2=tle_l2
+        #)
     )
 
 

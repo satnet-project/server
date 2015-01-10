@@ -21,13 +21,13 @@ import socket
 from services.accounts import models as account_models
 from services.configuration.models import tle as tle_models
 from services.leop import forms as leop_forms
-from services.leop.models import leop as leop_models
+from services.leop.models import launch as leop_models
 
 
 class LeopCreateView(edit_views.CreateView):
     """LEOP Manager create view.
     """
-    model = leop_models.LEOP
+    model = leop_models.Launch
     form_class = leop_forms.LeopForm
     template_name = 'staff/leop_create.html'
     success_url = django_resolvers.reverse_lazy('leop_management')
@@ -78,7 +78,7 @@ class LeopCreateView(edit_views.CreateView):
 class LeopUpdateView(edit_views.UpdateView):
     """LEOP Manager Update view.
     """
-    model = leop_models.LEOP
+    model = leop_models.Launch
     slug_field = 'identifier'
     slug_url_kwarg = 'identifier'
     form_class = leop_forms.LeopForm
@@ -95,7 +95,7 @@ class LeopUpdateView(edit_views.UpdateView):
 class LeopDeleteView(edit_views.DeleteView):
     """LEOP Manager delete view.
     """
-    model = leop_models.LEOP
+    model = leop_models.Launch
     slug_field = 'identifier'
     slug_url_kwarg = 'identifier'
     template_name = 'staff/leop_confirm_delete.html'
@@ -109,7 +109,7 @@ class LeopManagementView(list_views.ListView):
     second step of the registration process, that takes place after a user has
     sent the registration request.
     """
-    model = leop_models.LEOP
+    model = leop_models.Launch
     context_object_name = 'cluster_list'
     template_name = 'staff/leop_management.html'
 

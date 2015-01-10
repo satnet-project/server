@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'rpc4django',
     'rest_framework',
     'django_extensions',
+    'south',
 
     # ### developed applications
     'services.accounts',

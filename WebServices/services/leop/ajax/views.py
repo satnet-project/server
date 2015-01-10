@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django.contrib.auth import decorators as auth_decorators
 from jsonview import decorators, exceptions
-from services.leop.models import ufo as ufo_models
+from services.leop.models import objects as ufo_models
 
 logger = logging.getLogger('leop')
 
@@ -34,7 +34,7 @@ def ufo_valid_id(request):
     requested_id = request.GET['value']
     if not requested_id:
         raise exceptions.BadRequest("'value' not found as a GET parameter.")
-    valid = not ufo_models.UFO.objects.filter(identifier=requested_id).exists()
+    valid = not ufo_models.Object.objects.filter(identifier=requested_id).exists()
 
     return {
         'isValid': valid,
