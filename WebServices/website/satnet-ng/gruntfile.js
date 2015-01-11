@@ -187,6 +187,7 @@ module.exports = function (grunt) {
             build: {
                 files: [
                     '<%= jshint.files %>',
+                    'src/css/**/*',
                     'src/images/**/*',
                     'src/templates/**/*'
                 ],

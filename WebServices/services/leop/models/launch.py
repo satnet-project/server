@@ -77,18 +77,7 @@ class LaunchManager(django_models.Manager):
         :param object_identifier: Numerical identifier of the unknown object
         :return: Identifier of the created unknown object (int)
         """
-        launch = self.get(identifier=identifier)
-
-        if object_identifier < 0:
-            raise Exception('Identifier has to be > 0')
-
-        if launch.unknown_objects.filter(identifier=object_identifier).exists():
-            raise Exception('UFO already exists, id = ' + str(id))
-
-        launch.unknown_objects.create(identifier=object_identifier)
-        launch.save()
-
-        return object_identifier
+        return self.get(identifier=identifier).add_unknown(object_identifier)
 
     def remove_unknown(self, identifier, object_identifier):
         """
@@ -97,20 +86,23 @@ class LaunchManager(django_models.Manager):
         :param object_identifier: Numerical (int) identifier to be removed
         :return: True if the operation was succesful
         """
+        return self.get(identifier=identifier).remove_unknown(object_identifier)
+
+    def identify(self, identifier, object_identifier, callsign, tle_l1, tle_l2):
+        """Manager method
+        Promotes an unidentified object into an identified one.
+        :param identifier: Launch identifier
+        :param object_identifier: Identifier of the object to be promoted
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the new identified object
+        :param tle_l2: Second line of the TLE for the new identified object
+        :return:
+        """
         launch = self.get(identifier=identifier)
-
-        if object_identifier < 0:
-            raise Exception('Identifier has to be > 0')
-
-        if not launch.unknown_objects.filter(
-                identifier=object_identifier
-        ).exists():
-            raise Exception('UFO already exists, id = ' + str(id))
-
-        launch.unknown_objects.get(identifier=object_identifier).delete()
-        launch.save()
-
-        return True
+        launch.remove_unknown(identifier, object_identifier)
+        return launch.add_identified(
+            identifier, object_identifier, callsign, tle_l1, tle_l2
+        )
 
     def create(
         self, admin, identifier, date, tle_l1, tle_l2,
@@ -127,7 +119,6 @@ class LaunchManager(django_models.Manager):
         :return: Reference to the just created Launch object
         """
         tle = leop_utils.create_cluster_tle(identifier, tle_l1, tle_l2)
-
         spacecraft = leop_utils.create_cluster_spacecraft(
             user_profile=admin,
             launch_identifier=identifier,
@@ -205,3 +196,50 @@ class Launch(django_models.Model):
         segment_models.Spacecraft,
         verbose_name='Spacecraft identified from within the cluster'
     )
+
+    def add_unknown(self, object_identifier):
+        """Object method
+        Adds a new unknown object to this launch object.
+        :param object_identifier: Identifier for the unknown object
+        :return: Identifier of the object
+        """
+        if object_identifier < 0:
+            raise Exception('Identifier has to be > 0')
+
+        if self.unknown_objects.filter(identifier=object_identifier).exists():
+            raise Exception('UFO already exists, id = ' + str(id))
+
+        self.unknown_objects.create(identifier=object_identifier)
+        self.save()
+
+        return object_identifier
+
+    def remove_unknown(self, object_identifier):
+        """Object method
+        Removes a given unknown object from this launch object.
+        :param object_identifier: Identifier for the unknown object
+        :return: True if the operation was succesfull
+        """
+        if object_identifier < 0:
+            raise Exception('Identifier has to be > 0')
+
+        if not self.unknown_objects.filter(
+                identifier=object_identifier
+        ).exists():
+            raise Exception('UFO already exists, id = ' + str(id))
+
+        self.unknown_objects.get(identifier=object_identifier).delete()
+        self.save()
+
+        return True
+
+    def add_identified(self, object_identifier, callsign, tle_l1, tle_l2):
+        """
+        Adds an identified objectd to the list of identified ones.
+        :param object_identifier: Identifier for the identified object
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the identified object
+        :param tle_l2: Second line of the TLE for the identified object
+        :return:
+        """
+        pass

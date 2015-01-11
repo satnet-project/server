@@ -331,6 +331,16 @@ a.button-red {
 #sc-area-toggle:checked ~ .sc-area {
   top: -236px; }
 
+.action-link {
+  margin-left: 50px;
+  font-size: 75%;
+  display: table-cell; }
+
+.ufos-item {
+  display: table-cell;
+  box-sizing: content-box;
+  border-spacing: 0px; }
+
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");

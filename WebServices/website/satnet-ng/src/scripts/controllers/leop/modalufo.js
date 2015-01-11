@@ -212,6 +212,10 @@ angular.module('ui-leop-modalufo-controllers')
                     { tle: { l1: '', l2: '' }, callsign: '' }
                 );
 
+                $scope.cluster.identified.push(idx_obj.object);
+                $scope.cluster.ufos.splice(idx_obj.index, 1);
+
+                /*
                 satnetRPC.rCall(
                     'leop.ufo.identify',
                     [$rootScope.leop_id, object_id, '', '', '']
@@ -221,10 +225,8 @@ angular.module('ui-leop-modalufo-controllers')
                             '[modal-ufo] <Object#' +
                                 data + '> back in the UFO list.'
                         );
-                        $scope.cluster.identified.push(idx_obj.object);
-                        $scope.cluster.ufos.splice(idx_obj.index, 1);
                     });
-
+                */
             };
 
             /**

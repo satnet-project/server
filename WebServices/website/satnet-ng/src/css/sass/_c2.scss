@@ -174,3 +174,15 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 #sc-area-toggle + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked + div label:after { content: "spacecraft"; }
 #sc-area-toggle:checked ~ .sc-area { top: $min_gs_area_top; }
+
+.action-link {
+  margin-left: 50px;
+  font-size: 75%;
+  display: table-cell
+}
+
+.ufos-item {
+  display: table-cell;
+  box-sizing: content-box;
+  border-spacing: 0px;
+}

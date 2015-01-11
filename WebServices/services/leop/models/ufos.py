@@ -26,7 +26,4 @@ class UnknownObject(django_models.Model):
     class Meta:
         app_label = 'leop'
 
-    identifier = django_models.PositiveSmallIntegerField(
-        'Identifier of the object',
-        unique=True
-    )
+    identifier = django_models.PositiveSmallIntegerField('Object identifier')
