@@ -19,15 +19,16 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block head %}
-{% endblock %}
-
 {% block content %}
 
 <h1>Create LEOP Manager</h1>
 <hr/>
 
 <form class='leop-manager' action="{% url 'leop_create' %}" method='post'>
+
+    <!--
+    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' />
+    -->
 
     {% csrf_token %}
     {{ form.as_p }}

@@ -184,6 +184,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'django_extensions',
     'south',
+    'datetimewidget',
 
     # ### developed applications
     'services.accounts',

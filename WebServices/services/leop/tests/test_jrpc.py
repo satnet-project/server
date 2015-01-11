@@ -21,12 +21,12 @@ from django.core import exceptions as django_ex
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.leop.models import launch as leop_models
-from services.leop.jrpc.views import launch as cluster_jrpc, objects as ufo_jrpc
-from services.leop.jrpc.serializers import launch as cluster_serial
+from services.leop.models import launch as launch_models
+from services.leop.jrpc.views import launch as launch_jrpc
+from services.leop.jrpc.serializers import launch as launch_serial
 
 
-class TestLeopViews(test.TestCase):
+class TestLaunchViews(test.TestCase):
     """Test class for the LEOP JRPC methods.
     """
 
@@ -58,7 +58,7 @@ class TestLeopViews(test.TestCase):
         self.__request_2 = db_tools.create_request(user_profile=self.__admin)
 
         self.__leop_id = 'leop_cluster_4testing'
-        self.__leop = db_tools.create_cluster(
+        self.__leop = db_tools.create_launch(
             admin=self.__admin, identifier=self.__leop_id
         )
 
@@ -79,14 +79,14 @@ class TestLeopViews(test.TestCase):
         """
         # Permissions basic test, no request, no permission
         try:
-            cluster_jrpc.list_groundstations('FAKE_ID', **{'request': None})
+            launch_jrpc.list_groundstations('FAKE_ID', **{'request': None})
             self.fail('No request added, permission should not be granted')
         except django_ex.PermissionDenied:
             pass
 
         # First step: user is not staff, access forbidden...
         try:
-            cluster_jrpc.list_groundstations(
+            launch_jrpc.list_groundstations(
                 self.__leop_id, **{'request': self.__request_1}
             )
             self.fail('User is not staff, permission should not be granted')
@@ -95,14 +95,14 @@ class TestLeopViews(test.TestCase):
 
         # Second step: user is staff, therefore access should be granted
         e_gs = {
-            cluster_serial.JRPC_K_AVAILABLE_GS: [
+            launch_serial.JRPC_K_AVAILABLE_GS: [
                 self.__gs_1_id, self.__gs_2_id
             ],
-            cluster_serial.JRPC_K_IN_USE_GS: []
+            launch_serial.JRPC_K_IN_USE_GS: []
         }
 
         try:
-            a_gs = cluster_jrpc.list_groundstations(
+            a_gs = launch_jrpc.list_groundstations(
                 self.__leop_id, **{'request': self.__request_2}
             )
             self.assertEquals(
@@ -115,12 +115,15 @@ class TestLeopViews(test.TestCase):
 
         # Third step: one of the ground stations is added to the cluster, it
         # should not appear as available, only as in use.
-        self.__leop.add_ground_stations(identifiers=[self.__gs_1_id])
+        launch_jrpc.add_groundstations(
+            self.__leop_id, groundstations=[self.__gs_1_id],
+            **{'request': self.__request_2}
+            )
         e_gs = {
-            cluster_serial.JRPC_K_AVAILABLE_GS: [self.__gs_2_id],
-            cluster_serial.JRPC_K_IN_USE_GS: [self.__gs_1_id]
+            launch_serial.JRPC_K_AVAILABLE_GS: [self.__gs_2_id],
+            launch_serial.JRPC_K_IN_USE_GS: [self.__gs_1_id]
         }
-        a_gs = cluster_jrpc.list_groundstations(
+        a_gs = launch_jrpc.list_groundstations(
             self.__leop_id, **{'request': self.__request_2}
         )
 
@@ -135,10 +138,9 @@ class TestLeopViews(test.TestCase):
         Validates the addition of an array of GroundStations to a given LEOP
         cluster.
         """
-
         # Permissions test (1): no request, no permission
         try:
-            cluster_jrpc.add_groundstations(
+            launch_jrpc.add_groundstations(
                 'FAKE_ID', None, **{'request': None}
             )
             self.fail('No request added, permission should not be granted')
@@ -146,7 +148,7 @@ class TestLeopViews(test.TestCase):
             pass
         # Permissions test (2): user not authorized
         try:
-            cluster_jrpc.add_groundstations(
+            launch_jrpc.add_groundstations(
                 'FAKE', None, **{'request': self.__request_1}
             )
             self.fail('No request added, permission should not be granted')
@@ -154,43 +156,33 @@ class TestLeopViews(test.TestCase):
             pass
         # Basic parameters test (1)
         try:
-            cluster_jrpc.add_groundstations(
-                'FAKE', None, **{'request': self.__request_2}
+            launch_jrpc.add_groundstations(
+                'FAKE', ['fake'], **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.Launch.DoesNotExist:
+        except launch_models.Launch.DoesNotExist:
             pass
         # Basic parameters test (2)
-        actual = cluster_jrpc.add_groundstations(
-            self.__leop_id, None, **{'request': self.__request_2}
-        )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
-        )
-        # Basic parameters test (3)
-        actual = cluster_jrpc.add_groundstations(
-            self.__leop_id, [], **{'request': self.__request_2}
-        )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
-        )
+        try:
+            launch_jrpc.add_groundstations(
+                self.__leop_id, None, **{'request': self.__request_2}
+            )
+            self.fail('Groundstations is an empty array')
+        except Exception:
+            pass
 
         # GroundStations array []
         gss = [self.__gs_1_id, self.__gs_2_id]
-        actual = cluster_jrpc.add_groundstations(
+        actual = launch_jrpc.add_groundstations(
             self.__leop_id, gss, **{'request': self.__request_2}
         )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
+        expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
         self.assertEquals(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        cluster = leop_models.Launch.objects.get(identifier=self.__leop_id)
+        cluster = launch_models.Launch.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
@@ -204,7 +196,7 @@ class TestLeopViews(test.TestCase):
 
         # Permissions test (1): no request, no permission
         try:
-            cluster_jrpc.remove_groundstations(
+            launch_jrpc.remove_groundstations(
                 'FAKE_ID', None, **{'request': None}
             )
             self.fail('No request added, permission should not be granted')
@@ -212,7 +204,7 @@ class TestLeopViews(test.TestCase):
             pass
         # Permissions test (2): user not authorized
         try:
-            cluster_jrpc.remove_groundstations(
+            launch_jrpc.remove_groundstations(
                 'FAKE', None, **{'request': self.__request_1}
             )
             self.fail('No request added, permission should not be granted')
@@ -220,26 +212,26 @@ class TestLeopViews(test.TestCase):
             pass
         # Basic parameters test (1)
         try:
-            cluster_jrpc.remove_groundstations(
-                'FAKE', None, **{'request': self.__request_2}
+            launch_jrpc.remove_groundstations(
+                'FAKE', ['fake'], **{'request': self.__request_2}
             )
             self.fail('The leop cluster does not exist')
-        except leop_models.Launch.DoesNotExist:
+        except launch_models.Launch.DoesNotExist:
             pass
         # Basic parameters test (2)
-        actual = cluster_jrpc.remove_groundstations(
+        actual = launch_jrpc.remove_groundstations(
             self.__leop_id, None, **{'request': self.__request_2}
         )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
+        expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
         self.assertEquals(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
         # Basic parameters test (3)
-        actual = cluster_jrpc.remove_groundstations(
+        actual = launch_jrpc.remove_groundstations(
             self.__leop_id, [], **{'request': self.__request_2}
         )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
+        expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
         self.assertEquals(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
@@ -248,53 +240,121 @@ class TestLeopViews(test.TestCase):
         # First, we add two groundstations to the cluster and we try to remove
         # them later.
         gss = [self.__gs_1_id, self.__gs_2_id]
-        cluster_jrpc.add_groundstations(
+        launch_jrpc.add_groundstations(
             self.__leop_id, gss, **{'request': self.__request_2}
         )
-        cluster = leop_models.Launch.objects.get(identifier=self.__leop_id)
+        cluster = launch_models.Launch.objects.get(identifier=self.__leop_id)
         self.assertEquals(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
         )
 
-        actual = cluster_jrpc.remove_groundstations(
-            self.__leop_id, gss, **{'request': self.__request_2}
-        )
-        expected = {cluster_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
+        self.assertTrue(
+            launch_jrpc.remove_groundstations(
+                self.__leop_id, gss, **{'request': self.__request_2}
+            ),
+            'Should have returned True'
         )
         self.assertEquals(
             len(cluster.groundstations.all()), 0,
             'No groundstations should be part of this cluster object'
         )
 
-    def test_get_configuration(self):
+    def test_add_unknown(self):
+        """JRPC unit test case
+        Validation of the remote addition of a new unknown object to the list.
+        """
+        try:
+            launch_jrpc.add_unknown(
+                self.__leop_id, None, **{'request': self.__request_2}
+            )
+            self.fail('An exception should have been thrown, id < 0')
+        except Exception:
+            pass
+        try:
+            launch_jrpc.add_unknown(
+                self.__leop_id, -1, **{'request': self.__request_2}
+            )
+            self.fail('An exception should have been thrown, id < 0')
+        except Exception:
+            pass
+
+        self.assertEquals(
+            launch_jrpc.add_unknown(
+                self.__leop_id, 1, **{'request': self.__request_2}
+            ), 1,
+            'Identifiers must match'
+        )
+
+        a_list = launch_models.Launch.objects\
+            .get(identifier=self.__leop_id).unknown_objects
+        e_list = [1]
+        self.assertEquals(
+            a_list, e_list, 'Data differs in the DB, diff = ' + str(
+                datadiff.diff(a_list, e_list)
+            )
+        )
+
+    def _test_remove_unknown(self):
+        """JRPC unit test
+        Validates the removal of an unknown object from the list
+        """
+        try:
+            launch_jrpc.remove_unknown(self.__leop_id, None)
+            self.fail('An exception should have been thrown, id < 0')
+        except Exception:
+            pass
+        try:
+            launch_jrpc.remove_unknown(self.__leop_id, -1)
+            self.fail('An exception should have been thrown, id < 0')
+        except Exception:
+            pass
+        try:
+            launch_jrpc.remove_unknown(self.__leop_id, 2)
+            self.fail('An exception should have been thrown, wrong id')
+        except Exception:
+            pass
+
+        self.assertEquals(
+            launch_jrpc.add_unknown(self.__leop_id, 1), 1,
+            'Identifiers must match'
+        )
+        self.assertTrue(
+            launch_jrpc.remove_unknown(self.__leop_id, 1),
+            'Should have returned True'
+        )
+        self.assertIsNone(
+            launch_models.Launch.objects.get(
+                identifier=self.__leop_id
+            ).unknown_objects,
+            'List must be empty'
+        )
+
+    def _test_get_configuration(self):
         """JRPC unit test case
         Validation of the JRPC method that permits obtaining the
         configuration for a given LEOP cluster.
         """
         try:
-            cluster_jrpc.get_configuration('')
+            launch_jrpc.get_configuration('')
             self.fail('LEOP doesnt exist, an exception should have been raised')
-        except leop_models.Launch.DoesNotExist:
+        except launch_models.Launch.DoesNotExist:
             pass
 
         # 1) No ufos
-        a_cfg = cluster_jrpc.get_configuration(self.__leop_id)
+        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
-            cluster_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            cluster_serial.JRPC_K_TLE: {
-                cluster_serial.JRPC_K_TLE_L1:
+            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_TLE: {
+                launch_serial.JRPC_K_TLE_L1:
                     '1 27844U 03031E   15007.47529781  .00000328'
                     '  00000-0  16930-3 0  1108',
-                cluster_serial.JRPC_K_TLE_L2:
+                launch_serial.JRPC_K_TLE_L2:
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: [],
-            cluster_serial.JRPC_K_IDENTIFIED: []
+            launch_serial.JRPC_K_UFOS: [],
+            launch_serial.JRPC_K_IDENTIFIED: []
         }
         self.assertEquals(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
@@ -303,22 +363,22 @@ class TestLeopViews(test.TestCase):
         )
 
         # 2) 1 ufo
-        ufo_jrpc.add(self.__leop_id, 1)
-        a_cfg = cluster_jrpc.get_configuration(self.__leop_id)
+        launch_jrpc.add(self.__leop_id, 1)
+        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
-            cluster_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            cluster_serial.JRPC_K_TLE: {
-                cluster_serial.JRPC_K_TLE_L1:
+            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_TLE: {
+                launch_serial.JRPC_K_TLE_L1:
                     '1 27844U 03031E   15007.47529781  .00000328'
                     '  00000-0  16930-3 0  1108',
-                cluster_serial.JRPC_K_TLE_L2:
+                launch_serial.JRPC_K_TLE_L2:
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: [
-                {cluster_serial.JRPC_K_UFO_ID: '1'}
+            launch_serial.JRPC_K_UFOS: [
+                {launch_serial.JRPC_K_UFO_ID: '1'}
             ],
-            cluster_serial.JRPC_K_IDENTIFIED: []
+            launch_serial.JRPC_K_IDENTIFIED: []
         }
         self.assertEquals(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
@@ -327,36 +387,36 @@ class TestLeopViews(test.TestCase):
         )
 
         # 3) 1 ufo, 1 identified
-        ufo_jrpc.add(self.__leop_id, 2)
-        ufo_jrpc.identify(
+        launch_jrpc.add_unknown(self.__leop_id, 2)
+        launch_jrpc.identify(
             self.__leop_id,
             self.__ufo_id, self.__ufo_callsign,
             self.__ufo_tle_l1, self.__ufo_tle_l2,
             request=self.__request_1
         )
 
-        a_cfg = cluster_jrpc.get_configuration(self.__leop_id)
+        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
-            cluster_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            cluster_serial.JRPC_K_TLE: {
-                cluster_serial.JRPC_K_TLE_L1:
+            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_TLE: {
+                launch_serial.JRPC_K_TLE_L1:
                     '1 27844U 03031E   15007.47529781  .00000328'
                     '  00000-0  16930-3 0  1108',
-                cluster_serial.JRPC_K_TLE_L2:
+                launch_serial.JRPC_K_TLE_L2:
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: [
-                {cluster_serial.JRPC_K_UFO_ID: '2'}
+            launch_serial.JRPC_K_UFOS: [
+                {launch_serial.JRPC_K_UFO_ID: '2'}
             ],
-            cluster_serial.JRPC_K_IDENTIFIED: [{
-                cluster_serial.JRPC_K_UFO_ID: '1',
-                cluster_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
-                cluster_serial.JRPC_K_TLE: {
-                    cluster_serial.JRPC_K_TLE_L1:
+            launch_serial.JRPC_K_IDENTIFIED: [{
+                launch_serial.JRPC_K_UFO_ID: '1',
+                launch_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
+                launch_serial.JRPC_K_TLE: {
+                    launch_serial.JRPC_K_TLE_L1:
                         '1 27844U 03031E   15007.47529781  .00000328'
                         '  00000-0  16930-3 0  1108',
-                    cluster_serial.JRPC_K_TLE_L2:
+                    launch_serial.JRPC_K_TLE_L2:
                         '2 27844  98.6976  18.3001 0010316  50.6742 '
                         '104.9393 14.21678727597601',
                 }
@@ -369,23 +429,23 @@ class TestLeopViews(test.TestCase):
         )
 
         # 4) 2 ufos
-        ufo_jrpc.forget(self.__leop_id, self.__ufo_id)
-        a_cfg = cluster_jrpc.get_configuration(self.__leop_id)
+        launch_jrpc.forget(self.__leop_id, self.__ufo_id)
+        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
-            cluster_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            cluster_serial.JRPC_K_TLE: {
-                cluster_serial.JRPC_K_TLE_L1:
+            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_TLE: {
+                launch_serial.JRPC_K_TLE_L1:
                     '1 27844U 03031E   15007.47529781  .00000328'
                     '  00000-0  16930-3 0  1108',
-                cluster_serial.JRPC_K_TLE_L2:
+                launch_serial.JRPC_K_TLE_L2:
                     '2 27844  98.6976  18.3001 0010316  50.6742 '
                     '104.9393 14.21678727597601',
             },
-            cluster_serial.JRPC_K_UFOS: [
-                {cluster_serial.JRPC_K_UFO_ID: '2'},
-                {cluster_serial.JRPC_K_UFO_ID: '1'}
+            launch_serial.JRPC_K_UFOS: [
+                {launch_serial.JRPC_K_UFO_ID: '2'},
+                {launch_serial.JRPC_K_UFO_ID: '1'}
             ],
-            cluster_serial.JRPC_K_IDENTIFIED: []
+            launch_serial.JRPC_K_IDENTIFIED: []
         }
 
         if self.__verbose_testing:

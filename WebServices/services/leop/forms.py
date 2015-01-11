@@ -16,10 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import forms as django_forms
-from services.leop.models import launch as leop_models
+#from datetimewidget import widgets as datetime_widgets
+from services.leop.models import launch as launch_models
 
 
-class LeopForm(django_forms.ModelForm):
+class LaunchForm(django_forms.ModelForm):
     """Form
     Form for creating a manager for the LEOP operations phase.
     """
@@ -37,5 +38,16 @@ class LeopForm(django_forms.ModelForm):
 
     class Meta:
         """Model to be used from within this form."""
-        model = leop_models.Launch
-        fields = ('identifier', 'date')
+        model = launch_models.Launch
+        fields = ('identifier',)
+        widgets = {
+            #'identifier': django_forms.RegexField(
+            #    label='Launch Identifier',
+            #    max_length=launch_models.Launch.MAX_LAUNCH_ID_LEN,
+            #    regex=r'^[a-zA-Z0-9.\s-]*$',
+            #    error_messages={'invalid': "Not a valid TLE line."}
+            #),
+            #'date': datetime_widgets.DateTimeWidget(
+            #    usel10n=True, bootstrap_version=3
+            #)
+        }

@@ -59,7 +59,7 @@ class TestLeopViews(test.TestCase):
             admin=self.__user_2
         )
 
-        cm = leop_views.LeopManagementView()
+        cm = leop_views.LaunchManagementView()
         cm.request = self.__request_1
 
         qs = cm.get_queryset()

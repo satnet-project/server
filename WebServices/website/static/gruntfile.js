@@ -14,8 +14,11 @@
    limitations under the License.
 */
 
-module.exports = function(grunt) {
+module.exports = function (grunt) {
+    'use strict';
+
     grunt.initConfig({
+
         pkg: grunt.file.readJSON('package.json'),
         sass: {
             main: {
@@ -38,10 +41,10 @@ module.exports = function(grunt) {
                         cwd: 'dist',
                         src: ['<%= pkg.name %>.css'],
                         dest: 'dist',
-                        ext: '.min.css',
+                        ext: '.min.css'
                     }
                 ]
-            },
+            }
         },
         copy: {
             images: {
@@ -63,7 +66,7 @@ module.exports = function(grunt) {
             },
             cssmin: {
                 files: ['dist/<%= pkg.name %>.css'],
-                tasks: ['jshint']
+                tasks: ['cssmin']
             },
             images: {
                 files: ['src/images/*'],
@@ -82,5 +85,5 @@ module.exports = function(grunt) {
     grunt.registerTask('test', ['sass']);
     // the default task can be run just by typing "grunt" on the command line
     grunt.registerTask('default', ['sass', 'cssmin', 'copy']);
-    
+
 };

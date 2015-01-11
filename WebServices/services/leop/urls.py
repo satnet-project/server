@@ -23,22 +23,22 @@ urlpatterns = urls.patterns(
     '',
     urls.url(
         r'^management$',
-        decorators.login_required(leop_views.LeopManagementView.as_view()),
+        decorators.login_required(leop_views.LaunchManagementView.as_view()),
         name='leop_management'
     ),
     urls.url(
         r'^create$',
-        decorators.login_required(leop_views.LeopCreateView.as_view()),
+        decorators.login_required(leop_views.LaunchCreateView.as_view()),
         name='leop_create'
     ),
     urls.url(
         r'^update/(?P<identifier>\w+)$',
-        decorators.login_required(leop_views.LeopUpdateView.as_view()),
+        decorators.login_required(leop_views.LaunchUpdateView.as_view()),
         name='leop_update'
     ),
     urls.url(
         r'^delete/(?P<identifier>\w+)$',
-        decorators.login_required(leop_views.LeopDeleteView.as_view()),
+        decorators.login_required(leop_views.LaunchDeleteview.as_view()),
         name='leop_delete'
     )
 )

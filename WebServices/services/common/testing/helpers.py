@@ -124,12 +124,10 @@ def create_sc(
     )
 
 
-def create_cluster(
+def create_launch(
     username='admin-cluster-1',
     admin=None,
     identifier='cluster-1',
-    tle_source='test-source-tle',
-    tle_id='test-tle-id',
     tle_l1=
         '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108',
     tle_l2=
@@ -144,12 +142,8 @@ def create_cluster(
         admin = UserProfile.objects.get(username=username)
 
     return leop_models.Launch.objects.create(
-        admin=admin,
-        identifier=identifier,
-        ufos=[]
-        #cluster_tle=tle.TwoLineElement.objects.create(
-        #    source=tle_source, l0=tle_id, l1=tle_l1, l2=tle_l2
-        #)
+        admin, identifier, tle_l1, tle_l2,
+        date=datetime.datetime.today()
     )
 
 
