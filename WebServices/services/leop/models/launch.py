@@ -186,10 +186,7 @@ class Launch(django_models.Model):
         ]
     )
 
-    date = django_models.DateTimeField(
-        'Estimated date and time for the launch',
-        auto_now=True
-    )
+    date = django_models.DateTimeField('Launch date')
 
     groundstations = django_models.ManyToManyField(
         segment_models.GroundStation,

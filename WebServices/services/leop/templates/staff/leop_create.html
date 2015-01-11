@@ -19,6 +19,13 @@
 {% load i18n %}
 {% load staticfiles %}
 
+{% block head %}
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.css' %}"   />
+    <script src="{% static 'js/bootstrap-datetimepicker.js' %}"></script>
+
+{% endblock %}
+
 {% block content %}
 
 <h1>Create LEOP Manager</h1>
@@ -26,16 +33,13 @@
 
 <form class='leop-manager' action="{% url 'leop_create' %}" method='post'>
 
-    <!--
-    <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' />
-    -->
-
+<div class='launch-form'>
     {% csrf_token %}
     {{ form.as_p }}
-
     <div>
-        <input type='submit' value="{% trans '+ LEOP Manager' %}" />
+        <input id='submit' type='submit' value="{% trans '+ LEOP Manager' %}" />
     </div>
+</div>
 
 </form>
 

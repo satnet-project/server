@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import forms as django_forms
-#from datetimewidget import widgets as datetime_widgets
+from datetimewidget import widgets as datetime_widgets
+from services.configuration.models import tle as tle_models
 from services.leop.models import launch as launch_models
 
 
@@ -25,29 +26,25 @@ class LaunchForm(django_forms.ModelForm):
     Form for creating a manager for the LEOP operations phase.
     """
 
-    tle_l1 = django_forms.RegexField(
+    tle_l1 = django_forms.CharField(
         label='TLE - First Line',
-        regex=r'^[a-zA-Z0-9.\s-]{69}$',
-        error_messages={'invalid': "Not a valid TLE line."}
+        max_length=tle_models.TwoLineElement.MAX_TLE_LINE_LEN,
+        error_messages={'invalid': "Not a valid TLE line."},
+        widget=django_forms.Textarea
     )
-    tle_l2 = django_forms.RegexField(
+    tle_l2 = django_forms.CharField(
         label='TLE - Second Line',
-        regex=r'^[a-zA-Z0-9.\s-]{69}$',
-        error_messages={'invalid': "Not a valid TLE line."}
+        max_length=tle_models.TwoLineElement.MAX_TLE_LINE_LEN,
+        error_messages={'invalid': "Not a valid TLE line."},
+        widget=django_forms.Textarea
     )
 
     class Meta:
         """Model to be used from within this form."""
         model = launch_models.Launch
-        fields = ('identifier',)
+        fields = ('identifier', 'date')
         widgets = {
-            #'identifier': django_forms.RegexField(
-            #    label='Launch Identifier',
-            #    max_length=launch_models.Launch.MAX_LAUNCH_ID_LEN,
-            #    regex=r'^[a-zA-Z0-9.\s-]*$',
-            #    error_messages={'invalid': "Not a valid TLE line."}
-            #),
-            #'date': datetime_widgets.DateTimeWidget(
-            #    usel10n=True, bootstrap_version=3
-            #)
+            'date': datetime_widgets.DateTimeWidget(
+                usel10n=True, bootstrap_version=3
+            )
         }

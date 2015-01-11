@@ -111,6 +111,7 @@ class TwoLineElement(models.Model):
         app_label = 'configuration'
 
     MAX_TLE_ID_LEN = 24
+    MAX_TLE_LINE_LEN = 69
 
     objects = TwoLineElementsManager()
 
@@ -132,7 +133,7 @@ class TwoLineElement(models.Model):
 
     first_line = models.CharField(
         'First line of this TLE',
-        max_length=69,
+        max_length=MAX_TLE_LINE_LEN,
         validators=[
             validators.RegexValidator(
                 regex='^[a-zA-Z0-9.\s-]{69}$',
@@ -143,7 +144,7 @@ class TwoLineElement(models.Model):
     )
     second_line = models.CharField(
         'Second line of this TLE',
-        max_length=69,
+        max_length=MAX_TLE_LINE_LEN,
         validators=[
             validators.RegexValidator(
                 regex='^[a-zA-Z0-9.\s-]{69}$',
