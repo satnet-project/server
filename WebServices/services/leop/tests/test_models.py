@@ -15,11 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import datetime
 from django import test
 import logging
 from services.common.testing import helpers as db_tools
 from services.leop.models import launch as launch_models
-from services.leop import utils as launch_utils
 
 
 class TestLaunchModels(test.TestCase):
@@ -46,18 +46,10 @@ class TestLaunchModels(test.TestCase):
 
     def test_create_launch(self):
 
-        #tle = launch_utils.create_cluster_tle(
-        #    self.__launch_id, self.__tle_l1, self.__tle_l2
-        #)
-        #sc = launch_utils.create_cluster_spacecraft(
-        #    user_profile=self.__admin,
-        #    launch_identifier=self.__launch_id,
-        #    tle_id=tle.identifier
-        #)
-
         launch_models.Launch.objects.create(
             self.__admin,
             self.__launch_id,
+            datetime.datetime.utcnow(),
             self.__tle_l1,
             self.__tle_l2
         )

@@ -332,15 +332,15 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.gs.remove':
                 this._leop.createMethod('gs.remove'),
             'leop.ufo.add':
-                this._leop.createMethod('ufo.add'),
+                this._leop.createMethod('launch.addUnknown'),
             'leop.ufo.remove':
-                this._leop.createMethod('ufo.remove'),
+                this._leop.createMethod('launch.removeUnknown'),
             'leop.ufo.identify':
-                this._leop.createMethod('ufo.identify'),
+                this._leop.createMethod('launch.identify'),
             'leop.ufo.forget':
-                this._leop.createMethod('ufo.forget'),
+                this._leop.createMethod('launch.forget'),
             'leop.ufo.update':
-                this._leop.createMethod('ufo.update')
+                this._leop.createMethod('launch.update')
         };
 
         /**
@@ -2045,12 +2045,12 @@ angular.module('ui-leop-modalufo-controllers')
              * @param property The property for the operation
              */
             this.check = function (array, property) {
-                if ((array === null) || (array.length === 0)) {
-                    throw 'Array is empty';
-                }
+                if (array === null) { throw 'Array is null'; }
+                if (array.length === 0) { return true; }
                 if (array[0].hasOwnProperty(property) === false) {
                     throw 'Wrong property';
                 }
+                return true;
             };
 
             /**

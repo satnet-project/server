@@ -125,12 +125,6 @@ def add_unknown(launch_identifier, identifier, **kwargs):
     :param identifier: Identifier for the unknown object
     :return: Identifier for the unknown object (int)
     """
-    # user must be obtained from the request, since this has already been
-    # validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    if not http_request or not http_request.user.is_staff:
-        raise django_ex.PermissionDenied()
-
     return launch_models.Launch.objects.add_unknown(
         launch_identifier, identifier
     )
@@ -148,12 +142,6 @@ def remove_unknown(launch_identifier, identifier, **kwargs):
     :param identifier: Identifier for the unknown object
     :return: True if the operation was succesful
     """
-    # user must be obtained from the request, since this has already been
-    # validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    if not http_request or not http_request.user.is_staff:
-        raise django_ex.PermissionDenied()
-
     return launch_models.Launch.objects.remove_unknown(
         launch_identifier, identifier
     )
@@ -194,4 +182,4 @@ def get_configuration(leop_id):
     :return: JSON-like serialized structure
     """
     leop = launch_models.Launch.objects.get(identifier=leop_id)
-    return launch_serial.serialize_leop_cfg(leop)
+    return launch_serial.serialize_launch(leop)

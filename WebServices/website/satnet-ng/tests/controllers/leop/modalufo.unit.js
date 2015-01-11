@@ -36,16 +36,10 @@ test('objectArrayCheck tests', function () {
         function () {
             objectArrays.check(null, '');
         },
-        /is empty/,
-        "Empty array, throws exception"
+        /is null/,
+        "Null array, throws exception"
     );
-    throws(
-        function () {
-            objectArrays.check([], '');
-        },
-        /is empty/,
-        "Empty array, throws exception"
-    );
+    ok(objectArrays.check([], ''), "Empty array, throws exception");
     throws(
         function () {
             objectArrays.check([1], null);
@@ -69,7 +63,6 @@ test('objectArrayCheck tests', function () {
     );
 
 });
-
 test('basic findMaxTuple tests', function () {
     'use strict';
 

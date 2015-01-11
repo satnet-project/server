@@ -142,8 +142,7 @@ def create_launch(
         admin = UserProfile.objects.get(username=username)
 
     return leop_models.Launch.objects.create(
-        admin, identifier, tle_l1, tle_l2,
-        date=datetime.datetime.today()
+        admin, identifier, datetime.datetime.today(), tle_l1, tle_l2
     )
 
 

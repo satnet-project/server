@@ -38,12 +38,12 @@ angular.module('ui-leop-modalufo-controllers')
              * @param property The property for the operation
              */
             this.check = function (array, property) {
-                if ((array === null) || (array.length === 0)) {
-                    throw 'Array is empty';
-                }
+                if (array === null) { throw 'Array is null'; }
+                if (array.length === 0) { return true; }
                 if (array[0].hasOwnProperty(property) === false) {
                     throw 'Wrong property';
                 }
+                return true;
             };
 
             /**

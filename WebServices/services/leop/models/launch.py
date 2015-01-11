@@ -17,12 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
 from django.db import models as django_models
-import djorm_pgarray.fields as pgarray_fields
 import logging
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
 from services.leop import utils as leop_utils
+from services.leop.models import ufos as ufo_models
 
 logger = logging.getLogger('leop')
 
@@ -82,11 +82,10 @@ class LaunchManager(django_models.Manager):
         if object_identifier < 0:
             raise Exception('Identifier has to be > 0')
 
-        unknown = launch.unknown_objects
-        if object_identifier in unknown:
+        if launch.unknown_objects.filter(identifier=object_identifier).exists():
             raise Exception('UFO already exists, id = ' + str(id))
 
-        launch.unknown_objects = unknown + [object_identifier]
+        launch.unknown_objects.create(identifier=object_identifier)
         launch.save()
 
         return object_identifier
@@ -103,17 +102,18 @@ class LaunchManager(django_models.Manager):
         if object_identifier < 0:
             raise Exception('Identifier has to be > 0')
 
-        u_objects = launch.unknown_objects
-        if not object_identifier in u_objects:
-            raise Exception('Identifier not found')
+        if not launch.unknown_objects.filter(
+                identifier=object_identifier
+        ).exists():
+            raise Exception('UFO already exists, id = ' + str(id))
 
-        launch.unknown_objects = u_objects.remove(object_identifier)
+        launch.unknown_objects.get(identifier=object_identifier).delete()
         launch.save()
 
         return True
 
     def create(
-        self, admin=None, identifier=None, tle_l1=None, tle_l2=None,
+        self, admin, identifier, date, tle_l1, tle_l2,
         **kwargs
     ):
         """Custom create method
@@ -126,32 +126,20 @@ class LaunchManager(django_models.Manager):
         :param kwargs: All other parameters
         :return: Reference to the just created Launch object
         """
-        logger.info('XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX')
-        print '###########################################'
-        print '###########################################'
-        print 'XXXX'
+        tle = leop_utils.create_cluster_tle(identifier, tle_l1, tle_l2)
 
-        #tle = leop_utils.create_cluster_tle(identifier, tle_l1, tle_l2)
-        print '###########################################'
-        print '###########################################'
-        #print '>>> tle.id = ' + str(tle.identifier)
-
-        #spacecraft = leop_utils.create_cluster_spacecraft(
-        #    user_profile=admin,
-        #    launch_identifier=identifier,
-        #    tle_id=tle.identifier
-        #)
-
-        print '###########################################'
-        print '###########################################'
-        #print '>>> spacecraft.id = ' + str(spacecraft.identifier)
+        spacecraft = leop_utils.create_cluster_spacecraft(
+            user_profile=admin,
+            launch_identifier=identifier,
+            tle_id=tle.identifier
+        )
 
         return super(LaunchManager, self).create(
             admin=admin,
             identifier=identifier,
-            tle=None,
-            spacecraft=None,
-            unknown_objects=[],
+            tle=tle,
+            cluster_spacecraft_id=spacecraft.identifier,
+            date=date,
             **kwargs
         )
 
@@ -193,18 +181,25 @@ class Launch(django_models.Model):
         verbose_name='LEOP ground stations'
     )
 
+    cluster_spacecraft_id = django_models.CharField(
+        'Cluster spacecraft identifier',
+        unique=True,
+        max_length=segment_models.Spacecraft.MAX_SC_ID_LEN,
+        validators=[validators.RegexValidator(
+            regex='^[a-zA-Z0-9.\-_]*$',
+            message="Alphanumeric or '.-_' required",
+            code='invalid_spacecraft_identifier'
+        )]
+    )
+
     tle = django_models.ForeignKey(
         tle_models.TwoLineElement,
         verbose_name='TLE for the cluster of objects as a whole'
     )
-    spacecraft = django_models.ForeignKey(
-        segment_models.Spacecraft,
-        verbose_name='Spacecraft that represents the whole cluster',
-        related_name='cluster'
-    )
 
-    unknown_objects = pgarray_fields.SmallIntegerArrayField(
-        'Array with the identifiers of the un-identified flying objecs :)'
+    unknown_objects = django_models.ManyToManyField(
+        ufo_models.UnknownObject,
+        verbose_name='Objects still unknown'
     )
     identified_objects = django_models.ManyToManyField(
         segment_models.Spacecraft,

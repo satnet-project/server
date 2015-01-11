@@ -83,15 +83,15 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.gs.remove':
                 this._leop.createMethod('gs.remove'),
             'leop.ufo.add':
-                this._leop.createMethod('ufo.add'),
+                this._leop.createMethod('launch.addUnknown'),
             'leop.ufo.remove':
-                this._leop.createMethod('ufo.remove'),
+                this._leop.createMethod('launch.removeUnknown'),
             'leop.ufo.identify':
-                this._leop.createMethod('ufo.identify'),
+                this._leop.createMethod('launch.identify'),
             'leop.ufo.forget':
-                this._leop.createMethod('ufo.forget'),
+                this._leop.createMethod('launch.forget'),
             'leop.ufo.update':
-                this._leop.createMethod('ufo.update')
+                this._leop.createMethod('launch.update')
         };
 
         /**

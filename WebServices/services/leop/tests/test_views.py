@@ -19,7 +19,7 @@ import logging
 from django import test
 from services.common.testing import helpers as db_tools
 from services.leop import views as leop_views
-from services.leop.models import launch as leop_models
+#from services.leop.models import launch as leop_models
 
 
 class TestLeopViews(test.TestCase):
@@ -47,6 +47,14 @@ class TestLeopViews(test.TestCase):
             user_profile=self.__user_2, identifier=self.__ufo_id, is_ufo=True
         )
 
+        self.__admin = db_tools.create_user_profile(
+            username='user_admin',
+            email='admin@satnet.org',
+            is_staff=True
+        )
+        self.__request_3 = db_tools.create_request(user_profile=self.__admin)
+        self.__cluster = db_tools.create_launch(admin=self.__admin)
+
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
 
@@ -55,16 +63,12 @@ class TestLeopViews(test.TestCase):
         Simply checks this method of the LeopManagementView since it had to
         be implemented slightly different than what expected beforehand.
         """
-        self.__cluster = leop_models.Launch.objects.create(
-            admin=self.__user_2
-        )
-
         cm = leop_views.LaunchManagementView()
         cm.request = self.__request_1
 
         qs = cm.get_queryset()
         self.assertEquals(len(qs), 0 , 'No LEOPs should be owned by user 1.')
 
-        cm.request = self.__request_2
+        cm.request = self.__request_3
         qs_2 = cm.get_queryset()
         self.assertEquals(len(qs_2), 1 , '1 LEOP should be owned by user 2.')

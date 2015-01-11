@@ -304,7 +304,7 @@ a.edit-link:active {
 
 .toolbar_button {
   margin-right: -10px;
-  line-height: 250%; }
+  line-height: 150%; }
 
 div#toolbar a.toolbar_button:link,
 div#toolbar a.toolbar_button:visited {
@@ -318,7 +318,7 @@ div#toolbar a.toolbar_button:hover {
 #toolbar_footer {
   text-align: center;
   font-size: 60%;
-  line-height: 200%; }
+  line-height: 150%; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
