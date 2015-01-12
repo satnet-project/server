@@ -341,6 +341,15 @@ a.button-red {
   box-sizing: content-box;
   border-spacing: 0px; }
 
+.right-border {
+  border-right: thick solid black;
+  padding-right: 20px; }
+
+.bottom-border {
+  border-bottom: thick solid black;
+  padding-bottom: 10px;
+  margin-bottom: 30px; }
+
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");

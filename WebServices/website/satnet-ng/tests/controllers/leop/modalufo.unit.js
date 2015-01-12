@@ -98,3 +98,32 @@ test('basic indexOf tests', function () {
     equal(objectArrays.indexOf(input, 'object_id', 3), 1, 'Results differ');
 
 });
+
+test('basic split tests', function () {
+    'use strict';
+
+    throws(
+        function () {
+            objectArrays.split(null, -1);
+        },
+        /is null/,
+        'Array is null, an exception should have been thrown'
+    );
+    throws(
+        function () {
+            objectArrays.split([], -1);
+        },
+        /columns should be/,
+        'max_columns < 1, makes no sense!'
+    );
+
+    deepEqual(objectArrays.split(undefined, 3), [], 'Results differ');
+    deepEqual(objectArrays.split([], 3), [], 'Results differ');
+    deepEqual(objectArrays.split([1, 2], 1), [[1], [2]], 'Results differ');
+    deepEqual(
+        objectArrays.split([1, 2, 3, 4, 5, 6], 4),
+        [[1, 2, 3, 4], [5, 6]],
+        'Results differ'
+    );
+
+});

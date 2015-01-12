@@ -186,3 +186,14 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
   box-sizing: content-box;
   border-spacing: 0px;
 }
+
+.right-border {
+  border-right: thick solid black;
+  padding-right: 20px;
+}
+
+.bottom-border {
+  border-bottom: thick solid black;
+  padding-bottom: 10px;
+  margin-bottom: 30px;
+}

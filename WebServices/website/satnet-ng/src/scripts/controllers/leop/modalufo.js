@@ -27,6 +27,7 @@ angular.module(
 
 angular.module('ui-leop-modalufo-controllers')
     .constant('MAX_UFOS', 24)
+    .constant('UFO_COLUMNS', 4)
     .service('objectArrays', [
         function () {
             'use strict';
@@ -125,6 +126,46 @@ angular.module('ui-leop-modalufo-controllers')
                 return array;
             };
 
+            /**
+             * Splits a given array into a matrix of arrays whose maximum
+             * length is the @param max_columms number given as a second
+             * parameter.
+             * @param array The array to be split
+             * @param max_columns Maximum number of columns
+             * @returns {*}
+             */
+            this.split = function (array, max_columns) {
+
+                if (array === null) {
+                    throw 'array is null';
+                }
+                if (max_columns < 1) {
+                    throw 'max_columns should be > 1, actual = ' + max_columns;
+                }
+                if (array === undefined) {
+                    return [];
+                }
+                if (array.length <= max_columns) { return array; }
+
+                var i, j, columns, index,
+                    rowsNum = Math.ceil(array.length / max_columns),
+                    rows = new Array(rowsNum);
+
+                for (i = 0; i < rowsNum; i += 1) {
+                    columns = [];
+                    for (j = 0; j < max_columns; j += 1) {
+                        index = i * max_columns + j;
+                        if (index < array.length) {
+                            columns[j] = array[index];
+                        } else { break; }
+                    }
+                    rows[i] = columns;
+                }
+
+                return rows;
+
+            };
+
         }
     ])
     .controller('manageClusterModal', [
@@ -141,16 +182,17 @@ angular.module('ui-leop-modalufo-controllers')
         ) {
             'use strict';
 
+            $scope.cluster = {};
+
             $scope.init = function () {
                 var scope = $scope;
-                angular.extend($scope, { cluster: {}, identified_objects: {} });
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id])
                     .then(function (data) {
                         console.log(
                             '[modal-ufo] cluster cfg = ' + JSON.stringify(data)
                         );
                         objectArrays.parseInt(data.ufos, 'object_id');
-                        angular.extend(scope.cluster, data);
+                        angular.extend($scope.cluster, data);
                         scope.cluster.max_ufos = MAX_UFOS;
                     });
             };
@@ -170,6 +212,7 @@ angular.module('ui-leop-modalufo-controllers')
                         $log.info('[modal-ufo] New ufo, id = ' + data);
                         $scope.cluster.ufos.push({ object_id: id });
                     });
+
             };
 
             $scope.remove = function () {
@@ -204,7 +247,7 @@ angular.module('ui-leop-modalufo-controllers')
 
                 $log.info(
                     '[modal-ufo] <Object#' +
-                        object_id + '> promoted to the identified objects list.'
+                        object_id + '> promoted to the identified list.'
                 );
 
                 angular.extend(

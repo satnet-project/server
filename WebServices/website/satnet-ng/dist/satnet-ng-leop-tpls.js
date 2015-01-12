@@ -23,7 +23,59 @@ angular.module('leop-ui').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('templates/leop/manageCluster.html',
-    "<div class=\"modal-header\"><h3 class=\"modal-title\">Manage Cluster ({{ cluster.identifier }})</h3></div><style>label.control-label { font-size: 85%; }</style><div class=\"modal-body\" style=\"display: inline-block; width: 100%\"><form name=\"form\"><div style=\"display: table; table-layout: fixed; border-spacing: 5px; width: 100%\"><div style=\"display: table-cell; width: 30%\"><div><h4>Cluster TLE</h4></div><div class=\"control-group\" ng-class=\"{ 'has-error': form.tle_l1.$invalid }\"><label class=\"control-label\" for=\"tle_l1\">First line</label><input type=\"text\" name=\"tle_l1\" class=\"form-control\" style=\"width: 100%\" ng-model=\"cluster.tle.l1\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div><div class=\"control-group\" ng-class=\"{ 'has-error': form.tle_l2.$invalid }\"><label class=\"control-label\" for=\"tle_l2\">Second line</label><input type=\"text\" name=\"tle_l2\" class=\"form-control\" style=\"width: 100%\" ng-model=\"cluster.tle.l2\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div></div><div style=\"display: table-cell; width: 10px\"></div><div style=\"display: table-cell; width: 60%\"><div style=\"display: table-cell\"><h4>UFO Objects</h4></div><div ng-hide=\"cluster.ufos.length\"><p class=\"no-items\">(no ufos)</p></div><div class=\"ufos\"><ol class=\"unsalted-list\"><li ng-repeat=\"u in cluster.ufos\"><div class=\"ufos-item\"><span style=\"margin-left: 30px\">Object #{{ u.object_id }}</span></div><div class=\"ufos-item\"><a class=\"link action-link\" ng-click=\"identify(u.object_id)\">(identify)</a></div></li></ol></div><div style=\"display: table-row\"><div style=\"display: table-cell; font-size: 75%\"><a class=\"green-link\" ng-show=\"cluster.ufos.length < cluster.max_ufos\" ng-click=\"add()\">(+ add)</a> <a class=\"red-link\" ng-hide=\"cluster.ufos.length < cluster.max_ufos\">MAXIMUM</a></div><div ng-show=\"cluster.ufos.length\"><a class=\"red-link action-link\" ng-click=\"remove()\">(- remove)</a></div></div><div><h4>Identified Objects</h4></div><div ng-hide=\"cluster.identified.length\"><p class=\"no-items\">(none identified)</p></div><ol class=\"unsalted-list\"><li class=\"ufo-item\" ng-repeat=\"i in cluster.identified\"><div class=\"bottom-cell\"><div style=\"display: table-row\"><div style=\"display: table-cell\"><h4>Object #{{ i.object_id }}</h4><a class=\"link action-link\" ng-click=\"save(i.object_id)\">(save)</a> <a class=\"link action-link\" ng-click=\"cancel(i.object_id)\">(cancel)</a> <a class=\"link action-link\" ng-click=\"forget(i.object_id)\">(forget)</a></div><div class=\"control-group\" style=\"display: table-cell\" ng-class=\"{ 'has-error': form.i_alias.$invalid }\"><label class=\"control-label\" for=\"i_alias\">Alias</label><input type=\"text\" name=\"i_alias\" class=\"form-control\" style=\"width: 100%\" ng-model=\"i.alias\" ng-pattern=\"/^[a-zA-Z0-9]{3,8}$/\" required></div></div><div style=\"display: table-row\"><div style=\"display: table-cell\"><div class=\"control-group\" ng-class=\"{ 'has-error': form.i_tle_l1.$invalid }\"><label class=\"control-label\" for=\"i_tle_l1\">First line</label><input type=\"text\" name=\"i_tle_l1\" class=\"form-control\" style=\"width: 100%\" ng-model=\"i.tle.l1\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div></div><div style=\"display: table-cell\"><div class=\"control-group\" ng-class=\"{ 'has-error': form.i_tle_l2.$invalid }\"><label class=\"control-label\" for=\"i_tle_l2\">Second line</label><input type=\"text\" name=\"i_tle_l2\" class=\"form-control\" style=\"width: 100%\" ng-model=\"i.tle.l2\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div></div></div></div></li></ol></div></div></form></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\" ng-disabled=\"form.$invalid\">(ok)</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">(cancel)</button></div>"
+    "<div class=\"modal-header\"><h3 class=\"modal-title\">Manage Cluster ({{ cluster.identifier }})</h3></div><style>label.control-label { font-size: 85%; }</style><div class=\"modal-body\" style=\"display: inline-block; width: 100%\"><form name=\"form\"><div style=\"display: table; table-layout: fixed; border-spacing: 5px; width: 100%\"><div class=\"right-border\" style=\"display: table-cell; width: 30%\"><div><h4>Cluster TLE</h4></div><div class=\"control-group\" ng-class=\"{ 'has-error': form.tle_l1.$invalid }\"><label class=\"control-label\" for=\"tle_l1\">First line</label><input type=\"text\" name=\"tle_l1\" class=\"form-control\" style=\"width: 100%\" ng-model=\"cluster.tle.l1\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div><div class=\"control-group\" ng-class=\"{ 'has-error': form.tle_l2.$invalid }\"><label class=\"control-label\" for=\"tle_l2\">Second line</label><input type=\"text\" name=\"tle_l2\" class=\"form-control\" style=\"width: 100%\" ng-model=\"cluster.tle.l2\" ng-pattern=\"/^[a-zA-Z0-9.\\s-]{69}$/\" required></div></div><div style=\"display: table-cell; width: 20px\"></div><div style=\"display: table-cell; width: 60%\"><!--<div>--><div style=\"display: table-cell\"><h4>UFO Objects</h4></div><div ng-hide=\"cluster.ufos.length\"><p class=\"no-items\">(no ufos)</p></div><div ng-repeat=\"u in cluster.ufos\"><div class=\"ufos-item\"><a class=\"link action-link\" ng-click=\"identify(u.object_id)\">Object #{{ u.object_id }}</a></div><div class=\"ufos-item\"><span></span></div></div><div style=\"display: table-row\"><div style=\"display: table-cell; font-size: 75%\"><a class=\"green-link\" ng-show=\"cluster.ufos.length < cluster.max_ufos\" ng-click=\"add()\">(+ add)</a> <a class=\"red-link\" ng-hide=\"cluster.ufos.length < cluster.max_ufos\">MAXIMUM</a></div><div ng-show=\"cluster.ufos.length\"><a class=\"red-link action-link\" ng-click=\"remove()\">(- remove)</a></div></div><hr><!--</div>--><!--\n" +
+    "            <div><h4>Identified Objects</h4></div>\n" +
+    "            <div ng-hide=\"cluster.identified.length\"><p class='no-items'>(none identified)</p></div>\n" +
+    "                <ol class='unsalted-list'>\n" +
+    "                <li class='ufo-item' ng-repeat=\"i in cluster.identified\">\n" +
+    "                    <div class=\"bottom-cell\">\n" +
+    "                    <div style='display: table-row'>\n" +
+    "                        <div style='display: table-cell'>\n" +
+    "                            <h4>Object #{{ i.object_id }}</h4>\n" +
+    "                            <a class='link action-link' ng-click=\"save(i.object_id)\">(save)</a>\n" +
+    "                            <a class='link action-link' ng-click=\"cancel(i.object_id)\">(cancel)</a>\n" +
+    "                            <a class='link action-link' ng-click=\"forget(i.object_id)\">(forget)</a>\n" +
+    "                        </div>\n" +
+    "                        <div class='control-group' style='display: table-cell'\n" +
+    "                            ng-class=\"{ 'has-error': form.i_alias.$invalid }\">\n" +
+    "                            <label class='control-label' for='i_alias'>Alias</label>\n" +
+    "                            <input type='text' name='i_alias'\n" +
+    "                                class='form-control' style='width: 100%'\n" +
+    "                                ng-model=\"i.alias\"\n" +
+    "                                ng-pattern='/^[a-zA-Z0-9]{3,8}$/'\n" +
+    "                                required />\n" +
+    "                        </div>\n" +
+    "                    </div>\n" +
+    "                    <div style='display: table-row'>\n" +
+    "\n" +
+    "                        <div style='display: table-cell'>\n" +
+    "                            <div class='control-group'\n" +
+    "                                ng-class=\"{ 'has-error': form.i_tle_l1.$invalid }\">\n" +
+    "                                <label class='control-label' for='i_tle_l1'>First line</label>\n" +
+    "                                <input type='text' name='i_tle_l1'\n" +
+    "                                    class='form-control' style='width: 100%'\n" +
+    "                                    ng-model=\"i.tle.l1\"\n" +
+    "                                    ng-pattern='/^[a-zA-Z0-9.\\s-]{69}$/'\n" +
+    "                                    required />\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "                        <div style='display: table-cell'>\n" +
+    "                            <div class='control-group'\n" +
+    "                                ng-class=\"{ 'has-error': form.i_tle_l2.$invalid }\">\n" +
+    "                                <label class='control-label' for='i_tle_l2'>Second line</label>\n" +
+    "                                <input type='text' name='i_tle_l2'\n" +
+    "                                    class='form-control' style='width: 100%'\n" +
+    "                                    ng-model=\"i.tle.l2\"\n" +
+    "                                    ng-pattern='/^[a-zA-Z0-9.\\s-]{69}$/'\n" +
+    "                                    required />\n" +
+    "                            </div>\n" +
+    "                        </div>\n" +
+    "\n" +
+    "                    </div>\n" +
+    "                    </div>\n" +
+    "                </li>\n" +
+    "                </ol>\n" +
+    "                       --></div></div></form></div><div class=\"modal-footer\"><button class=\"btn btn-primary\" ng-click=\"ok()\" ng-disabled=\"form.$invalid\">(ok)</button> <button class=\"btn btn-warning\" ng-click=\"cancel()\">(cancel)</button></div>"
   );
 
 

@@ -7,7 +7,7 @@
 <div class='modal-body' style='display: inline-block; width: 100%'>
     <form name='form'>
     <div style='display: table; table-layout: fixed; border-spacing: 5px; width: 100%'>
-        <div style='display: table-cell; width: 30%'>
+        <div class='right-border' style='display: table-cell; width: 30%'>
             <div><h4>Cluster TLE</h4></div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.tle_l1.$invalid }">
@@ -28,24 +28,22 @@
                        required />
             </div>
         </div>
-        <div style='display: table-cell; width: 10px'></div>
+        <div style='display: table-cell; width: 20px'></div>
         <div style='display: table-cell; width: 60%'>
+            <!--<div>-->
             <div style='display: table-cell'><h4>UFO Objects</h4></div>
-            <div ng-hide="cluster.ufos.length"><p class='no-items'>(no ufos)</p></div>
-            <div class='ufos'>
-                <ol class='unsalted-list'>
-                <li ng-repeat="u in cluster.ufos">
-                    <div class='ufos-item'>
-                        <span style='margin-left: 30px'>
-                            Object #{{ u.object_id }}
-                        </span>
-                    </div>
-                    <div class='ufos-item'>
-                        <a class='link action-link'
-                            ng-click="identify(u.object_id)">(identify)</a>
-                    </div>
-                </li>
-                </ol>
+            <div ng-hide="cluster.ufos.length">
+                <p class='no-items'>(no ufos)</p>
+            </div>
+            <div ng-repeat="u in cluster.ufos">
+                <div class='ufos-item'>
+                    <a class='link action-link' ng-click="identify(u.object_id)">
+                        Object #{{ u.object_id }}
+                    </a>
+                </div>
+                <div class='ufos-item'>
+                    <span></span>
+                </div>
             </div>
             <div style='display: table-row'>
                 <div style='display: table-cell; font-size: 75%'>
@@ -60,6 +58,10 @@
                        ng-click="remove()">(- remove)</a>
                 </div>
             </div>
+            <hr/>
+
+            <!--</div>-->
+            <!--
             <div><h4>Identified Objects</h4></div>
             <div ng-hide="cluster.identified.length"><p class='no-items'>(none identified)</p></div>
                 <ol class='unsalted-list'>
@@ -111,6 +113,7 @@
                     </div>
                 </li>
                 </ol>
+                       -->
         </div>
     </div>
     </form>
