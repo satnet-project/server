@@ -177,8 +177,7 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 
 .action-link {
   margin-left: 50px;
-  font-size: 75%;
-  display: table-cell
+  font-size: 75%
 }
 
 .ufos-item {
@@ -187,9 +186,19 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
   border-spacing: 0px;
 }
 
+.ufo-item {
+  margin: 10px;
+  line-height: 200%;
+  cursor: pointer;
+}
+
+.ufo-item:hover {
+  color: $cool_blue;
+}
+
 .right-border {
   border-right: thick solid black;
-  padding-right: 20px;
+  padding-right: 50px;
 }
 
 .bottom-border {

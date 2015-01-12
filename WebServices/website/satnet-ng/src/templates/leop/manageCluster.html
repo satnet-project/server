@@ -7,7 +7,7 @@
 <div class='modal-body' style='display: inline-block; width: 100%'>
     <form name='form'>
     <div style='display: table; table-layout: fixed; border-spacing: 5px; width: 100%'>
-        <div class='right-border' style='display: table-cell; width: 30%'>
+        <div class='right-border' style='display: table-cell; width: 200px'>
             <div><h4>Cluster TLE</h4></div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.tle_l1.$invalid }">
@@ -30,21 +30,19 @@
         </div>
         <div style='display: table-cell; width: 20px'></div>
         <div style='display: table-cell; width: 60%'>
-            <!--<div>-->
+            <div class='bottom-border'>
             <div style='display: table-cell'><h4>UFO Objects</h4></div>
             <div ng-hide="cluster.ufos.length">
                 <p class='no-items'>(no ufos)</p>
             </div>
-            <div ng-repeat="u in cluster.ufos">
-                <div class='ufos-item'>
-                    <a class='link action-link' ng-click="identify(u.object_id)">
-                        Object #{{ u.object_id }}
-                    </a>
-                </div>
-                <div class='ufos-item'>
-                    <span></span>
-                </div>
-            </div>
+
+            <span class='link ufo-item'
+                ng-click="identify(value.object_id)"
+                ng-repeat="(index, value) in cluster.ufos">
+                Object #{{value.object_id}}<br ng-show="(index+1)%3==0" />
+            </span>
+            <hr/>
+
             <div style='display: table-row'>
                 <div style='display: table-cell; font-size: 75%'>
                     <a class='green-link'
@@ -58,62 +56,96 @@
                        ng-click="remove()">(- remove)</a>
                 </div>
             </div>
-            <hr/>
+            </div>
 
-            <!--</div>-->
-            <!--
-            <div><h4>Identified Objects</h4></div>
-            <div ng-hide="cluster.identified.length"><p class='no-items'>(none identified)</p></div>
-                <ol class='unsalted-list'>
-                <li class='ufo-item' ng-repeat="i in cluster.identified">
-                    <div class="bottom-cell">
-                    <div style='display: table-row'>
-                        <div style='display: table-cell'>
-                            <h4>Object #{{ i.object_id }}</h4>
-                            <a class='link action-link' ng-click="save(i.object_id)">(save)</a>
-                            <a class='link action-link' ng-click="cancel(i.object_id)">(cancel)</a>
-                            <a class='link action-link' ng-click="forget(i.object_id)">(forget)</a>
-                        </div>
-                        <div class='control-group' style='display: table-cell'
-                            ng-class="{ 'has-error': form.i_alias.$invalid }">
-                            <label class='control-label' for='i_alias'>Alias</label>
-                            <input type='text' name='i_alias'
-                                class='form-control' style='width: 100%'
-                                ng-model="i.alias"
-                                ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
-                                required />
-                        </div>
-                    </div>
-                    <div style='display: table-row'>
+            <div>
+                <div><h4>Identified Objects</h4></div>
+                <div ng-hide="cluster.identified.length">
+                    <p class='no-items'>(none identified)</p>
+                </div>
+                    <ol class='unsalted-list'>
+                    <li class='ufo-item' ng-repeat="i in cluster.identified">
 
-                        <div style='display: table-cell'>
-                            <div class='control-group'
-                                ng-class="{ 'has-error': form.i_tle_l1.$invalid }">
-                                <label class='control-label' for='i_tle_l1'>First line</label>
-                                <input type='text' name='i_tle_l1'
-                                    class='form-control' style='width: 100%'
-                                    ng-model="i.tle.l1"
-                                    ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
-                                    required />
+                        <div style='display: table-row'>
+                            <div style='display: table-cell; width: 50%; vertical-align: middle'>
+                                <h5 ng-click="edit(i.object_id)">
+                                    Object #{{ i.object_id }}
+                                </h5>
+                                <span ng-show="editing[i.object_id].callsign && !editing[i.object_id].editing"
+                                        style='font-size: 75%'>
+                                    (as {{ editing[i.object_id].callsign }})
+                                </span>
                             </div>
-                        </div>
-                        <div style='display: table-cell'>
+                            <div style='display: table-cell; vertical-align: middle'
+                                ng-hide="editing[i.object_id].editing">
+                                <a class='link action-link' ng-click="forget(i.object_id)">(forget)</a>
+                                <a class='link action-link' ng-click="edit(i.object_id)">(edit)</a>
+                            </div>
                             <div class='control-group'
-                                ng-class="{ 'has-error': form.i_tle_l2.$invalid }">
-                                <label class='control-label' for='i_tle_l2'>Second line</label>
-                                <input type='text' name='i_tle_l2'
+                                    style='column-span: all; vertical-align: middle'
+                                    ng-show="editing[i.object_id].editing"
+                                    ng-class="{ 'has-error': form.i_callsign.$invalid }">
+                                <label class='control-label' for='i_callsign'>Callsign</label>
+                                <input type='text' name='i_callsign'
                                     class='form-control' style='width: 100%'
-                                    ng-model="i.tle.l2"
-                                    ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
+                                    ng-model="editing[i.object_id].callsign"
+                                    ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
                                     required />
                             </div>
                         </div>
 
-                    </div>
-                    </div>
+                        <div style='display: table-row'
+                            ng-show="editing[i.object_id].editing">
+
+                            <div style='display: table-cell'>
+                                <div class='control-group'
+                                    ng-class="{ 'has-error': form.i_tle_l1.$invalid }">
+                                    <label class='control-label' for='i_tle_l1'>First line</label>
+                                    <input type='text' name='i_tle_l1'
+                                        class='form-control' style='width: 100%'
+                                        ng-model="editing[i.object_id].tle.l1"
+                                        ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
+                                        required />
+                                </div>
+                            </div>
+                            <div style='display: table-cell'>
+                                <div class='control-group'
+                                    ng-class="{ 'has-error': form.i_tle_l2.$invalid }">
+                                    <label class='control-label' for='i_tle_l2'>Second line</label>
+                                    <input type='text' name='i_tle_l2'
+                                        class='form-control' style='width: 100%'
+                                        ng-model="editing[i.object_id].tle.l2"
+                                        ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
+                                        required />
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div style='display: table-row'
+                            ng-show="editing[i.object_id].editing">
+
+                            <div style='display: table-cell'>
+                                <a class='green-link link action-link'
+                                   ng-click="save_edit(i.object_id)">(save)</a>
+                            </div>
+                            <div style='display: table-cell'>
+                                <a class='red-link link action-link'
+                                   ng-click="cancel_edit(i.object_id)">(cancel)
+                                </a>
+                            </div>
+                                <!--
+                                <a class='link action-link' ng-click="forget(i.object_id)">(forget)</a>
+                                -->
+
+                        </div>
+                        <hr/>
+
                 </li>
                 </ol>
-                       -->
+
+            </div>
+
         </div>
     </div>
     </form>

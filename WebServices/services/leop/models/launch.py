@@ -32,16 +32,16 @@ class LaunchManager(django_models.Manager):
     Custom manager for the Launch objects within the database.
     """
 
-    def add_ground_stations(self, identifier, groundstations):
+    def add_ground_stations(self, launch_id, groundstations):
         """
         This method adds an existing ground station to the list of registered
         ground stations for this cluster.
-        :param identifier: Identifier of the launch object
+        :param launch_id: Identifier of the launch object
         :param groundstations: List with the identifiers of the GroundStations
                                 to be added to this cluster
         :return: Identifier of the launch object
         """
-        launch = self.get(identifier=identifier)
+        launch = self.get(identifier=launch_id)
 
         for i in groundstations:
             gs = segment_models.GroundStation.objects.get(identifier=i)
@@ -49,17 +49,17 @@ class LaunchManager(django_models.Manager):
 
         launch.save()
 
-        return identifier
+        return launch_id
 
-    def remove_groundstations(self, identifier, groundstations):
+    def remove_groundstations(self, launch_id, groundstations):
         """
         This method removes the ground stations given as a parameter from the
         list of groundstations registered as part of this launch.
-        :param identifier: Identifier of the launch
+        :param launch_id: Identifier of the launch
         :param groundstations: List of groundstations to be removed
         :return: True if the operation was succesful
         """
-        launch = self.get(identifier=identifier)
+        launch = self.get(identifier=launch_id)
 
         for g_id in groundstations:
 
@@ -70,64 +70,77 @@ class LaunchManager(django_models.Manager):
 
         return True
 
-    def add_unknown(self, identifier, object_identifier):
+    def add_unknown(self, launch_id, object_id):
         """
         Adds a new unknown object to the list.
-        :param identifier: Identifier of the launch object
-        :param object_identifier: Numerical identifier of the unknown object
+        :param launch_id: Identifier of the launch object
+        :param object_id: Numerical identifier of the unknown object
         :return: Identifier of the created unknown object (int)
         """
-        return self.get(identifier=identifier).add_unknown(object_identifier)
+        return self.get(identifier=launch_id).add_unknown(object_id)
 
-    def remove_unknown(self, identifier, object_identifier):
+    def remove_unknown(self, launch_id, object_id):
         """
         Removes the given identifier from the list.
-        :param identifier: Identifier of the launch object
-        :param object_identifier: Numerical (int) identifier to be removed
+        :param launch_id: Identifier of the launch object
+        :param object_id: Numerical (int) identifier to be removed
         :return: True if the operation was succesful
         """
-        return self.get(identifier=identifier).remove_unknown(object_identifier)
+        return self.get(identifier=launch_id).remove_unknown(object_id)
 
-    def identify(self, identifier, object_identifier, callsign, tle_l1, tle_l2):
+    def identify(self, launch_id, object_id, callsign, tle_l1, tle_l2):
         """Manager method
         Promotes an unidentified object into an identified one.
-        :param identifier: Launch identifier
-        :param object_identifier: Identifier of the object to be promoted
+        :param launch_id: Launch identifier
+        :param object_id: Identifier of the object to be promoted
         :param callsign: Callsign for the identified object
         :param tle_l1: First line of the TLE for the new identified object
         :param tle_l2: Second line of the TLE for the new identified object
         :return:
         """
-        launch = self.get(identifier=identifier)
-        launch.remove_unknown(identifier, object_identifier)
+        launch = self.get(identifier=launch_id)
+        launch.remove_unknown(launch_id, object_id)
         return launch.add_identified(
-            identifier, object_identifier, callsign, tle_l1, tle_l2
+            launch_id, object_id, callsign, tle_l1, tle_l2
         )
 
+    def forget(self, launch_id, object_id):
+        """Manager method
+        Moves an identified object back to the unknown objects list and removes
+        all allocated resources.
+        :param launch_id: Launch identifier
+        :param object_id: Identifier of the object to be promoted
+        :return: True if the operation was succesful
+        """
+        launch = self.get(identifier=launch_id)
+        launch.remove_identified(object_id)
+        launch.add_unknown(object_id)
+        return True
+
     def create(
-        self, admin, identifier, date, tle_l1, tle_l2,
+        self, admin, launch_id, date, tle_l1, tle_l2,
         **kwargs
     ):
         """Custom create method
         Custom create method that creates the TLE for this launch and
         initializes the list of unknown objects to an empty one.
         :param admin: Username of the owner of this launch object
-        :param identifier: Identifier of the launcher
+        :param launch_id: Identifier of the launcher
         :param tle_l1: First line of the TLE for the cluster
         :param tle_l2: Second line of the TLE for the cluster
         :param kwargs: All other parameters
         :return: Reference to the just created Launch object
         """
-        tle = leop_utils.create_cluster_tle(identifier, tle_l1, tle_l2)
+        tle = leop_utils.create_cluster_tle(launch_id, tle_l1, tle_l2)
         spacecraft = leop_utils.create_cluster_spacecraft(
             user_profile=admin,
-            launch_identifier=identifier,
+            launch_id=launch_id,
             tle_id=tle.identifier
         )
 
         return super(LaunchManager, self).create(
             admin=admin,
-            identifier=identifier,
+            identifier=launch_id,
             tle=tle,
             cluster_spacecraft_id=spacecraft.identifier,
             date=date,
@@ -197,49 +210,81 @@ class Launch(django_models.Model):
         verbose_name='Spacecraft identified from within the cluster'
     )
 
-    def add_unknown(self, object_identifier):
+    def add_unknown(self, object_id):
         """Object method
         Adds a new unknown object to this launch object.
-        :param object_identifier: Identifier for the unknown object
+        :param object_id: Identifier for the unknown object
         :return: Identifier of the object
         """
-        if object_identifier < 0:
+        if object_id < 0:
             raise Exception('Identifier has to be > 0')
+        if self.unknown_objects.filter(identifier=object_id).exists():
+            raise Exception('Unknown object already exists, id = ' + str(id))
 
-        if self.unknown_objects.filter(identifier=object_identifier).exists():
-            raise Exception('UFO already exists, id = ' + str(id))
-
-        self.unknown_objects.create(identifier=object_identifier)
+        self.unknown_objects.create(identifier=object_id)
         self.save()
 
-        return object_identifier
+        return object_id
 
-    def remove_unknown(self, object_identifier):
+    def remove_unknown(self, object_id):
         """Object method
         Removes a given unknown object from this launch object.
-        :param object_identifier: Identifier for the unknown object
+        :param object_id: Identifier for the unknown object
         :return: True if the operation was succesfull
         """
-        if object_identifier < 0:
+        if object_id < 0:
             raise Exception('Identifier has to be > 0')
+        if not self.unknown_objects.filter(identifier=object_id).exists():
+            raise Exception('Unknown object does not exist, id = ' + str(id))
 
-        if not self.unknown_objects.filter(
-                identifier=object_identifier
-        ).exists():
-            raise Exception('UFO already exists, id = ' + str(id))
-
-        self.unknown_objects.get(identifier=object_identifier).delete()
+        self.unknown_objects.get(identifier=object_id).delete()
         self.save()
 
         return True
 
-    def add_identified(self, object_identifier, callsign, tle_l1, tle_l2):
+    def add_identified(
+        self, launch_id, object_id, callsign, tle_l1, tle_l2
+    ):
         """
         Adds an identified objectd to the list of identified ones.
-        :param object_identifier: Identifier for the identified object
+        :param launch_id: Identifier of the launch
+        :param object_id: Identifier for the identified object
         :param callsign: Callsign for the identified object
         :param tle_l1: First line of the TLE for the identified object
         :param tle_l2: Second line of the TLE for the identified object
-        :return:
+        :return: Identifier of the object
         """
-        pass
+        if object_id < 0:
+            raise Exception('Identifier has to be > 0')
+        if self.identified_objects.filter(identifier=object_id).exists():
+            raise Exception('Identified object already exists, id = ' + str(id))
+
+        tle = leop_utils.create_object_tle(
+            object_id, callsign, tle_l1, tle_l2
+        )
+        spacecraft = leop_utils.create_object_spacecraft(
+            self.admin, launch_id, object_id, callsign, tle.identifier
+        )
+
+        self.identified_objects.add(spacecraft)
+        self.save()
+
+    def remove_identified(self, launch_id, object_id):
+        """
+        Removes an identified object from the list together with the associated
+        resources.
+        :param object_id: Identifier for the identified object
+        :return: True if the operation was succesfull
+        """
+        if object_id < 0:
+            raise Exception('Identifier has to be > 0')
+        if not self.identified_objects.filter(identifier=object_id).exists():
+            raise Exception('Identified object does not exist, id = ' + str(id))
+
+        sc_id = leop_utils.generate_object_sc_identifier(launch_id, object_id)
+        tle_id = leop_utils.generate_cluster_tle_id(launch_id)
+        tle_models.TwoLineElement.objects.get(identifier=tle_id).delete()
+        segment_models.Spacecraft.objects.get(identifier=sc_id).delete()
+
+        self.add_unknown(object_id)
+        self.save()

@@ -333,17 +333,24 @@ a.button-red {
 
 .action-link {
   margin-left: 50px;
-  font-size: 75%;
-  display: table-cell; }
+  font-size: 75%; }
 
 .ufos-item {
   display: table-cell;
   box-sizing: content-box;
   border-spacing: 0px; }
 
+.ufo-item {
+  margin: 10px;
+  line-height: 200%;
+  cursor: pointer; }
+
+.ufo-item:hover {
+  color: #0F3E62; }
+
 .right-border {
   border-right: thick solid black;
-  padding-right: 20px; }
+  padding-right: 50px; }
 
 .bottom-border {
   border-bottom: thick solid black;

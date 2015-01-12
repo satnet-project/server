@@ -118,7 +118,7 @@ def remove_groundstations(launch_identifier, groundstations, **kwargs):
     signature=['String', 'int'],
     login_required=True
 )
-def add_unknown(launch_identifier, identifier, **kwargs):
+def add_unknown(launch_identifier, identifier):
     """JRPC method
     Adds a new unknown object to the list.
     :param launch_identifier: Identifier of the Launch
@@ -135,7 +135,7 @@ def add_unknown(launch_identifier, identifier, **kwargs):
     signature=['String', 'int'],
     login_required=True
 )
-def remove_unknown(launch_identifier, identifier, **kwargs):
+def remove_unknown(launch_identifier, identifier):
     """JRPC method
     Removes an unknown object from the list
     :param launch_identifier: Identifier of the Launch
@@ -152,23 +152,35 @@ def remove_unknown(launch_identifier, identifier, **kwargs):
     signature=['String', 'int', 'String', 'String', 'String'],
     login_required=True
 )
-def identify(launch_identifier, identifier, callsign, tle_l1, tle_l2, **kwargs):
+def identify(launch_identifier, identifier, callsign, tle_l1, tle_l2):
+    """JRPC method
+    Identifies an UFO object and promotes it to an identified one.
+    :param launch_identifier: Identifier of the Launch
+    :param identifier: Identifier for the unknown object
+    :param callsign: Callsign for the identified object
+    :param tle_l1: First line of the TLE associated to the object
+    :param tle_l2: Second line of the TLE associated to the object
+    :return: Identifier of the promoted object
+    """
+    return launch_models.Launch.objects.identify(
+        launch_identifier, identifier, callsign, tle_l1, tle_l2
+    )
 
-    # user must be obtained from the request, since this has already been
-    # validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    if not http_request or not http_request.user.is_staff:
-        raise django_ex.PermissionDenied()
 
-    if identifier < 0:
-        raise Exception('Identifier has to be > 0')
+@rpc4django.rpcmethod(
+    name='leop.launch.forget',
+    signature=['String', 'int'],
+    login_required=True
+)
+def forget(launch_identifier, identifier):
+    """JRPC method
+    Forgets an identified object and promotes it back to the unknown state.
+    :param launch_identifier: Identifier of the Launch
+    :param identifier: Identifier for the unknown object
+    :return: True if the operation was succesful
+    """
+    return launch_models.Launch.objects.forget(launch_identifier, identifier)
 
-    launch = launch_models.Launch.objects.get(identifier=launch_identifier)
-    u_objects = launch.unknown_objects
-    if not identifier in u_objects:
-        raise Exception('Identifier not found')
-
-    return identifier
 
 @rpc4django.rpcmethod(
     name='leop.getConfiguration',

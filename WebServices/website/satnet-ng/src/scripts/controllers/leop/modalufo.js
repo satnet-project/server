@@ -27,7 +27,7 @@ angular.module(
 
 angular.module('ui-leop-modalufo-controllers')
     .constant('MAX_UFOS', 24)
-    .constant('UFO_COLUMNS', 4)
+    .constant('MAX_COLUMNS', 4)
     .service('objectArrays', [
         function () {
             'use strict';
@@ -194,6 +194,7 @@ angular.module('ui-leop-modalufo-controllers')
                         objectArrays.parseInt(data.ufos, 'object_id');
                         angular.extend($scope.cluster, data);
                         scope.cluster.max_ufos = MAX_UFOS;
+                        scope.editing = {};
                     });
             };
 
@@ -257,11 +258,34 @@ angular.module('ui-leop-modalufo-controllers')
 
                 $scope.cluster.identified.push(idx_obj.object);
                 $scope.cluster.ufos.splice(idx_obj.index, 1);
+                $scope.editing[object_id] = {
+                    editing: true,
+                    tle: { l1: '', l2: '' },
+                    callsign: ''
+                };
+
+            };
+
+            $scope.edit = function (object_id) {
+                $scope.editing[object_id].editing = true;
+            };
+
+            $scope.save_edit = function (object_id) {
+
+                console.log('>>> cs = ' + $scope.editing[object_id].callsign);
+                console.log('>>> tle_l1 = ' + $scope.editing[object_id].tle.l1);
+                console.log('>>> tle_l2 = ' + $scope.editing[object_id].tle.l2);
 
                 /*
                 satnetRPC.rCall(
                     'leop.ufo.identify',
-                    [$rootScope.leop_id, object_id, '', '', '']
+                    [
+                        $rootScope.leop_id,
+                        object_id,
+                        $scope[object_id].callsign,
+                        $scope[object_id].tle.l1,
+                        $scope[object_id].tle.l2
+                    ]
                 )
                     .then(function (data) {
                         $log.info(
@@ -270,6 +294,11 @@ angular.module('ui-leop-modalufo-controllers')
                         );
                     });
                 */
+                $scope.editing[object_id].editing = false;
+            };
+
+            $scope.cancel_edit = function (object_id) {
+                $scope.editing[object_id].editing = false;
             };
 
             /**
@@ -294,6 +323,10 @@ angular.module('ui-leop-modalufo-controllers')
                     ),
                     scope = $scope;
 
+                scope.cluster.ufos.push(idx_obj.object);
+                scope.cluster.identified.splice(idx_obj.index, 1);
+
+                /*
                 satnetRPC.rCall(
                     'leop.ufo.forget',
                     [$rootScope.leop_id, object_id]
@@ -303,9 +336,9 @@ angular.module('ui-leop-modalufo-controllers')
                             '[modal-ufo] <Object#' +
                                 data + '> back in the UFO list.'
                         );
-                        scope.cluster.ufos.push(idx_obj.object);
-                        scope.cluster.identified.splice(idx_obj.index, 1);
+
                     });
+                */
 
             };
 
