@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import re
 import socket
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
@@ -79,7 +80,7 @@ def create_object_spacecraft(
     :return: Reference to the just created spacecraft object
     """
     sc_id = generate_object_sc_identifier(
-        launch_id, object_id, callsign
+        launch_id, object_id
     )
 
     return segment_models.Spacecraft.objects.create(
@@ -134,7 +135,7 @@ def generate_cluster_sc_identifier(launch_id, callsign):
     :param callsign: Callsign for the UFO
     :return: String with the complete TLE source
     """
-    sc_id = 'cluster:' + str(launch_id) + ':cs:' + str(callsign)
+    sc_id = str(launch_id) + ':' + str(callsign)
     return sc_id[0:(segment_models.Spacecraft.MAX_SC_ID_LEN - 1)]
 
 
@@ -145,7 +146,8 @@ def generate_cluster_callsign(launch_id):
     :param launch_id: Identifier of the cluster
     :return: String with the identifier
     """
-    sc_id = 'cluster:' + str(launch_id) + ':cs'
+    sc_id = 'CS' + str(launch_id)
+    sc_id = re.sub(r'\W+', '', sc_id)
     return sc_id[0:(segment_models.Spacecraft.MAX_CALLSIGN_LEN - 1)]
 
 

@@ -67,6 +67,7 @@ def serialize_launch_unknown(unknown):
 
     for u in unknown:
         result.append({JRPC_K_OBJECT_ID: str(u.identifier)})
+
     return result
 
 
@@ -78,17 +79,17 @@ def serialize_launch_identified(identified):
     """
     result = []
 
-    if not identified:
+    if len(identified) < 1:
         return result
 
     for i in identified:
 
         result.append({
             JRPC_K_OBJECT_ID: str(i.identifier),
-            JRPC_K_CALLSIGN: str(i.callsign),
+            JRPC_K_CALLSIGN: str(i.spacecraft.callsign),
             JRPC_K_TLE: {
-                JRPC_K_TLE_L1: str(i.tle.first_line),
-                JRPC_K_TLE_L2: str(i.tle.second_line)
+                JRPC_K_TLE_L1: str(i.spacecraft.tle.first_line),
+                JRPC_K_TLE_L2: str(i.spacecraft.tle.second_line)
             }
         })
 
@@ -102,7 +103,8 @@ def serialize_launch(launch):
     :return: JSON serialized structure with the configuration
     """
     unknown = serialize_launch_unknown(launch.unknown_objects.all())
-    identified = serialize_launch_identified(launch.identified_objects.all())
+    identified_objects = launch.identified_objects.all()
+    identified = serialize_launch_identified(identified_objects)
 
     return {
         JRPC_K_LEOP_ID: str(launch.identifier),

@@ -1,0 +1,13 @@
+[
+  {
+    "model": "accounts.UserProfile",
+    "pk": 1,
+    "fields": {
+        "user_ptr": "1",
+        "organization": "The SATNet Network",
+        "country": "",
+        "is_verified": "True",
+        "is_blocked": "False"
+    }
+  }
+]

@@ -2173,6 +2173,34 @@ angular.module('ui-leop-modalufo-controllers')
 
             };
 
+            /**
+             * Iterates over the objects of the given array and adds the
+             * pair (key, value) to each of those items.
+             * @param array Array over wich to iterate
+             * @param key Name of the property
+             * @param value Value of the property
+             * @returns {*}
+             */
+            this.addProperty = function (array, key, value) {
+
+                if (array === null) { throw 'Array is null'; }
+                if (array.length === 0) { return true; }
+                if (key === null) { throw 'Key is null'; }
+                if (key.length === 0) { throw 'Key is blank'; }
+                if (value === null) { throw 'Value is null'; }
+                if (array[0].hasOwnProperty(key) === true) {
+                    throw 'Property already defined, k = ' + key;
+                }
+                var i;
+
+                for (i = 0; i < array.length; i += 1) {
+                    array[i][key] = value;
+                }
+
+                return array;
+
+            };
+
         }
     ])
     .controller('manageClusterModal', [
@@ -2201,7 +2229,13 @@ angular.module('ui-leop-modalufo-controllers')
                         objectArrays.parseInt(data.ufos, 'object_id');
                         angular.extend($scope.cluster, data);
                         scope.cluster.max_ufos = MAX_UFOS;
-                        scope.editing = {};
+                        //scope.editing = {};
+                        objectArrays.addProperty(
+                            scope.cluster.identified,
+                            'editing',
+                            false
+                        );
+
                     });
             };
 
@@ -2260,16 +2294,18 @@ angular.module('ui-leop-modalufo-controllers')
 
                 angular.extend(
                     idx_obj.object,
-                    { tle: { l1: '', l2: '' }, callsign: '' }
+                    { tle: { l1: '', l2: '' }, callsign: '', editing: true }
                 );
 
                 $scope.cluster.identified.push(idx_obj.object);
                 $scope.cluster.ufos.splice(idx_obj.index, 1);
+                /*
                 $scope.editing[object_id] = {
                     editing: true,
                     tle: { l1: '', l2: '' },
                     callsign: ''
                 };
+                */
 
             };
 
@@ -2283,24 +2319,23 @@ angular.module('ui-leop-modalufo-controllers')
                 console.log('>>> tle_l1 = ' + $scope.editing[object_id].tle.l1);
                 console.log('>>> tle_l2 = ' + $scope.editing[object_id].tle.l2);
 
-                /*
+                /**/
                 satnetRPC.rCall(
                     'leop.ufo.identify',
                     [
                         $rootScope.leop_id,
                         object_id,
-                        $scope[object_id].callsign,
-                        $scope[object_id].tle.l1,
-                        $scope[object_id].tle.l2
+                        $scope.editing[object_id].callsign,
+                        $scope.editing[object_id].tle.l1,
+                        $scope.editing[object_id].tle.l2
                     ]
                 )
                     .then(function (data) {
                         $log.info(
-                            '[modal-ufo] <Object#' +
-                                data + '> back in the UFO list.'
+                            '[modal-ufo] <Object#' + data + '> IDENTIFIED!'
                         );
                     });
-                */
+                /**/
                 $scope.editing[object_id].editing = false;
             };
 
@@ -2333,19 +2368,18 @@ angular.module('ui-leop-modalufo-controllers')
                 scope.cluster.ufos.push(idx_obj.object);
                 scope.cluster.identified.splice(idx_obj.index, 1);
 
-                /*
+                /**/
                 satnetRPC.rCall(
                     'leop.ufo.forget',
                     [$rootScope.leop_id, object_id]
                 )
                     .then(function (data) {
                         $log.info(
-                            '[modal-ufo] <Object#' +
-                                data + '> back in the UFO list.'
+                            '[modal-ufo] <Object#' + data + '> back as a UFO.'
                         );
 
                     });
-                */
+                /**/
 
             };
 

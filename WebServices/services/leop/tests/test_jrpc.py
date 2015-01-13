@@ -19,7 +19,7 @@ import datadiff
 from django import test
 from django.core import exceptions as django_ex
 import logging
-#from services.common import misc
+from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.views import launch as launch_jrpc
@@ -71,6 +71,7 @@ class TestLaunchViews(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_list_groundstations(self):
         """Unit test case.
@@ -265,24 +266,18 @@ class TestLaunchViews(test.TestCase):
         Validation of the remote addition of a new unknown object to the list.
         """
         try:
-            launch_jrpc.add_unknown(
-                self.__leop_id, None, **{'request': self.__request_2}
-            )
+            launch_jrpc.add_unknown(self.__leop_id, None)
             self.fail('An exception should have been thrown, id < 0')
         except Exception:
             pass
         try:
-            launch_jrpc.add_unknown(
-                self.__leop_id, -1, **{'request': self.__request_2}
-            )
+            launch_jrpc.add_unknown(self.__leop_id, -1)
             self.fail('An exception should have been thrown, id < 0')
         except Exception:
             pass
 
         self.assertEquals(
-            launch_jrpc.add_unknown(
-                self.__leop_id, 1, **{'request': self.__request_2}
-            ), 1,
+            launch_jrpc.add_unknown(self.__leop_id, 1), 1,
             'Identifiers must match'
         )
 
@@ -319,21 +314,18 @@ class TestLaunchViews(test.TestCase):
             pass
 
         self.assertEquals(
-            launch_jrpc.add_unknown(
-                self.__leop_id, 1,  **{'request': self.__request_2}
-            ), 1,
+            launch_jrpc.add_unknown(self.__leop_id, 1), 1,
             'Identifiers must match'
         )
         self.assertTrue(
-            launch_jrpc.remove_unknown(
-                self.__leop_id, 1,  **{'request': self.__request_2}
-            ),
+            launch_jrpc.remove_unknown(self.__leop_id, 1),
             'Should have returned True'
         )
         self.assertEqual(
             len(launch_models.Launch.objects.get(
                 identifier=self.__leop_id
-            ).unknown_objects.all()), 0,
+            ).unknown_objects.all()),
+            0,
             'List must be empty'
         )
 
@@ -370,9 +362,7 @@ class TestLaunchViews(test.TestCase):
         )
 
         # 2) 1 ufo
-        launch_jrpc.add_unknown(
-            self.__leop_id, 1,  **{'request': self.__request_2}
-        )
+        launch_jrpc.add_unknown(self.__leop_id, 1)
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
@@ -395,16 +385,11 @@ class TestLaunchViews(test.TestCase):
             )
         )
 
-        """
         # 3) 1 ufo, 1 identified
-        launch_jrpc.add_unknown(
-            self.__leop_id, 2,  **{'request': self.__request_2}
-        )
+        launch_jrpc.add_unknown(self.__leop_id, 2)
         launch_jrpc.identify(
-            self.__leop_id,
-            self.__ufo_id, self.__ufo_callsign,
-            self.__ufo_tle_l1, self.__ufo_tle_l2,
-            request=self.__request_2
+            self.__leop_id, self.__ufo_id, self.__ufo_callsign,
+            self.__ufo_tle_l1, self.__ufo_tle_l2
         )
 
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
@@ -440,33 +425,32 @@ class TestLaunchViews(test.TestCase):
             )
         )
 
-        """
-#        # 4) 2 ufos
-#        launch_jrpc.forget(self.__leop_id, self.__ufo_id)
-#        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
-#        e_cfg = {
-#            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-#            launch_serial.JRPC_K_TLE: {
-#                launch_serial.JRPC_K_TLE_L1:
-#                    '1 27844U 03031E   15007.47529781  .00000328'
-#                    '  00000-0  16930-3 0  1108',
-#                launch_serial.JRPC_K_TLE_L2:
-#                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-#                    '104.9393 14.21678727597601',
-#            },
-#            launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
-#                {launch_serial.JRPC_K_OBJECT_ID: '2'},
-#                {launch_serial.JRPC_K_OBJECT_ID: '1'}
-#            ],
-#            launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
-#        }
-#
-#        if self.__verbose_testing:
-#            misc.print_dictionary(a_cfg)
-#            misc.print_dictionary(e_cfg)
-#
-#        self.assertEquals(
-#            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
-#                datadiff.diff(a_cfg, e_cfg)
-#            )
-#        )
+        # 4) 2 ufos
+        launch_jrpc.forget(self.__leop_id, self.__ufo_id)
+        a_cfg = launch_jrpc.get_configuration(self.__leop_id)
+        e_cfg = {
+            launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_TLE: {
+                launch_serial.JRPC_K_TLE_L1:
+                    '1 27844U 03031E   15007.47529781  .00000328'
+                    '  00000-0  16930-3 0  1108',
+                launch_serial.JRPC_K_TLE_L2:
+                    '2 27844  98.6976  18.3001 0010316  50.6742 '
+                    '104.9393 14.21678727597601',
+            },
+            launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
+                {launch_serial.JRPC_K_OBJECT_ID: '2'},
+                {launch_serial.JRPC_K_OBJECT_ID: '1'}
+            ],
+            launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
+        }
+
+        if self.__verbose_testing:
+            misc.print_dictionary(a_cfg)
+            misc.print_dictionary(e_cfg)
+
+        self.assertEquals(
+            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
+                datadiff.diff(a_cfg, e_cfg)
+            )
+        )

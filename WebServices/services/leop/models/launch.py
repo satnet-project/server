@@ -99,9 +99,9 @@ class LaunchManager(django_models.Manager):
         :return:
         """
         launch = self.get(identifier=launch_id)
-        launch.remove_unknown(launch_id, object_id)
+        launch.remove_unknown(object_id)
         return launch.add_identified(
-            launch_id, object_id, callsign, tle_l1, tle_l2
+            launch.admin, launch_id, object_id, callsign, tle_l1, tle_l2
         )
 
     def forget(self, launch_id, object_id):
@@ -113,7 +113,7 @@ class LaunchManager(django_models.Manager):
         :return: True if the operation was succesful
         """
         launch = self.get(identifier=launch_id)
-        launch.remove_identified(object_id)
+        launch.remove_identified(launch_id, object_id)
         launch.add_unknown(object_id)
         return True
 
@@ -206,8 +206,8 @@ class Launch(django_models.Model):
         verbose_name='Objects still unknown'
     )
     identified_objects = django_models.ManyToManyField(
-        segment_models.Spacecraft,
-        verbose_name='Spacecraft identified from within the cluster'
+        ufo_models.IdentifiedObject,
+        verbose_name='Object identified from within the cluster'
     )
 
     def add_unknown(self, object_id):
@@ -243,10 +243,11 @@ class Launch(django_models.Model):
         return True
 
     def add_identified(
-        self, launch_id, object_id, callsign, tle_l1, tle_l2
+        self, admin, launch_id, object_id, callsign, tle_l1, tle_l2
     ):
         """
         Adds an identified objectd to the list of identified ones.
+        :param admin: owner of the associated spacecraft object
         :param launch_id: Identifier of the launch
         :param object_id: Identifier for the identified object
         :param callsign: Callsign for the identified object
@@ -259,32 +260,31 @@ class Launch(django_models.Model):
         if self.identified_objects.filter(identifier=object_id).exists():
             raise Exception('Identified object already exists, id = ' + str(id))
 
-        tle = leop_utils.create_object_tle(
-            object_id, callsign, tle_l1, tle_l2
-        )
-        spacecraft = leop_utils.create_object_spacecraft(
-            self.admin, launch_id, object_id, callsign, tle.identifier
+        identified = ufo_models.IdentifiedObject.objects.create(
+            admin, launch_id, object_id, callsign, tle_l1, tle_l2
         )
 
-        self.identified_objects.add(spacecraft)
+        self.identified_objects.add(identified)
         self.save()
+
+        return object_id
 
     def remove_identified(self, launch_id, object_id):
         """
         Removes an identified object from the list together with the associated
         resources.
+        :param launch_id: Identifier of the launch
         :param object_id: Identifier for the identified object
         :return: True if the operation was succesfull
         """
         if object_id < 0:
             raise Exception('Identifier has to be > 0')
         if not self.identified_objects.filter(identifier=object_id).exists():
-            raise Exception('Identified object does not exist, id = ' + str(id))
+            raise Exception(
+                'Identified object (sc) does not exist, id = ' + str(object_id)
+            )
 
-        sc_id = leop_utils.generate_object_sc_identifier(launch_id, object_id)
-        tle_id = leop_utils.generate_cluster_tle_id(launch_id)
-        tle_models.TwoLineElement.objects.get(identifier=tle_id).delete()
-        segment_models.Spacecraft.objects.get(identifier=sc_id).delete()
+        ufo_models.IdentifiedObject.objects.delete(launch_id, object_id)
 
-        self.add_unknown(object_id)
         self.save()
+        return True

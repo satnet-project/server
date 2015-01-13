@@ -183,7 +183,7 @@ INSTALLED_APPS = (
     'rpc4django',
     'rest_framework',
     'django_extensions',
-    'south',
+    # 'south',
     'datetimewidget',
 
     # ### developed applications
@@ -358,5 +358,5 @@ APPEND_SLASH = False
 RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 
 # Django south not running during UNIT tests:
-SOUTH_TESTS_MIGRATE = False # To disable migrations and use syncdb instead
-SKIP_SOUTH_TESTS = True # To disable South's own unit tests
+# SOUTH_TESTS_MIGRATE = False # To disable migrations and use syncdb instead
+# SKIP_SOUTH_TESTS = True # To disable South's own unit tests
