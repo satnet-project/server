@@ -127,3 +127,70 @@ test('basic split tests', function () {
     );
 
 });
+
+test('basic insert sorted', function () {
+    'use strict';
+
+    throws(
+        function () {
+            objectArrays.insertSorted([{'object_id': 1}], 'object_id', null);
+        },
+        /is null/,
+        'Element is null, an exception should have been thrown'
+    );
+    throws(
+        function () {
+            objectArrays.insertSorted([{'object_id': 1}], 'object_id', {});
+        },
+        /Invalid element/,
+        'Element is empty, an exception should have been thrown'
+    );
+    throws(
+        function () {
+            objectArrays.insertSorted([], 'object_id', {});
+        },
+        /Invalid element/,
+        'Element is empty, an exception should have been thrown'
+    );
+
+    deepEqual(
+        objectArrays.insertSorted([], 'object_id', {'object_id': 2}),
+        [{'object_id': 2}],
+        'Array should contain a new element'
+    );
+    deepEqual(
+        objectArrays.insertSorted(
+            [{'object_id': 1}],
+            'object_id',
+            {'object_id': 2}
+        ),
+        [{'object_id': 1}, {'object_id': 2}],
+        'Array should contain a two elements'
+    );
+
+    deepEqual(
+        objectArrays.insertSorted(
+            [{'object_id': 3}],
+            'object_id',
+            {'object_id': 2}
+        ),
+        [{'object_id': 2}, {'object_id': 3}],
+        'Array should contain a two elements'
+    );
+
+    deepEqual(
+        objectArrays.insertSorted(
+            [{'object_id': 3}, {'object_id': 5}, {'object_id': 7}],
+            'object_id',
+            {'object_id': 2}
+        ),
+        [
+            {'object_id': 2},
+            {'object_id': 3},
+            {'object_id': 5},
+            {'object_id': 7}
+        ],
+        'Array should contain a two elements'
+    );
+
+});

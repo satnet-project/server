@@ -20,10 +20,6 @@
 {% load staticfiles %}
 
 {% block head %}
-
-    <link rel="stylesheet" href="{% static 'css/bootstrap-datetimepicker.css' %}"   />
-    <script src="{% static 'js/bootstrap-datetimepicker.js' %}"></script>
-
 {% endblock %}
 
 {% block content %}
@@ -31,18 +27,13 @@
 <h1>Create LEOP Manager</h1>
 <hr/>
 
-<form class='launch-form'
-      action="{% url 'leop_update' cluster_id %}"
-      method='post'>
-
-    {% csrf_token %}
-    {{ form.as_p }}
-
     <div>
-        <input type='submit' value="{% trans 'Update LEOP' %}" />
+        <span>LEOP manager succesfully created!</span>
     </div>
-
-</form>
+    <div><br>
+        <a class='button-dark' style='font-weight: bold'
+            href="{% url 'leop_management' %}">(return)</a>
+    </div>
 
 {% endblock %}
 

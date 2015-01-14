@@ -99,10 +99,11 @@ class LaunchManager(django_models.Manager):
         :return:
         """
         launch = self.get(identifier=launch_id)
-        launch.remove_unknown(object_id)
-        return launch.add_identified(
+        identified = launch.add_identified(
             launch.admin, launch_id, object_id, callsign, tle_l1, tle_l2
         )
+        launch.remove_unknown(object_id)
+        return identified
 
     def forget(self, launch_id, object_id):
         """Manager method
@@ -118,8 +119,7 @@ class LaunchManager(django_models.Manager):
         return True
 
     def create(
-        self, admin, launch_id, date, tle_l1, tle_l2,
-        **kwargs
+        self, admin, launch_id, date, tle_l1, tle_l2, **kwargs
     ):
         """Custom create method
         Custom create method that creates the TLE for this launch and
@@ -131,6 +131,11 @@ class LaunchManager(django_models.Manager):
         :param kwargs: All other parameters
         :return: Reference to the just created Launch object
         """
+        if not admin:
+            raise Exception('No admin provided')
+        if not date:
+            raise Exception('No date provided')
+
         tle = leop_utils.create_cluster_tle(launch_id, tle_l1, tle_l2)
         spacecraft = leop_utils.create_cluster_spacecraft(
             user_profile=admin,

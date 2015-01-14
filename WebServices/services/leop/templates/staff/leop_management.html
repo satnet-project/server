@@ -44,8 +44,8 @@
         </div>
         {% for c in cluster_list %}
         <div class='table-row'>
-            <div><a class='edit-link'
-                    href="{% url 'leop_update' c.identifier %}">
+            <div><a class='edit-link'>
+                    <!--href="{% url 'leop_update' c.identifier %}">-->
                 {{ c.identifier }}</a></div>
             <div><ol>
                 {% for g in c.groundstations_set.all %}

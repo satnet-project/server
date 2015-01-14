@@ -58,6 +58,18 @@ class OrbitalSimulator(object):
     _tle = None
 
     @staticmethod
+    def check_tle_format(l0, l1, l2):
+        """Static method
+        Checks whether the format for a given TLE is correct or not.
+        :param l0: Line#0 of the TLE file
+        :param l1: Line#1 of the TLE file
+        :param l2: Line#2 of the TLE file
+        :return: True if the operation could succesuffly be completed
+        """
+        ephem.readtle(l0, l1, l2)
+        return True
+
+    @staticmethod
     def _create_test_operational_slots(
         start, end, minimum_duration=datetime.timedelta(minutes=5)
     ):

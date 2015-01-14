@@ -194,6 +194,37 @@ angular.module('ui-leop-modalufo-controllers')
 
             };
 
+            /**
+             * This function inserts the given element into the array in
+             * accordance with the insertion algorithm. The array list is
+             * suppossed to be sorted before hand. For the comparison, it
+             * uses the <key> property that all the elements of the array
+             * should have.
+             *
+             * @param array Already sorted array
+             * @param property Object's property for comparison
+             * @param element The element to be inserted
+             * @returns {*}
+             */
+            this.insertSorted = function (array, property, element) {
+                this.check(array, property);
+                if (element === null) { throw 'Element is null'; }
+                if (element.hasOwnProperty(property) === false) {
+                    throw 'Invalid element';
+                }
+                var i;
+
+                for (i = 0; i < array.length; i += 1) {
+                    if (array[i][property] > element[property]) {
+                        break;
+                    }
+                }
+
+                array.splice(i, 0, element);
+                return array;
+
+            };
+
         }
     ])
     .controller('manageClusterModal', [
@@ -211,8 +242,10 @@ angular.module('ui-leop-modalufo-controllers')
             'use strict';
 
             $scope.cluster = {};
+            $scope.editing = [];
 
             $scope.init = function () {
+                // TODO sort list of ufos retrieved from server, just in case
                 var scope = $scope;
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id])
                     .then(function (data) {
@@ -222,13 +255,9 @@ angular.module('ui-leop-modalufo-controllers')
                         objectArrays.parseInt(data.ufos, 'object_id');
                         angular.extend($scope.cluster, data);
                         scope.cluster.max_ufos = MAX_UFOS;
-                        //scope.editing = {};
-                        objectArrays.addProperty(
-                            scope.cluster.identified,
-                            'editing',
-                            false
+                        console.log(
+                            '>>> edit = ' + JSON.stringify(scope.editing)
                         );
-
                     });
             };
 
@@ -237,10 +266,17 @@ angular.module('ui-leop-modalufo-controllers')
                 var id_ufos, id_identified, id;
 
                 id_ufos = ($scope.cluster.ufos.length === 0) ? 0
-                    : objectArrays.findMaxTuple($scope.cluster.ufos, 'object_id').value;
+                    : objectArrays.findMaxTuple(
+                        $scope.cluster.ufos,
+                        'object_id'
+                    ).value;
                 id_identified = ($scope.cluster.identified.length === 0) ? 0
-                    : objectArrays.findMaxTuple($scope.cluster.identified, 'object_id').value;
-                id = (id_ufos > id_identified) ? id_ufos + 1 : id_identified + 1;
+                    : objectArrays.findMaxTuple(
+                        $scope.cluster.identified,
+                        'object_id'
+                    ).value;
+                id = (id_ufos > id_identified) ? id_ufos + 1
+                    : id_identified + 1;
 
                 satnetRPC.rCall('leop.ufo.add', [$rootScope.leop_id, id])
                     .then(function (data) {
@@ -281,8 +317,7 @@ angular.module('ui-leop-modalufo-controllers')
                 );
 
                 $log.info(
-                    '[modal-ufo] <Object#' +
-                        object_id + '> promoted to the identified list.'
+                    '[modal-ufo] <Obj#' + object_id + '> moved to identified.'
                 );
 
                 angular.extend(
@@ -292,13 +327,7 @@ angular.module('ui-leop-modalufo-controllers')
 
                 $scope.cluster.identified.push(idx_obj.object);
                 $scope.cluster.ufos.splice(idx_obj.index, 1);
-                /*
-                $scope.editing[object_id] = {
-                    editing: true,
-                    tle: { l1: '', l2: '' },
-                    callsign: ''
-                };
-                */
+                $scope.editing[object_id] = idx_obj.object;
 
             };
 
@@ -308,11 +337,6 @@ angular.module('ui-leop-modalufo-controllers')
 
             $scope.save_edit = function (object_id) {
 
-                console.log('>>> cs = ' + $scope.editing[object_id].callsign);
-                console.log('>>> tle_l1 = ' + $scope.editing[object_id].tle.l1);
-                console.log('>>> tle_l2 = ' + $scope.editing[object_id].tle.l2);
-
-                /**/
                 satnetRPC.rCall(
                     'leop.ufo.identify',
                     [
@@ -323,17 +347,50 @@ angular.module('ui-leop-modalufo-controllers')
                         $scope.editing[object_id].tle.l2
                     ]
                 )
-                    .then(function (data) {
-                        $log.info(
-                            '[modal-ufo] <Object#' + data + '> IDENTIFIED!'
-                        );
-                    });
-                /**/
-                $scope.editing[object_id].editing = false;
+                    .then(
+                        function (data) {
+                            $log.info(
+                                '[modal-ufo] <Object#' + data + '> IDENTIFIED!'
+                            );
+                            $scope.editing[object_id].editing = false;
+                        },
+                        function (data) {
+                            $log.warn(
+                                '[modal-ufo] Wrong object configuration, ex = '
+                                    + JSON.stringify(data)
+                            );
+                            if (alert(
+                                    'Wrong configuration, error = ' +
+                                        JSON.stringify(data)
+                                ) === false) {
+                                $log.warn(
+                                    '[modal-ufo] <Object#' + object_id +
+                                        '> kept in the identified objects list.'
+                                );
+                            }
+                        }
+                    );
+
             };
 
             $scope.cancel_edit = function (object_id) {
                 $scope.editing[object_id].editing = false;
+            };
+
+            /**
+             * This function 'forgets' a given previously identified object by
+             * moving it back from the identified list to the ufos list.
+             * @param index Index of the object within the identified list
+             * @param object Reference to the object itself
+             */
+            $scope.forgetObject = function (index, object) {
+                objectArrays.insertSorted(
+                    $scope.cluster.ufos,
+                    'object_id',
+                    object
+                );
+                $scope.cluster.identified.splice(index, 1);
+                $scope.editing.splice(object.object_id, 1);
             };
 
             /**
@@ -358,10 +415,11 @@ angular.module('ui-leop-modalufo-controllers')
                     ),
                     scope = $scope;
 
-                scope.cluster.ufos.push(idx_obj.object);
-                scope.cluster.identified.splice(idx_obj.index, 1);
+                if (idx_obj.object.tle.l1 === '') {
+                    $scope.forgetObject(idx_obj.index, idx_obj.object);
+                    return;
+                }
 
-                /**/
                 satnetRPC.rCall(
                     'leop.ufo.forget',
                     [$rootScope.leop_id, object_id]
@@ -370,9 +428,8 @@ angular.module('ui-leop-modalufo-controllers')
                         $log.info(
                             '[modal-ufo] <Object#' + data + '> back as a UFO.'
                         );
-
+                        scope.forgetObject(idx_obj.index, idx_obj.object);
                     });
-                /**/
 
             };
 

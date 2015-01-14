@@ -21,7 +21,8 @@ from urllib2 import urlopen as urllib2_urlopen
 from django.core import exceptions, validators
 from django.db import models
 from services.common import misc
-from services.configuration.models.celestrak \
+from services.common import simulation
+from services.configuration.models.celestrak\
     import CelestrakDatabase as Celestrak
 
 logger = logging.getLogger('configuration')
@@ -37,6 +38,8 @@ class TwoLineElementsManager(models.Manager):
         with the correspondent timestamp about the time of update. The line 0
         of the TLE is used as a identifier for the TLE itself.
         """
+        simulation.OrbitalSimulator.check_tle_format(l0, l1, l2)
+
         return super(TwoLineElementsManager, self).create(
             timestamp=misc.get_utc_timestamp(),
             source=source,
