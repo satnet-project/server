@@ -335,8 +335,8 @@ AUTH_PROFILE_MODULE = 'services.accounts.UserProfile'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 # ### django-session-security
-SESSION_SECURITY_WARN_AFTER = 600
-SESSION_SECURITY_EXPIRE_AFTER = 540
+SESSION_SECURITY_WARN_AFTER = 450
+SESSION_SECURITY_EXPIRE_AFTER = 600
 # ### List with the urls that do not provoke the inactivity timer to be 
 # restarted
 # SESSION_SECURITY_PASSIVE_URLS = 

@@ -1708,6 +1708,54 @@ angular.module('x-spacecraft-models').service('xsc', [
 
     }
 ]);;/**
+ * Created by rtubio on 1/13/15.
+ */
+
+angular.module('idle', ['ui.bootstrap']);
+
+angular.module('idle')
+    .controller('idleCtrl', [
+        '$scope', '$modal',
+        function ($scope, $modal) {
+            'use strict';
+
+            $scope.started = true;
+
+            function closeModals() {
+                if ($scope.warning) {
+                    $scope.warning.close();
+                    $scope.warning = null;
+                }
+
+                if ($scope.timedout) {
+                    $scope.timedout.close();
+                    $scope.timedout = null;
+                }
+            }
+
+            $scope.$on('$idleStart', function () {
+                closeModals();
+
+                $scope.warning = $modal.open({
+                    templateUrl: 'idle/warningDialog.html',
+                    windowClass: 'modal-danger'
+                });
+
+            });
+
+            $scope.$on('$idleEnd', function () {
+                closeModals();
+            });
+
+            $scope.$on('$idleTimeout', function () {
+                closeModals();
+                $scope.timedout = $modal.open({
+                    templateUrl: 'idle/timedoutDialog.html',
+                    windowClass: 'modal-danger'
+                });
+            });
+
+        }]);;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -2033,9 +2081,9 @@ angular.module(
 );
 
 angular.module('ui-leop-modalufo-controllers')
-    .constant('MAX_UFOS', 24)
+    .constant('MAX_OBJECTS', 12)
     .constant('MAX_COLUMNS', 4)
-    .service('objectArrays', [
+    .service('oArrays', [
         function () {
             'use strict';
 
@@ -2046,8 +2094,12 @@ angular.module('ui-leop-modalufo-controllers')
              * @param property The property for the operation
              */
             this.check = function (array, property) {
-                if (array === null) { throw 'Array is null'; }
-                if (array.length === 0) { return true; }
+                if (!array) {
+                    throw 'Array is invalid';
+                }
+                if (array.length === 0) {
+                    return true;
+                }
                 if (array[0].hasOwnProperty(property) === false) {
                     throw 'Wrong property';
                 }
@@ -2152,7 +2204,9 @@ angular.module('ui-leop-modalufo-controllers')
                 if (array === undefined) {
                     return [];
                 }
-                if (array.length <= max_columns) { return array; }
+                if (array.length <= max_columns) {
+                    return array;
+                }
 
                 var i, j, columns, index,
                     rowsNum = Math.ceil(array.length / max_columns),
@@ -2164,7 +2218,9 @@ angular.module('ui-leop-modalufo-controllers')
                         index = i * max_columns + j;
                         if (index < array.length) {
                             columns[j] = array[index];
-                        } else { break; }
+                        } else {
+                            break;
+                        }
                     }
                     rows[i] = columns;
                 }
@@ -2183,11 +2239,21 @@ angular.module('ui-leop-modalufo-controllers')
              */
             this.addProperty = function (array, key, value) {
 
-                if (array === null) { throw 'Array is null'; }
-                if (array.length === 0) { return true; }
-                if (key === null) { throw 'Key is null'; }
-                if (key.length === 0) { throw 'Key is blank'; }
-                if (value === null) { throw 'Value is null'; }
+                if (array === null) {
+                    throw 'Array is null';
+                }
+                if (array.length === 0) {
+                    return true;
+                }
+                if (key === null) {
+                    throw 'Key is null';
+                }
+                if (key.length === 0) {
+                    throw 'Key is blank';
+                }
+                if (value === null) {
+                    throw 'Value is null';
+                }
                 if (array[0].hasOwnProperty(key) === true) {
                     throw 'Property already defined, k = ' + key;
                 }
@@ -2215,7 +2281,9 @@ angular.module('ui-leop-modalufo-controllers')
              */
             this.insertSorted = function (array, property, element) {
                 this.check(array, property);
-                if (element === null) { throw 'Element is null'; }
+                if (element === null) {
+                    throw 'Element is null';
+                }
                 if (element.hasOwnProperty(property) === false) {
                     throw 'Invalid element';
                 }
@@ -2232,223 +2300,357 @@ angular.module('ui-leop-modalufo-controllers')
 
             };
 
+            /**
+             * Function that converts an array of objects into a dictionary
+             * where the objects can be accessed using as a key the value
+             * for their own property. The property chosen is the one whose
+             * name was given as a parameter to this function. The property is
+             * not erased from the object.
+             *
+             * @param array Array to be converted
+             * @param property Property whose value is used as a key
+             * @returns {{}}
+             */
+            this.array2dict = function (array, property) {
+                this.check(array, property);
+                if (!property) {
+                    throw 'Property is null';
+                }
+                var obj = {}, dict = {}, key;
+
+                angular.forEach(array, function (i) {
+                    angular.extend(obj, i);
+                    key = i[property];
+                    dict[key] = obj;
+                    obj = {};
+                });
+
+                return dict;
+
+            };
+
+        }
+    ])
+    .service('xDicts', [
+        function () {
+            'use strict';
+
+            /**
+             * Function that checks the validity of the parameters passed to
+             * most of the functions that this service offers.
+             * @param dict The dictionary passed as an argument
+             * @param property The property passed as an argument
+             * @returns {boolean} 'true' if the operation was succesful
+             */
+            this.check = function (dict, property) {
+                if (!dict) {
+                    throw '<Dict> is invalid';
+                }
+                if (!property) {
+                    throw '<property> is invalid';
+                }
+                return true;
+            };
+
+            /**
+             * Function that finds the pair key, object of this dictionry whose
+             * value for the specified property is the biggest from amongst all
+             * in the same dictionary.
+             * @param dict The dictionary
+             * @param property The property
+             * @returns {*[]}
+             */
+            this.findMaxTuple = function (dict, property) {
+                this.check(dict, property);
+                var k, max_k, v = 0, max_v = 0, size = 0;
+                for (k in dict) {
+                    if (dict.hasOwnProperty(k)) {
+                        size += 1;
+                        v = dict[k][property];
+                        if (v < max_v) {
+                            continue;
+                        }
+                        max_v = v;
+                        max_k = k;
+                    }
+                }
+                if (size === 0) {
+                    return [undefined, 0];
+                }
+                return [max_k, max_v];
+            };
+
+            /**
+             * Checks whether this dictionary is empty or not.
+             * @param dict The dictionary
+             * @returns {boolean} 'true' if the dictionary is empty
+             */
+            this.isEmpty = function (dict) {
+                this.check(dict, 'any');
+                var k;
+                for (k in dict) {
+                    if (dict.hasOwnProperty(k)) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+
+            /**
+             * Returns the length of this dictionary.
+             * @param dict The dictionary
+             * @returns {number} Length of the dictionary
+             */
+            this.size = function (dict) {
+                this.check(dict, 'any');
+                var k, length = 0;
+                for (k in dict) {
+                    if (dict.hasOwnProperty(k)) {
+                        length += 1;
+                    }
+                }
+                return length;
+            };
+
         }
     ])
     .controller('manageClusterModal', [
         '$rootScope', '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'objectArrays', 'MAX_UFOS',
-        function (
-            $rootScope,
-            $scope,
-            $log,
-            $modalInstance,
-            satnetRPC,
-            objectArrays,
-            MAX_UFOS
-        ) {
+        'satnetRPC', 'oArrays', 'xDicts', 'MAX_OBJECTS',
+        function ($rootScope, $scope, $log, $modalInstance, satnetRPC, oArrays, xDicts, MAX_OBJECTS) {
             'use strict';
 
             $scope.cluster = {};
-            $scope.editing = [];
+
+            $scope._init = function (data) {
+                $scope.cluster.identifier = data.identifier;
+                $scope.cluster.tle_l1 = data.tle_l1;
+                $scope.cluster.tle_l2 = data.tle_l2;
+                $scope.cluster.max_objects = MAX_OBJECTS;
+                $scope.cluster.no_objects = 0;
+
+                oArrays.parseInt(data.ufos, 'object_id');
+                $scope.cluster.ufos =
+                    $scope._objArr2Dict(data.ufos);
+                $scope.cluster.no_ufos = $scope._ufosSize();
+
+                $scope.cluster.editing = {};
+                $scope.cluster.no_editing = 0;
+
+                $scope.cluster.identified =
+                    $scope._objArr2Dict(data.identified);
+                $scope.cluster.no_identified = $scope._identifiedSize();
+
+                console.log(
+                    '>>> (INIT) = ' + JSON.stringify($scope.cluster)
+                );
+            };
+
+            $scope._objArr2Dict = function (array) {
+                return oArrays.array2dict(array, 'object_id');
+            };
+            $scope._biggestUfo = function () {
+                var array = $scope.cluster.ufos,
+                    max = xDicts.findMaxTuple(array, 'object_id');
+                return max[1];
+            };
+            $scope._biggestIded = function () {
+                var array = $scope.cluster.identified,
+                    max = xDicts.findMaxTuple(array, 'object_id');
+                return max[1];
+            };
+            $scope._nextObjectId = function () {
+                var id_ufos = $scope._biggestUfo(),
+                    id_identified = $scope._biggestIded();
+                return (id_ufos > id_identified)
+                    ? id_ufos + 1
+                    : id_identified + 1;
+            };
+
+            $scope._isUfosEmpty = function () {
+                return xDicts.isEmpty($scope.cluster.ufos);
+            };
+            $scope._ufosSize = function () {
+                return xDicts.size($scope.cluster.ufos);
+            };
+            $scope._addUfo = function (object_id) {
+                $scope.cluster.ufos[object_id] = { 'object_id': object_id };
+                $scope.cluster.no_ufos += 1;
+            };
+            $scope._removeUfo = function (object_id) {
+                delete $scope.cluster.ufos[object_id];
+                $scope.cluster.no_ufos -= 1;
+            };
+            $scope._getUfo = function (object_id) {
+                return $scope.cluster.ufos[object_id];
+            };
+
+            $scope._addEditingUfo = function (object_id) {
+                $scope.cluster.editing[object_id] = {
+                    object_id: object_id,
+                    tle_l1: '',
+                    tle_l2: '',
+                    callsign: '',
+                    past: 'ufo'
+                };
+                $scope.cluster.no_editing += 1;
+            };
+            $scope._addEditingIded = function (object_id, cfg) {
+                $scope.cluster.editing[object_id] = {
+                    object_id: object_id,
+                    tle_l1: cfg.tle_l1,
+                    tle_l2: cfg.tle_l2,
+                    callsign: cfg.callsign,
+                    past: 'identified'
+                };
+                $scope.cluster.no_editing += 1;
+            };
+            $scope._removeEditing = function (object_id) {
+                delete $scope.cluster.editing[object_id];
+                $scope.cluster.no_editing -= 1;
+            };
+            $scope._getEditing = function (object_id) {
+                return $scope.cluster.editing[object_id];
+            };
+
+            $scope._identifiedSize = function () {
+                return xDicts.size($scope.cluster.identified);
+            };
+            $scope._addIdentified = function (object_id, cfg) {
+                $scope.cluster.identified[object_id] = {
+                    'object_id': object_id,
+                    'tle_l1': cfg.tle_l1,
+                    'tle_l2': cfg.tle_l2,
+                    'callsign': cfg.callsign
+                };
+                $scope.cluster.no_identified += 1;
+            };
+            $scope._removeIdentified = function (object_id) {
+                delete $scope.cluster.identified[object_id];
+                $scope.cluster.no_identified -= 1;
+            };
+            $scope._getIdentified = function (object_id) {
+                return $scope.cluster.identified[object_id];
+            };
+
+            $scope._updateNoObjects = function () {
+                $scope.cluster.no_objects =
+                    $scope.cluster.no_ufos +
+                    $scope.cluster.no_editing +
+                    $scope.cluster.no_identified;
+            };
 
             $scope.init = function () {
-                // TODO sort list of ufos retrieved from server, just in case
                 var scope = $scope;
-                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id])
-                    .then(function (data) {
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                    function (data) {
                         console.log(
                             '[modal-ufo] cluster cfg = ' + JSON.stringify(data)
                         );
-                        objectArrays.parseInt(data.ufos, 'object_id');
-                        angular.extend($scope.cluster, data);
-                        scope.cluster.max_ufos = MAX_UFOS;
-                        console.log(
-                            '>>> edit = ' + JSON.stringify(scope.editing)
-                        );
-                    });
+                        scope._init(data);
+                    }
+                );
             };
 
             $scope.add = function () {
-
-                var id_ufos, id_identified, id;
-
-                id_ufos = ($scope.cluster.ufos.length === 0) ? 0
-                    : objectArrays.findMaxTuple(
-                        $scope.cluster.ufos,
-                        'object_id'
-                    ).value;
-                id_identified = ($scope.cluster.identified.length === 0) ? 0
-                    : objectArrays.findMaxTuple(
-                        $scope.cluster.identified,
-                        'object_id'
-                    ).value;
-                id = (id_ufos > id_identified) ? id_ufos + 1
-                    : id_identified + 1;
-
-                satnetRPC.rCall('leop.ufo.add', [$rootScope.leop_id, id])
+                var next_id = $scope._nextObjectId(), scope = $scope;
+                satnetRPC.rCall('leop.ufo.add', [$rootScope.leop_id, next_id])
                     .then(function (data) {
                         $log.info('[modal-ufo] New ufo, id = ' + data);
-                        $scope.cluster.ufos.push({ object_id: id });
+                        scope._addUfo(next_id);
                     });
-
             };
 
             $scope.remove = function () {
-
-                if ($scope.cluster.ufos.length === 0) {
-                    $log.warn('[modal-ufo] removing from empty ufos?');
-                    return;
-                }
-
-                var i = $scope.cluster.ufos.length - 1,
-                    id = $scope.cluster.ufos[i].object_id;
-
+                var id = $scope._biggestUfo(), scope = $scope;
                 satnetRPC.rCall('leop.ufo.remove', [$rootScope.leop_id, id])
                     .then(function (data) {
                         $log.info('[modal-ufo] Removed ufo, id = ' + data);
-                        $scope.cluster.ufos.splice(i, 1);
+                        scope._removeUfo(id);
                     });
-
             };
 
-            /**
-             * Turns an UFO into an object who has been temporary identified.
-             * @param object_id Identifier of the object
-             */
-            $scope.identify = function (object_id) {
-
-                var idx_obj = objectArrays.getObject(
-                    $scope.cluster.ufos,
-                    'object_id',
-                    object_id
-                );
-
-                $log.info(
-                    '[modal-ufo] <Obj#' + object_id + '> moved to identified.'
-                );
-
-                angular.extend(
-                    idx_obj.object,
-                    { tle: { l1: '', l2: '' }, callsign: '', editing: true }
-                );
-
-                $scope.cluster.identified.push(idx_obj.object);
-                $scope.cluster.ufos.splice(idx_obj.index, 1);
-                $scope.editing[object_id] = idx_obj.object;
-
+            $scope.editingUfo = function (object_id) {
+                $scope._addEditingUfo(object_id);
+                $scope._removeUfo(object_id);
             };
 
-            $scope.edit = function (object_id) {
-                $scope.editing[object_id].editing = true;
+            $scope.editingIded = function (object_id) {
+                var object = $scope._getIdentified(object_id);
+                $scope._addEditingIded(object_id, object);
+                $scope._removeIdentified(object_id);
             };
 
-            $scope.save_edit = function (object_id) {
+            $scope.cancel = function (object_id) {
+                var object = $scope._getEditing(object_id);
+                if (object.past === 'ufo') {
+                    $scope._addUfo(object_id);
+                } else {
+                    $scope._addIdentified(object_id, object);
+                }
+                $scope._removeEditing(object_id);
+            };
 
+            $scope.save = function (object_id) {
+                var object = $scope._getEditing(object_id),
+                    err_msg = '[modal-ufo] Wrong configuration, ex = ';
+                console.log('>>> object = ' + JSON.stringify(object));
                 satnetRPC.rCall(
                     'leop.ufo.identify',
                     [
                         $rootScope.leop_id,
                         object_id,
-                        $scope.editing[object_id].callsign,
-                        $scope.editing[object_id].tle.l1,
-                        $scope.editing[object_id].tle.l2
+                        object.callsign,
+                        object.tle_l1,
+                        object.tle_l2
                     ]
-                )
-                    .then(
-                        function (data) {
-                            $log.info(
-                                '[modal-ufo] <Object#' + data + '> IDENTIFIED!'
-                            );
-                            $scope.editing[object_id].editing = false;
-                        },
-                        function (data) {
-                            $log.warn(
-                                '[modal-ufo] Wrong object configuration, ex = '
-                                    + JSON.stringify(data)
-                            );
-                            if (alert(
-                                    'Wrong configuration, error = ' +
-                                        JSON.stringify(data)
-                                ) === false) {
-                                $log.warn(
-                                    '[modal-ufo] <Object#' + object_id +
-                                        '> kept in the identified objects list.'
-                                );
-                            }
+                ).then(
+                    function (data) {
+                        $log.info('[modal-ufo] <Object#' + data + '> SAVED!');
+                        $scope._addIdentified(object_id, object);
+                        $scope._removeEditing(object_id);
+                    },
+                    function (data) {
+                        err_msg += JSON.stringify(data);
+                        $log.warn(err_msg);
+                        if (alert(err_msg) === false) {
+                            $log.warn(err_msg);
                         }
-                    );
-
-            };
-
-            $scope.cancel_edit = function (object_id) {
-                $scope.editing[object_id].editing = false;
-            };
-
-            /**
-             * This function 'forgets' a given previously identified object by
-             * moving it back from the identified list to the ufos list.
-             * @param index Index of the object within the identified list
-             * @param object Reference to the object itself
-             */
-            $scope.forgetObject = function (index, object) {
-                objectArrays.insertSorted(
-                    $scope.cluster.ufos,
-                    'object_id',
-                    object
+                    }
                 );
-                $scope.cluster.identified.splice(index, 1);
-                $scope.editing.splice(object.object_id, 1);
             };
 
-            /**
-             * "Forgets" the temporal identity of a given UFO.
-             * @param object_id Identifier of the object
-             */
             $scope.forget = function (object_id) {
+                var ask_msg = 'Are you sure that you want to return <Object#' +
+                        object_id + '> back to the UFO list?',
+                    err_msg = '[modal-ufo] Wrong configuration, ex = ';
 
-                if (confirm('Are you sure that you want to return <Object#' +
-                        object_id + '> back to the UFO list?') === false) {
-                    $log.warn(
-                        '[modal-ufo] <Object#' +
-                            object_id + '> kept in the identified objects list.'
-                    );
+                if (confirm(ask_msg) === false) {
+                    $log.warn('[modal-ufo] object kept identified.');
                     return;
                 }
-
-                var idx_obj = objectArrays.getObject(
-                        $scope.cluster.identified,
-                        'object_id',
-                        object_id
-                    ),
-                    scope = $scope;
-
-                if (idx_obj.object.tle.l1 === '') {
-                    $scope.forgetObject(idx_obj.index, idx_obj.object);
-                    return;
-                }
-
                 satnetRPC.rCall(
                     'leop.ufo.forget',
                     [$rootScope.leop_id, object_id]
-                )
-                    .then(function (data) {
+                ).then(
+                    function (data) {
                         $log.info(
                             '[modal-ufo] <Object#' + data + '> back as a UFO.'
                         );
-                        scope.forgetObject(idx_obj.index, idx_obj.object);
-                    });
-
+                        $scope._addUfo(object_id);
+                        $scope._removeIdentified(object_id);
+                    },
+                    function (data) {
+                        err_msg += JSON.stringify(data);
+                        $log.warn(err_msg);
+                        if (alert(err_msg) === false) {
+                            $log.warn(err_msg);
+                        }
+                    }
+                );
             };
 
-            $scope.ok = function () {
-                $log.info('[modal-ufo] cfg changed');
-                $modalInstance.close();
-            };
-
-            $scope.cancel = function () {
-                $modalInstance.close();
-            };
-
+            $scope.hide = function () { $modalInstance.close(); };
             $scope.init();
 
         }
@@ -3003,6 +3205,7 @@ var app = angular.module('satnet-ui', [
     'leaflet-directive',
     'remoteValidation',
     'nya.bootstrap.select',
+    'ngIdle',
     // level 1 services/models
     'broadcaster',
     'map-services',
@@ -3019,6 +3222,7 @@ var app = angular.module('satnet-ui', [
     'ui-menu-controllers',
     'ui-modalsc-controllers',
     'ui-modalgs-controllers',
+    'idle',
     // directives
     'logNotifierDirective'
 ]);
@@ -3046,47 +3250,57 @@ angular.module('logNotifierDirective');
  * Configuration of the main AngularJS logger so that it broadcasts all logging
  * messages as events that can be catched by other visualization UI controllers.
  */
-app.config(function ($provide) {
-    'use strict';
+app.config([
+    '$keepaliveProvider', '$idleProvider', '$provide',
+    function ($keepaliveProvider, $idleProvider, $provide) {
+        'use strict';
 
-    $provide.decorator('$log', function ($delegate) {
-        var rScope = null;
-        return {
-            setScope: function (scope) { rScope = scope; },
-            log: function (args) {
-                console.log('@log event');
-                $delegate.log.apply(null, ['[log] ' + args]);
-                rScope.$broadcast('logEvent', args);
-            },
-            info: function (args) {
-                console.log('@info event');
-                $delegate.info.apply(null, ['[info] ' + args]);
-                rScope.$broadcast('infoEvent', args);
-            },
-            error: function () {
-                console.log('@error event');
-                $delegate.error.apply(null, arguments);
-                rScope.$broadcast('errEvent', arguments);
-            },
-            warn: function (args) {
-                console.log('@warn event');
-                $delegate.warn.apply(null, ['[warn] ' + args]);
-                rScope.$broadcast('warnEvent', args);
-            }
-        };
-    });
+        $idleProvider.idleDuration(5);
+        $idleProvider.warningDuration(5);
+        $keepaliveProvider.interval(10);
 
-});
+        $provide.decorator('$log', function ($delegate) {
+            var rScope = null;
+            return {
+                setScope: function (scope) { rScope = scope; },
+                log: function (args) {
+                    console.log('@log event');
+                    $delegate.log.apply(null, ['[log] ' + args]);
+                    rScope.$broadcast('logEvent', args);
+                },
+                info: function (args) {
+                    console.log('@info event');
+                    $delegate.info.apply(null, ['[info] ' + args]);
+                    rScope.$broadcast('infoEvent', args);
+                },
+                error: function () {
+                    console.log('@error event');
+                    $delegate.error.apply(null, arguments);
+                    rScope.$broadcast('errEvent', arguments);
+                },
+                warn: function (args) {
+                    console.log('@warn event');
+                    $delegate.warn.apply(null, ['[warn] ' + args]);
+                    rScope.$broadcast('warnEvent', args);
+                }
+            };
+        });
+
+    }
+]);
 
 /**
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies',
-    function ($rootScope, $log, $http, $cookies) {
+    '$rootScope', '$log', '$http', '$cookies', '$idle',
+    function ($rootScope, $log, $http, $cookies, $idle) {
         'use strict';
+
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+        $idle.watch();
+
     }
 ]);;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
@@ -3117,6 +3331,7 @@ var app = angular.module('leop-ui', [
     'ngResource',
     'leaflet-directive',
     'remoteValidation',
+    'ngIdle',
     // level 1 services
     'broadcaster',
     'map-services',
@@ -3134,6 +3349,7 @@ var app = angular.module('leop-ui', [
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
     'ui-leop-modalgs-controllers',
+    'idle',
     // directives
     'logNotifierDirective'
 ]);
@@ -3155,6 +3371,7 @@ angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
+angular.module('idle');
 // level 5 (directives)
 angular.module('logNotifierDirective');
 
@@ -3162,41 +3379,57 @@ angular.module('logNotifierDirective');
  * Configuration of the main AngularJS logger so that it broadcasts all logging
  * messages as events that can be catched by other visualization UI controllers.
  */
-app.config(function ($provide) {
-    'use strict';
-    $provide.decorator('$log', function ($delegate) {
-        var rScope = null;
-        return {
-            setScope: function (scope) { rScope = scope; },
-            log: function (args) {
-                $delegate.log.apply(null, ['[log] ' + args]);
-                rScope.$broadcast('logEvent', args);
-            },
-            info: function (args) {
-                $delegate.info.apply(null, ['[info] ' + args]);
-                rScope.$broadcast('infoEvent', args);
-            },
-            error: function (args) {
-                $delegate.error.apply(null, arguments);
-                rScope.$broadcast('errEvent', args);
-            },
-            warn: function (args) {
-                $delegate.warn.apply(null, ['[warn] ' + args]);
-                rScope.$broadcast('warnEvent', args);
-            }
-        };
-    });
-});
+app.config([
+    '$keepaliveProvider', '$idleProvider', '$provide',
+    function ($keepaliveProvider, $idleProvider, $provide) {
+        'use strict';
+
+        $idleProvider.idleDuration(5);
+        $idleProvider.warningDuration(5);
+        $keepaliveProvider.interval(10);
+
+        $provide.decorator('$log', function ($delegate) {
+            var rScope = null;
+            return {
+                setScope: function (scope) { rScope = scope; },
+                log: function (args) {
+                    console.log('@log event');
+                    $delegate.log.apply(null, ['[log] ' + args]);
+                    rScope.$broadcast('logEvent', args);
+                },
+                info: function (args) {
+                    console.log('@info event');
+                    $delegate.info.apply(null, ['[info] ' + args]);
+                    rScope.$broadcast('infoEvent', args);
+                },
+                error: function () {
+                    console.log('@error event');
+                    $delegate.error.apply(null, arguments);
+                    rScope.$broadcast('errEvent', arguments);
+                },
+                warn: function (args) {
+                    console.log('@warn event');
+                    $delegate.warn.apply(null, ['[warn] ' + args]);
+                    rScope.$broadcast('warnEvent', args);
+                }
+            };
+        });
+
+    }
+]);
 
 /**
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies', '$window',
-    function ($rootScope, $log, $http, $cookies, $window) {
+    '$rootScope', '$log', '$http', '$cookies', '$window', '$idle',
+    function ($rootScope, $log, $http, $cookies, $window, $idle) {
         'use strict';
+
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.leop_id = $window.leop_id;
+        $idle.watch();
+
     }
 ]);

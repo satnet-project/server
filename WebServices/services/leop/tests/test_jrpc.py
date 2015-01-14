@@ -344,14 +344,12 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            launch_serial.JRPC_K_TLE: {
-                launch_serial.JRPC_K_TLE_L1:
-                    '1 27844U 03031E   15007.47529781  .00000328'
-                    '  00000-0  16930-3 0  1108',
-                launch_serial.JRPC_K_TLE_L2:
-                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-                    '104.9393 14.21678727597601',
-            },
+            launch_serial.JRPC_K_TLE_L1:
+                '1 27844U 03031E   15007.47529781  .00000328'
+                '  00000-0  16930-3 0  1108',
+            launch_serial.JRPC_K_TLE_L2:
+                '2 27844  98.6976  18.3001 0010316  50.6742 '
+                '104.9393 14.21678727597601',
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
@@ -366,14 +364,12 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            launch_serial.JRPC_K_TLE: {
-                launch_serial.JRPC_K_TLE_L1:
-                    '1 27844U 03031E   15007.47529781  .00000328'
-                    '  00000-0  16930-3 0  1108',
-                launch_serial.JRPC_K_TLE_L2:
-                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-                    '104.9393 14.21678727597601',
-            },
+            launch_serial.JRPC_K_TLE_L1:
+                '1 27844U 03031E   15007.47529781  .00000328'
+                '  00000-0  16930-3 0  1108',
+            launch_serial.JRPC_K_TLE_L2:
+                '2 27844  98.6976  18.3001 0010316  50.6742 '
+                '104.9393 14.21678727597601',
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '1'}
             ],
@@ -395,28 +391,24 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            launch_serial.JRPC_K_TLE: {
-                launch_serial.JRPC_K_TLE_L1:
-                    '1 27844U 03031E   15007.47529781  .00000328'
-                    '  00000-0  16930-3 0  1108',
-                launch_serial.JRPC_K_TLE_L2:
-                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-                    '104.9393 14.21678727597601',
-            },
+            launch_serial.JRPC_K_TLE_L1:
+                '1 27844U 03031E   15007.47529781  .00000328'
+                '  00000-0  16930-3 0  1108',
+            launch_serial.JRPC_K_TLE_L2:
+                '2 27844  98.6976  18.3001 0010316  50.6742 '
+                '104.9393 14.21678727597601',
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '2'}
             ],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: [{
                 launch_serial.JRPC_K_OBJECT_ID: '1',
                 launch_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
-                launch_serial.JRPC_K_TLE: {
-                    launch_serial.JRPC_K_TLE_L1:
-                        '1 27844U 03031E   15007.47529781  .00000328'
-                        '  00000-0  16930-3 0  1108',
-                    launch_serial.JRPC_K_TLE_L2:
-                        '2 27844  98.6976  18.3001 0010316  50.6742 '
-                        '104.9393 14.21678727597601',
-                }
+                launch_serial.JRPC_K_TLE_L1:
+                    '1 27844U 03031E   15007.47529781  .00000328'
+                    '  00000-0  16930-3 0  1108',
+                launch_serial.JRPC_K_TLE_L2:
+                    '2 27844  98.6976  18.3001 0010316  50.6742 '
+                    '104.9393 14.21678727597601',
             }]
         }
         self.assertEquals(
@@ -430,14 +422,12 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
-            launch_serial.JRPC_K_TLE: {
-                launch_serial.JRPC_K_TLE_L1:
-                    '1 27844U 03031E   15007.47529781  .00000328'
-                    '  00000-0  16930-3 0  1108',
-                launch_serial.JRPC_K_TLE_L2:
-                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-                    '104.9393 14.21678727597601',
-            },
+            launch_serial.JRPC_K_TLE_L1:
+                '1 27844U 03031E   15007.47529781  .00000328'
+                '  00000-0  16930-3 0  1108',
+            launch_serial.JRPC_K_TLE_L2:
+                '2 27844  98.6976  18.3001 0010316  50.6742 '
+                '104.9393 14.21678727597601',
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '2'},
                 {launch_serial.JRPC_K_OBJECT_ID: '1'}

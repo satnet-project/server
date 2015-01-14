@@ -82,7 +82,7 @@ class TwoLineElementsManager(models.Manager):
                 TwoLineElementsManager.load_tles(source=url)
 
     @staticmethod
-    def load_tles(source=Celestrak.CELESTRAK_CUBESATS):
+    def load_tles(source=Celestrak.CELESTRAK_CUBESATS, testing=False):
         """
         This method loads the TLE's in the database and updates them in
         accordance with the latest information gathered from NORAD's website.
@@ -94,16 +94,28 @@ class TwoLineElementsManager(models.Manager):
 
             if l_n % 3 == 0:
                 l0 = l_i.rstrip()
+                l_n += 1
+                continue
+
             if l_n % 3 == 1:
                 l1 = l_i.rstrip()
+                l_n += 1
+                continue
+
             if l_n % 3 == 2:
                 l2 = l_i.rstrip()
+                l_n += 1
 
-            TwoLineElement.objects.create_or_update(
-                source=source, l0=l0, l1=l1, l2=l2
-            )
-
-            l_n += 1
+            try:
+                TwoLineElement.objects.create_or_update(
+                    source=source, l0=l0, l1=l1, l2=l2
+                )
+            except ValueError as ex:
+                if testing:
+                    logger.warn('Error reading TLE = ' + str(l0))
+                    continue
+                else:
+                    raise ex
 
 
 class TwoLineElement(models.Model):

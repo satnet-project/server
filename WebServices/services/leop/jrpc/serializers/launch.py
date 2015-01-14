@@ -19,8 +19,8 @@ JRPC_K_LEOP_ID = 'identifier'
 JRPC_K_AVAILABLE_GS = 'leop_gs_available'
 JRPC_K_IN_USE_GS = 'leop_gs_inuse'
 JRPC_K_TLE = 'tle'
-JRPC_K_TLE_L1 = 'l1'
-JRPC_K_TLE_L2 = 'l2'
+JRPC_K_TLE_L1 = 'tle_l1'
+JRPC_K_TLE_L2 = 'tle_l2'
 JRPC_K_CALLSIGN = 'callsign'
 JRPC_K_UNKNOWN_OBJECTS = 'ufos'
 JRPC_K_OBJECT_ID = 'object_id'
@@ -87,10 +87,8 @@ def serialize_launch_identified(identified):
         result.append({
             JRPC_K_OBJECT_ID: str(i.identifier),
             JRPC_K_CALLSIGN: str(i.spacecraft.callsign),
-            JRPC_K_TLE: {
-                JRPC_K_TLE_L1: str(i.spacecraft.tle.first_line),
-                JRPC_K_TLE_L2: str(i.spacecraft.tle.second_line)
-            }
+            JRPC_K_TLE_L1: str(i.spacecraft.tle.first_line),
+            JRPC_K_TLE_L2: str(i.spacecraft.tle.second_line)
         })
 
     return result
@@ -108,10 +106,8 @@ def serialize_launch(launch):
 
     return {
         JRPC_K_LEOP_ID: str(launch.identifier),
-        JRPC_K_TLE: {
-            JRPC_K_TLE_L1: str(launch.tle.first_line),
-            JRPC_K_TLE_L2: str(launch.tle.second_line),
-        },
+        JRPC_K_TLE_L1: str(launch.tle.first_line),
+        JRPC_K_TLE_L2: str(launch.tle.second_line),
         JRPC_K_UNKNOWN_OBJECTS: unknown,
         JRPC_K_IDENTIFIED_OBJECTS: identified
     }

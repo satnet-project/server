@@ -48,6 +48,7 @@
     <script type='text/javascript' src="{% static 'lib/jsonrpc.js' %}"></script>
     <link rel='stylesheet' href="{% static 'lib/leaflet.label.css' %}"/>
     <script type='text/javascript' src="{% static 'lib/leaflet.label.js' %}"></script>
+    <script type='text/javascript' src="{% static 'lib/angular-idle.min.js' %}"></script>
     <!-- NON-BOWER LIBRARIES -->
     <script type="text/javascript" src="{% static 'lib/L.Terminator.js' %}"></script>
     <script type="text/javascript" src="{% static 'lib/MovingMarker.js' %}"></script>
@@ -63,6 +64,7 @@
     <link rel='stylesheet' href="{% static 'satnet-ng.min.css' %}" />
     <script type='text/javascript' src="{% static 'satnet-ng.js'%}"></script>
     <script type='text/javascript' src="{% static 'satnet-ng-leop-tpls.js'%}"></script>
+    <script type='text/javascript' src="{% static 'satnet-ng-idle-tpls.js'%}"></script>
 
 {% endblock %}
 
@@ -115,7 +117,7 @@
         <button type='button'
                 class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
                 ng-click="refreshSCList()">
-            <p>UFO Cluster</p><span class='caret'></span>
+            <p>Cluster</p><span class='caret'></span>
         </button>
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="s in scIds">

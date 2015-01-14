@@ -187,8 +187,8 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 }
 
 .ufo-item {
-  margin: 10px;
-  line-height: 200%;
+  margin: 0px;
+  line-height: 100%;
   cursor: pointer;
 }
 
@@ -205,4 +205,10 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
   border-bottom: thick solid black;
   padding-bottom: 10px;
   margin-bottom: 30px;
+}
+
+.top-border {
+  top-bottom: thick solid black;
+  padding-top: 10px;
+  margin-top: 30px;
 }

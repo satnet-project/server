@@ -99,6 +99,18 @@ module.exports = function (grunt) {
                         collapseBooleanAttributes: true
                     }
                 }
+            },
+            idle: {
+                cwd: 'src',
+                src: 'templates/idle/*.html',
+                dest: 'dist/<%= pkg.name %>-idle-tpls.js',
+                options: {
+                    module: 'idle',
+                    htmlmin: {
+                        collapseWhitespace: true,
+                        collapseBooleanAttributes: true
+                    }
+                }
             }
         },
         copy: {
@@ -129,7 +141,9 @@ module.exports = function (grunt) {
                             'bower/ng-remote-validate/release/ngRemoteValidate.js',
                             'bower/angular-uuid/uuid.min.js',
                             'bower/Leaflet.label/dist/leaflet.label.js',
-                            'bower/Leaflet.label/dist/leaflet.label.css'
+                            'bower/Leaflet.label/dist/leaflet.label.css',
+                            'bower/ng-idle/angular-idle.min.js',
+                            'bower/ng-idle/angular-idle.map'
                         ],
                         dest: 'dist/lib'
                     }

@@ -97,11 +97,11 @@ class GroundTrackManager(models.Manager):
     def groundtrack_to_dbarray(groundtrack):
         """
         Static method that transforms a groundtrack array composed by points
-        (lat, lng, timestamp) into three independent objectArrays that can be stored
+        (lat, lng, timestamp) into three independent oArrays that can be stored
         directly in a PostGres database.
         :param groundtrack: The groundtrack to be split.
         :return: ([latitude], [longitude], [timestamp]), three independent
-                objectArrays with the components of a given point from the
+                oArrays with the components of a given point from the
                 groundtrack.
         """
         latitudes = []

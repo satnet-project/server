@@ -38,7 +38,7 @@ class SatnetTestRunner(DiscoverRunner):
 
         try:
 
-            tle.TwoLineElementsManager.load_tles()
+            tle.TwoLineElementsManager.load_tles(testing=True)
             # tle.TwoLineElementsManager.load_celestrak()
             print ' done!'
 
