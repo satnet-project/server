@@ -1,4 +1,4 @@
-satnet-release-1
+satnet-server
 ================
 
 Repository with the source code for the server of the SATNet network.
