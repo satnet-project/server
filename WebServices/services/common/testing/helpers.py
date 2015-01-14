@@ -131,7 +131,8 @@ def create_launch(
     tle_l1=
         '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108',
     tle_l2=
-        '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601'
+        '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601',
+    date=None
 ):
 
     try:
@@ -141,8 +142,11 @@ def create_launch(
         print 'User already exists, getting a reference to it...'
         admin = UserProfile.objects.get(username=username)
 
+    if not date:
+        date = datetime.datetime.today()
+
     return leop_models.Launch.objects.create(
-        admin, identifier, datetime.datetime.today(), tle_l1, tle_l2
+        admin, identifier, date, tle_l1, tle_l2
     )
 
 

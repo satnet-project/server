@@ -16,6 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datadiff
+import datetime
+import pytz
 from django import test
 from django.core import exceptions as django_ex
 import logging
@@ -58,9 +60,12 @@ class TestLaunchViews(test.TestCase):
         self.__request_2 = db_tools.create_request(user_profile=self.__admin)
 
         self.__leop_id = 'leop_cluster_4testing'
+        self.__leop_date = pytz.utc.localize(datetime.datetime.today())
         self.__leop = db_tools.create_launch(
-            admin=self.__admin, identifier=self.__leop_id
+            admin=self.__admin, identifier=self.__leop_id,
+            date=self.__leop_date
         )
+        self.__leop_serial_date = str(self.__leop.date.isoformat())
 
         self.__ufo_id = 1
         self.__ufo_callsign = 'SCLLY'
@@ -344,6 +349,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1:
                 '1 27844U 03031E   15007.47529781  .00000328'
                 '  00000-0  16930-3 0  1108',
@@ -364,6 +370,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1:
                 '1 27844U 03031E   15007.47529781  .00000328'
                 '  00000-0  16930-3 0  1108',
@@ -391,6 +398,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1:
                 '1 27844U 03031E   15007.47529781  .00000328'
                 '  00000-0  16930-3 0  1108',
@@ -422,6 +430,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1:
                 '1 27844U 03031E   15007.47529781  .00000328'
                 '  00000-0  16930-3 0  1108',

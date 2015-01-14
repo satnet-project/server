@@ -28,6 +28,8 @@ var app = angular.module('leop-ui', [
     'leaflet-directive',
     'remoteValidation',
     'ngIdle',
+    'angular-loading-bar',
+    'ui.bootstrap.datetimepicker',
     // level 1 services
     'broadcaster',
     'map-services',

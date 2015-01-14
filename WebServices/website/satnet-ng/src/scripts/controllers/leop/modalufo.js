@@ -362,7 +362,16 @@ angular.module('ui-leop-modalufo-controllers')
     .controller('manageClusterModal', [
         '$rootScope', '$scope', '$log', '$modalInstance',
         'satnetRPC', 'oArrays', 'xDicts', 'MAX_OBJECTS',
-        function ($rootScope, $scope, $log, $modalInstance, satnetRPC, oArrays, xDicts, MAX_OBJECTS) {
+        function (
+            $rootScope,
+            $scope,
+            $log,
+            $modalInstance,
+            satnetRPC,
+            oArrays,
+            xDicts,
+            MAX_OBJECTS
+        ) {
             'use strict';
 
             $scope.cluster = {};
@@ -371,8 +380,10 @@ angular.module('ui-leop-modalufo-controllers')
                 $scope.cluster.identifier = data.identifier;
                 $scope.cluster.tle_l1 = data.tle_l1;
                 $scope.cluster.tle_l2 = data.tle_l2;
+                $scope.cluster.date = data.date;
                 $scope.cluster.max_objects = MAX_OBJECTS;
                 $scope.cluster.no_objects = 0;
+                $scope.cluster.edit = false;
 
                 oArrays.parseInt(data.ufos, 'object_id');
                 $scope.cluster.ufos =
@@ -593,6 +604,17 @@ angular.module('ui-leop-modalufo-controllers')
                         }
                     }
                 );
+            };
+
+            $scope.editCluster = function () {
+                $scope.cluster.edit = true;
+            };
+            $scope.saveCluster = function () {
+                // TODO Call satnet setConfiguration
+                $scope.cluster.edit = false;
+            };
+            $scope.cancelCluster = function () {
+                $scope.cluster.edit = false;
             };
 
             $scope.hide = function () { $modalInstance.close(); };

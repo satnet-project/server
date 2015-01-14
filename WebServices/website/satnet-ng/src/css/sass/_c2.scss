@@ -176,7 +176,6 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 #sc-area-toggle:checked ~ .sc-area { top: $min_gs_area_top; }
 
 .action-link {
-  margin-left: 50px;
   font-size: 75%
 }
 
@@ -187,8 +186,8 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
 }
 
 .ufo-item {
-  margin: 0px;
-  line-height: 100%;
+  margin: 10px;
+  line-height: 150%;
   cursor: pointer;
 }
 

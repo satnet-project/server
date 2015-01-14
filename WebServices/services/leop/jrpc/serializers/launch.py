@@ -15,9 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django.core import serializers as django_serial
+
 JRPC_K_LEOP_ID = 'identifier'
 JRPC_K_AVAILABLE_GS = 'leop_gs_available'
 JRPC_K_IN_USE_GS = 'leop_gs_inuse'
+JRPC_K_DATE = 'date'
 JRPC_K_TLE = 'tle'
 JRPC_K_TLE_L1 = 'tle_l1'
 JRPC_K_TLE_L2 = 'tle_l2'
@@ -108,6 +111,7 @@ def serialize_launch(launch):
         JRPC_K_LEOP_ID: str(launch.identifier),
         JRPC_K_TLE_L1: str(launch.tle.first_line),
         JRPC_K_TLE_L2: str(launch.tle.second_line),
+        JRPC_K_DATE: str(launch.date.isoformat()),
         JRPC_K_UNKNOWN_OBJECTS: unknown,
         JRPC_K_IDENTIFIED_OBJECTS: identified
     }

@@ -138,6 +138,8 @@ module.exports = function (grunt) {
                             'bower/angular-ui-bootstrap-bower/ui-bootstrap-tpls.min.js',
                             'bower/nya-bootstrap-select/dist/css/nya-bs-select.min.css',
                             'bower/nya-bootstrap-select/dist/js/nya-bs-select.min.js',
+                            'bower/angular-bootstrap-datetimepicker/src/css/datetimepicker.css',
+                            'bower/angular-bootstrap-datetimepicker/src/js/datetimepicker.js',
                             'bower/ng-remote-validate/release/ngRemoteValidate.js',
                             'bower/angular-uuid/uuid.min.js',
                             'bower/Leaflet.label/dist/leaflet.label.js',
