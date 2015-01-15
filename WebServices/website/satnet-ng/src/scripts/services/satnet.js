@@ -76,6 +76,8 @@ angular.module('satnet-services').service('satnetRPC', [
             // LEOP services
             'leop.cfg':
                 this._leop.createMethod('getConfiguration'),
+            'leop.setCfg':
+                this._leop.createMethod('setConfiguration'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
             'leop.gs.add':

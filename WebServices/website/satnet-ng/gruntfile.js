@@ -145,7 +145,8 @@ module.exports = function (grunt) {
                             'bower/Leaflet.label/dist/leaflet.label.js',
                             'bower/Leaflet.label/dist/leaflet.label.css',
                             'bower/ng-idle/angular-idle.min.js',
-                            'bower/ng-idle/angular-idle.map'
+                            'bower/ng-idle/angular-idle.map',
+                            'bower/angular-timer/dist/angular-timer.min.js'
                         ],
                         dest: 'dist/lib'
                     }

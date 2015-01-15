@@ -53,6 +53,7 @@
     <script type='text/javascript' src="{% static 'lib/angular-idle.min.js' %}"></script>
     <link rel='stylesheet' href="{% static 'lib/datetimepicker.css' %}"/>
     <script type='text/javascript' src="{% static 'lib/datetimepicker.js' %}"></script>
+    <script type='text/javascript' src="{% static 'lib/angular-timer.min.js' %}"></script>
     <!-- NON-BOWER LIBRARIES -->
     <script type="text/javascript" src="{% static 'lib/L.Terminator.js' %}"></script>
     <script type="text/javascript" src="{% static 'lib/MovingMarker.js' %}"></script>
@@ -133,6 +134,12 @@
                 <a href='#' ng-click="openManageCluster()">manage</a>
             </li>
         </ul>
+    </div>
+
+    <div class='timer-countdown' ng-controller="countdownCtrl">
+        <timer end-time="countdown.datetimems">
+            {{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds
+        </timer>
     </div>
 
 </div>

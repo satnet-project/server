@@ -20,6 +20,7 @@
 angular.module(
     'ui-leop-map-controllers',
     [
+        'satnetRPC',
         'marker-models',
         'x-spacecraft-models',
         'x-server-models',
@@ -54,6 +55,27 @@ angular.module('ui-leop-map-controllers')
                     );
                 });
             });
+
+        }
+    ]);
+
+angular.module('ui-leop-map-controllers')
+    .controller('countdownCtrl', [
+        '$rootScope', '$scope', 'satnetRPC',
+        function ($rootScope, $scope, satnetRPC) {
+            'use strict';
+
+            $scope.countdown = {};
+
+            $scope.init = function () {
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                    function (data) {
+                        $scope.countdown.date = new Date(data.date);
+                        $scope.countdown.datetimems =
+                            $scope.countdown.date.getMilliseconds();
+                    }
+                );
+            };
 
         }
     ]);

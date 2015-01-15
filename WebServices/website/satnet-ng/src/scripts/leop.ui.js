@@ -30,6 +30,7 @@ var app = angular.module('leop-ui', [
     'ngIdle',
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
+    'timer',
     // level 1 services
     'broadcaster',
     'map-services',
