@@ -15,9 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django import dispatch as django_dispatch
 from django.db.models import signals
+from services.common import simulation
 from services.configuration.models import availability, compatibility, channels
-from services.configuration.models import rules
+from services.configuration.models import rules, tle as tle_models
 from services.scheduling.models import operational
 
 
@@ -120,3 +122,28 @@ connect_availability_2_operational()
 connect_channels_2_compatibility()
 connect_compatibility_2_operational()
 connect_rules_2_availability()
+
+
+update_tle_signal = django_dispatch.Signal(
+    providing_args=['identifier', 'tle_l1', 'tle_l2']
+)
+
+
+@django_dispatch.receiver(update_tle_signal)
+def update_tle_handler(sender, identifier, tle_l1, tle_l2, **kwargs):
+    """
+    Signal receiver that updates the given TLE with the new first and second
+    lines.
+    :param sender: Any sender is accepted
+    :param identifier: Identifier of the TLE to be updated
+    :param tle_l1: New first line for the TLE
+    :param tle_l2: New second line for the TLE
+    :param kwargs: Additional parameters
+    """
+    simulation.OrbitalSimulator.check_tle_format(identifier, tle_l1, tle_l2)
+
+    # 1) we directly update the TLE
+    tle = tle_models.TwoLineElement.objects.get(identifier=identifier)
+    tle.first_line = tle_l1
+    tle.second_line = tle_l2
+    tle.save(update_fields=['first_line', 'second_line'])

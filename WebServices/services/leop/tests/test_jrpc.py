@@ -17,15 +17,18 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datadiff
 import datetime
+import difflib
 import pytz
 from django import test
 from django.core import exceptions as django_ex
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
+from services.configuration.models import tle as tle_models
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.views import launch as launch_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
+from services.simulation.models import simulation as simulation_models
 
 
 class TestLaunchViews(test.TestCase):
@@ -59,20 +62,29 @@ class TestLaunchViews(test.TestCase):
         )
         self.__request_2 = db_tools.create_request(user_profile=self.__admin)
 
+        self.__leop_tle_l1 =\
+            '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108'
+        self.__leop_tle_l2 =\
+            '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601'
+
         self.__leop_id = 'leop_cluster_4testing'
         self.__leop_date = pytz.utc.localize(datetime.datetime.today())
         self.__leop = db_tools.create_launch(
             admin=self.__admin, identifier=self.__leop_id,
-            date=self.__leop_date
+            date=self.__leop_date,
+            tle_l1=self.__leop_tle_l1, tle_l2=self.__leop_tle_l2
         )
         self.__leop_serial_date = str(self.__leop.date.isoformat())
 
         self.__ufo_id = 1
         self.__ufo_callsign = 'SCLLY'
-        self.__ufo_tle_l1 = '1 27844U 03031E   15007.47529781  .00000328' \
-                            '  00000-0  16930-3 0  1108'
-        self.__ufo_tle_l2 = '2 27844  98.6976  18.3001 0010316  50.6742 ' \
-                            '104.9393 14.21678727597601'
+        self.__ufo_tle_l1 = self.__leop_tle_l1
+        self.__ufo_tle_l2 = self.__leop_tle_l2
+
+        self.__leop_2_tle_l1 =\
+            '1 36799U 10035E   15011.25448421  .00004255  00000-0  47713-3 0  8407'
+        self.__leop_2_tle_l2 =\
+            '2 36799  98.0147 109.9908 0013178   6.5991  46.1472 14.87298023243626'
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
@@ -350,12 +362,8 @@ class TestLaunchViews(test.TestCase):
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
-            launch_serial.JRPC_K_TLE_L1:
-                '1 27844U 03031E   15007.47529781  .00000328'
-                '  00000-0  16930-3 0  1108',
-            launch_serial.JRPC_K_TLE_L2:
-                '2 27844  98.6976  18.3001 0010316  50.6742 '
-                '104.9393 14.21678727597601',
+            launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
+            launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
@@ -371,12 +379,8 @@ class TestLaunchViews(test.TestCase):
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
-            launch_serial.JRPC_K_TLE_L1:
-                '1 27844U 03031E   15007.47529781  .00000328'
-                '  00000-0  16930-3 0  1108',
-            launch_serial.JRPC_K_TLE_L2:
-                '2 27844  98.6976  18.3001 0010316  50.6742 '
-                '104.9393 14.21678727597601',
+            launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
+            launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '1'}
             ],
@@ -399,24 +403,16 @@ class TestLaunchViews(test.TestCase):
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
-            launch_serial.JRPC_K_TLE_L1:
-                '1 27844U 03031E   15007.47529781  .00000328'
-                '  00000-0  16930-3 0  1108',
-            launch_serial.JRPC_K_TLE_L2:
-                '2 27844  98.6976  18.3001 0010316  50.6742 '
-                '104.9393 14.21678727597601',
+            launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
+            launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '2'}
             ],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: [{
                 launch_serial.JRPC_K_OBJECT_ID: '1',
                 launch_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
-                launch_serial.JRPC_K_TLE_L1:
-                    '1 27844U 03031E   15007.47529781  .00000328'
-                    '  00000-0  16930-3 0  1108',
-                launch_serial.JRPC_K_TLE_L2:
-                    '2 27844  98.6976  18.3001 0010316  50.6742 '
-                    '104.9393 14.21678727597601',
+                launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
+                launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             }]
         }
         self.assertEquals(
@@ -431,12 +427,8 @@ class TestLaunchViews(test.TestCase):
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
-            launch_serial.JRPC_K_TLE_L1:
-                '1 27844U 03031E   15007.47529781  .00000328'
-                '  00000-0  16930-3 0  1108',
-            launch_serial.JRPC_K_TLE_L2:
-                '2 27844  98.6976  18.3001 0010316  50.6742 '
-                '104.9393 14.21678727597601',
+            launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
+            launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [
                 {launch_serial.JRPC_K_OBJECT_ID: '2'},
                 {launch_serial.JRPC_K_OBJECT_ID: '1'}
@@ -453,3 +445,74 @@ class TestLaunchViews(test.TestCase):
                 datadiff.diff(a_cfg, e_cfg)
             )
         )
+
+    def test_set_configuration(self):
+        """JRPC method UNIT test
+        Validates the update of the configuration for a given launch object.
+        """
+        try:
+            launch_jrpc.set_configuration('aaaaaaaaaaab', {})
+            self.fail('Wrong <identifier>, should have raised an exception')
+        except launch_models.Launch.DoesNotExist:
+            pass
+        try:
+            launch_jrpc.set_configuration(self.__leop_id, {})
+            self.fail('Wrong <configuration>, should have raised an exception')
+        except Exception:
+            pass
+
+        tomorrow = pytz.utc.localize(
+            datetime.datetime.today() + datetime.timedelta(days=1)
+        )
+
+        actual_date = launch_models.Launch.objects.get(
+            identifier=self.__leop_id
+        ).date
+        self.assertEquals(
+            actual_date.isoformat(), self.__leop_date.isoformat(),
+            'Date objects should match, diff = ' + str(difflib.ndiff(
+                actual_date.isoformat(), self.__leop_date.isoformat()
+            ))
+        )
+        self.assertEquals(
+            launch_jrpc.set_configuration(self.__leop_id, {
+                launch_serial.JRPC_K_DATE: str(tomorrow.isoformat())
+            }),
+            self.__leop_id,
+            'Should have returned the same launch identifier'
+        )
+        actual_date = launch_models.Launch.objects.get(
+            identifier=self.__leop_id
+        ).date
+        self.assertEquals(
+            actual_date.isoformat(), tomorrow.isoformat(),
+            'Date objects should match, diff = ' + str(difflib.ndiff(
+                actual_date.isoformat(), tomorrow.isoformat()
+            ))
+        )
+
+        old_gt = simulation_models.GroundTrack.objects.get(tle=self.__leop.tle)
+        self.assertEquals(
+            launch_jrpc.set_configuration(self.__leop_id, {
+                launch_serial.JRPC_K_DATE: str(tomorrow.isoformat()),
+                launch_serial.JRPC_K_TLE_L1: self.__leop_2_tle_l1,
+                launch_serial.JRPC_K_TLE_L2: self.__leop_2_tle_l2,
+            }),
+            self.__leop_id,
+            'Should have returned the same launch identifier'
+        )
+
+        self.assertTrue(
+            tle_models.TwoLineElement.objects.filter(
+                first_line=self.__leop_2_tle_l1
+            ).exists(),
+            'TLE (first_line) should have already been updated'
+        )
+        self.assertTrue(
+            tle_models.TwoLineElement.objects.filter(
+                second_line=self.__leop_2_tle_l2
+            ).exists(),
+            'TLE (second_line) should have already been updated'
+        )
+        new_gt = simulation_models.GroundTrack.objects.get(tle=self.__leop.tle)
+        self.assertNotEquals(old_gt, new_gt, 'GroundTracks should be different')

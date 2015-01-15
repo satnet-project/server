@@ -15,8 +15,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import serializers as django_serial
-
 JRPC_K_LEOP_ID = 'identifier'
 JRPC_K_AVAILABLE_GS = 'leop_gs_available'
 JRPC_K_IN_USE_GS = 'leop_gs_inuse'
@@ -115,3 +113,28 @@ def serialize_launch(launch):
         JRPC_K_UNKNOWN_OBJECTS: unknown,
         JRPC_K_IDENTIFIED_OBJECTS: identified
     }
+
+
+def deserialize_launch(launch):
+    # ### TODO Full configuration including UFO and IDENTIFIED arrays.
+    """Deserialization method
+    Deserializes the configuration for a given LAUNCH cluster, without getting
+    into the "ufo" or "identified" arrays (should be set separately).
+    :param launch: JSON-like object with the configuration of the launch
+    :return: (date, tle_l1, tle_l2) as a tuple
+    """
+    if not launch:
+        return None, None, None
+
+    date = None
+    tle_l1 = None
+    tle_l2 = None
+
+    if JRPC_K_DATE in launch:
+        date = launch[JRPC_K_DATE]
+    if JRPC_K_TLE_L1 in launch:
+        tle_l1 = launch[JRPC_K_TLE_L1]
+    if JRPC_K_TLE_L2 in launch:
+        tle_l2 = launch[JRPC_K_TLE_L2]
+
+    return date, tle_l1, tle_l2

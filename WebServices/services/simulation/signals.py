@@ -19,7 +19,8 @@ from django.db.models.signals import post_save, pre_delete
 from django.dispatch import receiver
 import logging
 from services.configuration.models import segments
-from services.simulation.models import simulation
+from services.configuration.models import tle as tle_models
+from services.simulation.models import simulation as simulation_models
 logger = logging.getLogger('simulation')
 
 
@@ -37,7 +38,7 @@ def spacecraft_saved(sender, instance, created, raw, **kwargs):
     """
     if not created or raw:
         return
-    simulation.GroundTrack.objects.create(instance)
+    simulation_models.GroundTrack.objects.create(instance)
 
 
 @receiver(post_save, sender=segments.Spacecraft)
@@ -59,13 +60,13 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
     # (ManyToMany), a first just-non-created signal is sent and should be
     # filtered.
     try:
-        gt = simulation.GroundTrack.objects.get(spacecraft=instance)
-    except simulation.GroundTrack.DoesNotExist:
+        gt = simulation_models.GroundTrack.objects.get(spacecraft=instance)
+    except simulation_models.GroundTrack.DoesNotExist:
         return
 
     if instance.tle != gt.tle:
         gt.delete()
-        simulation.GroundTrack.objects.create(instance)
+        simulation_models.GroundTrack.objects.create(instance)
 
 
 @receiver(pre_delete, sender=segments.Spacecraft)
@@ -79,10 +80,32 @@ def spacecraft_deleted(sender, instance, **kwargs):
     :param kwargs: Additional arguments.
     """
     try:
-        gt = simulation.GroundTrack.objects.get(spacecraft=instance)
+        gt = simulation_models.GroundTrack.objects.get(spacecraft=instance)
         gt.delete()
-    except simulation.GroundTrack.DoesNotExist:
+    except simulation_models.GroundTrack.DoesNotExist:
         logger.warn(
-            '>>> Spacecraft did not have an associated GT, id = ' +
-                str(instance.identifier)
+            '>>> Spacecraft did not have an associated GT, id = ' + str(
+                instance.identifier
+            )
         )
+
+@receiver(post_save, sender=tle_models.TwoLineElement)
+def tle_updated(sender, instance, created, raw, **kwargs):
+    """Signal handler (post_save)
+    Handles the update of the groundtracks and other simulation resources that
+    may change for all the registered spacecraft associated with the TLE that
+    has just changed.
+    :param sender: Reference to the sender
+    :param instance: Reference to the TLE that jas just been updated
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates whether the database is stable or not
+    :param kwargs: Additional arguments
+    """
+    if created or raw:
+        return
+
+    for gt in simulation_models.GroundTrack.objects.filter(tle=instance):
+
+        spacecraft = gt.spacecraft
+        gt.delete()
+        simulation_models.GroundTrack.objects.create(spacecraft)

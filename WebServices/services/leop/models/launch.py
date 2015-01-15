@@ -21,6 +21,7 @@ import logging
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
+from services.configuration import signals as configuration_signasl
 from services.leop import utils as leop_utils
 from services.leop.models import ufos as ufo_models
 
@@ -293,3 +294,27 @@ class Launch(django_models.Model):
 
         self.save()
         return True
+
+    def update(self, date=None, tle_l1=None, tle_l2=None):
+        """Model method
+        Updates the configuration of this object by performing a dirty check
+        in between the new values and the ones stored in the database.
+        :param date: The new date object
+        :param tle_l1: The first line of the new TLE
+        :param tle_l2: The second line of the new TLE
+        :return: Launch object's identifier
+        """
+        if date:
+            if self.date != date:
+                self.date = date
+                self.save(update_fields=['date'])
+
+        if tle_l1 and tle_l2:
+            if self.tle.first_line != tle_l1 or self.tle.second_line != tle_l2:
+
+                configuration_signasl.update_tle_signal.send(
+                    sender=self, identifier=self.tle.identifier,
+                    tle_l1=tle_l1, tle_l2=tle_l2
+                )
+
+        return self.identifier

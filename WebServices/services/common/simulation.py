@@ -17,8 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import ephem
-import numpy
 import logging
+import numpy
+import unicodedata
 from services.common import gis, misc
 
 logger = logging.getLogger('common')
@@ -58,6 +59,25 @@ class OrbitalSimulator(object):
     _tle = None
 
     @staticmethod
+    def normalize_string(l0, l1, l2):
+        """Static method
+        Normalizes the three parameters from unicode to string, in case it is
+        necessary.
+        :param l0: Line#0 of the TLE file
+        :param l1: Line#1 of the TLE file
+        :param l2: Line#2 of the TLE file
+        :return: Tuple (l0, l1, l2)
+        """
+        if isinstance(l0, unicode):
+            l0 = unicodedata.normalize('NFKD', l0).encode('ascii','ignore')
+        if isinstance(l1, unicode):
+            l1 = unicodedata.normalize('NFKD', l1).encode('ascii','ignore')
+        if isinstance(l2, unicode):
+            l2 = unicodedata.normalize('NFKD', l2).encode('ascii','ignore')
+
+        return l0, l1, l2
+
+    @staticmethod
     def check_tle_format(l0, l1, l2):
         """Static method
         Checks whether the format for a given TLE is correct or not.
@@ -66,6 +86,7 @@ class OrbitalSimulator(object):
         :param l2: Line#2 of the TLE file
         :return: True if the operation could succesuffly be completed
         """
+        l0, l1, l2 = OrbitalSimulator.normalize_string(l0, l1, l2)
         ephem.readtle(l0, l1, l2)
         return True
 
@@ -159,6 +180,7 @@ class OrbitalSimulator(object):
         :raises: ObjectDoesNotExist in case there is no cush tle_id in the
         database.
         """
+        l0, l1, l2 = OrbitalSimulator.normalize_string(l0, l1, l2)
         return ephem.readtle(l0, l1, l2)
 
     @staticmethod

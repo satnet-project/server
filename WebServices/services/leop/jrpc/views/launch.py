@@ -187,11 +187,38 @@ def forget(launch_identifier, identifier):
     signature=['String'],
     login_required=True
 )
-def get_configuration(leop_id):
+def get_configuration(launch_identifier):
     """JRPC method
     Serializes the configuration for the requested LEOP cluster and returns it.
-    :param leop_id: The identifier of the LEOP cluster
+    :param launch_identifier: The identifier of the LEOP cluster
     :return: JSON-like serialized structure
     """
-    leop = launch_models.Launch.objects.get(identifier=leop_id)
-    return launch_serial.serialize_launch(leop)
+    launch = launch_models.Launch.objects.get(identifier=launch_identifier)
+    return launch_serial.serialize_launch(launch)
+
+
+@rpc4django.rpcmethod(
+    name='leop.setConfiguration',
+    signature=['String', 'Object'],
+    login_required=True
+)
+def set_configuration(launch_identifier, configuration):
+    """JRPC method
+    Updates the configuration for a given LAUNCH cluster using the given
+    configuration object.
+    :param launch_identifier: Identifier of the launch object
+    :param configuration: The new configuration for the launch object
+    :return: The identifier of the launch
+    """
+    launch = launch_models.Launch.objects.get(identifier=launch_identifier)
+    if not configuration:
+        raise Exception('Wrong <configuration> object')
+
+    cfg_params = launch_serial.deserialize_launch(configuration)
+
+    launch.update(
+        date=cfg_params[0],
+        tle_l1=cfg_params[1],
+        tle_l2=cfg_params[2]
+    )
+    return launch.identifier
