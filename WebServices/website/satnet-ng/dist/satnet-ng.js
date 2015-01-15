@@ -1779,7 +1779,6 @@ angular.module('idle')
 angular.module(
     'ui-leop-map-controllers',
     [
-        'satnetRPC',
         'marker-models',
         'x-spacecraft-models',
         'x-server-models',
@@ -1894,27 +1893,6 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
                     $scope.scIds = data.slice(0);
                 }
             });
-        };
-        //$scope.refreshUFOList();
-
-    }
-]);
-
-angular.module('ui-leop-menu-controllers').controller('countdownCtrl', [
-    '$rootScope', '$scope', 'satnetRPC',
-    function ($rootScope, $scope, satnetRPC) {
-        'use strict';
-
-        $scope.countdown = {};
-
-        $scope.init = function () {
-            satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                function (data) {
-                    $scope.countdown.date = new Date(data.date);
-                    $scope.countdown.datetimems =
-                        $scope.countdown.date.getMilliseconds();
-                }
-            );
         };
 
     }
@@ -2498,8 +2476,8 @@ angular.module('ui-leop-modalufo-controllers')
                 var id_ufos = $scope._biggestUfo(),
                     id_identified = $scope._biggestIded();
                 return (id_ufos > id_identified)
-                    ? id_ufos + 1
-                    : id_identified + 1;
+                    ? parseInt(id_ufos, 10) + 1
+                    : parseInt(id_identified, 10) + 1;
             };
 
             $scope._isUfosEmpty = function () {
@@ -3179,6 +3157,74 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
    limitations under the License.
 */
 
+angular.module('countdownDirective', [ 'satnet-services' ])
+    .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
+    .controller('countdownCtrl', [
+        '$rootScope', '$scope', '$timeout', 'satnetRPC',
+        function ($rootScope, $scope, $timeout, satnetRPC) {
+            'use strict';
+
+            $scope._timer = {};
+            $scope._counter = 0;
+            $scope.datems = 0;
+            $scope.label = 'Time to launch';
+
+            $scope.beat = function () {
+                $scope._timer = $timeout(function () {
+                    console.log($scope._counter);
+                    $scope._counter -= 1;
+                    $scope.datems = $scope._counter * 1000;
+                    if ($scope._counter === 0) {
+                        $rootScope.$broadcast('launch-countdown-end');
+                        $timeout.cancel($scope._timer);
+                    } else {
+                        $scope.beat();
+                    }
+                }, 1000);
+            };
+
+            $scope.init = function () {
+
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                    function (data) {
+                        var launch = moment(data.date),
+                            now = moment(),
+                            diff = moment.duration(launch.diff(now));
+                        $scope._counter = diff;
+                        $scope.beat();
+                    }
+                );
+
+            };
+
+            $scope.init();
+
+        }
+    ])
+    .directive('countdown', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            templateUrl: 'templates/countdown/countdown.html'
+        };
+
+    });;/*
+   Copyright 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
 angular.module('logNotifierDirective', [])
     .constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
     .controller('logNotifierCtrl', [
@@ -3377,10 +3423,8 @@ var app = angular.module('leop-ui', [
     'ngResource',
     'leaflet-directive',
     'remoteValidation',
-    'ngIdle',
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
-    'timer',
     // level 1 services
     'broadcaster',
     'map-services',
@@ -3398,9 +3442,9 @@ var app = angular.module('leop-ui', [
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
     'ui-leop-modalgs-controllers',
-    'idle',
     // directives
-    'logNotifierDirective'
+    'logNotifierDirective',
+    'countdownDirective'
 ]);
 
 // level 1 services
@@ -3420,22 +3464,18 @@ angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
-angular.module('idle');
 // level 5 (directives)
 angular.module('logNotifierDirective');
+angular.module('countdownDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
  * messages as events that can be catched by other visualization UI controllers.
  */
 app.config([
-    '$keepaliveProvider', '$idleProvider', '$provide',
-    function ($keepaliveProvider, $idleProvider, $provide) {
+    '$provide',
+    function ($provide) {
         'use strict';
-
-        $idleProvider.idleDuration(5);
-        $idleProvider.warningDuration(5);
-        $keepaliveProvider.interval(10);
 
         $provide.decorator('$log', function ($delegate) {
             var rScope = null;
@@ -3471,14 +3511,13 @@ app.config([
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies', '$window', '$idle',
-    function ($rootScope, $log, $http, $cookies, $window, $idle) {
+    '$rootScope', '$log', '$http', '$cookies', '$window',
+    function ($rootScope, $log, $http, $cookies, $window) {
         'use strict';
 
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.leop_id = $window.leop_id;
-        $idle.watch();
 
     }
 ]);

@@ -419,8 +419,8 @@ angular.module('ui-leop-modalufo-controllers')
                 var id_ufos = $scope._biggestUfo(),
                     id_identified = $scope._biggestIded();
                 return (id_ufos > id_identified)
-                    ? id_ufos + 1
-                    : id_identified + 1;
+                    ? parseInt(id_ufos, 10) + 1
+                    : parseInt(id_identified, 10) + 1;
             };
 
             $scope._isUfosEmpty = function () {

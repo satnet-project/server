@@ -27,10 +27,8 @@ var app = angular.module('leop-ui', [
     'ngResource',
     'leaflet-directive',
     'remoteValidation',
-    'ngIdle',
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
-    'timer',
     // level 1 services
     'broadcaster',
     'map-services',
@@ -48,9 +46,9 @@ var app = angular.module('leop-ui', [
     'ui-leop-menu-controllers',
     'ui-leop-modalufo-controllers',
     'ui-leop-modalgs-controllers',
-    'idle',
     // directives
-    'logNotifierDirective'
+    'logNotifierDirective',
+    'countdownDirective'
 ]);
 
 // level 1 services
@@ -70,22 +68,18 @@ angular.module('ui-menu-controllers');
 angular.module('ui-leop-menu-controllers');
 angular.module('ui-leop-modalufo-controllers');
 angular.module('ui-leop-modalgs-controllers');
-angular.module('idle');
 // level 5 (directives)
 angular.module('logNotifierDirective');
+angular.module('countdownDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
  * messages as events that can be catched by other visualization UI controllers.
  */
 app.config([
-    '$keepaliveProvider', '$idleProvider', '$provide',
-    function ($keepaliveProvider, $idleProvider, $provide) {
+    '$provide',
+    function ($provide) {
         'use strict';
-
-        $idleProvider.idleDuration(5);
-        $idleProvider.warningDuration(5);
-        $keepaliveProvider.interval(10);
 
         $provide.decorator('$log', function ($delegate) {
             var rScope = null;
@@ -121,14 +115,13 @@ app.config([
  * Main run method for the AngularJS app.
  */
 app.run([
-    '$rootScope', '$log', '$http', '$cookies', '$window', '$idle',
-    function ($rootScope, $log, $http, $cookies, $window, $idle) {
+    '$rootScope', '$log', '$http', '$cookies', '$window',
+    function ($rootScope, $log, $http, $cookies, $window) {
         'use strict';
 
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.leop_id = $window.leop_id;
-        $idle.watch();
 
     }
 ]);

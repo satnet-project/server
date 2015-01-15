@@ -13,10 +13,20 @@
    limitations under the License. */
 
 @import 'main';
-@import 'buttons';
-@import 'c2';
-@import 'leop';
-@import 'markers';
-@import 'narea';
-@import 'countdown';
-@import 'pace/corner';
+
+.countdown {
+
+  background-color: $karbon;
+  padding: 10px;
+  border-radius: 10px;
+
+  p {
+    vertical-align: middle;
+    color: white;
+    font-size: 120%;
+    font-weight: bold;
+    text-align: center;
+    margin: 2px;
+  }
+
+}

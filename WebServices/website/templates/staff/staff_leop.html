@@ -134,12 +134,11 @@
                 <a href='#' ng-click="openManageCluster()">manage</a>
             </li>
         </ul>
+
     </div>
 
-    <div class='timer-countdown' ng-controller="countdownCtrl">
-        <timer end-time="countdown.datetimems">
-            {{days}} days, {{hours}} hours, {{minutes}} minutes, {{seconds}} seconds
-        </timer>
+    <div class='btn-group'>
+        <countdown></countdown>
     </div>
 
 </div>

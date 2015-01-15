@@ -20,7 +20,6 @@
 angular.module(
     'ui-leop-map-controllers',
     [
-        'satnetRPC',
         'marker-models',
         'x-spacecraft-models',
         'x-server-models',
