@@ -28,12 +28,12 @@ from services.leop.jrpc.serializers import launch as launch_serial
     signature=['String'],
     login_required=True
 )
-def list_groundstations(leop_id, **kwargs):
+def list_groundstations(launch_id, **kwargs):
     """JRPC method (LEOP service).
     Returns the list of groundstations available for creating this LEOP
     system. In case a Ground Station is already in use for this system, it will
     not be listed.
-    :param leop_id: Identifier of the LEOP cluster.
+    :param launch_id: Identifier of the LEOP cluster.
     :param kwargs: Dictionary with additional variables like the HTTP request
                     itself (defined by RPC4Django).
     :return: List of the identifiers of the available groundstations.
@@ -45,7 +45,7 @@ def list_groundstations(leop_id, **kwargs):
     if not http_request or not http_request.user.is_staff:
         raise django_ex.PermissionDenied()
 
-    leop_cluster = launch_models.Launch.objects.get(identifier=leop_id)
+    leop_cluster = launch_models.Launch.objects.get(identifier=launch_id)
 
     # List construction: ground stations in use and available for LEOP
     u_gs = leop_cluster.groundstations.all()
@@ -61,12 +61,12 @@ def list_groundstations(leop_id, **kwargs):
     signature=['String', 'Object'],
     login_required=True
 )
-def add_groundstations(launch_identifier, groundstations, **kwargs):
+def add_groundstations(launch_id, groundstations, **kwargs):
     """JRPC method (LEOP service).
     Adds the array of GroundStations to the LEOP cluster. If any of the given
     GroundStation identifiers does not exist, the operation is cancelled and
     an 'ObjectDoesNotExist' exception is raised.
-    :param launch_identifier: Identifier of the LEOP cluster
+    :param launch_id: Identifier of the LEOP cluster
     :param groundstations: List with the GroundStations to be added
     :return: Identifier of the just-updated LEOP cluster
     """
@@ -81,7 +81,7 @@ def add_groundstations(launch_identifier, groundstations, **kwargs):
     # Serialization to a JSON-RPC-like object
     return launch_serial.serialize_leop_id(
         launch_models.Launch.objects.add_ground_stations(
-            launch_identifier, groundstations
+            launch_id, groundstations
         )
     )
 
@@ -91,12 +91,12 @@ def add_groundstations(launch_identifier, groundstations, **kwargs):
     signature=['String', 'Object'],
     login_required=True
 )
-def remove_groundstations(launch_identifier, groundstations, **kwargs):
+def remove_groundstations(launch_id, groundstations, **kwargs):
     """JRPC method (LEOP service).
     Removes the array of GroundStations from the LEOP cluster. If any of the
     given GroundStation identifiers does not exist, the operation is
     cancelled and an 'ObjectDoesNotExist' exception is raised.
-    :param launch_identifier: Identifier of the LEOP cluster.
+    :param launch_id: Identifier of the LEOP cluster.
     :param groundstations: List with the GroundStations to be added.
     :return: True if the operation was succesfully completed
     """
@@ -106,11 +106,11 @@ def remove_groundstations(launch_identifier, groundstations, **kwargs):
     if not http_request or not http_request.user.is_staff:
         raise django_ex.PermissionDenied()
     if not groundstations:
-        return launch_serial.serialize_leop_id(launch_identifier)
+        return launch_serial.serialize_leop_id(launch_id)
 
     # Serialization to a JSON-RPC-like object
     return launch_models.Launch.objects.remove_groundstations(
-        launch_identifier, groundstations
+        launch_id, groundstations
     )
 
 
@@ -119,15 +119,15 @@ def remove_groundstations(launch_identifier, groundstations, **kwargs):
     signature=['String', 'int'],
     login_required=True
 )
-def add_unknown(launch_identifier, identifier):
+def add_unknown(launch_id, object_id):
     """JRPC method
     Adds a new unknown object to the list.
-    :param launch_identifier: Identifier of the Launch
-    :param identifier: Identifier for the unknown object
+    :param launch_id: Identifier of the Launch
+    :param object_id: Identifier for the unknown object
     :return: Identifier for the unknown object (int)
     """
     return launch_models.Launch.objects.add_unknown(
-        launch_identifier, identifier
+        launch_id, object_id
     )
 
 
@@ -136,15 +136,15 @@ def add_unknown(launch_identifier, identifier):
     signature=['String', 'int'],
     login_required=True
 )
-def remove_unknown(launch_identifier, identifier):
+def remove_unknown(launch_id, object_id):
     """JRPC method
     Removes an unknown object from the list
-    :param launch_identifier: Identifier of the Launch
-    :param identifier: Identifier for the unknown object
+    :param launch_id: Identifier of the Launch
+    :param object_id: Identifier for the unknown object
     :return: True if the operation was succesful
     """
     return launch_models.Launch.objects.remove_unknown(
-        launch_identifier, identifier
+        launch_id, object_id
     )
 
 
@@ -153,18 +153,18 @@ def remove_unknown(launch_identifier, identifier):
     signature=['String', 'int', 'String', 'String', 'String'],
     login_required=True
 )
-def identify(launch_identifier, identifier, callsign, tle_l1, tle_l2):
+def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
     """JRPC method
     Identifies an UFO object and promotes it to an identified one.
-    :param launch_identifier: Identifier of the Launch
-    :param identifier: Identifier for the unknown object
+    :param launch_id: Identifier of the Launch
+    :param object_id: Identifier for the unknown object
     :param callsign: Callsign for the identified object
     :param tle_l1: First line of the TLE associated to the object
     :param tle_l2: Second line of the TLE associated to the object
     :return: Identifier of the promoted object
     """
     return launch_models.Launch.objects.identify(
-        launch_identifier, identifier, callsign, tle_l1, tle_l2
+        launch_id, object_id, callsign, tle_l1, tle_l2
     )
 
 
@@ -173,14 +173,34 @@ def identify(launch_identifier, identifier, callsign, tle_l1, tle_l2):
     signature=['String', 'int'],
     login_required=True
 )
-def forget(launch_identifier, identifier):
+def forget(launch_id, object_id):
     """JRPC method
     Forgets an identified object and promotes it back to the unknown state.
-    :param launch_identifier: Identifier of the Launch
-    :param identifier: Identifier for the unknown object
+    :param launch_id: Identifier of the Launch
+    :param object_id: Identifier for the unknown object
     :return: True if the operation was succesful
     """
-    return launch_models.Launch.objects.forget(launch_identifier, identifier)
+    return launch_models.Launch.objects.forget(launch_id, object_id)
+
+
+@rpc4django.rpcmethod(
+    name='leop.launch.update',
+    signature=['String'],
+    login_required=True
+)
+def update(launch_id, object_id, callsign, tle_l1, tle_l2):
+    """JRPC method
+    Updates the configuration for a given object.
+    :param launch_id: Identifier of the Launch
+    :param object_id: Identifier for the unknown object
+    :param callsign: Callsign for the identified object
+    :param tle_l1: First line of the TLE associated to the object
+    :param tle_l2: Second line of the TLE associated to the object
+    :return: Identifier of the updated object
+    """
+    return launch_models.Launch.objects.update_identified(
+        launch_id, object_id, callsign, tle_l1, tle_l2
+    )
 
 
 @rpc4django.rpcmethod(
@@ -188,13 +208,13 @@ def forget(launch_identifier, identifier):
     signature=['String'],
     login_required=True
 )
-def get_configuration(launch_identifier):
+def get_configuration(launch_id):
     """JRPC method
     Serializes the configuration for the requested LEOP cluster and returns it.
-    :param launch_identifier: The identifier of the LEOP cluster
+    :param launch_id: The identifier of the LEOP cluster
     :return: JSON-like serialized structure
     """
-    launch = launch_models.Launch.objects.get(identifier=launch_identifier)
+    launch = launch_models.Launch.objects.get(identifier=launch_id)
     return launch_serial.serialize_launch(launch)
 
 
@@ -203,15 +223,15 @@ def get_configuration(launch_identifier):
     signature=['String', 'Object'],
     login_required=True
 )
-def set_configuration(launch_identifier, configuration):
+def set_configuration(launch_id, configuration):
     """JRPC method
     Updates the configuration for a given LAUNCH cluster using the given
     configuration object.
-    :param launch_identifier: Identifier of the launch object
+    :param launch_id: Identifier of the launch object
     :param configuration: The new configuration for the launch object
     :return: The identifier of the launch
     """
-    launch = launch_models.Launch.objects.get(identifier=launch_identifier)
+    launch = launch_models.Launch.objects.get(identifier=launch_id)
     if not configuration:
         raise Exception('Wrong <configuration> object')
 

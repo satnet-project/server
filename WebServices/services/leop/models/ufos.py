@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models as django_models
+from services.configuration import signals as configuration_signals
 from services.configuration.models import segments as segment_models
 from services.leop import utils as leop_utils
 
@@ -49,6 +50,35 @@ class IdentifiedObjectsManager(django_models.Manager):
             spacecraft=sc,
             **kwargs
         )
+
+    def update(self, launch_id, object_id, callsign, tle_l1, tle_l2):
+        """
+        Updates the configuration for an identified object with the given data
+        :param launch_id: Identifier of the launch
+        :param object_id: Identifier for the identified object
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the identified object
+        :param tle_l2: Second line of the TLE for the identified object
+        :return: Identifier of the object
+        """
+        ufo = self.get(identifier=object_id)
+        if callsign:
+            if ufo.spacecraft.callsign != callsign:
+                ufo.spacecraft.callsign = callsign
+                ufo.spacecraft.save(update_fields=['callsign'])
+
+        if tle_l1 and tle_l2:
+            if ufo.spacecraft.tle.first_line != tle_l1 or\
+                    ufo.spacecraft.tle.second_line != tle_l2:
+
+                configuration_signals.update_tle_signal.send(
+                    sender=ufo,
+                    identifier=ufo.spacecraft.tle.identifier,
+                    tle_l1=tle_l1,
+                    tle_l2=tle_l2
+                )
+
+        return ufo.identifier
 
     def delete(self, launch_id, object_id):
         """
