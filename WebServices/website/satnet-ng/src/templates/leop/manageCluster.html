@@ -128,6 +128,7 @@
                                 <label class='control-label' for='i_callsign'>Callsign</label>
                                 <input type='text' name='i_callsign'
                                     class='form-control' style='width: 100%'
+                                    ng-disabled="!i.edit"
                                     ng-model="i.callsign"
                                     ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
                                     required />
@@ -142,6 +143,7 @@
                                     <label class='control-label' for='i_tle_l1'>First line</label>
                                     <input type='text' name='i_tle_l1'
                                         class='form-control' style='width: 100%'
+                                        ng-disabled="!i.edit"
                                         ng-model="i.tle_l1"
                                         ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
                                         required />
@@ -153,6 +155,7 @@
                                     <label class='control-label' for='i_tle_l2'>Second line</label>
                                     <input type='text' name='i_tle_l2'
                                         class='form-control' style='width: 100%'
+                                        ng-disabled="!i.edit"
                                         ng-model="i.tle_l2"
                                         ng-pattern='/^[a-zA-Z0-9.\s-]{69}$/'
                                         required />
@@ -165,11 +168,13 @@
 
                             <div style='display: table-cell'>
                                 <a class='green-link link action-link'
-                                   ng-click="save(i.object_id)">(save)</a>
+                                    ng-disabled="!i.edit"
+                                    ng-click="save(i.object_id)">(save)</a>
                             </div>
                             <div style='display: table-cell'>
                                 <a class='red-link link action-link'
-                                   ng-click="cancel(i.object_id)">(cancel)
+                                    ng-disabled="!i.edit"
+                                    ng-click="cancel(i.object_id)">(cancel)
                                 </a>
                             </div>
 
@@ -200,11 +205,12 @@
                             <div style='display: table-cell; vertical-align: middle'>
                                 <h5 style='vertical-align: middle'>
                                     <p>Object #{{ i.object_id }}
-                                    <span ng-click="editingIded(i.object_id)"
-                                      style='font-size: 75%'>
-                                        (as {{ i.callsign }})
-                                    </span>
-                                </p></h5>
+                                        <span ng-click="editingIded(i.object_id)"
+                                                style='font-size: 75%'>
+                                                (as {{ i.callsign }})
+                                        </span>
+                                    </p>
+                                </h5>
                             </div>
 
                         </div>

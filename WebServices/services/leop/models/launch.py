@@ -21,7 +21,7 @@ import logging
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
-from services.configuration import signals as configuration_signasl
+from services.configuration import signals as configuration_signals
 from services.leop import utils as leop_utils
 from services.leop.models import ufos as ufo_models
 
@@ -88,6 +88,20 @@ class LaunchManager(django_models.Manager):
         :return: True if the operation was succesful
         """
         return self.get(identifier=launch_id).remove_unknown(object_id)
+
+    def update_identified(self, launch_id, object_id, callsign, tle_l1, tle_l2):
+        """
+        Updates the configuration for an identified object with the given data
+        :param launch_id: Identifier of the launch
+        :param object_id: Identifier for the identified object
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the identified object
+        :param tle_l2: Second line of the TLE for the identified object
+        :return: Identifier of the object
+        """
+        return self.get(identifier=launch_id).update_identified(
+            launch_id, object_id, callsign, tle_l1, tle_l2
+        )
 
     def identify(self, launch_id, object_id, callsign, tle_l1, tle_l2):
         """Manager method
@@ -275,6 +289,26 @@ class Launch(django_models.Model):
 
         return object_id
 
+    def update_identified(self, launch_id, object_id, callsign, tle_l1, tle_l2):
+        """
+        Updates the configuration for an identified object with the given data
+        :param launch_id: Identifier of the launch
+        :param object_id: Identifier for the identified object
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the identified object
+        :param tle_l2: Second line of the TLE for the identified object
+        :return: Identifier of the object
+        """
+        if object_id < 0:
+            raise Exception('Identifier has to be > 0')
+        if not self.identified_objects.filter(identifier=object_id).exists():
+            raise Exception(
+                'Identified object (sc) does not exist, id = ' + str(object_id)
+            )
+        return ufo_models.IdentifiedObject.objects.update(
+            launch_id, object_id, callsign, tle_l1, tle_l2
+        )
+
     def remove_identified(self, launch_id, object_id):
         """
         Removes an identified object from the list together with the associated
@@ -312,7 +346,7 @@ class Launch(django_models.Model):
         if tle_l1 and tle_l2:
             if self.tle.first_line != tle_l1 or self.tle.second_line != tle_l2:
 
-                configuration_signasl.update_tle_signal.send(
+                configuration_signals.update_tle_signal.send(
                     sender=self, identifier=self.tle.identifier,
                     tle_l1=tle_l1, tle_l2=tle_l2
                 )

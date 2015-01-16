@@ -396,10 +396,6 @@ angular.module('ui-leop-modalufo-controllers')
                 $scope.cluster.identified =
                     $scope._objArr2Dict(data.identified);
                 $scope.cluster.no_identified = $scope._identifiedSize();
-
-                console.log(
-                    '>>> (INIT) = ' + JSON.stringify($scope.cluster)
-                );
             };
 
             $scope._objArr2Dict = function (array) {
@@ -447,6 +443,7 @@ angular.module('ui-leop-modalufo-controllers')
                     tle_l1: '',
                     tle_l2: '',
                     callsign: '',
+                    edit: true,
                     past: 'ufo'
                 };
                 $scope.cluster.no_editing += 1;
@@ -457,6 +454,7 @@ angular.module('ui-leop-modalufo-controllers')
                     tle_l1: cfg.tle_l1,
                     tle_l2: cfg.tle_l2,
                     callsign: cfg.callsign,
+                    edit: true,
                     past: 'identified'
                 };
                 $scope.cluster.no_editing += 1;
@@ -467,6 +465,9 @@ angular.module('ui-leop-modalufo-controllers')
             };
             $scope._getEditing = function (object_id) {
                 return $scope.cluster.editing[object_id];
+            };
+            $scope._disableEditing = function (object_id) {
+                $scope.cluster.editing[object_id].edit = false;
             };
 
             $scope._identifiedSize = function () {
@@ -548,11 +549,20 @@ angular.module('ui-leop-modalufo-controllers')
             };
 
             $scope.save = function (object_id) {
-                var object = $scope._getEditing(object_id),
-                    err_msg = '[modal-ufo] Wrong configuration, ex = ';
+                var object = $scope._getEditing(object_id);
+                $scope._disableEditing(object_id);
+                if (object.past === 'ufo') {
+                    $scope._save('leop.ufo.identify', object_id, object);
+                } else {
+                    $scope._save('leop.ufo.update', object_id, object);
+                }
+            };
+
+            $scope._save = function (rpc_method, object_id, object) {
+                var err_msg = '[modal-ufo] Wrong configuration, ex = ';
                 console.log('>>> object = ' + JSON.stringify(object));
                 satnetRPC.rCall(
-                    'leop.ufo.identify',
+                    rpc_method,
                     [
                         $rootScope.leop_id,
                         object_id,
