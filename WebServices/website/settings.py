@@ -225,8 +225,7 @@ LOGGING = {
             'formatter': 'simple'
         },
         'mail_admins': {
-            'level': 'ERROR',
-            #'filters': ['require_debug_false'],
+            'level': 'DEBUG',
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'simple',
         },
@@ -244,7 +243,7 @@ LOGGING = {
         },
         'periodically': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'ERROR',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'rpc4django': {

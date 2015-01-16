@@ -633,7 +633,8 @@ a.button-red {
   border-bottom: 2px solid #0F3E62; }
 
 .countdown {
-  background-color: #293542;
+  background-color: #0F3E62;
+  opacity: 0.95;
   padding: 10px;
   border-radius: 10px; }
   .countdown p {

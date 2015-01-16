@@ -26,6 +26,7 @@ angular.module(
 );
 
 angular.module('ui-leop-modalufo-controllers')
+    .constant('CLUSTER_CFG_UPDATED_EV', 'cluster-cfg-updated')
     .constant('MAX_OBJECTS', 12)
     .constant('MAX_COLUMNS', 4)
     .service('oArrays', [
@@ -361,7 +362,8 @@ angular.module('ui-leop-modalufo-controllers')
     ])
     .controller('manageClusterModal', [
         '$rootScope', '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'oArrays', 'xDicts', 'MAX_OBJECTS',
+        'satnetRPC', 'oArrays', 'xDicts',
+        'MAX_OBJECTS', 'CLUSTER_CFG_UPDATED_EV',
         function (
             $rootScope,
             $scope,
@@ -370,7 +372,8 @@ angular.module('ui-leop-modalufo-controllers')
             satnetRPC,
             oArrays,
             xDicts,
-            MAX_OBJECTS
+            MAX_OBJECTS,
+            CLUSTER_CFG_UPDATED_EV
         ) {
             'use strict';
 
@@ -609,9 +612,30 @@ angular.module('ui-leop-modalufo-controllers')
             $scope.editCluster = function () {
                 $scope.cluster.edit = true;
             };
+
             $scope.saveCluster = function () {
-                // TODO Call satnet setConfiguration
-                $scope.cluster.edit = false;
+
+                var err_msg = '[modal-ufo] Wrong configuration, ex = ',
+                    cfg = {
+                        identifier: $rootScope.leop_id,
+                        date: $scope.cluster.date,
+                        tle_l1: $scope.cluster.tle_l1,
+                        tle_l2: $scope.cluster.tle_l2
+                    };
+
+                satnetRPC.rCall('leop.setCfg', [$rootScope.leop_id, cfg])
+                    .then(function (data) {
+                        $log.info('[modal-ufo] New cluster cfg, id = ' + data);
+                        $scope.cluster.edit = false;
+                        $rootScope.$broadcast(CLUSTER_CFG_UPDATED_EV, cfg);
+                    }, function (data) {
+                        err_msg += JSON.stringify(data);
+                        $log.warn(err_msg);
+                        if (alert(err_msg) === false) {
+                            $log.warn(err_msg);
+                        }
+                    });
+
             };
             $scope.cancelCluster = function () {
                 $scope.cluster.edit = false;

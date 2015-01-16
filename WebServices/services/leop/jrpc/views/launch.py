@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
+from services.common import misc
 from services.configuration.models import segments as segment_models
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
@@ -213,6 +214,8 @@ def set_configuration(launch_identifier, configuration):
     launch = launch_models.Launch.objects.get(identifier=launch_identifier)
     if not configuration:
         raise Exception('Wrong <configuration> object')
+
+    print '>>> configuration = ' + misc.dict_2_string(configuration)
 
     cfg_params = launch_serial.deserialize_launch(configuration)
 

@@ -16,11 +16,13 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
+import logging
 from django.db import models
 from djorm_pgarray import fields as pgarray_fields
 from services.common import simulation as simulator, misc
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
+logger = logging.getLogger('simulation')
 
 
 class GroundTrackManager(models.Manager):
@@ -127,7 +129,24 @@ class GroundTrackManager(models.Manager):
         os = simulator.OrbitalSimulator()
         (start, end) = os.get_update_window()
 
+        logger.info(
+            '[@propagate_groundtracks] start = ' +
+            str(start) + ', end = ' + str(end)
+        )
+
         for gt in self.all():
+
+            try:
+                logger.info(
+                    '[@propagate_groundtracks] gt.len (BEFORE) = ' +
+                        str(len(gt.ts))
+                )
+            except Exception as ex:
+                logger.error(
+                    '[@propagate_groundtracks] Exception logging, ex = ' +
+                    str(ex)
+                )
+                pass
 
             # 1) remove old groundtrack points
             gt = GroundTrackManager.remove_old(gt)
@@ -141,6 +160,18 @@ class GroundTrackManager(models.Manager):
             gt = GroundTrackManager.append_new(gt, ts, lat, lng)
             # 4) the updated groundtrack is saved to the database.
             gt.save()
+
+            try:
+                logger.info(
+                    '[@propagate_groundtracks] gt.len (AFTER) = ' +
+                    str(len(gt.ts))
+                )
+            except Exception as ex:
+                logger.error(
+                    '[@propagate_groundtracks] Exception logging, ex = ' +
+                    str(ex)
+                )
+                pass
 
 
 class GroundTrack(models.Model):

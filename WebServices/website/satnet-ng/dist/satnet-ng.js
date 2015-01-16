@@ -2083,6 +2083,7 @@ angular.module(
 );
 
 angular.module('ui-leop-modalufo-controllers')
+    .constant('CLUSTER_CFG_UPDATED_EV', 'cluster-cfg-updated')
     .constant('MAX_OBJECTS', 12)
     .constant('MAX_COLUMNS', 4)
     .service('oArrays', [
@@ -2418,7 +2419,8 @@ angular.module('ui-leop-modalufo-controllers')
     ])
     .controller('manageClusterModal', [
         '$rootScope', '$scope', '$log', '$modalInstance',
-        'satnetRPC', 'oArrays', 'xDicts', 'MAX_OBJECTS',
+        'satnetRPC', 'oArrays', 'xDicts',
+        'MAX_OBJECTS', 'CLUSTER_CFG_UPDATED_EV',
         function (
             $rootScope,
             $scope,
@@ -2427,7 +2429,8 @@ angular.module('ui-leop-modalufo-controllers')
             satnetRPC,
             oArrays,
             xDicts,
-            MAX_OBJECTS
+            MAX_OBJECTS,
+            CLUSTER_CFG_UPDATED_EV
         ) {
             'use strict';
 
@@ -2666,9 +2669,30 @@ angular.module('ui-leop-modalufo-controllers')
             $scope.editCluster = function () {
                 $scope.cluster.edit = true;
             };
+
             $scope.saveCluster = function () {
-                // TODO Call satnet setConfiguration
-                $scope.cluster.edit = false;
+
+                var err_msg = '[modal-ufo] Wrong configuration, ex = ',
+                    cfg = {
+                        identifier: $rootScope.leop_id,
+                        date: $scope.cluster.date,
+                        tle_l1: $scope.cluster.tle_l1,
+                        tle_l2: $scope.cluster.tle_l2
+                    };
+
+                satnetRPC.rCall('leop.setCfg', [$rootScope.leop_id, cfg])
+                    .then(function (data) {
+                        $log.info('[modal-ufo] New cluster cfg, id = ' + data);
+                        $scope.cluster.edit = false;
+                        $rootScope.$broadcast(CLUSTER_CFG_UPDATED_EV, cfg);
+                    }, function (data) {
+                        err_msg += JSON.stringify(data);
+                        $log.warn(err_msg);
+                        if (alert(err_msg) === false) {
+                            $log.warn(err_msg);
+                        }
+                    });
+
             };
             $scope.cancelCluster = function () {
                 $scope.cluster.edit = false;
@@ -3160,47 +3184,84 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
 angular.module('countdownDirective', [ 'satnet-services' ])
     .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
     .controller('countdownCtrl', [
-        '$rootScope', '$scope', '$timeout', 'satnetRPC',
-        function ($rootScope, $scope, $timeout, satnetRPC) {
+        '$rootScope', '$log', '$scope', '$timeout', 'satnetRPC',
+        function ($rootScope, $log, $scope, $timeout, satnetRPC) {
             'use strict';
 
-            $scope._timer = {};
-            $scope._counter = 0;
-            $scope.datems = 0;
-            $scope.label = 'Time to launch';
+            $scope.cd = {
+                label: 'EXPIRED',
+                diff: '',
+                expired: false,
+                hide: false,
+                _launch: {},
+                _diff: {},
+                _timer: {}
+            };
+
+            $scope._endBeat = function () {
+                $rootScope.$broadcast('launch-countdown-end');
+                $timeout.cancel($scope._timer);
+                $scope.cd.expired = true;
+            };
+
+            $scope.toggle = function () {
+                $scope.cd.hide = !$scope.cd.hide;
+            };
 
             $scope.beat = function () {
-                $scope._timer = $timeout(function () {
-                    console.log($scope._counter);
-                    $scope._counter -= 1;
-                    $scope.datems = $scope._counter * 1000;
-                    if ($scope._counter === 0) {
-                        $rootScope.$broadcast('launch-countdown-end');
-                        $timeout.cancel($scope._timer);
-                    } else {
-                        $scope.beat();
+                $scope.cd._timer = $timeout(function () {
+
+                    var now = moment().utc();
+
+                    if (($scope.cd._launch.isBefore(now) === true) ||
+                            ($scope.cd._launch.isSame(now) === true)) {
+                        $scope._endBeat();
+                        return;
                     }
-                }, 1000);
+
+                    $scope.cd._diff = moment.duration(
+                        $scope.cd._launch.diff(now)
+                    );
+                    $scope.cd.diff = $scope.cd._diff.toISOString();
+                    $scope.beat();
+
+                }, 990);
+            };
+
+            $scope._init = function (cfg) {
+                var now = moment().utc();
+                $scope.cd._launch = moment(cfg.date);
+                $scope.cd._diff = moment.duration($scope.cd._launch.diff(now));
+                $scope.beat();
             };
 
             $scope.init = function () {
-
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (data) {
-                        var launch = moment(data.date),
-                            now = moment(),
-                            diff = moment.duration(launch.diff(now));
-                        $scope._counter = diff;
-                        $scope.beat();
-                    }
+                    function (cfg) { $scope._init(cfg); }
                 );
-
+                $scope.$on('cluster-cfg-updated', function (id, cfg) {
+                    console.log('EVENT, id = ' + id);
+                    $log.info('@countdown: updating cluster, cfg = ' + cfg);
+                    $scope._init(cfg);
+                });
             };
 
             $scope.init();
 
         }
     ])
+    .filter('cdDate', function () {
+        'use strict';
+
+        return function (input) {
+
+            return input.replace(/P/, '').replace(/S/, '')
+                        .replace(/DT/, ' days ').replace(/H/, ':').replace(/M/, ':')
+                        .replace(/\.[0-9]{1,}/, '');
+
+        };
+
+    })
     .directive('countdown', function () {
         'use strict';
 

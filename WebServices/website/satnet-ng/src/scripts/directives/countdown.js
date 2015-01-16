@@ -17,47 +17,84 @@
 angular.module('countdownDirective', [ 'satnet-services' ])
     .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
     .controller('countdownCtrl', [
-        '$rootScope', '$scope', '$timeout', 'satnetRPC',
-        function ($rootScope, $scope, $timeout, satnetRPC) {
+        '$rootScope', '$log', '$scope', '$timeout', 'satnetRPC',
+        function ($rootScope, $log, $scope, $timeout, satnetRPC) {
             'use strict';
 
-            $scope._timer = {};
-            $scope._counter = 0;
-            $scope.datems = 0;
-            $scope.label = 'Time to launch';
+            $scope.cd = {
+                label: 'EXPIRED',
+                diff: '',
+                expired: false,
+                hide: false,
+                _launch: {},
+                _diff: {},
+                _timer: {}
+            };
+
+            $scope._endBeat = function () {
+                $rootScope.$broadcast('launch-countdown-end');
+                $timeout.cancel($scope._timer);
+                $scope.cd.expired = true;
+            };
+
+            $scope.toggle = function () {
+                $scope.cd.hide = !$scope.cd.hide;
+            };
 
             $scope.beat = function () {
-                $scope._timer = $timeout(function () {
-                    console.log($scope._counter);
-                    $scope._counter -= 1;
-                    $scope.datems = $scope._counter * 1000;
-                    if ($scope._counter === 0) {
-                        $rootScope.$broadcast('launch-countdown-end');
-                        $timeout.cancel($scope._timer);
-                    } else {
-                        $scope.beat();
+                $scope.cd._timer = $timeout(function () {
+
+                    var now = moment().utc();
+
+                    if (($scope.cd._launch.isBefore(now) === true) ||
+                            ($scope.cd._launch.isSame(now) === true)) {
+                        $scope._endBeat();
+                        return;
                     }
-                }, 1000);
+
+                    $scope.cd._diff = moment.duration(
+                        $scope.cd._launch.diff(now)
+                    );
+                    $scope.cd.diff = $scope.cd._diff.toISOString();
+                    $scope.beat();
+
+                }, 990);
+            };
+
+            $scope._init = function (cfg) {
+                var now = moment().utc();
+                $scope.cd._launch = moment(cfg.date);
+                $scope.cd._diff = moment.duration($scope.cd._launch.diff(now));
+                $scope.beat();
             };
 
             $scope.init = function () {
-
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (data) {
-                        var launch = moment(data.date),
-                            now = moment(),
-                            diff = moment.duration(launch.diff(now));
-                        $scope._counter = diff;
-                        $scope.beat();
-                    }
+                    function (cfg) { $scope._init(cfg); }
                 );
-
+                $scope.$on('cluster-cfg-updated', function (id, cfg) {
+                    console.log('EVENT, id = ' + id);
+                    $log.info('@countdown: updating cluster, cfg = ' + cfg);
+                    $scope._init(cfg);
+                });
             };
 
             $scope.init();
 
         }
     ])
+    .filter('cdDate', function () {
+        'use strict';
+
+        return function (input) {
+
+            return input.replace(/P/, '').replace(/S/, '')
+                        .replace(/DT/, ' days ').replace(/H/, ':').replace(/M/, ':')
+                        .replace(/\.[0-9]{1,}/, '');
+
+        };
+
+    })
     .directive('countdown', function () {
         'use strict';
 
