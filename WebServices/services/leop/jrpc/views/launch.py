@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
-from services.common import misc
 from services.configuration.models import segments as segment_models
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
@@ -163,9 +162,13 @@ def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
     :param tle_l2: Second line of the TLE associated to the object
     :return: Identifier of the promoted object
     """
-    return launch_models.Launch.objects.identify(
+    object_id, spacecraft_id = launch_models.Launch.objects.identify(
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
+    return {
+        launch_serial.JRPC_K_OBJECT_ID: object_id,
+        launch_serial.JRPC_K_SC_ID: spacecraft_id
+    }
 
 
 @rpc4django.rpcmethod(
@@ -185,7 +188,7 @@ def forget(launch_id, object_id):
 
 @rpc4django.rpcmethod(
     name='leop.launch.update',
-    signature=['String'],
+    signature=['String', 'int', 'String', 'String', 'String'],
     login_required=True
 )
 def update(launch_id, object_id, callsign, tle_l1, tle_l2):
@@ -198,9 +201,13 @@ def update(launch_id, object_id, callsign, tle_l1, tle_l2):
     :param tle_l2: Second line of the TLE associated to the object
     :return: Identifier of the updated object
     """
-    return launch_models.Launch.objects.update_identified(
+    object_id, spacecraft_id = launch_models.Launch.objects.update_identified(
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
+    return {
+        launch_serial.JRPC_K_OBJECT_ID: object_id,
+        launch_serial.JRPC_K_SC_ID: spacecraft_id
+    }
 
 
 @rpc4django.rpcmethod(
@@ -234,8 +241,6 @@ def set_configuration(launch_id, configuration):
     launch = launch_models.Launch.objects.get(identifier=launch_id)
     if not configuration:
         raise Exception('Wrong <configuration> object')
-
-    print '>>> configuration = ' + misc.dict_2_string(configuration)
 
     cfg_params = launch_serial.deserialize_launch(configuration)
 

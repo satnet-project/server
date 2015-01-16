@@ -507,7 +507,7 @@ angular.module('marker-models')
             this.addSC = function (id, cfg) {
 
                 if (this.sc.hasOwnProperty(id)) {
-                    throw '[x-maps] SC Marker already exists, id = ' + id;
+                    throw '[markers] SC Marker already exists, id = ' + id;
                 }
 
                 var m = this.createSCMarkers(cfg);
@@ -529,15 +529,20 @@ angular.module('marker-models')
              * @param id Identifier of the spacecraft.
              * @param cfg Object with the new configuration for the Spacecraft.
              * @returns {String} Identifier of the just-updated Spacecraft.
-             *
-             * TODO Real spacecraft update.
              */
             this.updateSC = function (id, cfg) {
-
+                var self = this;
                 if (!this.sc.hasOwnProperty(id)) {
-                    throw '[x-maps] SC Marker does not exist! id = ' + id;
+                    throw '[markers] SC Marker does not exist! id = ' + id;
                 }
-                console.log('@updateSC, cfg = ' + cfg);
+
+                this.removeSC(id).then(function (data) {
+                    console.log('[markers] SC removed, id = ' + data);
+                    self.addSC(id, cfg).then(function (data) {
+                        console.log('[markers] SC added, id = ' + data);
+                    });
+                });
+
                 return id;
 
             };

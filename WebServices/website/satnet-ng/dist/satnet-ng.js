@@ -1341,7 +1341,7 @@ angular.module('marker-models')
             this.addSC = function (id, cfg) {
 
                 if (this.sc.hasOwnProperty(id)) {
-                    throw '[x-maps] SC Marker already exists, id = ' + id;
+                    throw '[markers] SC Marker already exists, id = ' + id;
                 }
 
                 var m = this.createSCMarkers(cfg);
@@ -1363,15 +1363,20 @@ angular.module('marker-models')
              * @param id Identifier of the spacecraft.
              * @param cfg Object with the new configuration for the Spacecraft.
              * @returns {String} Identifier of the just-updated Spacecraft.
-             *
-             * TODO Real spacecraft update.
              */
             this.updateSC = function (id, cfg) {
-
+                var self = this;
                 if (!this.sc.hasOwnProperty(id)) {
-                    throw '[x-maps] SC Marker does not exist! id = ' + id;
+                    throw '[markers] SC Marker does not exist! id = ' + id;
                 }
-                console.log('@updateSC, cfg = ' + cfg);
+
+                this.removeSC(id).then(function (data) {
+                    console.log('[markers] SC removed, id = ' + data);
+                    self.addSC(id, cfg).then(function (data) {
+                        console.log('[markers] SC added, id = ' + data);
+                    });
+                });
+
                 return id;
 
             };
@@ -1662,14 +1667,6 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.updateSC = function (identifier) {
-            this.removeSC(identifier).then(function (data) {
-                $log.info(
-                    '[x-sc] (UPDATING) Removed spacecraft, id = ' + identifier
-                );
-                console.log(
-                    '[x-sc] (UPDATING), data = ' + JSON.stringify(data)
-                );
-            });
             return satnetRPC.readSCCfg(identifier).then(function (data) {
                 return markers.updateSC(identifier, data);
             });
@@ -1680,7 +1677,9 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.removeSC = function (identifier) {
-            markers.removeSC(identifier).then(function (data) { return data; });
+            return markers.removeSC(identifier).then(function (data) {
+                return data;
+            });
         };
 
         /**
@@ -2078,6 +2077,7 @@ angular.module(
     'ui-leop-modalufo-controllers',
     [
         'ui.bootstrap',
+        //'broadcaster',
         'satnet-services'
     ]
 );
@@ -2419,6 +2419,7 @@ angular.module('ui-leop-modalufo-controllers')
     ])
     .controller('manageClusterModal', [
         '$rootScope', '$scope', '$log', '$modalInstance',
+        'broadcaster',
         'satnetRPC', 'oArrays', 'xDicts',
         'MAX_OBJECTS', 'CLUSTER_CFG_UPDATED_EV',
         function (
@@ -2426,6 +2427,7 @@ angular.module('ui-leop-modalufo-controllers')
             $scope,
             $log,
             $modalInstance,
+            broadcaster,
             satnetRPC,
             oArrays,
             xDicts,
@@ -2438,6 +2440,9 @@ angular.module('ui-leop-modalufo-controllers')
 
             $scope._init = function (data) {
                 $scope.cluster.identifier = data.identifier;
+                $scope.cluster.sc_identifier = data.sc_identifier;
+                $scope.cluster.old_tle_l1 = data.tle_l1;
+                $scope.cluster.old_tle_l2 = data.tle_l2;
                 $scope.cluster.tle_l1 = data.tle_l1;
                 $scope.cluster.tle_l2 = data.tle_l2;
                 $scope.cluster.date = data.date;
@@ -2500,6 +2505,7 @@ angular.module('ui-leop-modalufo-controllers')
             $scope._addEditingUfo = function (object_id) {
                 $scope.cluster.editing[object_id] = {
                     object_id: object_id,
+                    sc_identifier: '',
                     tle_l1: '',
                     tle_l2: '',
                     callsign: '',
@@ -2511,6 +2517,7 @@ angular.module('ui-leop-modalufo-controllers')
             $scope._addEditingIded = function (object_id, cfg) {
                 $scope.cluster.editing[object_id] = {
                     object_id: object_id,
+                    sc_identifier: cfg.sc_id,
                     tle_l1: cfg.tle_l1,
                     tle_l2: cfg.tle_l2,
                     callsign: cfg.callsign,
@@ -2535,10 +2542,11 @@ angular.module('ui-leop-modalufo-controllers')
             };
             $scope._addIdentified = function (object_id, cfg) {
                 $scope.cluster.identified[object_id] = {
-                    'object_id': object_id,
-                    'tle_l1': cfg.tle_l1,
-                    'tle_l2': cfg.tle_l2,
-                    'callsign': cfg.callsign
+                    object_id: object_id,
+                    sc_identifier: cfg.sc_id,
+                    tle_l1: cfg.tle_l1,
+                    tle_l2: cfg.tle_l2,
+                    callsign: cfg.callsign
                 };
                 $scope.cluster.no_identified += 1;
             };
@@ -2612,17 +2620,16 @@ angular.module('ui-leop-modalufo-controllers')
                 var object = $scope._getEditing(object_id);
                 $scope._disableEditing(object_id);
                 if (object.past === 'ufo') {
-                    $scope._save('leop.ufo.identify', object_id, object);
+                    $scope._saveUfo(object_id, object);
                 } else {
-                    $scope._save('leop.ufo.update', object_id, object);
+                    $scope._saveIded(object_id, object);
                 }
             };
 
-            $scope._save = function (rpc_method, object_id, object) {
+            $scope._saveUfo = function (object_id, object) {
                 var err_msg = '[modal-ufo] Wrong configuration, ex = ';
-                console.log('>>> object = ' + JSON.stringify(object));
                 satnetRPC.rCall(
-                    rpc_method,
+                    'leop.ufo.identify',
                     [
                         $rootScope.leop_id,
                         object_id,
@@ -2632,9 +2639,44 @@ angular.module('ui-leop-modalufo-controllers')
                     ]
                 ).then(
                     function (data) {
-                        $log.info('[modal-ufo] <Object#' + data + '> SAVED!');
+                        $log.info(
+                            '[modal-ufo] <Object#' + data.object_id + '> SAVED!'
+                        );
+                        object.sc_identifier = data.sc_identifier;
                         $scope._addIdentified(object_id, object);
                         $scope._removeEditing(object_id);
+                        broadcaster.scAdded(object.sc_identifier);
+                    },
+                    function (data) {
+                        err_msg += JSON.stringify(data);
+                        $log.warn(err_msg);
+                        if (alert(err_msg) === false) {
+                            $log.warn(err_msg);
+                        }
+                    }
+                );
+            };
+
+            $scope._saveIded = function (object_id, object) {
+                var err_msg = '[modal-ufo] Wrong configuration, ex = ';
+                satnetRPC.rCall(
+                    'leop.ufo.update',
+                    [
+                        $rootScope.leop_id,
+                        object_id,
+                        object.callsign,
+                        object.tle_l1,
+                        object.tle_l2
+                    ]
+                ).then(
+                    function (data) {
+                        $log.info(
+                            '[modal-ufo] <Object#' + data.object_id + '> SAVED!'
+                        );
+                        object.sc_identifier = data.sc_identifier;
+                        $scope._addIdentified(object_id, object);
+                        $scope._removeEditing(object_id);
+                        broadcaster.scUpdated(object.sc_identifier);
                     },
                     function (data) {
                         err_msg += JSON.stringify(data);
@@ -2649,12 +2691,15 @@ angular.module('ui-leop-modalufo-controllers')
             $scope.forget = function (object_id) {
                 var ask_msg = 'Are you sure that you want to return <Object#' +
                         object_id + '> back to the UFO list?',
-                    err_msg = '[modal-ufo] Wrong configuration, ex = ';
+                    err_msg = '[modal-ufo] Wrong configuration, ex = ',
+                    object = $scope._getIdentified(object_id),
+                    object_sc_id = object.sc_identifier;
 
                 if (confirm(ask_msg) === false) {
                     $log.warn('[modal-ufo] object kept identified.');
                     return;
                 }
+
                 satnetRPC.rCall(
                     'leop.ufo.forget',
                     [$rootScope.leop_id, object_id]
@@ -2665,6 +2710,7 @@ angular.module('ui-leop-modalufo-controllers')
                         );
                         $scope._addUfo(object_id);
                         $scope._removeIdentified(object_id);
+                        broadcaster.scRemoved(object_sc_id);
                     },
                     function (data) {
                         err_msg += JSON.stringify(data);
@@ -2695,6 +2741,7 @@ angular.module('ui-leop-modalufo-controllers')
                         $log.info('[modal-ufo] New cluster cfg, id = ' + data);
                         $scope.cluster.edit = false;
                         $rootScope.$broadcast(CLUSTER_CFG_UPDATED_EV, cfg);
+                        broadcaster.scUpdated($scope.cluster.sc_identifier);
                     }, function (data) {
                         err_msg += JSON.stringify(data);
                         $log.warn(err_msg);

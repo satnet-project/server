@@ -80,14 +80,6 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.updateSC = function (identifier) {
-            this.removeSC(identifier).then(function (data) {
-                $log.info(
-                    '[x-sc] (UPDATING) Removed spacecraft, id = ' + identifier
-                );
-                console.log(
-                    '[x-sc] (UPDATING), data = ' + JSON.stringify(data)
-                );
-            });
             return satnetRPC.readSCCfg(identifier).then(function (data) {
                 return markers.updateSC(identifier, data);
             });
@@ -98,7 +90,9 @@ angular.module('x-spacecraft-models').service('xsc', [
          * @param identifier The identifier of the Spacecraft.
          */
         this.removeSC = function (identifier) {
-            markers.removeSC(identifier).then(function (data) { return data; });
+            return markers.removeSC(identifier).then(function (data) {
+                return data;
+            });
         };
 
         /**

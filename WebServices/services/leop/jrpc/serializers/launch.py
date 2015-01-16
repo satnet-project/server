@@ -19,6 +19,7 @@ JRPC_K_LEOP_ID = 'identifier'
 JRPC_K_AVAILABLE_GS = 'leop_gs_available'
 JRPC_K_IN_USE_GS = 'leop_gs_inuse'
 JRPC_K_DATE = 'date'
+JRPC_K_SC_ID = 'sc_identifier'
 JRPC_K_TLE = 'tle'
 JRPC_K_TLE_L1 = 'tle_l1'
 JRPC_K_TLE_L2 = 'tle_l2'
@@ -87,6 +88,7 @@ def serialize_launch_identified(identified):
 
         result.append({
             JRPC_K_OBJECT_ID: str(i.identifier),
+            JRPC_K_SC_ID: str(i.spacecraft.identifier),
             JRPC_K_CALLSIGN: str(i.spacecraft.callsign),
             JRPC_K_TLE_L1: str(i.spacecraft.tle.first_line),
             JRPC_K_TLE_L2: str(i.spacecraft.tle.second_line)
@@ -107,6 +109,7 @@ def serialize_launch(launch):
 
     return {
         JRPC_K_LEOP_ID: str(launch.identifier),
+        JRPC_K_SC_ID: str(launch.cluster_spacecraft_id),
         JRPC_K_TLE_L1: str(launch.tle.first_line),
         JRPC_K_TLE_L2: str(launch.tle.second_line),
         JRPC_K_DATE: str(launch.date.isoformat()),

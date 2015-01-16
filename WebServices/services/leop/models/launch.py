@@ -273,7 +273,7 @@ class Launch(django_models.Model):
         :param callsign: Callsign for the identified object
         :param tle_l1: First line of the TLE for the identified object
         :param tle_l2: Second line of the TLE for the identified object
-        :return: Identifier of the object
+        :return: (object_id, spacecraft_id)
         """
         if object_id < 0:
             raise Exception('Identifier has to be > 0')
@@ -287,7 +287,7 @@ class Launch(django_models.Model):
         self.identified_objects.add(identified)
         self.save()
 
-        return object_id
+        return object_id, identified.spacecraft.identifier
 
     def update_identified(self, launch_id, object_id, callsign, tle_l1, tle_l2):
         """

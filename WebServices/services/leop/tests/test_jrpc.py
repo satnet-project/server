@@ -25,6 +25,7 @@ import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.models import tle as tle_models
+from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.views import launch as launch_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
@@ -75,8 +76,15 @@ class TestLaunchViews(test.TestCase):
             tle_l1=self.__leop_tle_l1, tle_l2=self.__leop_tle_l2
         )
         self.__leop_serial_date = str(self.__leop.date.isoformat())
+        self.__leop_cs = launch_utils.generate_cluster_callsign(self.__leop_id)
+        self.__leop_sc_id = launch_utils.generate_cluster_sc_identifier(
+            self.__leop_id, self.__leop_cs
+        )
 
         self.__ufo_id = 1
+        self.__ufo_sc_id = launch_utils.generate_object_sc_identifier(
+            self.__leop_id, self.__ufo_id
+        )
         self.__ufo_callsign = 'SCLLY'
         self.__ufo_tle_l1 = self.__leop_tle_l1
         self.__ufo_tle_l2 = self.__leop_tle_l2
@@ -346,6 +354,86 @@ class TestLaunchViews(test.TestCase):
             'List must be empty'
         )
 
+    def test_update_ufo(self):
+        """JRPC unit test case
+        Validation of the updte method for an UFO-like object.
+        """
+        try:
+            launch_jrpc.update(None, None, None, None, None)
+            self.fail('Wrong arguments, an exception should have been raised')
+        except Exception as ex:
+            if self.__verbose_testing:
+                print '#1 ex = ' + str(ex)
+            pass
+        try:
+            launch_jrpc.update(self.__leop_id, None, None, None, None)
+            self.fail('Wrong arguments, an exception should have been raised')
+        except Exception as ex:
+            if self.__verbose_testing:
+                print '#2 ex = ' + str(ex)
+            pass
+        try:
+            launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None)
+            self.fail('Wrong arguments, an exception should have been raised')
+        except Exception as ex:
+            if self.__verbose_testing:
+                print '#3 ex = ' + str(ex)
+            pass
+
+        self.assertEquals(
+            launch_jrpc.add_unknown(self.__leop_id, self.__ufo_id),
+            self.__ufo_id,
+            'Should return the same id'
+        )
+        try:
+            launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None)
+            self.fail('Wrong arguments, an exception should have been raised')
+        except Exception as ex:
+            if self.__verbose_testing:
+                print '#4 ex = ' + str(ex)
+            pass
+        self.assertEquals(
+            launch_jrpc.identify(
+                self.__leop_id, self.__ufo_id,
+                self.__ufo_callsign, self.__ufo_tle_l1, self.__ufo_tle_l2
+            ),
+            {
+                launch_serial.JRPC_K_OBJECT_ID: self.__ufo_id,
+                launch_serial.JRPC_K_SC_ID: self.__ufo_sc_id
+            },
+            'Should have returned the id of the UFO and the SC id'
+        )
+        self.assertEquals(
+            launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None),
+            {
+                launch_serial.JRPC_K_OBJECT_ID: self.__ufo_id,
+                launch_serial.JRPC_K_SC_ID: self.__ufo_sc_id
+            },
+            'Should have returned the id of the UFO and the SC id'
+        )
+        self.assertEquals(
+            launch_jrpc.update(
+                self.__leop_id, self.__ufo_id,
+                self.__ufo_callsign, self.__ufo_tle_l1, self.__ufo_tle_l2
+            ),
+            {
+                launch_serial.JRPC_K_OBJECT_ID: self.__ufo_id,
+                launch_serial.JRPC_K_SC_ID: self.__ufo_sc_id
+            },
+            'Should have returned the id of the UFO and the SC id'
+        )
+        self.assertEquals(
+            launch_jrpc.update(
+                self.__leop_id, self.__ufo_id,
+                self.__ufo_callsign, self.__leop_2_tle_l1, self.__leop_2_tle_l2
+            ),
+            {
+                launch_serial.JRPC_K_OBJECT_ID: self.__ufo_id,
+                launch_serial.JRPC_K_SC_ID: self.__ufo_sc_id
+            },
+            'Should have returned the id of the UFO and the SC id'
+        )
+
     def test_get_configuration(self):
         """JRPC unit test case
         Validation of the JRPC method that permits obtaining the
@@ -361,6 +449,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_SC_ID: str(self.__leop_sc_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
             launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
@@ -378,6 +467,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_SC_ID: str(self.__leop_sc_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
             launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
@@ -402,6 +492,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_SC_ID: str(self.__leop_sc_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
             launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
@@ -410,6 +501,7 @@ class TestLaunchViews(test.TestCase):
             ],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: [{
                 launch_serial.JRPC_K_OBJECT_ID: '1',
+                launch_serial.JRPC_K_SC_ID: str(self.__ufo_sc_id),
                 launch_serial.JRPC_K_CALLSIGN: str(self.__ufo_callsign),
                 launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
                 launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
@@ -426,6 +518,7 @@ class TestLaunchViews(test.TestCase):
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
         e_cfg = {
             launch_serial.JRPC_K_LEOP_ID: str(self.__leop_id),
+            launch_serial.JRPC_K_SC_ID: str(self.__leop_sc_id),
             launch_serial.JRPC_K_DATE: self.__leop_serial_date,
             launch_serial.JRPC_K_TLE_L1: self.__leop_tle_l1,
             launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,

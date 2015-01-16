@@ -78,7 +78,7 @@ class IdentifiedObjectsManager(django_models.Manager):
                     tle_l2=tle_l2
                 )
 
-        return ufo.identifier
+        return ufo.identifier, ufo.spacecraft.identifier
 
     def delete(self, launch_id, object_id):
         """
