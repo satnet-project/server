@@ -39,7 +39,8 @@
             <div class='control-group'
                     ng-class="{ 'has-error': form.edit_gs_lat.$invalid }">
                 <label for='edit_gs_lat'>Latitude</label>
-                <input type='number' name='edit_gs_lat' id='edit_gs_lat'
+                <input name='edit_gs_lat' id='edit_gs_lat'
+                       type='number' step='0.01' readonly
                        ng-model="markers.gs.lat"
                        style='width: 95%;' >
                 </input>
@@ -47,7 +48,8 @@
             <div class='control-group'
                     ng-class="{ 'has-error': form.edit_gs_lng.$invalid }">
                 <label for='edit_gs_lng'>Longitude</label>
-                <input type='number' name='edit_gs_lng' id='edit_gs_lng'
+                <input name='edit_gs_lng' id='edit_gs_lng'
+                       type='number' step='0.01' readonly
                        ng-model="markers.gs.lng"
                        style='width: 95%;'>
                 </input>
