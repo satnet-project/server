@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django import test
 from services.configuration.models import segments as segment_models
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 
 class PeriodicSimulationTest(test.TestCase):

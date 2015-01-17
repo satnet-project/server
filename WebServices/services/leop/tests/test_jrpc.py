@@ -29,7 +29,7 @@ from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.views import launch as launch_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 
 class TestLaunchViews(test.TestCase):
@@ -99,7 +99,7 @@ class TestLaunchViews(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_list_groundstations(self):
-        """Unit test case.
+        """Unit test case
         Checks the functioning of the JRPC method that returns the list of
         GroundStations available for the administrator to create a LEOP system.
         """

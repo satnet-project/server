@@ -20,7 +20,8 @@ from django.dispatch import receiver
 import logging
 from services.configuration.models import segments
 from services.configuration.models import tle as tle_models
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as gt_models
+
 logger = logging.getLogger('simulation')
 
 
@@ -38,7 +39,9 @@ def spacecraft_saved(sender, instance, created, raw, **kwargs):
     """
     if not created or raw:
         return
-    simulation_models.GroundTrack.objects.create(instance)
+
+    #pass_models.PassSlots.objects.create(instance)
+    gt_models.GroundTrack.objects.create(instance)
 
 
 @receiver(post_save, sender=segments.Spacecraft)
@@ -60,13 +63,13 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
     # (ManyToMany), a first just-non-created signal is sent and should be
     # filtered.
     try:
-        gt = simulation_models.GroundTrack.objects.get(spacecraft=instance)
-    except simulation_models.GroundTrack.DoesNotExist:
+        gt = gt_models.GroundTrack.objects.get(spacecraft=instance)
+    except gt_models.GroundTrack.DoesNotExist:
         return
 
     if instance.tle != gt.tle:
         gt.delete()
-        simulation_models.GroundTrack.objects.create(instance)
+        gt_models.GroundTrack.objects.create(instance)
 
 
 @receiver(pre_delete, sender=segments.Spacecraft)
@@ -80,14 +83,15 @@ def spacecraft_deleted(sender, instance, **kwargs):
     :param kwargs: Additional arguments.
     """
     try:
-        gt = simulation_models.GroundTrack.objects.get(spacecraft=instance)
+        gt = gt_models.GroundTrack.objects.get(spacecraft=instance)
         gt.delete()
-    except simulation_models.GroundTrack.DoesNotExist:
+    except gt_models.GroundTrack.DoesNotExist:
         logger.warn(
             '>>> Spacecraft did not have an associated GT, id = ' + str(
                 instance.identifier
             )
         )
+
 
 @receiver(post_save, sender=tle_models.TwoLineElement)
 def tle_updated(sender, instance, created, raw, **kwargs):
@@ -104,8 +108,8 @@ def tle_updated(sender, instance, created, raw, **kwargs):
     if created or raw:
         return
 
-    for gt in simulation_models.GroundTrack.objects.filter(tle=instance):
+    for gt in gt_models.GroundTrack.objects.filter(tle=instance):
 
         spacecraft = gt.spacecraft
         gt.delete()
-        simulation_models.GroundTrack.objects.create(spacecraft)
+        gt_models.GroundTrack.objects.create(spacecraft)

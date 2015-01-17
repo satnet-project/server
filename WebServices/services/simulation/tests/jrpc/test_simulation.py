@@ -23,10 +23,10 @@ from services.common.testing import helpers as db_tools
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
 from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
-from services.simulation.jrpc.views import simulation as simulation_jrpc
-from services.simulation.jrpc.serializers import simulation as \
+from services.simulation.jrpc.views import groundtracks as simulation_jrpc
+from services.simulation.jrpc.serializers import groundtracks as \
     simulation_serializer
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 
 class JRPCSimulationTest(test.TestCase):

@@ -94,8 +94,22 @@ angular.module('ui-modalgs-controllers')
 angular.module('ui-modalgs-controllers')
     .constant('GS_ELEVATION', 15.0)
     .controller('EditGSModalCtrl', [
-        '$scope', '$log', '$modalInstance', 'satnetRPC', 'broadcaster', 'maps', 'groundstationId',
-        function ($scope, $log, $modalInstance, satnetRPC, broadcaster, maps, groundstationId) {
+        '$scope',
+        '$log',
+        '$modalInstance',
+        'satnetRPC',
+        'broadcaster',
+        'maps',
+        'groundstationId',
+        function (
+            $scope,
+            $log,
+            $modalInstance,
+            satnetRPC,
+            broadcaster,
+            maps,
+            groundstationId
+        ) {
             'use strict';
 
             $scope.gs = { identifier: '', callsign: '', elevation: 0 };
@@ -139,7 +153,10 @@ angular.module('ui-modalgs-controllers')
                 if (confirm('Delete this ground station?') === true) {
                     satnetRPC.rCall('gs.delete', [groundstationId]).then(
                         function (gsId) {
-                            $log.info('[modalgs] GS removed, id = ' + JSON.stringify(gsId));
+                            $log.info(
+                                '[modalgs] GS removed, id = ' +
+                                    JSON.stringify(gsId)
+                            );
                             broadcaster.gsRemoved(gsId);
                             $modalInstance.close();
                         },

@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 logger = logging.getLogger('simulation')
 

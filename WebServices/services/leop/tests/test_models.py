@@ -22,7 +22,7 @@ from services.configuration.models import tle as tle_models
 from services.configuration.models import segments as segment_models
 from services.leop import utils as leop_utils
 from services.leop.models import launch as launch_models
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 
 class TestLaunchModels(test.TestCase):

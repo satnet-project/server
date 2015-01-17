@@ -25,7 +25,7 @@ import numpy
 from pytz import utc as pytz_utc
 from services.common import simulation, misc
 from services.common.testing import helpers as db_tools
-from services.simulation.models import simulation as simulation_models
+from services.simulation.models import groundtracks as simulation_models
 
 
 class TestSimulation(TestCase):
