@@ -19,10 +19,11 @@
                 <label class='control-label'
                        for='callsign'>Callsign</label>
                 <input type='text' name='callsign' id='callsign'
-                       ng-model="gs.callsign"
                        class='form-control' style='width: 95%'
                        ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
+                       ng-model="gs.callsign"
                        required/>
+                <!--  -->
             </div>
             <div class='control-group'
                     ng-class="{ 'has-error': form.elevation.$invalid }">
@@ -33,16 +34,24 @@
                        class='form-control' style='width: 95%'
                        step='0.01' min='0' max='90' required />
             </div>
-            <hr>
-            <label for='edit_gs_lat'>Latitude</label>
-            <input type='text' name='edit_gs_lat' id='edit_gs_lat' readonly
-                   ng-model="markers.gs.lat" style='width: 95%;' />
-            <label for='edit_gs_lng'>Longitude</label>
-            <input type='text' name='edit_gs_lng' id='edit_gs_lng' readonly
-                   ng-model="markers.gs.lng" style='width: 95%;' />
+            <hr/>
 
-            <input type='hidden' name='hidden_lat' ng-model="markers.gs.lat" />
-            <input type='hidden' name='hidden_lng' ng-model="markers.gs.lng" />
+            <div class='control-group'
+                    ng-class="{ 'has-error': form.edit_gs_lat.$invalid }">
+                <label for='edit_gs_lat'>Latitude</label>
+                <input type='number' name='edit_gs_lat' id='edit_gs_lat'
+                       ng-model="markers.gs.lat"
+                       style='width: 95%;' >
+                </input>
+            </div>
+            <div class='control-group'
+                    ng-class="{ 'has-error': form.edit_gs_lng.$invalid }">
+                <label for='edit_gs_lng'>Longitude</label>
+                <input type='number' name='edit_gs_lng' id='edit_gs_lng'
+                       ng-model="markers.gs.lng"
+                       style='width: 95%;'>
+                </input>
+            </div>
 
         </form>
     </div>
@@ -56,7 +65,9 @@
 
 <div class='modal-footer'>
     <button class='btn btn-primary' ng-click="update()"
-            ng-disabled="form.$pristine || form.$invalid">(update)</button>
+            ng-disabled="form.$pristine || form.$invalid">
+        (update)
+    </button>
     <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
     <button class='btn btn-danger' ng-click="erase()">(remove)</button>
 </div>

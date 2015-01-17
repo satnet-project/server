@@ -101,7 +101,6 @@ angular.module('x-groundstation-models').service('xgs', [
          * @param identifier Identifier of the GroundStation object.
          */
         this.removeGS = function (identifier) {
-            console.log('@x-gs: remove, id = ' + identifier);
             return markers.removeGSMarker(identifier);
         };
 

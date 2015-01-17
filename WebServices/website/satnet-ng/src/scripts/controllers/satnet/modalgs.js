@@ -51,7 +51,11 @@ angular.module('ui-modalgs-controllers')
 
             'use strict';
 
-            $scope.gs = { identifier: '', callsign: '', elevation: GS_ELEVATION };
+            $scope.gs = {
+                identifier: '',
+                callsign: '',
+                elevation: GS_ELEVATION
+            };
 
             angular.extend($scope, {
                 center: {},

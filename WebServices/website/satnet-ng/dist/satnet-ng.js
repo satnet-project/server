@@ -1555,7 +1555,6 @@ angular.module('x-groundstation-models').service('xgs', [
          * @param identifier Identifier of the GroundStation object.
          */
         this.removeGS = function (identifier) {
-            console.log('@x-gs: remove, id = ' + identifier);
             return markers.removeGSMarker(identifier);
         };
 
@@ -1945,6 +1944,8 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.gsIds.toAdd = [];
             $scope.gsIds.toRemove = [];
+
+            $scope.ll_changed = false;
 
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
@@ -2979,7 +2980,11 @@ angular.module('ui-modalgs-controllers')
 
             'use strict';
 
-            $scope.gs = { identifier: '', callsign: '', elevation: GS_ELEVATION };
+            $scope.gs = {
+                identifier: '',
+                callsign: '',
+                elevation: GS_ELEVATION
+            };
 
             angular.extend($scope, {
                 center: {},

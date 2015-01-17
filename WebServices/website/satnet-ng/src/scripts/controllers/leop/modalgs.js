@@ -49,6 +49,8 @@ angular.module('ui-leop-modalgs-controllers')
             $scope.gsIds.toAdd = [];
             $scope.gsIds.toRemove = [];
 
+            $scope.ll_changed = false;
+
             $scope.init = function () {
                 console.log('init, leop_id = ' + $rootScope.leop_id);
                 satnetRPC.readAllLEOPGS($rootScope.leop_id)
