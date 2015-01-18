@@ -27,6 +27,7 @@ from services.common import serialization as common_serial
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
 from services.leop.models import launch as leop_models
+from services.network import models as network_models
 
 
 def create_user(
@@ -122,6 +123,11 @@ def create_sc(
         tle_id=tle_id,
         is_ufo=is_ufo
     )
+
+
+def create_local_server():
+
+    network_models.Server.objects.load_local_server()
 
 
 def create_launch(

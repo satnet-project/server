@@ -53,7 +53,7 @@ angular.module('satnet-ui').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('templates/passes.html',
-    "<div ng-controller=\"passesCtrl\" class=\"pass-list\" ng-click=\"init()\"><span>XXXXXXXXXXXXXX</span><div ng-repeat=\"p in passes\"><div ng-class=\"{in:$first}\" class=\"pass-row\"><div class=\"pass-cell\"><span>{{ p.groundstation }}</span></div></div></div></div>"
+    "<div ng-controller=\"passesCtrl\" class=\"pass-list\" ng-click=\"init()\"><div ng-repeat=\"p in passes\"><div ng-class=\"{in:$first}\" class=\"pass-row\"><div class=\"pass-cell\"><span>{{ p.groundstation }}</span></div></div></div></div>"
   );
 
 }]);

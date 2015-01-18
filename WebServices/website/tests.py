@@ -34,12 +34,17 @@ class SatnetTestRunner(DiscoverRunner):
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
 
+        # 1) first we create the local server in case it does not exist
+        db_tools.create_local_server()
+
         try:
 
+            # 2) later, we try to load the CELESTRAK TLE database
             tle.TwoLineElementsManager.load_tles(testing=True)
             # tle.TwoLineElementsManager.load_celestrak()
             print ' done!'
 
+            # 3) SC necessary for speeding-up some tests
             sys.stdout.write('>>> Adding <CANX-2> as testing Spacecraft...')
             sys.stdout.flush()
             db_tools.create_sc(
@@ -55,6 +60,7 @@ class SatnetTestRunner(DiscoverRunner):
 
         sys.stdout.write('>>> Initializing available bands...')
         sys.stdout.flush()
+        # 4) Initialization of the available communication channel bands.
         db_tools.init_available()
         print ' done!'
 

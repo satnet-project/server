@@ -93,6 +93,32 @@ class TestLaunchModels(test.TestCase):
             print '>>> tle_id (cluster) = ' + str(tle_id)
             print '>>> callsign (cluster) = ' + str(callsign)
 
+    def test_delete_launch(self):
+        """UNIT test case (model method)
+        Validates the deletion of a Launch object together with its associated
+        resources.
+        """
+        launch_id = 'XXXlaunch'
+        self.assertEquals(
+            db_tools.create_launch(identifier=launch_id).identifier,
+            launch_id,
+            'Create should have returned the same identifier for the launch'
+        )
+        launch_tle_id = leop_utils.generate_cluster_tle_id(launch_id)
+        self.assertTrue(
+            tle_models.TwoLineElement.objects.filter(
+                identifier=launch_tle_id
+            ).exists(),
+            'TLE for the new launch object should have been CREATED'
+        )
+        launch_models.Launch.objects.get(identifier=launch_id).delete()
+        self.assertFalse(
+            tle_models.TwoLineElement.objects.filter(
+                identifier=launch_tle_id
+            ).exists(),
+            'TLE for the new launch object should have been DELETED'
+        )
+
     def test_add_unknown(self):
         """UNIT test case (model method)
         Validates the creation of an unknown object within the database.

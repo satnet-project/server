@@ -335,6 +335,8 @@ angular.module('satnet-services').service('satnetRPC', [
                 this._leop.createMethod('getPasses'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
+            'leop.sc.list':
+                this._leop.createMethod('sc.list'),
             'leop.gs.add':
                 this._leop.createMethod('gs.add'),
             'leop.gs.remove':
@@ -1640,7 +1642,6 @@ angular.module('x-spacecraft-models').service('xsc', [
             });
         };
 
-
         /**
          * Initializes all the configuration objects for the available
          * spacecraft.
@@ -1648,13 +1649,14 @@ angular.module('x-spacecraft-models').service('xsc', [
          */
         this.initAllLEOP = function () {
             var self = this;
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
-                return $q.all(p).then(function (sc_ids) {
-                    return sc_ids;
+            return satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
+                .then(function (scs) {
+                    var p = [];
+                    angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                    return $q.all(p).then(function (sc_ids) {
+                        return sc_ids;
+                    });
                 });
-            });
         };
 
         /**

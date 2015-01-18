@@ -47,7 +47,6 @@ angular.module('x-spacecraft-models').service('xsc', [
             });
         };
 
-
         /**
          * Initializes all the configuration objects for the available
          * spacecraft.
@@ -55,13 +54,14 @@ angular.module('x-spacecraft-models').service('xsc', [
          */
         this.initAllLEOP = function () {
             var self = this;
-            return satnetRPC.rCall('sc.list', []).then(function (scs) {
-                var p = [];
-                angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
-                return $q.all(p).then(function (sc_ids) {
-                    return sc_ids;
+            return satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
+                .then(function (scs) {
+                    var p = [];
+                    angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                    return $q.all(p).then(function (sc_ids) {
+                        return sc_ids;
+                    });
                 });
-            });
         };
 
         /**

@@ -611,7 +611,7 @@ class TestLaunchViews(test.TestCase):
         self.assertNotEquals(old_gt, new_gt, 'GroundTracks should be different')
 
     def test_get_passes(self):
-        """
+        """UNIT test (JRPC method)
         Validates the retrieval of the passes for this launch.
         """
         self.assertEquals(
@@ -627,4 +627,13 @@ class TestLaunchViews(test.TestCase):
             ),
             {launch_serial.JRPC_K_LEOP_ID: self.__leop_id},
             'Should have returned launch identifier'
+        )
+
+    def test_list_sc(self):
+        """UNIT test (JRPC method)
+        Validates the retrieval of the list of spacecraft associated to this
+        launch.
+        """
+        launch_jrpc.list_spacecraft(
+            self.__leop_id, **{'request': self.__request_2}
         )

@@ -59,6 +59,39 @@ def list_groundstations(launch_id, **kwargs):
 
 
 @rpc4django.rpcmethod(
+    name='leop.sc.list',
+    signature=['String'],
+    login_required=True
+)
+def list_spacecraft(launch_id, **kwargs):
+    """JRPC method (LEOP service).
+    Returns the list of spacecraft registered for this launch.
+    system.
+    :param launch_id: Identifier of the LEOP cluster.
+    :param kwargs: Dictionary with additional variables like the HTTP request
+                    itself (defined by RPC4Django).
+    :return: List of the identifiers of the spacecraft associated with the
+    launch
+    """
+    # user must be obtained from the request, since this has already been
+    # validated by the authentication backend
+    http_request = kwargs.get('request', None)
+    if not http_request or not http_request.user.is_staff:
+        raise django_ex.PermissionDenied()
+
+    launch = launch_models.Launch.objects.get(identifier=launch_id)
+
+    # The spacecraft associated with this launch include the spacecraft for
+    # the cluster and the spacecraft of the identified objects.
+    scs = [launch.cluster_spacecraft_id]
+    scs += [i_object.identifier for i_object in launch.identified_objects.all()]
+
+    # Since 'scs' is simply an array of strings (identifiers), no further
+    # serialization should be required
+    return scs
+
+
+@rpc4django.rpcmethod(
     name='leop.gs.add',
     signature=['String', 'Object'],
     login_required=True
@@ -281,13 +314,6 @@ def get_passes(launch_id):
         )
     ]
     scs += launch.identified_objects.all()
-
-    for sc in scs:
-        print '>>> sc = ' + str(sc.identifier)
-
-    for slot in pass_models.PassSlots.objects.all():
-
-        print '@@@@ slot = ' + misc.dict_2_string(slot)
 
     slots = pass_models.PassSlots.objects.filter(
         spacecraft__in=scs,

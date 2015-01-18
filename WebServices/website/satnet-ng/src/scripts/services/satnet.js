@@ -86,6 +86,8 @@ angular.module('satnet-services').service('satnetRPC', [
                 this._leop.createMethod('getPasses'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
+            'leop.sc.list':
+                this._leop.createMethod('sc.list'),
             'leop.gs.add':
                 this._leop.createMethod('gs.add'),
             'leop.gs.remove':
