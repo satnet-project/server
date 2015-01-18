@@ -15,8 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django.core import exceptions as django_exceptions
 from rpc4django import rpcmethod
-
 from services.accounts import models as account_models
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
@@ -56,8 +56,10 @@ def create(identifier, callsign, tle_id, **kwargs):
     """
     request = kwargs.get('request', None)
     if request is None:
-        logger.warning('No HTTP request found.')
-        return
+        raise django_exceptions.PermissionDenied(
+            'User identity could not be verified ' +
+            'since no HTTP request was provided.'
+        )
     username = request.user.username
 
     if username is None:

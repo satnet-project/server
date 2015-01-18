@@ -30,9 +30,7 @@ class SatnetTestRunner(DiscoverRunner):
 
     def setup_databases(self, **kwargs):
 
-        db = DiscoverRunner(SatnetTestRunner, self).setup_databases(
-            **kwargs
-        )
+        db = DiscoverRunner(SatnetTestRunner, self).setup_databases(**kwargs)
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
 

@@ -243,7 +243,7 @@ LOGGING = {
         },
         'periodically': {
             'handlers': ['console', 'mail_admins'],
-            'level': 'DEBUG',
+            'level': 'WARNING',
             'propagate': True,
         },
         'rpc4django': {

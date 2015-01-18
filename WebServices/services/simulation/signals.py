@@ -16,17 +16,74 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db.models.signals import post_save, pre_delete
-from django.dispatch import receiver
+from django import dispatch as django_dispatch
 import logging
 from services.configuration.models import segments
 from services.configuration.models import tle as tle_models
 from services.simulation.models import groundtracks as gt_models
+from services.simulation.models import passes as pass_models
 
 logger = logging.getLogger('simulation')
 
 
-@receiver(post_save, sender=segments.Spacecraft)
-def spacecraft_saved(sender, instance, created, raw, **kwargs):
+@django_dispatch.receiver(post_save, sender=segments.GroundStation)
+def groundstation_created(sender, instance, created, raw, **kwargs):
+    """Signal handler (post_save)
+    Generates the pass slots associated with this groundstation.
+    :param sender: Reference to the sender
+    :param instance: Reference to the GroundStation object whose creation/update
+                    triggered the execution of this handler
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates whether the database is stable or not
+    :param kwargs: Additional arguments
+    :return:
+    """
+    if not created or raw:
+        return
+
+    pass_models.PassSlots.objects.create_pass_slots_gs(instance)
+
+
+@django_dispatch.receiver(post_save, sender=segments.GroundStation)
+def groundstation_updated(
+    sender, instance, created, raw, update_fields, **kwargs
+):
+    """Signal handler (post_save)
+    Generates the pass slots associated with this groundstation.
+    :param sender: Reference to the sender
+    :param instance: Reference to the GroundStation object whose creation/update
+                    triggered the execution of this handler
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates whether the database is stable or not
+    :param update_fields: List of the fields that were updated
+    :param kwargs: Additional arguments
+    :return:
+    """
+    if created or raw:
+        return
+
+    if update_fields is None:
+        return
+
+    if 'latitude' in update_fields or 'longitude' in update_fields:
+        pass_models.PassSlots.objects.create_pass_slots_gs(instance)
+
+
+@django_dispatch.receiver(pre_delete, sender=segments.Spacecraft)
+def groundstation_deleted(sender, instance, **kwargs):
+    """Signal Handler (post_save).
+    Signal handler that triggers the removal of the related simulation
+    resources for a given Spacecraft.
+    :param sender: Reference to the sender.
+    :param instance: Reference to the Spacecraft object whose removal
+                    triggered the execution of this handler.
+    :param kwargs: Additional arguments.
+    """
+    pass_models.PassSlots.objects.remove_pass_slots_gs(instance)
+
+
+@django_dispatch.receiver(post_save, sender=segments.Spacecraft)
+def spacecraft_created(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the creation or update of the related
     simulation resources for a given Spacecraft.
@@ -40,11 +97,11 @@ def spacecraft_saved(sender, instance, created, raw, **kwargs):
     if not created or raw:
         return
 
-    #pass_models.PassSlots.objects.create(instance)
+    pass_models.PassSlots.objects.create_pass_slots_sc(instance)
     gt_models.GroundTrack.objects.create(instance)
 
 
-@receiver(post_save, sender=segments.Spacecraft)
+@django_dispatch.receiver(post_save, sender=segments.Spacecraft)
 def spacecraft_updated(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the creation or update of the related
@@ -68,11 +125,15 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
         return
 
     if instance.tle != gt.tle:
+
         gt.delete()
         gt_models.GroundTrack.objects.create(instance)
 
+        pass_models.PassSlots.objects.remove_pass_slots_sc(instance)
+        pass_models.PassSlots.objects.create_pass_slots_sc(instance)
 
-@receiver(pre_delete, sender=segments.Spacecraft)
+
+@django_dispatch.receiver(pre_delete, sender=segments.Spacecraft)
 def spacecraft_deleted(sender, instance, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the removal of the related simulation
@@ -92,8 +153,10 @@ def spacecraft_deleted(sender, instance, **kwargs):
             )
         )
 
+    pass_models.PassSlots.objects.filter(spacecraft=instance).delete()
 
-@receiver(post_save, sender=tle_models.TwoLineElement)
+
+@django_dispatch.receiver(post_save, sender=tle_models.TwoLineElement)
 def tle_updated(sender, instance, created, raw, **kwargs):
     """Signal handler (post_save)
     Handles the update of the groundtracks and other simulation resources that

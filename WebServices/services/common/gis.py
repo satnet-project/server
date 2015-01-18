@@ -195,6 +195,21 @@ def get_longitude_direction(longitude_degrees):
         return ""
 
 
+def latlng_2_degrees(latlng, add_direction=False):
+    """
+    Converts a latlng coordinate position from decimal degrees into DMS format.
+    :param latlng: Coordinate in decimal format
+    :param add_direction: Marks whether direction should be added or not
+    :return: Tuple with the DMS-formatted (lat, lng)
+    """
+    return decimal_2_degrees(
+        latlng[0], latitude=True, add_direction=add_direction
+    ),\
+        decimal_2_degrees(
+            latlng[1], latitude=False, add_direction=add_direction
+        )
+
+
 def decimal_2_degrees(decimal, latitude=True, add_direction=False):
     """
     Converts a value in decimal degrees into a string with the format:
@@ -204,35 +219,21 @@ def decimal_2_degrees(decimal, latitude=True, add_direction=False):
     latitude or for the longitude. This parameter is only necessary when it
     is required to add the direction at the end of the string (N, S, W, E).
     :param add_direction: If true, adds the direction for the DMS result.
-    :return: The input degrees in DMS format (with optional direction).
+    :return: The degrees in DMS format (with optional direction).
     """
+    decimal = float(decimal)
     degrees = int(decimal)
-    submin = abs((decimal - int(decimal)) * 60)
+    submin = abs((decimal - degrees) * 60)
     minutes = int(submin)
-    subseconds = abs((submin - int(submin)) * 60)
+    subseconds = abs((submin - minutes) * 60)
 
     result = str(degrees) + ":" + str(minutes) + ":" +\
-        str(subseconds)[0:5]
+        "{0:.2f}".format(subseconds)
 
     if add_direction:
         if latitude:
             return result + "" + get_latitude_direction(degrees)
         else:
-            return result + "" + get_latitude_direction(degrees)
+            return result + "" + get_longitude_direction(degrees)
 
     return result
-
-
-def degrees_2_decimal(degrees, separator=':'):
-    """
-    Converts a value in DMS to decimal degrees.
-    :param degrees: The DMS value to be converted (as a string).
-    :return: The generated decimal value (returns a float).
-    """
-    sighn = degrees.lstrip()[:1] == '-' and -1.0 or 1.0
-    (ds, ms, ss) = degrees.split(separator)
-
-    d = float(ds)
-    m = sighn * float(ms)
-    s = sighn * float(ss)
-    return d + (m / 60) + (s / 3600)

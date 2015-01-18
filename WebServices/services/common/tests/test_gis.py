@@ -84,16 +84,51 @@ class TestGis(TestCase):
         except Exception:
             pass
 
-    def test_dms2dec(self):
-        """DMS2Decimal test.
-        Test to validate the method that transforms a DMS coordinate into a
-        decimal value.
+    def test_decimal_2_degrees(self):
+        """Unit test case
+        Validates the method for converting from decimal degrees (float) to a
+        DMS-formatted string.
         """
-        pobra_dms = '42:35:15'
-        e_pobra_dec = 42.0 + 35.0 / 60 + 15.0 / 3600
-        a_pobra_dec = gis.degrees_2_decimal(pobra_dms)
+        test_array = [
+            {  # Zeroland
+                'input': (0, 0),
+                'expected': ('0:0:0.00', '0:0:0.00')
+            },
+            {  # Zeroland
+                'input': (0, -0),
+                'expected': ('0:0:0.00', '0:0:0.00')
+            },
+            {  # Zeroland
+                'input': (-0, 0),
+                'expected': ('0:0:0.00', '0:0:0.00')
+            },
+            {  # Zeroland
+                'input': (-0, -0),
+                'expected': ('0:0:0.00', '0:0:0.00')
+            },
+            {  # Casa (Pobra)
+                'input': (42.600, -8.933),
+                'expected': ('42:36:0.00', '-8:55:58.80')
+            },
+            {  # Reichstag (Berlin)
+                'input': (52.518623, 13.376198),
+                'expected': ('52:31:7.04', '13:22:34.31')
+            },
+            {  # Capetown
+                'input': (-33.918861, 18.423300),
+                'expected': ('-33:55:7.90', '18:25:23.88')
+            },
+            {  # Buenos Aires
+                'input': (-34.603722, -58.381592),
+                'expected': ('-34:36:13.40', '-58:22:53.73')
+            }
+        ]
 
-        self.assertEquals(
-            e_pobra_dec, a_pobra_dec, 'Decimal coordinates differ, e = ' +
-            str(e_pobra_dec) + ', a = ' + str(a_pobra_dec)
-        )
+        for t in test_array:
+
+            actual = gis.latlng_2_degrees(t['input'])
+
+            self.assertEquals(
+                actual, t['expected'], 'Wrong result, a = ' +
+                str(actual) + ', e = '+ str(t['expected'])
+            )

@@ -309,32 +309,40 @@ class GroundStation(models.Model):
         """
         changes = False
         change_altitude = False
+        update_fields = []
 
         if callsign and self.callsign != callsign:
             self.callsign = callsign
+            update_fields.append('callsign')
             changes = True
         if not contact_elevation is None and\
                 self.contact_elevation != contact_elevation:
             self.contact_elevation = contact_elevation
+            update_fields.append('contact_elevation')
             changes = True
 
         if is_automatic and self.is_automatic != is_automatic:
             self.is_automatic = is_automatic
+            update_fields.append('is_automatic')
             changes = True
 
         if latitude and self.latitude != latitude:
             self.latitude = latitude
+            update_fields.append('latitude')
             changes = True
             change_altitude = True
         if longitude and self.longitude != longitude:
             self.longitude = longitude
+            update_fields.append('longitude')
             changes = True
             change_altitude = True
 
         if change_altitude:
             self.altitude = gis.get_altitude(self.latitude, self.longitude)[0]
+            update_fields.append('altitude')
+
         if changes:
-            self.save()
+            self.save(update_fields=update_fields)
 
     def has_channel(self, gs_channel_id):
         """Checker method.

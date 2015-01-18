@@ -137,13 +137,12 @@ class TestLaunchModels(test.TestCase):
         launch_models.Launch.objects.add_unknown(
             self.__launch_id, self.__ufo_1_id
         )
+        actual_id = launch_models.Launch.objects.identify(
+            self.__launch_id, self.__ufo_1_id, self.__ufo_1_cs,
+            self.__tle_l1, self.__tle_l2
+        )
         self.assertEquals(
-            launch_models.Launch.objects.identify(
-                self.__launch_id, self.__ufo_1_id, self.__ufo_1_cs,
-                self.__tle_l1, self.__tle_l2
-            ),
-            self.__ufo_1_id,
-            'Identifiers should be the same'
+            actual_id[0], self.__ufo_1_id, 'Identifiers should be the same'
         )
 
         # 1) unknown object should have been deleted from the database.

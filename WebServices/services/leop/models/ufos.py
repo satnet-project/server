@@ -36,10 +36,20 @@ class IdentifiedObjectsManager(django_models.Manager):
     """LEOP database manager
     Manages the common opererations with the underlaying IdentifyObjects.
     """
+
     def create(
         self, admin, launch_id, object_id, callsign, tle_l1, tle_l2, **kwargs
     ):
-
+        """Manager method
+        Convenience method for creating a new identified object.
+        :param admin: Administrator of the cluster
+        :param launch_id: Identifier of the launch
+        :param object_id: Identifier for the identified object
+        :param callsign: Callsign for the identified object
+        :param tle_l1: First line of the TLE for the identified object
+        :param tle_l2: Second line of the TLE for the identified object
+        :return: Reference to the newly created object
+        """
         tle = leop_utils.create_object_tle(object_id, callsign, tle_l1, tle_l2)
         sc = leop_utils.create_object_spacecraft(
             admin, launch_id, object_id, callsign, tle.identifier
