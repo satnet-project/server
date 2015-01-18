@@ -17,7 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-from services.simulation.models import groundtracks as simulation_models
+from services.simulation.models import groundtracks as gt_models
+from services.simulation.models import passes as pass_models
 
 logger = logging.getLogger('simulation')
 
@@ -29,5 +30,15 @@ def propagate_groundtracks():
     Spacecraft.
     """
     logger.info('[DAILY] >>> Propagating groundtracks')
-    simulation_models.GroundTrack.objects.propagate_groundtracks()
+    gt_models.GroundTrack.objects.propagate_groundtracks()
+    logger.info('> Propagated!')
+
+@decorators.daily()
+def propagate_passes():
+    """Periodic task.
+    This task updates the available groundtracks for the different registered
+    Spacecraft.
+    """
+    logger.info('[DAILY] >>> Propagating passes')
+    pass_models.PassSlots.objects.propagate_groundtracks()
     logger.info('> Propagated!')

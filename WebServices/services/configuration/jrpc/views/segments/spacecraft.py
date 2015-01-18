@@ -24,6 +24,7 @@ from services.configuration.jrpc.serializers import serialization as jrpc_serial
 import logging
 logger = logging.getLogger('configuration')
 
+
 @rpcmethod(
     name='configuration.sc.list',
     signature=[],

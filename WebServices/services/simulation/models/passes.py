@@ -88,22 +88,42 @@ class PassManager(django_models.Manager):
 
             self.set_spacecraft(spacecraft)
 
-            window_start, window_end = \
-                simulation.OrbitalSimulator.get_simulation_window()
-            slots = self._simulator.calculate_pass_slot(
-                window_start, window_end
-            )
+            w_start, w_end = simulation.OrbitalSimulator.get_simulation_window()
+            slots = self._simulator.calculate_pass_slot(w_start, w_end)
 
             for s in slots:
-
                 self.create(
-                    spacecraft=spacecraft,
-                    groundstation=groundstation,
-                    start=s[0],
-                    end=s[1]
+                    spacecraft=spacecraft, groundstation=groundstation,
+                    start=s[0], end=s[1]
                 )
 
             all_slots += slots
+
+        return all_slots
+
+    def propagate_pass_slots(self):
+        """Manager method
+        Propagates the pass slots for all the registered groundstation and
+        spacecraft pairs.
+        """
+        all_slots = []
+
+        for groundstation in segment_models.GroundStation.objects.all():
+            self._simulator.set_groundstation(groundstation)
+
+            for spacecraft in segment_models.Spacecraft.objects.all():
+                self.set_spacecraft(spacecraft)
+
+                w_start, w_end = simulation.OrbitalSimulator.get_update_window()
+                slots = self._simulator.calculate_pass_slot(w_start, w_end)
+
+                for s in slots:
+                    self.create(
+                        spacecraft=spacecraft, groundstation=groundstation,
+                        start=s[0], end=s[1]
+                    )
+
+                all_slots += slots
 
         return all_slots
 
