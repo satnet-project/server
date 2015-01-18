@@ -17,9 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
+from services.common import misc
 from services.configuration.models import segments as segment_models
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
+from services.simulation.models import passes as pass_models
+from services.simulation.jrpc.serializers import passes as pass_serializers
 
 
 @rpc4django.rpcmethod(
@@ -250,3 +253,45 @@ def set_configuration(launch_id, configuration):
         tle_l2=cfg_params[2]
     )
     return launch.identifier
+
+
+@rpc4django.rpcmethod(
+    name='leop.getPasses',
+    signature=['String'],
+    login_required=True
+)
+def get_passes(launch_id):
+    """JRPC method
+    Retrieves the passes for the objects involved in a launch (groundstations,
+    cluster and objects).
+    :param launch_id: Identifier of the launch
+    :return: Array with the following objects:
+    {
+        gs_id: $(groundstation),
+        sc_id: $(spacecraft),
+        passes: [[start, end]]
+    }
+    """
+    launch = launch_models.Launch.objects.get(identifier=launch_id)
+    print '>>> launch = ' + misc.dict_2_string(launch)
+
+    scs = [
+        segment_models.Spacecraft.objects.get(
+            identifier=launch.cluster_spacecraft_id
+        )
+    ]
+    scs += launch.identified_objects.all()
+
+    for sc in scs:
+        print '>>> sc = ' + str(sc.identifier)
+
+    for slot in pass_models.PassSlots.objects.all():
+
+        print '@@@@ slot = ' + misc.dict_2_string(slot)
+
+    slots = pass_models.PassSlots.objects.filter(
+        spacecraft__in=scs,
+        groundstation__in=launch.groundstations.all()
+    )
+
+    return pass_serializers.serialize_pass_slots(slots)

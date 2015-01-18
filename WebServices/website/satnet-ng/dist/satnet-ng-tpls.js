@@ -51,4 +51,9 @@ angular.module('satnet-ui').run(['$templateCache', function($templateCache) {
     "<input type=\"checkbox\" name=\"n-area-toggle\" id=\"n-area-toggle\"><div ng-controller=\"logNotifierCtrl\" class=\"n-area\"><div class=\"n-area-title\"><label for=\"n-area-toggle\"></label></div><div class=\"n-area-content\"><ul class=\"n-area-list\"><li ng-repeat=\"e in eventLog\"><div class=\"n-area-info-row\"><div class=\"n-area-type-cell\"><p class=\"{{ e.type }}\">[@{{ e.timestamp }}]</p></div><div class=\"n-area-content-cell\"><span class=\"{{ e.type }}\">{{ e.msg }}</span></div></div></li></ul></div></div>"
   );
 
+
+  $templateCache.put('templates/passes.html',
+    "<div ng-controller=\"passesCtrl\" class=\"pass-list\" ng-click=\"init()\"><span>XXXXXXXXXXXXXX</span><div ng-repeat=\"p in passes\"><div ng-class=\"{in:$first}\" class=\"pass-row\"><div class=\"pass-cell\"><span>{{ p.groundstation }}</span></div></div></div></div>"
+  );
+
 }]);

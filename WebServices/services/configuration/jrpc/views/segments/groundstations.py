@@ -54,9 +54,7 @@ def list_groundstations(**kwargs):
     login_required=True
 )
 def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
-    """
-    JRPC method.
-
+    """JRPC method
     Creates a new ground station with the given configuration.
     """
     request = kwargs.get('request', None)
@@ -89,9 +87,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     login_required=True
 )
 def get_configuration(ground_station_id):
-    """
-    JRPC method.
-
+    """JRPC method
     Returns the configuration for the given ground station.
     """
     return serialization.serialize_gs_configuration(
@@ -105,9 +101,7 @@ def get_configuration(ground_station_id):
     login_required=True
 )
 def set_configuration(ground_station_id, configuration):
-    """
-    JRPC method.
-
+    """JRPC method
     Sets the configuration for the given ground station.
     """
     callsign, contact_elevation, latitude, longitude =\
@@ -126,9 +120,7 @@ def set_configuration(ground_station_id, configuration):
     login_required=True
 )
 def list_channels(ground_station_id):
-    """
-    JRPC method.
-
+    """JRPC method
     Returns the channels for the given ground station.
     """
     ch_objects = segments.GroundStation.objects.get(
@@ -145,9 +137,7 @@ def list_channels(ground_station_id):
     login_required=True
 )
 def delete(ground_station_id):
-    """
-    JRPC method.
-
+    """JRPC method
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
     """

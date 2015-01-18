@@ -16,12 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import exceptions as django_exceptions
+import logging
 from rpc4django import rpcmethod
 from services.accounts import models as account_models
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
-
-import logging
 logger = logging.getLogger('configuration')
 
 

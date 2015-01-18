@@ -52,9 +52,10 @@ angular.module('x-groundstation-models').service('xgs', [
          */
         this.initAllLEOP = function (leop_id) {
             var self = this;
-            return satnetRPC.rCall('leop.gs.list', [leop_id]).then(function (gss) {
-                return self._initAll(gss.leop_gs_inuse);
-            });
+            return satnetRPC.rCall('leop.gs.list', [leop_id])
+                .then(function (gss) {
+                    return self._initAll(gss.leop_gs_inuse);
+                });
         };
 
         /**

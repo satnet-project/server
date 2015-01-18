@@ -20,6 +20,9 @@ JRPC_K_AVAILABLE_GS = 'leop_gs_available'
 JRPC_K_IN_USE_GS = 'leop_gs_inuse'
 JRPC_K_DATE = 'date'
 JRPC_K_SC_ID = 'sc_identifier'
+JRPC_K_GS_ID = 'gs_identifier'
+JRPC_K_SLOT_START = 'slot_start'
+JRPC_K_SLOT_END = 'slot_end'
 JRPC_K_TLE = 'tle'
 JRPC_K_TLE_L1 = 'tle_l1'
 JRPC_K_TLE_L2 = 'tle_l2'
@@ -119,7 +122,6 @@ def serialize_launch(launch):
 
 
 def deserialize_launch(launch):
-    # ### TODO Full configuration including UFO and IDENTIFIED arrays.
     """Deserialization method
     Deserializes the configuration for a given LAUNCH cluster, without getting
     into the "ufo" or "identified" arrays (should be set separately).

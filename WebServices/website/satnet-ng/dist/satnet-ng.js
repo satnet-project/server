@@ -322,11 +322,17 @@ angular.module('satnet-services').service('satnetRPC', [
             // Simulation methods
             'sc.getGroundtrack':
                 this._simulation.createMethod('spacecraft.getGroundtrack'),
+            'sc.getPasses':
+                this._simulation.createMethod('spacecraft.getPasses'),
+            'gs.getPasses':
+                this._simulation.createMethod('groundstation.getPasses'),
             // LEOP services
             'leop.cfg':
                 this._leop.createMethod('getConfiguration'),
             'leop.setCfg':
                 this._leop.createMethod('setConfiguration'),
+            'leop.passes':
+                this._leop.createMethod('getPasses'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
             'leop.gs.add':
@@ -1506,9 +1512,10 @@ angular.module('x-groundstation-models').service('xgs', [
          */
         this.initAllLEOP = function (leop_id) {
             var self = this;
-            return satnetRPC.rCall('leop.gs.list', [leop_id]).then(function (gss) {
-                return self._initAll(gss.leop_gs_inuse);
-            });
+            return satnetRPC.rCall('leop.gs.list', [leop_id])
+                .then(function (gss) {
+                    return self._initAll(gss.leop_gs_inuse);
+                });
         };
 
         /**
@@ -3407,6 +3414,56 @@ angular.module('logNotifierDirective', [])
             templateUrl: 'templates/notifier/logNotifier.html'
         };
 
+    });;/*
+   Copyright 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+*/
+
+angular.module('passDirective', [ 'satnet-services' ])
+    .controller('passesCtrl', [
+        '$rootScope', '$scope', 'satnetRPC',
+        function ($rootScope, $scope, satnetRPC) {
+            'use strict';
+
+            $scope.passes = [];
+
+            $scope.init = function () {
+                satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
+                    .then(function (data) {
+                        console.log(
+                            '>>>> @PASSES, data = ' + JSON.stringify(data)
+                        );
+                        angular.extend($scope.passes, data);
+                        console.log(
+                            '>>>> @PASSES, passes = ' +
+                                JSON.stringify($scope.passes)
+                        );
+                    });
+            };
+
+            $scope.init();
+
+        }
+    ])
+    .directive('passes', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            templateUrl: 'templates/passes.html'
+        };
+
     });;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
@@ -3584,7 +3641,8 @@ var app = angular.module('leop-ui', [
     'ui-leop-modalgs-controllers',
     // directives
     'logNotifierDirective',
-    'countdownDirective'
+    'countdownDirective',
+    'passDirective'
 ]);
 
 // level 1 services
@@ -3607,6 +3665,7 @@ angular.module('ui-leop-modalgs-controllers');
 // level 5 (directives)
 angular.module('logNotifierDirective');
 angular.module('countdownDirective');
+angular.module('passDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging

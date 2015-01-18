@@ -73,11 +73,17 @@ angular.module('satnet-services').service('satnetRPC', [
             // Simulation methods
             'sc.getGroundtrack':
                 this._simulation.createMethod('spacecraft.getGroundtrack'),
+            'sc.getPasses':
+                this._simulation.createMethod('spacecraft.getPasses'),
+            'gs.getPasses':
+                this._simulation.createMethod('groundstation.getPasses'),
             // LEOP services
             'leop.cfg':
                 this._leop.createMethod('getConfiguration'),
             'leop.setCfg':
                 this._leop.createMethod('setConfiguration'),
+            'leop.passes':
+                this._leop.createMethod('getPasses'),
             'leop.gs.list':
                 this._leop.createMethod('gs.list'),
             'leop.gs.add':

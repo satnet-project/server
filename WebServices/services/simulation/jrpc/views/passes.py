@@ -23,37 +23,57 @@ from services.simulation.jrpc.serializers import passes as pass_serializer
 
 @rpc4django.rpcmethod(
     name='simulation.spacecraft.getPasses',
-    signature=['String'],
+    signature=['String', 'Object'],
     login_required=True
 )
-def get_sc_passes(spacecraft_id):
+def get_sc_passes(spacecraft_id, groundstations):
     """JRPC method
-    Returns the passes of a given spacecraft over all the registered
-    GroundStations.
+    Returns the passes of a given spacecraft over the specified groundstations.
     :param spacecraft_id: Identifier of the spacecraft
-    :return: JSON-like serializable list with the pass slots
+    :param groundstations: List of groundstation identifiers
+    :return: JSON-like serializable list with the pass slots for ech
+    groundstation.
     """
+    slots = {}
     spacecraft = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)
-    pass_slots = pass_models.PassSlots.objects.filter(spacecraft=spacecraft)
-    return pass_serializer.serialize_pass_slots(pass_slots)
+
+    for groundstation_id in groundstations:
+
+        groundstation = segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
+        gs_slots = pass_models.PassSlots.objects\
+            .filter(spacecraft=spacecraft, groundstation=groundstation)
+        slots[groundstation_id] = pass_serializer.serialize_pass_slots(gs_slots)
+
+    return slots
 
 
 @rpc4django.rpcmethod(
     name='simulation.groundstation.getPasses',
-    signature=['String'],
+    signature=['String', 'Object'],
     login_required=True
 )
-def get_gs_passes(groundstation_id):
+def get_gs_passes(groundstation_id, spacecraft):
     """JRPC method
-    Returns the passes of all the registered Spacecraft over this
-    GroundStation.
+    Returns the passes of the given Spacecraft over this GroundStation.
     :param groundstation_id: Identifier of the groundstation
-    :return: JSON-like serializable list with the pass slots
+    :param spacecraft: List of spacecraft identifiers
+    :return: JSON-like serializable list with the pass slots for each
+    spacecraft.
     """
+    slots = {}
     groundstation = segment_models.GroundStation.objects.get(
         identifier=groundstation_id
     )
-    pass_slots = pass_models.PassSlots.objects.filter(
-        groundstation=groundstation
-    )
-    return pass_serializer.serialize_pass_slots(pass_slots)
+
+    for spacecraft_id in spacecraft:
+
+        spacecraft = segment_models.Spacecraft.objects.get(
+            identifier=spacecraft_id
+        )
+        sc_slots = pass_models.PassSlots.objects\
+            .filter(spacecraft=spacecraft, groundstation=groundstation)
+        slots[spacecraft_id] = pass_serializer.serialize_pass_slots(sc_slots)
+
+    return slots

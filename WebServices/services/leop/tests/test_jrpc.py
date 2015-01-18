@@ -144,7 +144,7 @@ class TestLaunchViews(test.TestCase):
         launch_jrpc.add_groundstations(
             self.__leop_id, groundstations=[self.__gs_1_id],
             **{'request': self.__request_2}
-            )
+        )
         e_gs = {
             launch_serial.JRPC_K_AVAILABLE_GS: [self.__gs_2_id],
             launch_serial.JRPC_K_IN_USE_GS: [self.__gs_1_id]
@@ -609,3 +609,22 @@ class TestLaunchViews(test.TestCase):
         )
         new_gt = simulation_models.GroundTrack.objects.get(tle=self.__leop.tle)
         self.assertNotEquals(old_gt, new_gt, 'GroundTracks should be different')
+
+    def test_get_passes(self):
+        """
+        Validates the retrieval of the passes for this launch.
+        """
+        self.assertEquals(
+            launch_jrpc.get_passes(self.__leop_id),
+            [],
+            'No passes should have been inserted yet'
+        )
+
+        self.assertEquals(
+            launch_jrpc.add_groundstations(
+                self.__leop_id, [self.__gs_1_id],
+                **{'request': self.__request_2}
+            ),
+            {launch_serial.JRPC_K_LEOP_ID: self.__leop_id},
+            'Should have returned launch identifier'
+        )

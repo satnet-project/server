@@ -15,7 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.forms import models as django_form_models
+from services.leop.jrpc.serializers import launch as launch_serializers
 
 
 def serialize_pass_slots(pass_slots):
@@ -28,6 +28,12 @@ def serialize_pass_slots(pass_slots):
     serial_array = []
 
     for s in pass_slots:
-        serial_array.append(django_form_models.model_to_dict(s))
+
+        serial_array.append({
+            launch_serializers.JRPC_K_SC_ID: s.spacecraft.identifier,
+            launch_serializers.JRPC_K_GS_ID: s.groundstation.identifier,
+            launch_serializers.JRPC_K_SLOT_START: s.start.isoformat(),
+            launch_serializers.JRPC_K_SLOT_END: s.end.isoformat()
+        })
 
     return serial_array
