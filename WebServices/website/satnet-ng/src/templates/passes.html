@@ -1,11 +1,5 @@
-<div ng-controller="passesCtrl" class="pass-list" ng-click="init()">
+<div ng-controller="passSlotsCtrl" class="pass-gantt">
 
-    <div ng-repeat="p in passes">
-        <div ng-class="{in:$first}" class="pass-row">
-            <div class="pass-cell">
-                <span>{{ p.groundstation }}</span>
-            </div>
-        </div>
-    </div>
+    <div gantt data=passes></div>
 
 </div>

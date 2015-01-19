@@ -29,6 +29,7 @@ var app = angular.module('leop-ui', [
     'remoteValidation',
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
+    'gantt',
     // level 1 services
     'broadcaster',
     'map-services',

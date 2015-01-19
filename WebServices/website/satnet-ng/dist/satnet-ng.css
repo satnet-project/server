@@ -226,7 +226,8 @@ a.button-red {
 .left-menu {
   position: absolute;
   top: 0;
-  left: 100px; }
+  left: 100px;
+  vertical-align: top; }
 
 .my-menu-item {
   color: #293542;

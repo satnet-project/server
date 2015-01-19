@@ -14,26 +14,97 @@
    limitations under the License.
 */
 
-angular.module('passDirective', [ 'satnet-services' ])
-    .controller('passesCtrl', [
-        '$rootScope', '$scope', 'satnetRPC',
-        function ($rootScope, $scope, satnetRPC) {
+angular.module('passDirective', [
+    'satnet-services', 'ui-leop-modalufo-controllers'
+])
+    .service('passSlotsService', [
+        '$rootScope', 'satnetRPC', 'oArrays',
+        function ($rootScope, satnetRPC, oArrays) {
+            'use strict';
+
+            /**
+             * Creates a Gantt-like slot object from the slot read from the
+             * server.
+             * @param slot Slot as read from the server.
+             * @returns {{
+             *      name: (cfg.groundstation_id|*),
+             *      tasks: {name: (cfg.spacecraft_id|*), start: *, end: *}[]
+             *  }}
+             * @private
+             */
+            this._createSlot = function (slot) {
+                return {
+                    name: slot.gs_identifier,
+                    tasks: [{
+                        name: slot.sc_identifier,
+                        start: new Date(slot.slot_start),
+                        end: new Date(slot.slot_end)
+                    }]
+                };
+            };
+
+            /**
+             * This function transforms the plain raw format of the server into
+             * the one needed by the Gantt chart used within this directive.
+             * @param pass_slots Raw passes from the server.
+             * @private
+             */
+            this._parseSlots = function (pass_slots) {
+
+                var gantt_slots = [], g_slot, new_slot, self = this;
+
+                angular.forEach(pass_slots, function (slot) {
+
+                    new_slot = self._createSlot(slot);
+
+                    try {
+                        g_slot = oArrays.getObject(
+                            gantt_slots,
+                            'name',
+                            slot.gs_identifier
+                        );
+                        g_slot.tasks.push(new_slot.tasks[0]);
+                    } catch (err) {
+                        gantt_slots.push(new_slot);
+                    }
+
+                });
+
+                return gantt_slots;
+
+            };
+
+            /**
+             * Retrieves the slots from the server and transforms them into the
+             * format required for the Gantt chart component.
+             * @returns {ng.IPromise<>|*}
+             */
+            this.getPasses = function () {
+                var self = this;
+                return satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
+                    .then(function (passes) {
+                        console.log('>>>> @PASSES = ' + JSON.stringify(passes));
+                        return self._parseSlots(passes);
+                    });
+            };
+
+        }
+    ])
+    .controller('passSlotsCtrl', [
+        '$scope', 'passSlotsService',
+        function ($scope, passSlotsService) {
             'use strict';
 
             $scope.passes = [];
 
             $scope.init = function () {
-                satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
-                    .then(function (data) {
-                        console.log(
-                            '>>>> @PASSES, data = ' + JSON.stringify(data)
-                        );
-                        angular.extend($scope.passes, data);
-                        console.log(
-                            '>>>> @PASSES, passes = ' +
-                                JSON.stringify($scope.passes)
-                        );
-                    });
+                passSlotsService.getPasses().then(function (g_slots) {
+                    console.log('$$$$$$$$$$$$$$$$$$$$');
+                    angular.extend($scope.passes, g_slots);
+                    console.log(
+                        '[pass-slots] gantt = ' + JSON.stringify($scope.passes)
+                    );
+                });
             };
 
             $scope.init();

@@ -305,6 +305,26 @@ angular.module('marker-models')
             };
 
             /**
+             * Pans the current view of the map to the coordinates of the marker
+             * for the given groundstation.
+             * @param groundstation_id Identifier of the groundstation
+             */
+            this.panToGSMarker = function (groundstation_id) {
+
+                var marker = this.getMarker(groundstation_id),
+                    m_ll = new L.LatLng(marker.lat, marker.lng);
+
+                return maps.getMainMap().then(function (mapInfo) {
+                    mapInfo.map.panTo(m_ll, { animate: true });
+                    return {
+                        latitude: marker.lat,
+                        longitude: marker.lng
+                    };
+                });
+
+            };
+
+            /**
              * Creates a new marker object for the given GroundStation.
              *
              * @param cfg The configuration of the GroundStation.
@@ -400,6 +420,33 @@ angular.module('marker-models')
 
             this.colors = ['green', 'blue', 'purple'];
             this.color_n = 0;
+
+            /**
+             * Pans the current view of the map to the coordinates of the marker
+             * for the given spacecraft.
+             * @param spacecraft_id Identifier of the spacecraft
+             */
+            this.panToSCMarker = function (spacecraft_id) {
+
+                if (!this.sc.hasOwnProperty(spacecraft_id)) {
+                    throw '[markers] Spacecraft does not exist, id = ' +
+                        spacecraft_id;
+                }
+
+                var sc_marker = this.sc[spacecraft_id],
+                    m_ll = sc_marker.marker.getLatLng();
+
+                console.log('m_ll = ' + JSON.stringify(m_ll));
+
+                return maps.getMainMap().then(function (mapInfo) {
+                    mapInfo.map.panTo(m_ll, { animate: true });
+                    return {
+                        lat: m_ll.lat,
+                        lng: m_ll.lng
+                    };
+                });
+
+            };
 
             /**
              * For a given Spacecraft configuration object, it creates the

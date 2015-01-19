@@ -57,7 +57,9 @@ angular.module('x-spacecraft-models').service('xsc', [
             return satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
                 .then(function (scs) {
                     var p = [];
-                    angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                    angular.forEach(scs, function (sc) {
+                        p.push(self.addSC(sc));
+                    });
                     return $q.all(p).then(function (sc_ids) {
                         return sc_ids;
                     });

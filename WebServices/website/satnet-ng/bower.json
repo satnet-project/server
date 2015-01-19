@@ -44,7 +44,8 @@
     "Leaflet.label": "~0.2.1",
     "pace": "~1.0.2",
     "ng-idle": "~0.3.5",
-    "angular-timer": "~1.2.0"
+    "angular-timer": "~1.2.0",
+    "angular-gantt": "~1.1.0"
   },
   "devDependencies": {
     "qunit": "~1.15.0"

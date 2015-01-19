@@ -17,8 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
-from services.common import misc
 from services.configuration.models import segments as segment_models
+from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.simulation.models import passes as pass_models
@@ -84,7 +84,14 @@ def list_spacecraft(launch_id, **kwargs):
     # The spacecraft associated with this launch include the spacecraft for
     # the cluster and the spacecraft of the identified objects.
     scs = [launch.cluster_spacecraft_id]
-    scs += [i_object.identifier for i_object in launch.identified_objects.all()]
+
+    for identified_o in launch.identified_objects.all():
+
+        scs += [
+            launch_utils.generate_object_sc_identifier(
+                launch_id, identified_o.identifier
+            )
+        ]
 
     # Since 'scs' is simply an array of strings (identifiers), no further
     # serialization should be required
@@ -302,11 +309,11 @@ def get_passes(launch_id):
     {
         gs_id: $(groundstation),
         sc_id: $(spacecraft),
-        passes: [[start, end]]
+        start: $(start_date_isoformat),
+        end: $(end_date_isoformat)
     }
     """
     launch = launch_models.Launch.objects.get(identifier=launch_id)
-    print '>>> launch = ' + misc.dict_2_string(launch)
 
     scs = [
         segment_models.Spacecraft.objects.get(

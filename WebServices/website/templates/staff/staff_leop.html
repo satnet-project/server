@@ -28,6 +28,7 @@
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.6.3/css/bootstrap-select.min.css' />
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/MarkerCluster.css' />
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.6.0/loading-bar.min.css' />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/angular.gantt/latest/angular-gantt.min.css"/>
 
     <script src='https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.2/jquery-ui.min.js'></script>
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
@@ -39,6 +40,8 @@
     <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment-with-locales.min.js'></script>
     <script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/0.4.0/leaflet.markercluster.js'></script>
     <script src='https://tombatossals.github.io/angular-leaflet-directive/dist/angular-leaflet-directive.min.js'></script>
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/angular.moment/latest/angular-moment.min.js'></script>
+    <script type='text/javascript' src='https://cdn.jsdelivr.net/angular.gantt/latest/angular-gantt.min.js'></script>
 
     <!-- KEPT BACK FOR COMPATIBILITY -->
     <script type='text/javascript' src="{% static 'lib/ui-bootstrap-tpls.min.js' %}"></script>
@@ -109,7 +112,7 @@
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="g in gsIds">
                 <a class='my-menu-item' href='#'
-                   ng-click="editGroundStation(g)">{{ g }}</a>
+                   ng-click="panToGS(g)">{{ g }}</a>
             </li>
             <li class='divider'></li>
             <li>
@@ -127,7 +130,7 @@
         <ul class='dropdown-menu' role='menu'>
             <li ng-repeat="s in scIds">
                 <a class='my-menu-item' href='#'
-                   ng-click="editSpacecraft(s)">{{ s }}</a>
+                   ng-click="panToSC(s)">{{ s }}</a>
             </li>
             <li class='divider'></li>
             <li>

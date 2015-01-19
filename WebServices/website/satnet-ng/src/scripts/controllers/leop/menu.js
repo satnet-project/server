@@ -21,16 +21,27 @@ angular.module(
     'ui-leop-menu-controllers',
     [
         'ui.bootstrap',
-        'satnet-services'
+        'satnet-services',
+        'marker-models'
     ]
 );
 
 angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
-    '$rootScope', '$scope', '$modal', 'satnetRPC',
-    function ($rootScope, $scope, $modal, satnetRPC) {
+    '$rootScope', '$scope', '$log', '$modal', 'satnetRPC', 'markers',
+    function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
         $scope.gsIds = [];
+
+        $scope.panToGS = function (groundstation_id) {
+            markers.panToGSMarker(groundstation_id).then(
+                function (coordinates) {
+                    $log.info(
+                        '[menu-gs] Map panned to ' + JSON.stringify(coordinates)
+                    );
+                }
+            );
+        };
 
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
@@ -55,8 +66,8 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
 ]);
 
 angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
-    '$scope', '$modal', 'satnetRPC',
-    function ($scope, $modal, satnetRPC) {
+    '$rootScope', '$scope', '$log', '$modal', 'satnetRPC', 'markers',
+    function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
         $scope.ufoIds = [];
@@ -66,15 +77,27 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
                 controller: 'manageClusterModal',
                 backdrop: 'static'
             });
-            console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
+            console.log(
+                '[leop-menu] Created modalInstance = ' +
+                    JSON.stringify(modalInstance)
+            );
         };
-        $scope.refreshUFOList = function () {
-            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
-                if (data !== null) {
-                    console.log('leop.ufo.list >>> data = ' + JSON.stringify(data));
-                    $scope.scIds = data.slice(0);
+        $scope.refreshSCList = function () {
+            satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
+                .then(function (data) {
+                    if (data !== null) {
+                        $scope.scIds = data.slice(0);
+                    }
+                });
+        };
+        $scope.panToSC = function (groundstation_id) {
+            markers.panToSCMarker(groundstation_id).then(
+                function (coordinates) {
+                    $log.info(
+                        '[menu-gs] Map panned to ' + JSON.stringify(coordinates)
+                    );
                 }
-            });
+            );
         };
 
     }

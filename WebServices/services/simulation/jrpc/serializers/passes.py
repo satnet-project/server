@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from services.leop.jrpc.serializers import launch as launch_serializers
 
 
-def serialize_pass_slots(pass_slots):
+def serialize_pass_slots(pass_slots, by_gs=True):
     """
     Serializes a list of pass slots into an array of JSON-like serializable
     slot objects.

@@ -1147,6 +1147,26 @@ angular.module('marker-models')
             };
 
             /**
+             * Pans the current view of the map to the coordinates of the marker
+             * for the given groundstation.
+             * @param groundstation_id Identifier of the groundstation
+             */
+            this.panToGSMarker = function (groundstation_id) {
+
+                var marker = this.getMarker(groundstation_id),
+                    m_ll = new L.LatLng(marker.lat, marker.lng);
+
+                return maps.getMainMap().then(function (mapInfo) {
+                    mapInfo.map.panTo(m_ll, { animate: true });
+                    return {
+                        latitude: marker.lat,
+                        longitude: marker.lng
+                    };
+                });
+
+            };
+
+            /**
              * Creates a new marker object for the given GroundStation.
              *
              * @param cfg The configuration of the GroundStation.
@@ -1242,6 +1262,33 @@ angular.module('marker-models')
 
             this.colors = ['green', 'blue', 'purple'];
             this.color_n = 0;
+
+            /**
+             * Pans the current view of the map to the coordinates of the marker
+             * for the given spacecraft.
+             * @param spacecraft_id Identifier of the spacecraft
+             */
+            this.panToSCMarker = function (spacecraft_id) {
+
+                if (!this.sc.hasOwnProperty(spacecraft_id)) {
+                    throw '[markers] Spacecraft does not exist, id = ' +
+                        spacecraft_id;
+                }
+
+                var sc_marker = this.sc[spacecraft_id],
+                    m_ll = sc_marker.marker.getLatLng();
+
+                console.log('m_ll = ' + JSON.stringify(m_ll));
+
+                return maps.getMainMap().then(function (mapInfo) {
+                    mapInfo.map.panTo(m_ll, { animate: true });
+                    return {
+                        lat: m_ll.lat,
+                        lng: m_ll.lng
+                    };
+                });
+
+            };
 
             /**
              * For a given Spacecraft configuration object, it creates the
@@ -1652,7 +1699,9 @@ angular.module('x-spacecraft-models').service('xsc', [
             return satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
                 .then(function (scs) {
                     var p = [];
-                    angular.forEach(scs, function (sc) { p.push(self.addSC(sc)); });
+                    angular.forEach(scs, function (sc) {
+                        p.push(self.addSC(sc));
+                    });
                     return $q.all(p).then(function (sc_ids) {
                         return sc_ids;
                     });
@@ -1846,16 +1895,27 @@ angular.module(
     'ui-leop-menu-controllers',
     [
         'ui.bootstrap',
-        'satnet-services'
+        'satnet-services',
+        'marker-models'
     ]
 );
 
 angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
-    '$rootScope', '$scope', '$modal', 'satnetRPC',
-    function ($rootScope, $scope, $modal, satnetRPC) {
+    '$rootScope', '$scope', '$log', '$modal', 'satnetRPC', 'markers',
+    function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
         $scope.gsIds = [];
+
+        $scope.panToGS = function (groundstation_id) {
+            markers.panToGSMarker(groundstation_id).then(
+                function (coordinates) {
+                    $log.info(
+                        '[menu-gs] Map panned to ' + JSON.stringify(coordinates)
+                    );
+                }
+            );
+        };
 
         $scope.addGroundStation = function () {
             var modalInstance = $modal.open({
@@ -1880,8 +1940,8 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
 ]);
 
 angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
-    '$scope', '$modal', 'satnetRPC',
-    function ($scope, $modal, satnetRPC) {
+    '$rootScope', '$scope', '$log', '$modal', 'satnetRPC', 'markers',
+    function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
         $scope.ufoIds = [];
@@ -1891,15 +1951,27 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
                 controller: 'manageClusterModal',
                 backdrop: 'static'
             });
-            console.log('[leop-menu] Created modalInstance = ' + JSON.stringify(modalInstance));
+            console.log(
+                '[leop-menu] Created modalInstance = ' +
+                    JSON.stringify(modalInstance)
+            );
         };
-        $scope.refreshUFOList = function () {
-            satnetRPC.rCall('leop.ufo.list', []).then(function (data) {
-                if (data !== null) {
-                    console.log('leop.ufo.list >>> data = ' + JSON.stringify(data));
-                    $scope.scIds = data.slice(0);
+        $scope.refreshSCList = function () {
+            satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
+                .then(function (data) {
+                    if (data !== null) {
+                        $scope.scIds = data.slice(0);
+                    }
+                });
+        };
+        $scope.panToSC = function (groundstation_id) {
+            markers.panToSCMarker(groundstation_id).then(
+                function (coordinates) {
+                    $log.info(
+                        '[menu-gs] Map panned to ' + JSON.stringify(coordinates)
+                    );
                 }
-            });
+            );
         };
 
     }
@@ -3432,26 +3504,97 @@ angular.module('logNotifierDirective', [])
    limitations under the License.
 */
 
-angular.module('passDirective', [ 'satnet-services' ])
-    .controller('passesCtrl', [
-        '$rootScope', '$scope', 'satnetRPC',
-        function ($rootScope, $scope, satnetRPC) {
+angular.module('passDirective', [
+    'satnet-services', 'ui-leop-modalufo-controllers'
+])
+    .service('passSlotsService', [
+        '$rootScope', 'satnetRPC', 'oArrays',
+        function ($rootScope, satnetRPC, oArrays) {
+            'use strict';
+
+            /**
+             * Creates a Gantt-like slot object from the slot read from the
+             * server.
+             * @param slot Slot as read from the server.
+             * @returns {{
+             *      name: (cfg.groundstation_id|*),
+             *      tasks: {name: (cfg.spacecraft_id|*), start: *, end: *}[]
+             *  }}
+             * @private
+             */
+            this._createSlot = function (slot) {
+                return {
+                    name: slot.gs_identifier,
+                    tasks: [{
+                        name: slot.sc_identifier,
+                        start: new Date(slot.slot_start),
+                        end: new Date(slot.slot_end)
+                    }]
+                };
+            };
+
+            /**
+             * This function transforms the plain raw format of the server into
+             * the one needed by the Gantt chart used within this directive.
+             * @param pass_slots Raw passes from the server.
+             * @private
+             */
+            this._parseSlots = function (pass_slots) {
+
+                var gantt_slots = [], g_slot, new_slot, self = this;
+
+                angular.forEach(pass_slots, function (slot) {
+
+                    new_slot = self._createSlot(slot);
+
+                    try {
+                        g_slot = oArrays.getObject(
+                            gantt_slots,
+                            'name',
+                            slot.gs_identifier
+                        );
+                        g_slot.tasks.push(new_slot.tasks[0]);
+                    } catch (err) {
+                        gantt_slots.push(new_slot);
+                    }
+
+                });
+
+                return gantt_slots;
+
+            };
+
+            /**
+             * Retrieves the slots from the server and transforms them into the
+             * format required for the Gantt chart component.
+             * @returns {ng.IPromise<>|*}
+             */
+            this.getPasses = function () {
+                var self = this;
+                return satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
+                    .then(function (passes) {
+                        console.log('>>>> @PASSES = ' + JSON.stringify(passes));
+                        return self._parseSlots(passes);
+                    });
+            };
+
+        }
+    ])
+    .controller('passSlotsCtrl', [
+        '$scope', 'passSlotsService',
+        function ($scope, passSlotsService) {
             'use strict';
 
             $scope.passes = [];
 
             $scope.init = function () {
-                satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
-                    .then(function (data) {
-                        console.log(
-                            '>>>> @PASSES, data = ' + JSON.stringify(data)
-                        );
-                        angular.extend($scope.passes, data);
-                        console.log(
-                            '>>>> @PASSES, passes = ' +
-                                JSON.stringify($scope.passes)
-                        );
-                    });
+                passSlotsService.getPasses().then(function (g_slots) {
+                    console.log('$$$$$$$$$$$$$$$$$$$$');
+                    angular.extend($scope.passes, g_slots);
+                    console.log(
+                        '[pass-slots] gantt = ' + JSON.stringify($scope.passes)
+                    );
+                });
             };
 
             $scope.init();
@@ -3624,6 +3767,7 @@ var app = angular.module('leop-ui', [
     'remoteValidation',
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
+    'gantt',
     // level 1 services
     'broadcaster',
     'map-services',
