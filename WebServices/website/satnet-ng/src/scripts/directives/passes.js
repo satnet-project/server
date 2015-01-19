@@ -37,8 +37,8 @@ angular.module('passDirective', [
                     name: slot.gs_identifier,
                     tasks: [{
                         name: slot.sc_identifier,
-                        start: new Date(slot.slot_start),
-                        end: new Date(slot.slot_end)
+                        from: new Date(slot.slot_start),
+                        to: new Date(slot.slot_end)
                     }]
                 };
             };
@@ -51,6 +51,8 @@ angular.module('passDirective', [
              */
             this._parseSlots = function (pass_slots) {
 
+                if (!pass_slots) { throw "<pass_slots> is null"; }
+
                 var gantt_slots = [], g_slot, new_slot, self = this;
 
                 angular.forEach(pass_slots, function (slot) {
@@ -62,7 +64,7 @@ angular.module('passDirective', [
                             gantt_slots,
                             'name',
                             slot.gs_identifier
-                        );
+                        ).object;
                         g_slot.tasks.push(new_slot.tasks[0]);
                     } catch (err) {
                         gantt_slots.push(new_slot);
@@ -95,14 +97,12 @@ angular.module('passDirective', [
         function ($scope, passSlotsService) {
             'use strict';
 
-            $scope.passes = [];
-
+            $scope.data = [];
             $scope.init = function () {
                 passSlotsService.getPasses().then(function (g_slots) {
-                    console.log('$$$$$$$$$$$$$$$$$$$$');
-                    angular.extend($scope.passes, g_slots);
+                    angular.extend($scope.data, g_slots);
                     console.log(
-                        '[pass-slots] gantt = ' + JSON.stringify($scope.passes)
+                        '[pass-slots] gantt = ' + JSON.stringify($scope.data)
                     );
                 });
             };

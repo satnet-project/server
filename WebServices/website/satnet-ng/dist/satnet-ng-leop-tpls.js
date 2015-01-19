@@ -53,7 +53,7 @@ angular.module('leop-ui').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('templates/passes.html',
-    "<div ng-controller=\"passSlotsCtrl\" class=\"pass-gantt\"><div gantt data=\"passes\"></div></div>"
+    "<div ng-controller=\"passSlotsCtrl\" class=\"pass-gantt\"><div gantt data=\"data\"></div></div>"
   );
 
 }]);

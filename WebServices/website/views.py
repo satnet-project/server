@@ -23,7 +23,7 @@ def redirect_operations(request):
     Redirects users either to their C2 interface or to the login window.
     """
     return django_response.TemplateResponse(
-        request, 'users/users_operations.html'
+        request, 'angular/users_operations.html'
     )
 
 
@@ -32,5 +32,5 @@ def redirect_leop(request, identifier):
     Redirects staff either to the LEOP interface or to the login page.
     """
     return django_response.TemplateResponse(
-        request, 'staff/staff_leop.html', {'leop_id': identifier}
+        request, 'angular/staff_leop.html', {'leop_id': identifier}
     )
