@@ -19,7 +19,7 @@ $bg_color: $karbon;
 $fg_color: #A6A6A6;
 $opacity: 0.8;
 $area_h: 275px;
-$area_w: 650px;
+$area_w: 45%;
 $area_corner: 5px;
 
 .my-dd-btn {
@@ -36,6 +36,18 @@ $area_corner: 5px;
   vertical-align: middle;
   padding: 15px 5px 5px 5px;
   top: -5px;
+}
+
+.my-rotated-menu {
+  position: absolute;
+  top: 30%;
+  left: -130px;
+  margin-left: 0;
+  transform: rotate(-90deg);
+}
+
+.my-dd-menu {
+  transform: rotate(90deg);
 }
 
 $left-margin: 100px;
@@ -211,4 +223,35 @@ $sc_area_left: $gs_area_left + $gs_area_w + 10px;
   top-bottom: thick solid black;
   padding-top: 10px;
   margin-top: 30px;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////// Angular leaflet
+////////////////////////////////////////////////////////////////////////////////
+
+.angular-leaflet-control-layers {
+  position: absolute;
+  background: white;
+  z-index: 100;
+  left: 10px;
+  top: 100px;
+  width: 200px;
+  box-shadow: 1px 1px 5px #333;
+  padding: 5px;
+}
+.angular-leaflet-control-layers .lf-row label {
+  cursor: pointer;
+  width: 100%;
+}
+.angular-leaflet-control-layers .lf-row label .lf-icons {
+  float: right;
+}
+.angular-leaflet-control-layers .lf-row label .lf-icon {
+  cursor: pointer;
+  float: left;
+  margin-right: 5px;
+  padding-top: 2px;
+}
+.angular-leaflet-control-layers .lf-row label .lf-text {
+  float: left;
 }

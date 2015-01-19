@@ -615,7 +615,7 @@ class TestLaunchViews(test.TestCase):
         Validates the retrieval of the passes for this launch.
         """
         self.assertEquals(
-            launch_jrpc.get_passes(self.__leop_id),
+            launch_jrpc.get_pass_slots(self.__leop_id),
             [],
             'No passes should have been inserted yet'
         )
@@ -627,6 +627,18 @@ class TestLaunchViews(test.TestCase):
             ),
             {launch_serial.JRPC_K_LEOP_ID: self.__leop_id},
             'Should have returned launch identifier'
+        )
+
+        # 1 ufo gets identified, generates pass slots...
+        launch_jrpc.add_unknown(self.__leop_id, self.__ufo_id)
+        launch_jrpc.identify(
+            self.__leop_id, self.__ufo_id, self.__ufo_callsign,
+            self.__ufo_tle_l1, self.__ufo_tle_l2
+        )
+
+        slots = launch_jrpc.get_pass_slots(self.__leop_id)
+        self.assertNotEquals(
+            len(slots), 0, 'Pass slots should have been created'
         )
 
     def test_list_sc(self):

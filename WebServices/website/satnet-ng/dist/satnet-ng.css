@@ -223,6 +223,16 @@ a.button-red {
   padding: 15px 5px 5px 5px;
   top: -5px; }
 
+.my-rotated-menu {
+  position: absolute;
+  top: 30%;
+  left: -130px;
+  margin-left: 0;
+  transform: rotate(-90deg); }
+
+.my-dd-menu {
+  transform: rotate(90deg); }
+
 .left-menu {
   position: absolute;
   top: 0;
@@ -361,6 +371,32 @@ a.button-red {
   top-bottom: thick solid black;
   padding-top: 10px;
   margin-top: 30px; }
+
+.angular-leaflet-control-layers {
+  position: absolute;
+  background: white;
+  z-index: 100;
+  left: 10px;
+  top: 100px;
+  width: 200px;
+  box-shadow: 1px 1px 5px #333;
+  padding: 5px; }
+
+.angular-leaflet-control-layers .lf-row label {
+  cursor: pointer;
+  width: 100%; }
+
+.angular-leaflet-control-layers .lf-row label .lf-icons {
+  float: right; }
+
+.angular-leaflet-control-layers .lf-row label .lf-icon {
+  cursor: pointer;
+  float: left;
+  margin-right: 5px;
+  padding-top: 2px; }
+
+.angular-leaflet-control-layers .lf-row label .lf-text {
+  float: left; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -525,7 +561,7 @@ a.button-red {
   border-bottom: 2px solid #0F3E62; }
 
 .n-area {
-  width: 650px;
+  width: 45%;
   height: 275px;
   position: absolute;
   bottom: -5px;
@@ -557,7 +593,8 @@ a.button-red {
 .n-area-content {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 240px; }
+  height: 240px;
+  width: 100%; }
 
 .n-area-info-base, .n-area-info-row div p.infoEvent, .n-area-info-row div p.logEvent, .n-area-info-row div p.warnEvent, .n-area-info-row div p.errEvent, .n-area-info-row div p.debEvent {
   opacity: 0.5; }
@@ -580,7 +617,8 @@ a.button-red {
 .n-area-list {
   list-style: none;
   line-height: 0.9em;
-  vertical-align: middle; }
+  vertical-align: middle;
+  padding-left: 5px; }
   .n-area-list li div {
     display: table-row;
     border-radius: 5px;
@@ -645,6 +683,63 @@ a.button-red {
     font-weight: bold;
     text-align: center;
     margin: 2px; }
+
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
+
+.pass-gantt {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50%;
+  color: #A3A3C2;
+  background-color: #293542;
+  opacity: 0.8; }
+
+.my-gantt-row span {
+  font-size: 70%; }
+
+.gantt-row.my-gantt-row .gantt-row-content {
+  font-weight: bolder; }
+
+.gantt-task.my-gantt-cell .gantt-task-background {
+  background: darkred;
+  border: 2px solid #ff0000;
+  border-radius: 0px; }
+
+.gantt-task.my-gantt-cell .gantt-task-content {
+  color: white; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 

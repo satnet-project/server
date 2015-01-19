@@ -1260,7 +1260,20 @@ angular.module('marker-models')
                 steps: _GEOLINE_STEPS
             };
 
-            this.colors = ['green', 'blue', 'purple'];
+            this.colors = [
+                '#000033',
+                //'#003333',
+                '#006633',
+                //'#009933',
+                '#00CC33',
+                //'#00FF33',
+                '#000066',
+                //'#003366',
+                '#006666',
+                //'#009966',
+                '#00CC66'
+                //'#00FF66'
+            ];
             this.color_n = 0;
 
             /**
@@ -1277,8 +1290,6 @@ angular.module('marker-models')
 
                 var sc_marker = this.sc[spacecraft_id],
                     m_ll = sc_marker.marker.getLatLng();
-
-                console.log('m_ll = ' + JSON.stringify(m_ll));
 
                 return maps.getMainMap().then(function (mapInfo) {
                     mapInfo.map.panTo(m_ll, { animate: true });
@@ -3512,6 +3523,10 @@ angular.module('passDirective', [
         function ($rootScope, satnetRPC, oArrays) {
             'use strict';
 
+            this._generateRowName = function (slot) {
+                return slot.gs_identifier + ' / ' + slot.sc_identifier;
+            };
+
             /**
              * Creates a Gantt-like slot object from the slot read from the
              * server.
@@ -3524,9 +3539,11 @@ angular.module('passDirective', [
              */
             this._createSlot = function (slot) {
                 return {
-                    name: slot.gs_identifier,
+                    name: this._generateRowName(slot),
+                    classes: 'my-gantt-row',
                     tasks: [{
                         name: slot.sc_identifier,
+                        classes: 'my-gantt-cell',
                         from: new Date(slot.slot_start),
                         to: new Date(slot.slot_end)
                     }]
@@ -3553,7 +3570,7 @@ angular.module('passDirective', [
                         g_slot = oArrays.getObject(
                             gantt_slots,
                             'name',
-                            slot.gs_identifier
+                            self._generateRowName(slot)
                         ).object;
                         g_slot.tasks.push(new_slot.tasks[0]);
                     } catch (err) {
@@ -3606,7 +3623,7 @@ angular.module('passDirective', [
 
         return {
             restrict: 'E',
-            templateUrl: 'templates/passes.html'
+            templateUrl: 'templates/passes/passes.html'
         };
 
     });;/**
@@ -3768,6 +3785,9 @@ var app = angular.module('leop-ui', [
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
     'gantt',
+    'gantt.labels',
+    'gantt.movable',
+    'gantt.tooltips',
     // level 1 services
     'broadcaster',
     'map-services',

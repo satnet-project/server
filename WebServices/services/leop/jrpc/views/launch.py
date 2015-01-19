@@ -300,7 +300,7 @@ def set_configuration(launch_id, configuration):
     signature=['String'],
     login_required=True
 )
-def get_passes(launch_id):
+def get_pass_slots(launch_id):
     """JRPC method
     Retrieves the passes for the objects involved in a launch (groundstations,
     cluster and objects).
@@ -314,17 +314,19 @@ def get_passes(launch_id):
     }
     """
     launch = launch_models.Launch.objects.get(identifier=launch_id)
-
     scs = [
         segment_models.Spacecraft.objects.get(
             identifier=launch.cluster_spacecraft_id
         )
     ]
-    scs += launch.identified_objects.all()
+    for i_object in launch.identified_objects.all():
+        scs.append(i_object.spacecraft)
+    slots = []
 
-    slots = pass_models.PassSlots.objects.filter(
-        spacecraft__in=scs,
-        groundstation__in=launch.groundstations.all()
-    )
+    for sc in scs:
+
+        slots += pass_models.PassSlots.objects.filter(spacecraft=sc).filter(
+            groundstation__in=launch.groundstations.all()
+        )
 
     return pass_serializers.serialize_pass_slots(slots)

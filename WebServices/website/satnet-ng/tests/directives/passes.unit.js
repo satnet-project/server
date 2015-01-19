@@ -54,9 +54,11 @@ test('basic _parseSlots tests', function () {
             slot_end: '2002-12-25T01:00:00-06:39'
         }],
         expected = [{
-            name: 'my-gs-1',
+            name: 'my-gs-1 / my-sc-1',
+            classes: 'my-gantt-row',
             tasks: [{
                 name: 'my-sc-1',
+                classes: 'my-gantt-cell',
                 from: new Date('2002-12-25T00:00:00-06:39'),
                 to: new Date('2002-12-25T01:00:00-06:39')
             }]
@@ -74,6 +76,7 @@ test('basic _parseSlots tests', function () {
     });
     expected[0].tasks.push({
         name: 'my-sc-1',
+        classes: 'my-gantt-cell',
         from: new Date('2002-12-26T00:00:00-06:39'),
         to: new Date('2002-12-26T01:00:00-06:39')
     });
@@ -89,9 +92,11 @@ test('basic _parseSlots tests', function () {
         slot_end: '2002-12-27T01:00:00-06:39'
     });
     expected.push({
-        name: 'my-gs-2',
+        name: 'my-gs-2 / my-sc-1',
+        classes: 'my-gantt-row',
         tasks: [{
             name: 'my-sc-1',
+            classes: 'my-gantt-cell',
             from: new Date('2002-12-27T00:00:00-06:39'),
             to: new Date('2002-12-27T01:00:00-06:39')
         }]

@@ -53,56 +53,47 @@
         </button>
     </div>
 
-    <!-- Single button -->
-    <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="LEOPGSMenuCtrl">
-        <button type='button'
-                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
-                ng-click="refreshGSList()">
-            <p>Ground Stations</p><span class='caret'></span>
-        </button>
-        <ul class='dropdown-menu' role='menu'>
-            <li ng-repeat="g in gsIds">
-                <a class='my-menu-item' href='#'
-                   ng-click="panToGS(g)">{{ g }}</a>
-            </li>
-            <li class='divider'></li>
-            <li>
-                <a href='#' ng-click="addGroundStation()">manage</a>
-            </li>
-        </ul>
-    </div>
-    <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="clusterMenuCtrl">
-        <button type='button'
-                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
-                ng-click="refreshSCList()">
-            <p>Cluster</p><span class='caret'></span>
-        </button>
-        <ul class='dropdown-menu' role='menu'>
-            <li ng-repeat="s in scIds">
-                <a class='my-menu-item' href='#'
-                   ng-click="panToSC(s)">{{ s }}</a>
-            </li>
-            <li class='divider'></li>
-            <li>
-                <a href='#' ng-click="openManageCluster()">manage</a>
-            </li>
-        </ul>
 
-    </div>
-
-    <div class='btn-group'>
-        <countdown/>
-    </div>
-
-    <div class="btn-group" style="width: 500px">
-        <passes/>
-    </div>
+    <div class='btn-group'><countdown/></div>
 
 </div>
 
-<log-notifier/>
+<div class="my-rotated-menu">
+<div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
+        ng-controller="LEOPGSMenuCtrl">
+    <button type='button'
+        class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
+        ng-click="refreshGSList()">
+        <p>Ground Stations</p><span class='caret'></span>
+    </button>
+    <ul class='dropdown-menu my-dd-menu' role='menu'>
+        <li ng-repeat="g in gsIds">
+            <a class='my-menu-item' href='#' ng-click="panToGS(g)">{{ g }}</a>
+        </li>
+        <li class='divider'></li>
+        <li><a href='#' ng-click="addGroundStation()">manage</a></li>
+    </ul>
+</div>
+
+<div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown
+        ng-controller="clusterMenuCtrl">
+    <button type='button'
+        class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
+        ng-click="refreshSCList()">
+        <p>Cluster</p><span class='caret'></span>
+    </button>
+    <ul class='dropdown-menu my-dd-menu' role='menu'>
+        <li ng-repeat="s in scIds">
+            <a class='my-menu-item' href='#' ng-click="panToSC(s)">{{ s }}</a>
+        </li>
+        <li class='divider'></li>
+        <li><a href='#' ng-click="openManageCluster()">manage</a></li>
+    </ul>
+</div>
+</div>
+
+<div><passes/></div>
+<div><log-notifier/></div>
 
 </div>
 {% endverbatim %}

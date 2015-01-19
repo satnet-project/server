@@ -418,7 +418,20 @@ angular.module('marker-models')
                 steps: _GEOLINE_STEPS
             };
 
-            this.colors = ['green', 'blue', 'purple'];
+            this.colors = [
+                '#000033',
+                //'#003333',
+                '#006633',
+                //'#009933',
+                '#00CC33',
+                //'#00FF33',
+                '#000066',
+                //'#003366',
+                '#006666',
+                //'#009966',
+                '#00CC66'
+                //'#00FF66'
+            ];
             this.color_n = 0;
 
             /**
@@ -435,8 +448,6 @@ angular.module('marker-models')
 
                 var sc_marker = this.sc[spacecraft_id],
                     m_ll = sc_marker.marker.getLatLng();
-
-                console.log('m_ll = ' + JSON.stringify(m_ll));
 
                 return maps.getMainMap().then(function (mapInfo) {
                     mapInfo.map.panTo(m_ll, { animate: true });

@@ -30,6 +30,9 @@ var app = angular.module('leop-ui', [
     'angular-loading-bar',
     'ui.bootstrap.datetimepicker',
     'gantt',
+    'gantt.labels',
+    'gantt.movable',
+    'gantt.tooltips',
     // level 1 services
     'broadcaster',
     'map-services',
