@@ -1072,7 +1072,7 @@ angular.module('marker-models')
                     layer: 'network',
                     icon: {
                         iconUrl: '/static/images/server-icon.svg',
-                        iconSize: [10, 10]
+                        iconSize: [15, 15]
                     },
                     label: {
                         message: id,
@@ -1184,7 +1184,7 @@ angular.module('marker-models')
                     layer: 'groundstations',
                     icon: {
                         iconUrl: '/static/images/gs-icon.svg',
-                        iconSize: [10, 10]
+                        iconSize: [15, 15]
                     },
                     label: {
                         message: cfg.groundstation_id,
@@ -1250,7 +1250,7 @@ angular.module('marker-models')
                 draggable: false,
                 icon: L.icon({
                     iconUrl: '/static/images/sc-icon.svg',
-                    iconSize: [10, 10]
+                    iconSize: [15, 15]
                 })
             };
 
@@ -3441,7 +3441,10 @@ angular.module('countdownDirective', [ 'satnet-services' ])
             templateUrl: 'templates/countdown/countdown.html'
         };
 
-    });;/*
+    });;/**
+ * Created by rtubio on 1/19/15.
+ */
+;/*
    Copyright 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");

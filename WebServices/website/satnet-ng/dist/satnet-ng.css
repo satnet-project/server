@@ -252,7 +252,7 @@ a.button-red {
   float: right;
   width: 250px; }
 
-.base-area, .gs-area, .sc-area, .n-area {
+.base-area, .gs-area, .sc-area, .n-area, .passes-area {
   opacity: 0.8;
   line-height: 40px;
   border-radius: 5px;
@@ -260,13 +260,13 @@ a.button-red {
   font-size: 10pt;
   color: #A6A6A6; }
 
-.base-area-title, .gs-area-title, .n-area-title {
+.base-area-title, .gs-area-title, .n-area-title, .passes-title {
   font-weight: bold;
   font-size: 105%;
   text-align: center;
   vertical-align: middle;
   height: 35px; }
-  .base-area-title a, .gs-area-title a, .n-area-title a {
+  .base-area-title a, .gs-area-title a, .n-area-title a, .passes-title a {
     cursor: pointer; }
 
 .base-area-content, .gs-area-content, .n-area-content {
@@ -718,15 +718,6 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
-.pass-gantt {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50%;
-  color: #A3A3C2;
-  background-color: #293542;
-  opacity: 0.8; }
-
 .my-gantt-row span {
   font-size: 70%; }
 
@@ -740,6 +731,35 @@ a.button-red {
 
 .gantt-task.my-gantt-cell .gantt-task-content {
   color: white; }
+
+.passes-area {
+  width: 55%;
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  transition: bottom 300ms ease-in-out 125ms; }
+
+.passes-title {
+  border-bottom: solid #A6A6A6 2px; }
+
+#passes-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#passes-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#passes-toggle + div label:after {
+  content: "passes"; }
+
+#passes-toggle:checked + div label:after {
+  content: "passes"; }
+
+#passes-toggle:checked ~ .passes-area {
+  bottom: -200px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 

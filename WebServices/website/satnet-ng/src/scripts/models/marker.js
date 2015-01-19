@@ -230,7 +230,7 @@ angular.module('marker-models')
                     layer: 'network',
                     icon: {
                         iconUrl: '/static/images/server-icon.svg',
-                        iconSize: [10, 10]
+                        iconSize: [15, 15]
                     },
                     label: {
                         message: id,
@@ -342,7 +342,7 @@ angular.module('marker-models')
                     layer: 'groundstations',
                     icon: {
                         iconUrl: '/static/images/gs-icon.svg',
-                        iconSize: [10, 10]
+                        iconSize: [15, 15]
                     },
                     label: {
                         message: cfg.groundstation_id,
@@ -408,7 +408,7 @@ angular.module('marker-models')
                 draggable: false,
                 icon: L.icon({
                     iconUrl: '/static/images/sc-icon.svg',
-                    iconSize: [10, 10]
+                    iconSize: [15, 15]
                 })
             };
 

@@ -14,17 +14,6 @@
 
 @import 'main';
 
-.pass-gantt {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50%;
-  color: $light_gray;
-  background-color: $karbon;
-  opacity: 0.8;
-}
-
-
 .my-gantt-row {
   span {
     font-size: 70%;
@@ -54,3 +43,37 @@
 .gantt-task.my-gantt-cell .gantt-task-foreground {
   // Customize foreground of the task
 }
+
+////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////// PASSES AREA
+////////////////////////////////////////////////////////////////////////////////
+
+.passes-area { @extend .base-area;
+  width: 55%;
+  position: absolute;
+  bottom: -$area_corner;
+  right: -$area_corner;
+  transition: bottom 300ms ease-in-out 125ms;
+}
+
+.passes-title { @extend .base-area-title;
+  border-bottom: solid $fg_color $separator_h;
+}
+
+.passes-content {}
+
+#passes-toggle {
+  position: relative;
+  visibility: hidden;
+}
+
+#passes-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center;
+}
+
+#passes-toggle + div label:after { content: "passes"; }
+#passes-toggle:checked + div label:after { content: "passes"; }
+#passes-toggle:checked ~ .passes-area { bottom: -200px; }

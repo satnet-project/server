@@ -1,9 +1,9 @@
 <input type='checkbox' name='passes-toggle' id='passes-toggle' />
-<div ng-controller="passSlotsCtrl" class='pass-gantt'>
+<div ng-controller="passSlotsCtrl" class='passes-area'>
     <div class='passes-title'>
         <label for='passes-toggle'></label>
     </div>
-    <div gantt
+    <div gantt class='passes-content'
          data="data" allow-side-resizing="false" auto-expand="both"
          template-url="templates/passes/myGanttTpl.html">
         <gantt-labels></gantt-labels>
