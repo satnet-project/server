@@ -254,7 +254,7 @@ a.button-red {
   float: right;
   width: 250px; }
 
-.base-area, .gs-area, .sc-area, .n-area, .passes-area {
+.base-area, .gs-area, .sc-area, .n-area, .passes-area, .messages-area {
   opacity: 0.8;
   line-height: 40px;
   border-radius: 5px;
@@ -262,13 +262,13 @@ a.button-red {
   font-size: 10pt;
   color: #A6A6A6; }
 
-.base-area-title, .gs-area-title, .n-area-title, .passes-title {
+.base-area-title, .gs-area-title, .n-area-title, .passes-title, .messages-title {
   font-weight: bold;
   font-size: 105%;
   text-align: center;
   vertical-align: middle;
   height: 35px; }
-  .base-area-title a, .gs-area-title a, .n-area-title a, .passes-title a {
+  .base-area-title a, .gs-area-title a, .n-area-title a, .passes-title a, .messages-title a {
     cursor: pointer; }
 
 .base-area-content, .gs-area-content, .n-area-content {
@@ -739,7 +739,7 @@ a.button-red {
   position: absolute;
   bottom: -5px;
   right: -5px;
-  transition: max-height 300ms ease-in-out 125ms; }
+  transition: max-height 500ms ease-in-out 125ms; }
 
 .passes-title {
   border-bottom: solid #A6A6A6 2px; }
@@ -762,6 +762,69 @@ a.button-red {
 
 #passes-toggle:checked ~ .passes-area {
   max-height: 60px; }
+
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License. */
+.unsalted-list {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px; }
+
+.bottom-cell {
+  border-bottom: 2px solid #0F3E62; }
+
+.messages-area {
+  width: 55%;
+  position: absolute;
+  top: -5px;
+  right: 10%;
+  transition: max-height 500ms ease-in-out 125ms; }
+
+.messages-title {
+  border-bottom: solid #A6A6A6 2px; }
+
+#messages-toggle {
+  position: relative;
+  visibility: hidden; }
+
+#messages-toggle + div label {
+  position: relative;
+  cursor: pointer;
+  display: block;
+  text-align: center; }
+
+#messages-toggle + div label:after {
+  content: "messages"; }
+
+#messages-toggle:checked + div label:after {
+  content: "messages"; }
+
+#messages-toggle:checked ~ .messages-area {
+  max-height: 5px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 

@@ -162,7 +162,7 @@ angular.module('marker-models')
                 if (this._serverMarkerKey === null) {
                     throw 'No server has been defined';
                 }
-                console.log('@getServerMarker, gs = ' + gs_identifier);
+                console.log('gs_id = ' + gs_identifier);
                 return this.getScope().markers[this._serverMarkerKey];
             };
 
@@ -419,18 +419,14 @@ angular.module('marker-models')
             };
 
             this.colors = [
-                '#000033',
-                //'#003333',
-                '#006633',
-                //'#009933',
-                '#00CC33',
-                //'#00FF33',
-                '#000066',
-                //'#003366',
-                '#006666',
-                //'#009966',
-                '#00CC66'
-                //'#00FF66'
+                //'#57EF1E', '#47DE2D', '#37CD3C', '#27BC4B', '#17AB5A'
+                //'#00DFFC', '#00B4CC', '#008C9E', '#005F6B',
+                '#74FF60', '#499F3C', '#2C6024'
+                /*
+                '#000033', '#003333', '#006633', '#009933', '#00CC33',
+                '#00FF33', '#000066', '#003366', '#006666', '#009966',
+                '#00CC66' '#00FF66'
+                */
             ];
             this.color_n = 0;
 

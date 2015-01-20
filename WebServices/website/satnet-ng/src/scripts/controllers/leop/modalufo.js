@@ -17,14 +17,9 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module(
-    'ui-leop-modalufo-controllers',
-    [
-        'ui.bootstrap',
-        //'broadcaster',
-        'satnet-services'
-    ]
-);
+angular.module('ui-leop-modalufo-controllers', [
+    'ui.bootstrap', 'satnet-services'
+]);
 
 angular.module('ui-leop-modalufo-controllers')
     .constant('CLUSTER_CFG_UPDATED_EV', 'cluster-cfg-updated')

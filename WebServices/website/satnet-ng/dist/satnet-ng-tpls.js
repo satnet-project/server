@@ -48,7 +48,7 @@ angular.module('satnet-ui').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('templates/messages/messages.html',
-    "<input type=\"checkbox\" name=\"messages-toggle\" id=\"messages-toggle\"><div ng-controller=\"messagesCtrl\" class=\"messages-area\"><div class=\"messages-title\"><label for=\"messages-toggle\"></label></div><div class=\"messages-content\"><div class=\"message-row\" ng-repeat=\"data.messages\"></div></div></div>"
+    "<input type=\"checkbox\" name=\"messages-toggle\" id=\"messages-toggle\"><div ng-controller=\"messagesCtrl\" class=\"messages-area\"><div class=\"messages-content\"><div class=\"message-row\" ng-repeat=\"m in data\"><div class=\"n-area-type-cell\"><p class=\"{{ m.gs_identifier }}\">[@{{ m.timestamp }}]</p></div><div class=\"n-area-content-cell\"><span class=\"message-data\">{{ m.message }}</span></div></div></div><div class=\"messages-title\"><label for=\"messages-toggle\"></label></div></div>"
   );
 
 

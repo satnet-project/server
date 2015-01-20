@@ -30,8 +30,7 @@ angular.module('satnet-services').service('satnetRPC', [
         'use strict';
 
         var _rpc = $location.protocol() + '://' +
-            $location.host() + ':' + $location.port() +
-            '/jrpc/';
+            $location.host() + ':' + $location.port() + '/jrpc/';
 
         this._configuration = jsonrpc.newService('configuration', _rpc);
         this._simulation = jsonrpc.newService('simulation', _rpc);
@@ -101,7 +100,9 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.ufo.forget':
                 this._leop.createMethod('launch.forget'),
             'leop.ufo.update':
-                this._leop.createMethod('launch.update')
+                this._leop.createMethod('launch.update'),
+            'leop.messages':
+                this._leop.createMethod('getMessages')
         };
 
         /**

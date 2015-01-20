@@ -279,8 +279,7 @@ angular.module('satnet-services').service('satnetRPC', [
         'use strict';
 
         var _rpc = $location.protocol() + '://' +
-            $location.host() + ':' + $location.port() +
-            '/jrpc/';
+            $location.host() + ':' + $location.port() + '/jrpc/';
 
         this._configuration = jsonrpc.newService('configuration', _rpc);
         this._simulation = jsonrpc.newService('simulation', _rpc);
@@ -350,7 +349,9 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.ufo.forget':
                 this._leop.createMethod('launch.forget'),
             'leop.ufo.update':
-                this._leop.createMethod('launch.update')
+                this._leop.createMethod('launch.update'),
+            'leop.messages':
+                this._leop.createMethod('getMessages')
         };
 
         /**
@@ -1004,7 +1005,7 @@ angular.module('marker-models')
                 if (this._serverMarkerKey === null) {
                     throw 'No server has been defined';
                 }
-                console.log('@getServerMarker, gs = ' + gs_identifier);
+                console.log('gs_id = ' + gs_identifier);
                 return this.getScope().markers[this._serverMarkerKey];
             };
 
@@ -1261,18 +1262,14 @@ angular.module('marker-models')
             };
 
             this.colors = [
-                '#000033',
-                //'#003333',
-                '#006633',
-                //'#009933',
-                '#00CC33',
-                //'#00FF33',
-                '#000066',
-                //'#003366',
-                '#006666',
-                //'#009966',
-                '#00CC66'
-                //'#00FF66'
+                //'#57EF1E', '#47DE2D', '#37CD3C', '#27BC4B', '#17AB5A'
+                //'#00DFFC', '#00B4CC', '#008C9E', '#005F6B',
+                '#74FF60', '#499F3C', '#2C6024'
+                /*
+                '#000033', '#003333', '#006633', '#009933', '#00CC33',
+                '#00FF33', '#000066', '#003366', '#006666', '#009966',
+                '#00CC66' '#00FF66'
+                */
             ];
             this.color_n = 0;
 
@@ -2166,14 +2163,9 @@ angular.module('ui-leop-modalgs-controllers')
  */
 
 /** Module definition (empty array is vital!). */
-angular.module(
-    'ui-leop-modalufo-controllers',
-    [
-        'ui.bootstrap',
-        //'broadcaster',
-        'satnet-services'
-    ]
-);
+angular.module('ui-leop-modalufo-controllers', [
+    'ui.bootstrap', 'satnet-services'
+]);
 
 angular.module('ui-leop-modalufo-controllers')
     .constant('CLUSTER_CFG_UPDATED_EV', 'cluster-cfg-updated')
@@ -3427,7 +3419,8 @@ angular.module('countdownDirective', [ 'satnet-services' ])
         return function (input) {
 
             return input.replace(/P/, '').replace(/S/, '')
-                        .replace(/DT/, ' days ').replace(/H/, ':').replace(/M/, ':')
+                        .replace(/DT/, ' days ')
+                        .replace(/H/, ':').replace(/M/, ':').replace(/T/, '')
                         .replace(/\.[0-9]{1,}/, '');
 
         };
@@ -3458,15 +3451,66 @@ angular.module('countdownDirective', [ 'satnet-services' ])
 */
 
 angular.module('messagesDirective', [
+    'satnet-services', 'ui-leop-modalufo-controllers'
 ])
+    .constant('MAX_MESSAGES', 20)
     .controller('messagesCtrl', [
-        '$scope',
-        function ($scope) {
+        '$rootScope', '$scope', 'satnetRPC', 'oArrays', 'MAX_MESSAGES',
+        function ($rootScope, $scope, satnetRPC, oArrays, MAX_MESSAGES) {
             'use strict';
 
             $scope.data = [];
+
+            /**
+             * This function pushes a new element into the array using the
+             * insertion algorithm and keeping the array sorted by timestamp. It
+             * respects the maximum messages limit for the array, as established
+             * by the related constant.
+             * @param message Message to be inserted within the array
+             * @private
+             */
+            $scope._pushMessage = function (message) {
+                if ($scope.data.length === MAX_MESSAGES) {
+                    $scope.data.splice(0, 1);
+                }
+                oArrays.insertSorted($scope.data, 'timestamp', message);
+            };
+
+            /**
+             * Inserts into the data messages array all the messages from the
+             * provided array. It uses the insertion algorithm driven by the
+             * timestamp field and respects the limit for the maximum number of
+             * messages.
+             * @param messages Messages array
+             * @private
+             */
+            $scope._pushMessages = function (messages) {
+                angular.forEach(messages, function (m) {
+                    $scope._pushMessage(m);
+                });
+            };
+
+            /**
+             * Initializes this controller.
+             */
             $scope.init = function () {
-                console.log('X');
+
+                var now = moment().utc(),
+                    yesterday = now.subtract(7, 'days');
+
+                satnetRPC.rCall(
+                    'leop.messages',
+                    [$rootScope.leop_id, yesterday]
+                )
+                    .then(function (data) {
+                        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$');
+                        $scope._pushMessages(data);
+                        console.log(
+                            '[@messagesCtrl.init(), $scope.data = ' +
+                                JSON.stringify($scope.data)
+                        );
+                    });
+
             };
 
             $scope.init();
@@ -3632,7 +3676,6 @@ angular.module('passDirective', [
                 var self = this;
                 return satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
                     .then(function (passes) {
-                        console.log('>>>> @PASSES = ' + JSON.stringify(passes));
                         return self._parseSlots(passes);
                     });
             };
@@ -3648,9 +3691,6 @@ angular.module('passDirective', [
             $scope.init = function () {
                 passSlotsService.getPasses().then(function (g_slots) {
                     angular.extend($scope.data, g_slots);
-                    console.log(
-                        '[pass-slots] gantt = ' + JSON.stringify($scope.data)
-                    );
                 });
             };
 
@@ -3848,7 +3888,8 @@ var app = angular.module('leop-ui', [
     // directives
     'logNotifierDirective',
     'countdownDirective',
-    'passDirective'
+    'passDirective',
+    'messagesDirective'
 ]);
 
 // level 1 services
@@ -3872,6 +3913,7 @@ angular.module('ui-leop-modalgs-controllers');
 angular.module('logNotifierDirective');
 angular.module('countdownDirective');
 angular.module('passDirective');
+angular.module('messagesDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging

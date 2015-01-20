@@ -14,66 +14,36 @@
 
 @import 'main';
 
-.my-gantt-row {
-  span {
-    font-size: 70%;
-  }
-}
-
-.gantt-row.my-gantt-row .gantt-row-background {
-}
-
-.gantt-row.my-gantt-row .gantt-row-content {
-  // Customize content of the row
-  font-weight: bolder;
-}
-
-.gantt-task.my-gantt-cell .gantt-task-background {
-  // Customize background of the task
-  background: darkred;
-  border: 2px solid #ff0000;
-  border-radius: 0px;
-}
-
-.gantt-task.my-gantt-cell .gantt-task-content {
-  // Customize content of the task
-  color: white;
-}
-
-.gantt-task.my-gantt-cell .gantt-task-foreground {
-  // Customize foreground of the task
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////// PASSES AREA
 ////////////////////////////////////////////////////////////////////////////////
 
-.passes-area { @extend .base-area;
+.messages-area { @extend .base-area;
   width: 55%;
   position: absolute;
-  bottom: -$area_corner;
-  right: -$area_corner;
+  top: -$area_corner;
+  right: 10%;
   transition: max-height 500ms ease-in-out 125ms;
 }
 
-.passes-title { @extend .base-area-title;
+.messages-title { @extend .base-area-title;
   border-bottom: solid $fg_color $separator_h;
 }
 
-.passes-content {}
+.messages-content {}
 
-#passes-toggle {
+#messages-toggle {
   position: relative;
   visibility: hidden;
 }
 
-#passes-toggle + div label {
+#messages-toggle + div label {
   position: relative;
   cursor: pointer;
   display: block;
   text-align: center;
 }
 
-#passes-toggle + div label:after { content: "passes"; }
-#passes-toggle:checked + div label:after { content: "passes"; }
-#passes-toggle:checked ~ .passes-area { max-height: 60px; }
+#messages-toggle + div label:after { content: "messages"; }
+#messages-toggle:checked + div label:after { content: "messages"; }
+#messages-toggle:checked ~ .messages-area { max-height: 5px; }

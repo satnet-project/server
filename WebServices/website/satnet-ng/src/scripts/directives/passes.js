@@ -91,7 +91,6 @@ angular.module('passDirective', [
                 var self = this;
                 return satnetRPC.rCall('leop.passes', [$rootScope.leop_id])
                     .then(function (passes) {
-                        console.log('>>>> @PASSES = ' + JSON.stringify(passes));
                         return self._parseSlots(passes);
                     });
             };
@@ -107,9 +106,6 @@ angular.module('passDirective', [
             $scope.init = function () {
                 passSlotsService.getPasses().then(function (g_slots) {
                     angular.extend($scope.data, g_slots);
-                    console.log(
-                        '[pass-slots] gantt = ' + JSON.stringify($scope.data)
-                    );
                 });
             };
 

@@ -89,7 +89,8 @@ angular.module('countdownDirective', [ 'satnet-services' ])
         return function (input) {
 
             return input.replace(/P/, '').replace(/S/, '')
-                        .replace(/DT/, ' days ').replace(/H/, ':').replace(/M/, ':')
+                        .replace(/DT/, ' days ')
+                        .replace(/H/, ':').replace(/M/, ':').replace(/T/, '')
                         .replace(/\.[0-9]{1,}/, '');
 
         };
