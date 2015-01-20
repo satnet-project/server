@@ -3485,7 +3485,11 @@ angular.module('messagesDirective', [
              * @private
              */
             $scope._pushMessages = function (messages) {
+                var date, ts_in_ms;
                 angular.forEach(messages, function (m) {
+                    ts_in_ms = parseInt(m.timestamp, 10) / 1000;
+                    date = new Date(ts_in_ms);
+                    m.timestamp = date;
                     $scope._pushMessage(m);
                 });
             };
@@ -3503,7 +3507,6 @@ angular.module('messagesDirective', [
                     [$rootScope.leop_id, yesterday]
                 )
                     .then(function (data) {
-                        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$');
                         $scope._pushMessages(data);
                         console.log(
                             '[@messagesCtrl.init(), $scope.data = ' +

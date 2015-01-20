@@ -1,12 +1,12 @@
 <input type='checkbox' name='messages-toggle' id='messages-toggle' />
 <div ng-controller="messagesCtrl" class='messages-area'>
+    <div class='messages-top-padding'></div>
     <div class='messages-content'>
         <div class='message-row' ng-repeat="m in data">
-            <div class='n-area-type-cell'>
-                <p class="{{ m.gs_identifier }}">[@{{ m.timestamp }}]</p>
-            </div>
-            <div class='n-area-content-cell'>
-                <span class='message-data'>{{ m.message }}</span>
+            <div class='message-ts-cell'><p>{{ m.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</p></div>
+            <div class='message-gs-cell'><p>{{ m.gs_identifier }}</p></div>
+            <div class='message-data-cell'>
+                <span>{{ m.message }}</span>
             </div>
         </div>
     </div>
