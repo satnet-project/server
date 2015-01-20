@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django import dispatch
 from django.contrib.auth import models as auth_models
+from django.contrib.auth.signals import user_logged_in as auth_logged_in_signal
 from django.core import exceptions
 
 from allauth.account import adapter as allauth_adapter
@@ -28,6 +29,12 @@ from services.accounts import models as account_models
 
 logger = logging.getLogger('accounts')
 
+@dispatch.receiver(auth_logged_in_signal)
+def logged_in_receiver(sender, request, user, **kwargs):
+    account_models.UserSession.objects.get_or_create(
+        user = user,
+        session_id = request.session.session_key
+    )
 
 @dispatch.receiver(allauth_signals.user_signed_up)
 def user_signed_up_receiver(request, user, **kwargs):

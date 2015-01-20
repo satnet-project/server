@@ -20,6 +20,7 @@ from django.db import models
 from django.contrib.auth import models as auth_models
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
+from django.contrib.sessions.models import Session
 
 from allauth.account import adapter as allauth_adapter
 
@@ -166,3 +167,31 @@ class UserProfile(auth_models.User):
     # Initially set to false, indicates whether network administrator has
     # decided to block the requests from this user.
     is_blocked = models.BooleanField()
+
+
+class UserSessionManager(models.Manager):
+    """
+    Custom model manager for the UserSession class
+    """
+    def getLoggedUsers(self):
+        """
+        Function that gets all the logged users excluding those who
+        are duplicated because they have multiple active sessions (e.g. 
+        one from the Chrome client and the other one from the web).
+        
+        :returns:
+            List of django.contrib.auth.models.User classes
+        """
+
+        return [ item.user for item in self.distinct('user') ]
+
+class UserSession(models.Model):
+    """
+    This class holds a list corresponding to the logged users. More details here:
+    http://gavinballard.com/associating-django-users-sessions/
+    """
+
+    objects = UserSessionManager()
+
+    user = models.ForeignKey(auth_models.User)
+    session = models.ForeignKey(Session)

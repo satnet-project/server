@@ -22,10 +22,7 @@ from services.communications import models as comms_models
 
 class PassiveMessages(list_views.ListView):
     """
-    This class helps in handling how users are shown to the network
-    administrator, so that their activation can be initiated. This is the
-    second step of the registration process, that takes place after a user has
-    sent the registration request.
+    This class loads the messages uploaded by one user.
     """
     model = comms_models.PassiveMessage
     context_object_name = 'message_list'
