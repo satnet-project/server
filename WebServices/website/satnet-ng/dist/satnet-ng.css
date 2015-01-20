@@ -802,10 +802,40 @@ a.button-red {
   position: absolute;
   top: -5px;
   right: 10%;
-  transition: max-height 500ms ease-in-out 125ms; }
+  transition: top 300ms ease-in-out 125ms; }
 
 .messages-title {
-  border-bottom: solid #A6A6A6 2px; }
+  border-top: solid #A6A6A6 2px; }
+
+.messages-content {
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: 200px; }
+
+.messages-top-padding {
+  height: 5px; }
+
+.message-row {
+  display: table-row;
+  line-height: 1.25em; }
+
+.message-cell, .message-ts-cell, .message-gs-cell, .message-data-cell {
+  display: table-cell;
+  padding: 0 10px 5px 10px;
+  font-size: 80%;
+  text-wrap: normal;
+  line-break: strict;
+  text-align: center;
+  vertical-align: middle;
+  word-break: break-all; }
+
+.message-ts-cell {
+  font-weight: bolder;
+  width: 100px; }
+
+.message-gs-cell {
+  font-weight: bolder;
+  width: 100px; }
 
 #messages-toggle {
   position: relative;
@@ -824,7 +854,7 @@ a.button-red {
   content: "messages"; }
 
 #messages-toggle:checked ~ .messages-area {
-  max-height: 5px; }
+  top: -200px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 

@@ -1264,7 +1264,7 @@ angular.module('marker-models')
             this.colors = [
                 //'#57EF1E', '#47DE2D', '#37CD3C', '#27BC4B', '#17AB5A'
                 //'#00DFFC', '#00B4CC', '#008C9E', '#005F6B',
-                '#74FF60', '#499F3C', '#2C6024'
+                '#00ABAF', '#74FF60', '#499F3C', '#2C6024'
                 /*
                 '#000033', '#003333', '#006633', '#009933', '#00CC33',
                 '#00FF33', '#000066', '#003366', '#006666', '#009966',
@@ -3485,7 +3485,11 @@ angular.module('messagesDirective', [
              * @private
              */
             $scope._pushMessages = function (messages) {
+                var date, ts_in_ms;
                 angular.forEach(messages, function (m) {
+                    ts_in_ms = parseInt(m.timestamp, 10) / 1000;
+                    date = new Date(ts_in_ms);
+                    m.timestamp = date;
                     $scope._pushMessage(m);
                 });
             };
@@ -3503,7 +3507,6 @@ angular.module('messagesDirective', [
                     [$rootScope.leop_id, yesterday]
                 )
                     .then(function (data) {
-                        console.log('$$$$$$$$$$$$$$$$$$$$$$$$$');
                         $scope._pushMessages(data);
                         console.log(
                             '[@messagesCtrl.init(), $scope.data = ' +
