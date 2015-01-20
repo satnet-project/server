@@ -28,7 +28,9 @@ from services.configuration.models import tle as tle_models
 from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.views import launch as launch_jrpc
+from services.leop.jrpc.views import messages as messages_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
+from services.leop.jrpc.serializers import messages as messages_serial
 from services.simulation.models import groundtracks as simulation_models
 
 
@@ -648,4 +650,98 @@ class TestLaunchViews(test.TestCase):
         """
         launch_jrpc.list_spacecraft(
             self.__leop_id, **{'request': self.__request_2}
+        )
+
+    def test_get_messages(self):
+        """UNIT test (JRPC method)
+        Validates the retrieval of messages from the server.
+        """
+        # 1) interface robustness
+        try:
+            messages_jrpc.get_messages('DOESNTEXIST', 'nulldate')
+            self.fail('Wrong launch id should have risen an exception')
+        except launch_models.Launch.DoesNotExist:
+            pass
+        try:
+            messages_jrpc.get_messages(self.__leop_id, None)
+            self.fail('Wrong launch id should have risen an exception')
+        except Exception:
+            pass
+        try:
+            messages_jrpc.get_messages(self.__leop_id, 'null')
+            self.fail('Wrong launch id should have risen an exception')
+        except Exception:
+            pass
+
+        # 2) basic empty response
+        self.assertEquals(
+            messages_jrpc.get_messages(
+                self.__leop_id, '2002-12-26T00:00:00-06:39'
+            ),
+            [],
+            'No messages, an empty array should have been returned'
+        )
+
+        # 3) feeding 1 message, should be retrieved
+        # 3.a) gs created and added to the launch
+        self.assertEquals(
+            launch_jrpc.add_groundstations(
+                self.__leop_id, [self.__gs_1_id],
+                **{'request': self.__request_2}
+            ),
+            {launch_serial.JRPC_K_LEOP_ID: self.__leop_id},
+            'The identifier of the Launch should have been returned'
+        )
+
+        # 3.b) database fed with fake data frame
+        message_1 = db_tools.create_message(self.__gs_1)
+
+        # 3.c) service finally invoked
+        yesterday = misc.get_now_utc() - datetime.timedelta(days=1)
+        actual = messages_jrpc.get_messages(
+            self.__leop_id, yesterday.isoformat()
+        )
+        expected = [{
+            launch_serial.JRPC_K_GS_ID: self.__gs_1_id,
+            messages_serial.JRPC_K_TS: message_1.groundstation_timestamp,
+            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE__1_TEST
+        }]
+        self.assertEquals(
+            actual, expected,
+            'Single message array expected, diff = ' + str(datadiff.diff(
+                actual, expected
+            ))
+        )
+
+        # 4) multiple groundstations:
+        # 4.a) gs created and added to the launch
+        self.assertEquals(
+            launch_jrpc.add_groundstations(
+                self.__leop_id, [self.__gs_2_id],
+                **{'request': self.__request_2}
+            ),
+            {launch_serial.JRPC_K_LEOP_ID: self.__leop_id},
+            'The identifier of the Launch should have been returned'
+        )
+
+        # 3.b) database fed with fake data frame
+        message_2 = db_tools.create_message(
+            self.__gs_2, message=db_tools.MESSAGE__2_TEST
+        )
+
+        # 3.c) service finally invoked
+        yesterday = misc.get_now_utc() - datetime.timedelta(days=1)
+        actual = messages_jrpc.get_messages(
+            self.__leop_id, yesterday.isoformat()
+        )
+        expected.append({
+            launch_serial.JRPC_K_GS_ID: self.__gs_2_id,
+            messages_serial.JRPC_K_TS: message_2.groundstation_timestamp,
+            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE__2_TEST
+        })
+        self.assertEquals(
+            actual, expected,
+            'Single message array expected, diff = ' + str(datadiff.diff(
+                actual, expected
+            ))
         )

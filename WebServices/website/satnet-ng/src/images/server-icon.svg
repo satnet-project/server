@@ -18,14 +18,8 @@
     width='150px' height='150px' style='opacity:0.85;'>
 
     <circle cx='50%' cy='50%' r='47%'
-        stroke-width='6%' stroke='black'
-        style='fill:#FF6103;'
+        stroke-width='20%' stroke='#ff0000'
+        style='fill:#900000; opacity: 0.8'
     />
-
-    <text x='50%' y='60%'
-            font-family='sans-serif' font-size='400%'
-            font-weight='bold'
-            fill='white'
-            text-anchor='middle'>gs</text>
 
 </svg>

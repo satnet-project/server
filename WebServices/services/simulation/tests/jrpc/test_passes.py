@@ -62,14 +62,14 @@ class JRPCPassesTest(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-    def test_sc_passes(self):
+    def _test_sc_passes(self):
         """JRPC Unit Test
         Validates the generation of the passes for a given spacecraft.
         """
 
         # 1) Basic test, inexistent spacecraft and no groundstation available
         try:
-            pass_views.get_sc_passes(self.__sc_id)
+            pass_views.get_sc_passes(self.__sc_id, [])
             self.fail('Wrong spacecraft ID must throw an exception')
         except segment_models.Spacecraft.DoesNotExist:
             pass
@@ -83,7 +83,7 @@ class JRPCPassesTest(test.TestCase):
             'Should have returned the spacecraft identifier'
         )
         self.assertEquals(
-            pass_views.get_sc_passes(self.__sc_id), [],
+            pass_views.get_sc_passes(self.__sc_id, []), [],
             'No passes, an array should be returned empty'
         )
 

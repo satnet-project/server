@@ -13,14 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 -->
-<!-- coolBlue: 0F3E62; cramberry: A52A2A; -->
+<!-- coolBlue: 0F3E62; cramberry: A52A2A; flash-red: ff0000; dark-red: 900000;-->
 <svg version='1.1' xmlns="http://www.w3.org/2000/svg"
     name='gs-icon' preserveAspectRatio='xMinYMin'
     width='150px' height='150px' style='opacity:0.85;'>
 
     <circle cx='50%' cy='50%' r='47%'
-        stroke-width='50px' stroke='#ff0000;'
-        style='fill:#900000;'
+        stroke-width='20%' stroke='#900000'
+        style='fill:#ff0000; opacity: 0.8'
     />
 
 </svg>

@@ -24,6 +24,7 @@ from django.test.client import RequestFactory
 from services.accounts.models import UserProfile
 from services.common import misc, gis
 from services.common import serialization as common_serial
+from services.communications import models as comms_models
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
 from services.leop.models import launch as leop_models
@@ -122,6 +123,30 @@ def create_sc(
         callsign=callsign,
         tle_id=tle_id,
         is_ufo=is_ufo
+    )
+
+
+MESSAGE__1_TEST = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
+MESSAGE__2_TEST = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
+                            'AAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7d' \
+                            'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
+                            'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
+                            'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
+
+
+def create_message(groundstation, message=MESSAGE__1_TEST):
+
+    server_dt = misc.get_now_utc()
+    server_ts = misc.get_utc_timestamp(server_dt)
+    gs_dt = server_dt - datetime.timedelta(hours=2)
+    gs_ts = misc.get_utc_timestamp(gs_dt)
+
+    return comms_models.PassiveMessage.objects.create(
+        groundstation=groundstation,
+        doppler_shift=0.0,
+        groundstation_timestamp=gs_ts,
+        reception_timestamp=server_ts,
+        message=message
     )
 
 

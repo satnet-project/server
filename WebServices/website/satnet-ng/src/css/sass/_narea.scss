@@ -34,8 +34,8 @@
   display: block;
   text-align: center;
 }
-#n-area-toggle + div label:after { content: "notification area"; }
-#n-area-toggle:checked + div label:after { content: "notification area"; }
+#n-area-toggle + div label:after { content: "events"; }
+#n-area-toggle:checked + div label:after { content: "events"; }
 #n-area-toggle:checked ~ .n-area { bottom: $min_area_h; }
 
 .n-area-content { @extend .base-area-content;

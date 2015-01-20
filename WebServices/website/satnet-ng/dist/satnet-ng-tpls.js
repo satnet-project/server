@@ -47,6 +47,11 @@ angular.module('satnet-ui').run(['$templateCache', function($templateCache) {
   );
 
 
+  $templateCache.put('templates/messages/messages.html',
+    "<input type=\"checkbox\" name=\"messages-toggle\" id=\"messages-toggle\"><div ng-controller=\"messagesCtrl\" class=\"messages-area\"><div class=\"messages-title\"><label for=\"messages-toggle\"></label></div><div class=\"messages-content\"><div class=\"message-row\" ng-repeat=\"data.messages\"></div></div></div>"
+  );
+
+
   $templateCache.put('templates/notifier/logNotifier.html',
     "<input type=\"checkbox\" name=\"n-area-toggle\" id=\"n-area-toggle\"><div ng-controller=\"logNotifierCtrl\" class=\"n-area\"><div class=\"n-area-title\"><label for=\"n-area-toggle\"></label></div><div class=\"n-area-content\"><ul class=\"n-area-list\"><li ng-repeat=\"e in eventLog\"><div class=\"n-area-info-row\"><div class=\"n-area-type-cell\"><p class=\"{{ e.type }}\">[@{{ e.timestamp }}]</p></div><div class=\"n-area-content-cell\"><span class=\"{{ e.type }}\">{{ e.msg }}</span></div></div></li></ul></div></div>"
   );

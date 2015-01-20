@@ -211,7 +211,7 @@ TIMESTAMP_0 = localize_date_utc(datetime.datetime(year=1970, month=1, day=1))
 
 def get_utc_timestamp(utc_datetime=None):
     """
-    Returns a timestamp with the number of miliseconds ellapsed since January
+    Returns a timestamp with the number of microseconds ellapsed since January
     1st of 1970 for the given datetime object, UTC localized.
     :param utc_datetime: The datetime whose timestamp is to be calculated.
     :return: The number of miliseconds since 1.1.1970, UTC localized (integer)

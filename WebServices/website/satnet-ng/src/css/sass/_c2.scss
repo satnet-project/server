@@ -31,11 +31,13 @@ $area_corner: 5px;
 
 .my-exit-btn { @extend .my-dd-btn;
   background: darkred;
-  border-color: darkred;
+  border: 4px solid #ff0000;
+  color: #ff0000;
   font-weight: bolder;
   vertical-align: middle;
   padding: 15px 5px 5px 5px;
   top: -5px;
+  opacity: 0.8;
 }
 
 .my-rotated-menu {
