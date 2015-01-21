@@ -15,10 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from allauth.account import signals as allauth_signals
 from django.db.models import signals as django_signals
 from django import dispatch as django_dispatch
+from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
-from services.network import models as network_models
+from services.network.models import server as server_models
+from services.network.models import clients as client_models
 
 
 @django_dispatch.receiver(
@@ -32,6 +35,20 @@ def gs_saved_handler(sender, instance, created, raw, **kwargs):
     if not created or raw:
         return
 
-    local_s = network_models.Server.objects.get_local()
+    local_s = server_models.Server.objects.get_local()
     local_s.groundstations.add(instance)
     local_s.save()
+
+
+@django_dispatch.receiver(allauth_signals.user_logged_in)
+def logged_in_receiver(sender, request, user, **kwargs):
+    """User logged int callback
+    Callback executed automatically when a new user has just logged in.
+    :param sender: Object triggering the execution of this callback
+    :param request: The request being sent
+    :param user: Reference to the user object that has just logged in
+    :param kwargs: Additional arguments
+    """
+    client_models.Client.objects.get_or_create(
+        user=account_models.UserProfile.objects.get(username=user.username)
+    )

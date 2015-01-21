@@ -42,6 +42,6 @@ from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
 # Load local server definition:
-from services.network import models as network_models
+from services.network.models import server as server_models
 print '>>> Loading local server information...'
-network_models.ServerManager().load_local_server()
+server_models.ServerManager().load_local_server()
