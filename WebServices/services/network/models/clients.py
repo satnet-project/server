@@ -17,7 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models as django_models
 import logging
-from services.accounts import models as account_models
+from services.accounts.models import UserProfile
+from django.contrib.sessions.models import Session
 
 logger = logging.getLogger('network')
 
@@ -48,6 +49,10 @@ class Client(django_models.Model):
     objects = ClientsManager()
 
     user = django_models.ForeignKey(
-        account_models.UserProfile,
+        UserProfile,
         verbose_name='Reference to the profile of the user'
+    )
+    session = django_models.ForeignKey(
+      Session,
+      verbose_name='Reference to the session of the user'
     )
