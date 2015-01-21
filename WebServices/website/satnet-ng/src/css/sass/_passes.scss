@@ -48,12 +48,16 @@
 //////////////////////////////////////////////////////////////////// PASSES AREA
 ////////////////////////////////////////////////////////////////////////////////
 
+$p_area_h: 350px;
+$min_bottom: $p_area_h - 50px;
+
 .passes-area { @extend .base-area;
-  width: 55%;
+  width: 65%;
+  height: $p_area_h;
   position: absolute;
   bottom: -$area_corner;
   right: -$area_corner;
-  transition: max-height 500ms ease-in-out 125ms;
+  transition: bottom 300ms ease-in-out 125ms;
 }
 
 .passes-title { @extend .base-area-title;
@@ -76,4 +80,4 @@
 
 #passes-toggle + div label:after { content: "passes"; }
 #passes-toggle:checked + div label:after { content: "passes"; }
-#passes-toggle:checked ~ .passes-area { max-height: 60px; }
+#passes-toggle:checked ~ .passes-area { bottom: -$min_bottom; }

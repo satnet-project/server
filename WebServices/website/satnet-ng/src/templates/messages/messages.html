@@ -1,6 +1,9 @@
 <input type='checkbox' name='messages-toggle' id='messages-toggle' />
 <div ng-controller="messagesCtrl" class='messages-area'>
     <div class='messages-top-padding'></div>
+    <div ng-hide="data.length">
+        <p class='no-items-red'>(no messages)</p>
+    </div>
     <div class='messages-content'>
         <div class='message-row' ng-repeat="m in data">
             <div class='message-ts-cell'><p>{{ m.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</p></div>

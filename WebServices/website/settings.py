@@ -299,7 +299,9 @@ AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     "django.contrib.auth.backends.RemoteUserBackend",
     # `allauth` specific authentication methods, such as login by e-mail
-    "allauth.account.auth_backends.AuthenticationBackend"
+    "allauth.account.auth_backends.AuthenticationBackend",
+    # specific backend for automatically authenticating anonymous users
+    'services.accounts.backend.AnonymousAuthenticationBackend'
 )
 
 # ### django-allauth configuration:

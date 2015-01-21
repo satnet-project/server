@@ -3,7 +3,11 @@
     <div class='passes-title'>
         <label for='passes-toggle'></label>
     </div>
-    <div gantt class='passes-content'
+    <div ng-hide="data.length">
+        <p class='no-items-red'>(no passes)</p>
+    </div>
+    <div ng-show="data.length"
+         gantt class='passes-content'
          data="data" allow-side-resizing="false" auto-expand="both"
          template-url="templates/passes/myGanttTpl.html">
         <gantt-labels></gantt-labels>

@@ -32,6 +32,14 @@
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -65,6 +73,14 @@
 
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
+
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
 
 a.link, a.green-link, a.red-link {
   cursor: pointer;
@@ -208,6 +224,14 @@ a.button-red {
 
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
+
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
 
 .my-dd-btn, .my-exit-btn {
   background: black;
@@ -434,6 +458,14 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 .leop-gs-duallist option {
   font-size: 150%;
   font-weight: bolder;
@@ -472,6 +504,14 @@ a.button-red {
 
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
+
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
 
 .marker-cluster-small {
   background-color: #A3A3C2; }
@@ -562,8 +602,16 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 .n-area {
-  width: 45%;
+  width: 35%;
   height: 275px;
   position: absolute;
   bottom: -5px;
@@ -590,7 +638,7 @@ a.button-red {
   content: "events"; }
 
 #n-area-toggle:checked ~ .n-area {
-  bottom: -238px; }
+  bottom: -225px; }
 
 .n-area-content {
   overflow-x: hidden;
@@ -673,6 +721,14 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 .countdown {
   background-color: black;
   opacity: 0.95;
@@ -720,6 +776,14 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 .my-gantt-row span {
   font-size: 70%; }
 
@@ -735,11 +799,12 @@ a.button-red {
   color: white; }
 
 .passes-area {
-  width: 55%;
+  width: 65%;
+  height: 350px;
   position: absolute;
   bottom: -5px;
   right: -5px;
-  transition: max-height 500ms ease-in-out 125ms; }
+  transition: bottom 300ms ease-in-out 125ms; }
 
 .passes-title {
   border-bottom: solid #A6A6A6 2px; }
@@ -761,7 +826,7 @@ a.button-red {
   content: "passes"; }
 
 #passes-toggle:checked ~ .passes-area {
-  max-height: 60px; }
+  bottom: -300px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -797,6 +862,14 @@ a.button-red {
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
 
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
+
 .messages-area {
   width: 55%;
   position: absolute;
@@ -813,7 +886,7 @@ a.button-red {
   height: 200px; }
 
 .messages-top-padding {
-  height: 5px; }
+  height: 10px; }
 
 .message-row {
   display: table-row;
@@ -854,7 +927,7 @@ a.button-red {
   content: "messages"; }
 
 #messages-toggle:checked ~ .messages-area {
-  top: -200px; }
+  top: -240px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -889,6 +962,14 @@ a.button-red {
 
 .bottom-cell {
   border-bottom: 2px solid #0F3E62; }
+
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000; }
 
 /* This is a compiled file, you should be editing the file in the templates directory */
 .pace {

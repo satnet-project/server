@@ -14,8 +14,10 @@
 
 @import 'main';
 
+$min_bottom: $min_area_h + 13px;
+
 .n-area { @extend .base-area;
-  width: $area_w;
+  width: 35%;
   height: $area_h;
   position: absolute;
   bottom: -$area_corner;
@@ -36,7 +38,7 @@
 }
 #n-area-toggle + div label:after { content: "events"; }
 #n-area-toggle:checked + div label:after { content: "events"; }
-#n-area-toggle:checked ~ .n-area { bottom: $min_area_h; }
+#n-area-toggle:checked ~ .n-area { bottom: $min_bottom; }
 
 .n-area-content { @extend .base-area-content;
   overflow-x: hidden;

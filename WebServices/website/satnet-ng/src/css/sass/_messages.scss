@@ -19,6 +19,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 $messages_content_h: 200px;
+$messages_title_h: 20px;
+$messages_area_h: $messages_content_h + $messages_title_h;
+$min_top: $messages_area_h + 20px;
 
 .messages-area { @extend .base-area;
   width: 55%;
@@ -36,7 +39,7 @@ $messages_content_h: 200px;
   height: $messages_content_h;
 }
 .messages-top-padding {
-  height: $area_corner;
+  height: 2*$area_corner;
 }
 .message-row {
   display: table-row;
@@ -80,4 +83,4 @@ $messages_content_h: 200px;
 
 #messages-toggle + div label:after { content: "messages"; }
 #messages-toggle:checked + div label:after { content: "messages"; }
-#messages-toggle:checked ~ .messages-area { top: -$messages_content_h; }
+#messages-toggle:checked ~ .messages-area { top: -$min_top; }

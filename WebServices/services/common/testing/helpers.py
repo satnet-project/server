@@ -28,7 +28,7 @@ from services.communications import models as comms_models
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import serialization
 from services.leop.models import launch as leop_models
-from services.network import models as network_models
+from services.network.models import server as server_models
 
 
 def create_user(
@@ -152,7 +152,7 @@ def create_message(groundstation, message=MESSAGE__1_TEST):
 
 def create_local_server():
 
-    network_models.Server.objects.load_local_server()
+    server_models.Server.objects.load_local_server()
 
 
 def create_launch(

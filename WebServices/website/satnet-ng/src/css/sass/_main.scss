@@ -33,3 +33,12 @@ $red_fg: #600000;
 .bottom-cell {
   border-bottom: 2px solid $cool_blue;
 }
+
+.no-items-red {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+  color: #ff0000;
+}
