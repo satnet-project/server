@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.template import response as django_response
+from services.accounts import backend as accounts_backend
 
 
 def redirect_operations(request):
@@ -31,6 +32,7 @@ def redirect_leop(request, identifier):
     """Redirect method.
     Redirects staff either to the LEOP interface or to the login page.
     """
+    accounts_backend.authenticate_anonymous(request)
     return django_response.TemplateResponse(
         request, 'angular/staff_leop.html', {'leop_id': identifier}
     )

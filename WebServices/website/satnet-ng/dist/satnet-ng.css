@@ -241,7 +241,6 @@ a.button-red {
 
 .my-exit-btn {
   background: darkred;
-  border: 4px solid #ff0000;
   color: #ff0000;
   font-weight: bolder;
   vertical-align: middle;
@@ -334,12 +333,12 @@ a.button-red {
   content: "ground stations"; }
 
 #gs-area-toggle:checked ~ .gs-area {
-  top: -236px; }
+  top: -261px; }
 
 .gs-area-content {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 193px; }
+  height: 218px; }
 
 .sc-area {
   min-height: 275px;
@@ -366,7 +365,7 @@ a.button-red {
   content: "spacecraft"; }
 
 #sc-area-toggle:checked ~ .sc-area {
-  top: -236px; }
+  top: -261px; }
 
 .action-link {
   font-size: 75%; }
@@ -612,7 +611,7 @@ a.button-red {
 
 .n-area {
   width: 35%;
-  height: 275px;
+  height: 300px;
   position: absolute;
   bottom: -5px;
   left: -5px;
@@ -638,12 +637,12 @@ a.button-red {
   content: "events"; }
 
 #n-area-toggle:checked ~ .n-area {
-  bottom: -225px; }
+  bottom: -250px; }
 
 .n-area-content {
   overflow-x: hidden;
   overflow-y: auto;
-  height: 240px;
+  height: 265px;
   width: 100%; }
 
 .n-area-info-base, .n-area-info-row div p.infoEvent, .n-area-info-row div p.logEvent, .n-area-info-row div p.warnEvent, .n-area-info-row div p.errEvent, .n-area-info-row div p.debEvent {

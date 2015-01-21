@@ -158,10 +158,16 @@ class UserProfile(auth_models.User):
     organization = models.CharField(max_length=100)
     # Country of origin of the organization that the user belongs to.
     country = CountryField()
-    # Initially set to false, indicates whether administrator has accepted
-    # this user or not.
-    is_verified = models.BooleanField()
-    
-    # Initially set to false, indicates whether network administrator has
-    # decided to block the requests from this user.
-    is_blocked = models.BooleanField()
+
+    is_verified = models.BooleanField(
+        'Flag that sets this user profile as verified',
+        default=False
+    )
+    is_blocked = models.BooleanField(
+        'Flat that sets this user profile as blocked',
+        default=False
+    )
+    is_anonymous = models.BooleanField(
+        'Flag that sets this user as an anonymous user',
+        default=False
+    )
