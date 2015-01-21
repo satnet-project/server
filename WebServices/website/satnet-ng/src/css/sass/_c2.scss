@@ -31,11 +31,12 @@ $area_corner: 5px;
 
 .my-exit-btn { @extend .my-dd-btn;
   background: darkred;
+  border-width: 0;
   color: #ff0000;
   font-weight: bolder;
   vertical-align: middle;
   padding: 15px 5px 5px 5px;
-  top: -5px;
+  top: -$area_corner;
   opacity: 0.8;
 }
 

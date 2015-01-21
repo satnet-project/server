@@ -241,6 +241,7 @@ a.button-red {
 
 .my-exit-btn {
   background: darkred;
+  border-width: 0;
   color: #ff0000;
   font-weight: bolder;
   vertical-align: middle;
@@ -730,7 +731,7 @@ a.button-red {
 
 .countdown {
   background-color: black;
-  opacity: 0.95;
+  opacity: 0.8;
   padding: 10px;
   border-radius: 10px; }
   .countdown p {
