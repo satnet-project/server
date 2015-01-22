@@ -23,7 +23,7 @@ from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.simulation.models import passes as pass_models
 from services.simulation.jrpc.serializers import passes as pass_serializers
-
+from website import settings as satnet_settings
 
 @rpc4django.rpcmethod(
     name='leop.gs.list',
@@ -43,9 +43,11 @@ def list_groundstations(launch_id, **kwargs):
 
     # user must be obtained from the request, since this has already been
     # validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    if not http_request or not http_request.user.is_staff:
-        raise django_ex.PermissionDenied()
+
+    if satnet_settings.JRPC_PERMISSIONS:
+        http_request = kwargs.get('request', None)
+        if not http_request or not http_request.user.is_staff:
+            raise django_ex.PermissionDenied()
 
     leop_cluster = launch_models.Launch.objects.get(identifier=launch_id)
 
@@ -75,9 +77,10 @@ def list_spacecraft(launch_id, **kwargs):
     """
     # user must be obtained from the request, since this has already been
     # validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    if not http_request or not http_request.user.is_staff:
-        raise django_ex.PermissionDenied()
+    if satnet_settings.JRPC_PERMISSIONS:
+        http_request = kwargs.get('request', None)
+        if not http_request or not http_request.user.is_staff:
+            raise django_ex.PermissionDenied()
 
     launch = launch_models.Launch.objects.get(identifier=launch_id)
 
@@ -117,6 +120,7 @@ def add_groundstations(launch_id, groundstations, **kwargs):
     http_request = kwargs.get('request', None)
     if not http_request or not http_request.user.is_staff:
         raise django_ex.PermissionDenied()
+
     if not groundstations:
         raise Exception('No groundstations provided')
 

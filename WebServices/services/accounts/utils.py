@@ -22,6 +22,8 @@ from allauth.account import utils as allauth_utils, models as allauth_models
 
 import logging
 import re
+import random
+
 
 logger = logging.getLogger(__name__)
 p = re.compile('^op_([0-9]+)$')
@@ -107,3 +109,15 @@ def allauth_confirm_email(user, request):
         user, email
     )
     email_address.send_confirmation(request, signup=True)
+
+
+MAX_INT_ANONYMOUS = 9999999
+
+
+def generate_random_username():
+    """Generate function
+    Generates a random username for anonymous users.
+    :returns: String with the anonymous username
+    """
+    random.seed()
+    return 'anon-' + str(random.randint(0, MAX_INT_ANONYMOUS))

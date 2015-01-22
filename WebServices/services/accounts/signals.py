@@ -17,16 +17,34 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from allauth.account import adapter as allauth_adapter
 from allauth.account import signals as allauth_signals
-from django import dispatch
+from django import dispatch as django_dispatch
 from django.contrib.auth import models as auth_models
 from django.core import exceptions
+from django.db.models import signals as django_signals
 import logging
 from services.accounts import models as account_models
+from user_sessions import models as user_session_models
 
 logger = logging.getLogger('accounts')
 
 
-@dispatch.receiver(allauth_signals.user_signed_up)
+@django_dispatch.receiver(
+    django_signals.pre_delete, sender=user_session_models.Session
+)
+def session_closed_handler(sender, instance, **kwargs):
+    """Session closed signal handler
+    This handler checks whether the session was owned by an anonymous user or
+    not. In case the owner of the session was anonymous, it removes the
+    resources allocated for that user as well.
+    :param sender: Session object that sent this signal
+    :param instance: Instance of the session object
+    :param kwargs: Additional parameters
+    """
+    # ### TODO erase anonymous user as session ends!
+    pass
+
+
+@django_dispatch.receiver(allauth_signals.user_signed_up)
 def user_signed_up_receiver(request, user, **kwargs):
     """User signed up callback
     This method overrides the default behavior for handling the sign up of a
@@ -44,7 +62,7 @@ def user_signed_up_receiver(request, user, **kwargs):
 CONFIRMED_EMAIL_TEMPLATE = 'email/email_user_confirmed'
 
 
-@dispatch.receiver(allauth_signals.email_confirmed)
+@django_dispatch.receiver(allauth_signals.email_confirmed)
 def email_confirmed_receiver(email_address, **kwargs):
     """Email confirmed callback.
     This method overrides the default behavior for handling the sign up of a

@@ -103,8 +103,8 @@ class RegistrationForm(forms.ModelForm):
         profile.user_ptr = user
         profile.organization = self.cleaned_data['organization']
         profile.country = self.cleaned_data['country']
-        profile.is_blocked = False
-        profile.is_verified = False
+        profile.blocked = False
+        profile.verified = False
         profile.save()
 
         user.username = self.cleaned_data['username']

@@ -17,10 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from allauth.account import adapter as allauth_adapter
 import logging
+
 from django.db import models
 from django.contrib.auth import models as auth_models
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
+
+from services.accounts import utils as account_utils
 
 logger = logging.getLogger('accounts')
 
@@ -30,6 +33,22 @@ class UserProfileManager(models.Manager):
     Custom manager that implements a set of function to perform basic tasks
     over the users and profiles of this extended model.
     """
+
+    def create_anonymous(self):
+        """Create manager method
+        Creates a profile for an anonymous user.
+        :return: Reference to the just-created profile
+        """
+        profile = super(UserProfileManager, self).create(
+            username=account_utils.generate_random_username(),
+            first_name='Anonymous', last_name='User', is_active=True,
+            anonymous=True, country='US', organization='SATNET'
+        )
+        profile.set_unusable_password()
+        profile.save()
+
+        return profile
+
     def verify_user(self, user_id):
         """
         Function that changes user status to 'verified' in the database.
@@ -42,7 +61,7 @@ class UserProfileManager(models.Manager):
             None
         """
         user = get_object_or_404(UserProfile, user_ptr=user_id)
-        user.is_verified = True
+        user.verified = True
         user.save()
 
         allauth_adapter.get_adapter().send_mail(
@@ -65,7 +84,7 @@ class UserProfileManager(models.Manager):
             None
         """
         user = get_object_or_404(UserProfile, user_ptr=user_id)
-        user.is_blocked = True
+        user.blocked = True
         user.save()
 
         allauth_adapter.get_adapter().send_mail(
@@ -88,7 +107,7 @@ class UserProfileManager(models.Manager):
             None
         """
         user = get_object_or_404(UserProfile, user_ptr=user_id)
-        user.is_blocked = False
+        user.blocked = False
         user.save()
 
         allauth_adapter.get_adapter().send_mail(
@@ -154,20 +173,22 @@ class UserProfile(auth_models.User):
     """
     objects = UserProfileManager()
 
-    # Name of the organization that the user belongs to.
-    organization = models.CharField(max_length=100)
+    organization = models.CharField(
+        'Name of the organization that the user belongs to',
+        max_length=100
+    )
     # Country of origin of the organization that the user belongs to.
     country = CountryField()
 
-    is_verified = models.BooleanField(
+    verified = models.BooleanField(
         'Flag that sets this user profile as verified',
         default=False
     )
-    is_blocked = models.BooleanField(
+    blocked = models.BooleanField(
         'Flat that sets this user profile as blocked',
         default=False
     )
-    is_anonymous = models.BooleanField(
+    anonymous = models.BooleanField(
         'Flag that sets this user as an anonymous user',
         default=False
     )

@@ -114,7 +114,8 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    'django.contrib.sessions.middleware.SessionMiddleware',
+    #'django.contrib.sessions.middleware.SessionMiddleware',
+    'user_sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.auth.middleware.RemoteUserMiddleware',
@@ -174,7 +175,8 @@ INSTALLED_APPS = (
     # ### default applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    'django.contrib.sessions',
+    #'django.contrib.sessions',
+    'user_sessions',
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
@@ -330,11 +332,16 @@ CSRF_FAILURE_VIEW = 'services.accounts.views.csrf_failure_handler'
 
 # ### this parameter links __my__ UserProfile with the User from contrib.auth
 AUTH_PROFILE_MODULE = 'services.accounts.UserProfile'
+
+################################################################################
+####################################################################### SESSIONS
+################################################################################
+# ### Session engine changed: user_sessions improvement
+SESSION_ENGINE = 'user_sessions.backends.db'
 # ### this parameter provokes that a user has to re-log-in every time the
 # browser is closed
 # value required to be True bye django-session-security
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-
 # ### django-session-security
 SESSION_SECURITY_WARN_AFTER = 450
 SESSION_SECURITY_EXPIRE_AFTER = 600
@@ -342,6 +349,9 @@ SESSION_SECURITY_EXPIRE_AFTER = 600
 # restarted
 # SESSION_SECURITY_PASSIVE_URLS = 
 
+################################################################################
+########################################################################## EMAIL
+################################################################################
 EMAIL_BACKEND = email.EMAIL_BACKEND
 EMAIL_HOST = email.EMAIL_HOST
 EMAIL_PORT = email.EMAIL_PORT
@@ -365,3 +375,6 @@ RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 # Django south not running during UNIT tests:
 # SOUTH_TESTS_MIGRATE = False # To disable migrations and use syncdb instead
 # SKIP_SOUTH_TESTS = True # To disable South's own unit tests
+
+# ### SATNET specific settings
+JRPC_PERMISSIONS = False

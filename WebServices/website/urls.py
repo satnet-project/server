@@ -104,6 +104,7 @@ urlpatterns = urls.patterns(
         r'session_security/',
         urls.include('session_security.urls')
     ),
+    urls.url(r'', urls.include('user_sessions.urls', 'user_sessions')),
     # ### django admin
     urls.url(
         r'^admin/',
