@@ -1952,7 +1952,9 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
     function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
+        $scope.is_anonymous = $rootScope.is_anonymous;
         $scope.ufoIds = [];
+
         $scope.openManageCluster = function () {
             var modalInstance = $modal.open({
                 templateUrl: 'templates/leop/manageCluster.html',
@@ -2521,6 +2523,7 @@ angular.module('ui-leop-modalufo-controllers')
         ) {
             'use strict';
 
+            $scope.is_anonymous = $rootScope.is_anonymous;
             $scope.cluster = {};
 
             $scope._init = function (data) {
@@ -2588,6 +2591,7 @@ angular.module('ui-leop-modalufo-controllers')
             };
 
             $scope._addEditingUfo = function (object_id) {
+                if ($scope.is_anonymous) { return; }
                 $scope.cluster.editing[object_id] = {
                     object_id: object_id,
                     sc_identifier: '',
@@ -2686,6 +2690,7 @@ angular.module('ui-leop-modalufo-controllers')
             };
 
             $scope.editingIded = function (object_id) {
+                if ($scope.is_anonymous) { return; }
                 var object = $scope._getIdentified(object_id);
                 $scope._addEditingIded(object_id, object);
                 $scope._removeIdentified(object_id);
@@ -3004,9 +3009,11 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
 ]);
 
 angular.module('ui-menu-controllers').controller('ExitMenuCtrl', [
-    '$scope', '$log',
-    function ($scope, $log) {
+    '$rootScope', '$scope', '$log',
+    function ($rootScope, $scope, $log) {
         'use strict';
+
+        $scope.is_anonymous = $rootScope.is_anonymous;
         $scope.home = function () {
             $log.info('Exiting...');
         };
@@ -3968,6 +3975,7 @@ app.run([
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.leop_id = $window.leop_id;
+        $rootScope.is_anonymous = ($window.is_anonymous === 'True');
 
     }
 ]);

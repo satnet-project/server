@@ -130,6 +130,7 @@ app.run([
         $log.setScope($rootScope);
         $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
         $rootScope.leop_id = $window.leop_id;
+        $rootScope.is_anonymous = ($window.is_anonymous === 'True');
 
     }
 ]);

@@ -375,6 +375,7 @@ angular.module('ui-leop-modalufo-controllers')
         ) {
             'use strict';
 
+            $scope.is_anonymous = $rootScope.is_anonymous;
             $scope.cluster = {};
 
             $scope._init = function (data) {
@@ -442,6 +443,7 @@ angular.module('ui-leop-modalufo-controllers')
             };
 
             $scope._addEditingUfo = function (object_id) {
+                if ($scope.is_anonymous) { return; }
                 $scope.cluster.editing[object_id] = {
                     object_id: object_id,
                     sc_identifier: '',
@@ -540,6 +542,7 @@ angular.module('ui-leop-modalufo-controllers')
             };
 
             $scope.editingIded = function (object_id) {
+                if ($scope.is_anonymous) { return; }
                 var object = $scope._getIdentified(object_id);
                 $scope._addEditingIded(object_id, object);
                 $scope._removeIdentified(object_id);

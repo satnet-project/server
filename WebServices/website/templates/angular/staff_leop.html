@@ -46,7 +46,9 @@
 
 <div class='left-menu'>
 
-    <div class='btn-group my-exit-btn-grp' ng-controller="ExitMenuCtrl">
+    <div class='btn-group my-exit-btn-grp'
+         ng-controller="ExitMenuCtrl"
+         ng-hide="is_anonymous">
         <button type='button' class='btn btn-primary my-exit-btn'
                 onclick="location.href='/'"  ng-click="home()">
             <a style="color: white;">(exit)</a>
@@ -71,7 +73,9 @@
             <a class='my-menu-item' href='#' ng-click="panToGS(g)">{{ g }}</a>
         </li>
         <li class='divider'></li>
-        <li><a href='#' ng-click="addGroundStation()">manage</a></li>
+        <li><a href='#'
+               ng-click="addGroundStation()">manage
+        </a></li>
     </ul>
 </div>
 

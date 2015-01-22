@@ -63,7 +63,8 @@
                  ng-hide="cluster.edit">
                 <div style='display: table-cell'>
                     <a class='green-link link action-link'
-                       ng-click="editCluster()">(edit)</a>
+                       ng-click="editCluster()"
+                       ng-hide="is_anonymous">(edit)</a>
                 </div>
             </div>
             <div style='display: table-row'
@@ -97,7 +98,7 @@
             <div style='display: table-row'>
                 <div style='display: table-cell; font-size: 75%'>
                     <a class='green-link'
-                       ng-show="cluster.no_ufos < cluster.max_objects"
+                       ng-show="(cluster.no_ufos < cluster.max_objects) && (!is_anonymous)"
                        ng-click="add()">(+ add)</a>
                     <a class='red-link'
                        ng-hide="(cluster.no_ufos < cluster.max_objects)">
@@ -105,7 +106,9 @@
                     </a>
                 </div>
                 <div ng-show="cluster.no_ufos > 0">
-                    <a class='red-link action-link' ng-click="remove()">(- del)
+                    <a class='red-link action-link'
+                       ng-hide="is_anonymous"
+                       ng-click="remove()">(- del)
                     </a>
                 </div>
             </div>
@@ -203,6 +206,7 @@
                         <div style='display: table-row'>
                             <div style='display: table-cell; width: 50px'>
                                 <a class='red-link link action-link'
+                                   ng-hide="is_anonymous"
                                    ng-click="forget(i.object_id)">(forget)</a>
                             </div>
                             <div style='display: table-cell; vertical-align: middle'>

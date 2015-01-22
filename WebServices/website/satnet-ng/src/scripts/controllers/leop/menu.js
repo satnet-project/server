@@ -70,7 +70,9 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
     function ($rootScope, $scope, $log, $modal, satnetRPC, markers) {
         'use strict';
 
+        $scope.is_anonymous = $rootScope.is_anonymous;
         $scope.ufoIds = [];
+
         $scope.openManageCluster = function () {
             var modalInstance = $modal.open({
                 templateUrl: 'templates/leop/manageCluster.html',

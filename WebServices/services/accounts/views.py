@@ -110,7 +110,7 @@ class PendingRegView(ListView):
     model = models.UserProfile
     template_name = 'staff/registration_requests.html'
     queryset = models.UserProfile.objects.\
-        filter(verified=False).\
+        filter(is_verified=False).\
         filter(blocked=False)
     context_object_name = 'user_list'
 
@@ -225,7 +225,7 @@ class VerifiedView(PendingRegView):
     template_name = 'staff/verified_requests.html'
     queryset = models.UserProfile.objects.\
         filter(is_active=True).\
-        filter(verified=True).\
+        filter(is_verified=True).\
         filter(blocked=False)
 
     def deactivate_user(self, user_id):
@@ -249,7 +249,7 @@ class InactiveView(PendingRegView):
     template_name = 'staff/inactive_users.html'
     queryset = models.UserProfile.objects.\
         filter(is_active=False).\
-        filter(verified=True).\
+        filter(is_verified=True).\
         filter(blocked=False)
 
     def activate_user(self, user_id):

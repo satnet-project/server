@@ -100,9 +100,11 @@ angular.module('ui-menu-controllers').controller('SCMenuCtrl', [
 ]);
 
 angular.module('ui-menu-controllers').controller('ExitMenuCtrl', [
-    '$scope', '$log',
-    function ($scope, $log) {
+    '$rootScope', '$scope', '$log',
+    function ($rootScope, $scope, $log) {
         'use strict';
+
+        $scope.is_anonymous = $rootScope.is_anonymous;
         $scope.home = function () {
             $log.info('Exiting...');
         };

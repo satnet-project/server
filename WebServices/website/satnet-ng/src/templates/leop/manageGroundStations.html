@@ -14,11 +14,11 @@
         </div>
         <div style='width: 10px; display: table-cell; margin-top: 50px;'>
             <button id='a2u' class='btn'
-                    ng-disabled="!gsIds.aItems.length"
+                    ng-disabled="!gsIds.aItems.length || is_anonymous"
                     ng-click="selectGs()">&gt;
             </button>
             <button id='u2a' class='btn'
-                    ng-disabled="!gsIds.uItems.length"
+                    ng-disabled="!gsIds.uItems.length || is_anonymous"
                     ng-click="unselectGs()">&lt;
             </button>
         </div>
@@ -34,10 +34,7 @@
 </div>
 
 <div class='modal-footer'>
-    <button class='btn btn-primary'
-            ng-click="ok()">
-        <!--ng-disabled="!gsIds.toAdd || !gsIds.toRemove">-->
-        (ok)
-    </button>
+    <button class='btn btn-primary' ng-click="ok()"
+            ng-disabled="is_anonymous">(ok)</button>
     <button class='btn btn-warning' ng-click="cancel()">(cancel)</button>
 </div>

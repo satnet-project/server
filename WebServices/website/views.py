@@ -32,13 +32,11 @@ def redirect_leop(request, identifier):
     """Redirect method.
     Redirects staff either to the LEOP interface or to the login page.
     """
-    user, is_anonymous = accounts_backend.authenticate_anonymous(request)
-    print '@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@'
-    print '>>>>> is_anonymous = ' + str(is_anonymous)
+    user_profile = accounts_backend.authenticate_anonymous(request)
     return django_response.TemplateResponse(
         request, 'angular/staff_leop.html',
         {
             'leop_id': identifier,
-            'is_anonymous': is_anonymous
+            'is_anonymous': user_profile.anonymous
         }
     )

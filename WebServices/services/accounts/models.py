@@ -39,7 +39,7 @@ class UserProfileManager(models.Manager):
         Creates a profile for an anonymous user.
         :return: Reference to the just-created profile
         """
-        profile = super(UserProfileManager, self).create(
+        profile = self.create(
             username=account_utils.generate_random_username(),
             first_name='Anonymous', last_name='User', is_active=True,
             anonymous=True, country='US', organization='SATNET'
@@ -61,7 +61,7 @@ class UserProfileManager(models.Manager):
             None
         """
         user = get_object_or_404(UserProfile, user_ptr=user_id)
-        user.verified = True
+        user.is_verified = True
         user.save()
 
         allauth_adapter.get_adapter().send_mail(
@@ -180,7 +180,7 @@ class UserProfile(auth_models.User):
     # Country of origin of the organization that the user belongs to.
     country = CountryField()
 
-    verified = models.BooleanField(
+    is_verified = models.BooleanField(
         'Flag that sets this user profile as verified',
         default=False
     )

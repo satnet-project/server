@@ -23,12 +23,14 @@ from services.accounts import models as account_models
 def authenticate_anonymous(request):
     # do we have an existing user?
     if request.user.is_authenticated():
-        return request.user, False
+        return account_models.UserProfile.objects.get(
+            username=request.user.username
+        )
     else:
         anonymous_u = account_models.UserProfile.objects.create_anonymous()
         django_auth.authenticate(user=anonymous_u)
         django_auth.login(request, anonymous_u)
-        return anonymous_u, True
+        return anonymous_u
 
 
 class AnonymousAuthenticationBackend(object):
