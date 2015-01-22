@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
-from services.network import models as network_models
+import logging
+from services.network.models import server as server_models
 
 
 class NetworkModels(test.TestCase):
@@ -24,8 +25,10 @@ class NetworkModels(test.TestCase):
     def setUp(self):
         """Test database setup.
         """
-        pass
+        self.__verbose_testing = False
+        if not self.__verbose_testing:
+            logging.getLogger('network').setLevel(level=logging.CRITICAL)
 
     def test_load_server(self):
 
-        network_models.ServerManager().load_local_server()
+        server_models.Server.objects.load_local_server()

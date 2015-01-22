@@ -32,6 +32,7 @@ from services.leop.jrpc.views import messages as messages_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.leop.jrpc.serializers import messages as messages_serial
 from services.simulation.models import groundtracks as simulation_models
+from website import settings as satnet_settings
 
 
 class TestLaunchViews(test.TestCase):
@@ -43,6 +44,7 @@ class TestLaunchViews(test.TestCase):
         """
 
         self.__verbose_testing = False
+        satnet_settings.JRPC_PERMISSIONS = True
 
         self.__user = db_tools.create_user_profile()
         self.__request_1 = db_tools.create_request(user_profile=self.__user)
@@ -105,6 +107,7 @@ class TestLaunchViews(test.TestCase):
         Checks the functioning of the JRPC method that returns the list of
         GroundStations available for the administrator to create a LEOP system.
         """
+
         # Permissions basic test, no request, no permission
         try:
             launch_jrpc.list_groundstations('FAKE_ID', **{'request': None})

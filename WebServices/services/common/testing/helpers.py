@@ -68,7 +68,7 @@ def create_user_profile(
             first_name=first_name, last_name=last_name,
             email=email,
             organization=organization, country=country,
-            is_active=False, is_verified=False, is_blocked=False,
+            is_active=False, is_verified=False, blocked=False,
             is_staff=is_staff
         )
 
@@ -114,7 +114,6 @@ def create_sc(
         if not user_profile:
             user_profile = create_user_profile(username=username)
     except IntegrityError:
-        print 'User already exists, getting a reference to it...'
         user_profile = UserProfile.objects.get(username=username)
 
     return segments.Spacecraft.objects.create(
@@ -170,7 +169,6 @@ def create_launch(
         if not admin:
             admin = create_user_profile(username=username)
     except IntegrityError:
-        print 'User already exists, getting a reference to it...'
         admin = UserProfile.objects.get(username=username)
 
     if not date:
