@@ -39,13 +39,13 @@ def gs_added_or_updated_handler(sender, instance, created, raw, **kwargs):
 
     if created:
         satnet_push.PushService().trigger_event(
-            satnet_push.PushService.EVENTS_CHANNEL,
+            satnet_push.PushService.CONFIGURATION_EVENTS_CHANNEL,
             satnet_push.PushService.GS_ADDED_EVENT,
             {'identifier': instance.identifier}
         )
     else:
         satnet_push.PushService().trigger_event(
-            satnet_push.PushService.EVENTS_CHANNEL,
+            satnet_push.PushService.CONFIGURATION_EVENTS_CHANNEL,
             satnet_push.PushService.GS_UPDATED_EVENT,
             {'identifier': instance.identifier}
         )
@@ -63,7 +63,7 @@ def gs_removed_handler(sender, instance, **kwargs):
     :param kwargs: Additional parameters
     """
     satnet_push.PushService().trigger_event(
-        satnet_push.PushService.EVENTS_CHANNEL,
+        satnet_push.PushService.CONFIGURATION_EVENTS_CHANNEL,
         satnet_push.PushService.GS_REMOVED_EVENT,
         {'identifier': instance.identifier}
     )

@@ -35,9 +35,8 @@ class CommunicationsPush(object):
         same frames that were received by the server.
         :param message: PassiveMessage object as read from the database
         """
-        logger.info('PUSH frame event invoked!')
         push_service.PushService().trigger_event(
-            push_service.PushService.DOWNLINK_CHANNEL,
+            push_service.PushService.LEOP_DOWNLINK_CHANNEL,
             push_service.PushService.FRAME_EVENT,
             message_serializers.serialize_push_frame(message)
         )

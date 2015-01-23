@@ -21,7 +21,8 @@ import datetime
 import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.configuration import periodictasks, signals
+from services.configuration import periodictasks
+from services.configuration.signals import models as model_signals
 from services.configuration.models import availability
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.scheduling.models import operational
@@ -46,10 +47,10 @@ class TestSlotPropagation(test.TestCase):
         self.__sc_1_ch_1_id = 'xatco-fm-1'
         self.__sc_1_ch_1_f = 437000000
 
-        signals.connect_availability_2_operational()
-        signals.connect_channels_2_compatibility()
-        signals.connect_compatibility_2_operational()
-        signals.connect_rules_2_availability()
+        model_signals.connect_availability_2_operational()
+        model_signals.connect_channels_2_compatibility()
+        model_signals.connect_compatibility_2_operational()
+        model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()

@@ -21,7 +21,7 @@ import logging
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
-from services.configuration import signals as configuration_signals
+from services.configuration.signals import models as cfg_models_signals
 from services.leop import utils as leop_utils
 from services.leop.models import ufos as ufo_models
 
@@ -346,7 +346,7 @@ class Launch(django_models.Model):
         if tle_l1 and tle_l2:
             if self.tle.first_line != tle_l1 or self.tle.second_line != tle_l2:
 
-                configuration_signals.update_tle_signal.send(
+                cfg_models_signals.update_tle_signal.send(
                     sender=self, identifier=self.tle.identifier,
                     tle_l1=tle_l1, tle_l2=tle_l2
                 )

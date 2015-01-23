@@ -22,7 +22,7 @@ import logging
 
 from services.common.testing import helpers as db_tools
 from services.common import misc, simulation
-from services.configuration import signals
+from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import availability, rules
 
@@ -40,7 +40,7 @@ class TestRules(test.TestCase):
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
 
-        signals.connect_rules_2_availability()
+        model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()

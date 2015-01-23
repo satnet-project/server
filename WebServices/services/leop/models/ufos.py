@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models as django_models
-from services.configuration import signals as configuration_signals
+from services.configuration.signals import models as cfg_models_signals
 from services.configuration.models import segments as segment_models
 from services.leop import utils as leop_utils
 
@@ -81,7 +81,7 @@ class IdentifiedObjectsManager(django_models.Manager):
             if ufo.spacecraft.tle.first_line != tle_l1 or\
                     ufo.spacecraft.tle.second_line != tle_l2:
 
-                configuration_signals.update_tle_signal.send(
+                cfg_models_signals.update_tle_signal.send(
                     sender=ufo,
                     identifier=ufo.spacecraft.tle.identifier,
                     tle_l1=tle_l1,

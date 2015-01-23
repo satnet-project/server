@@ -35,13 +35,13 @@ angular.module('pushServices').service('satnetPush', [
         this._service = null;
 
         // Names of the channels for subscription
-        this.DOWNLINK_CHANNEL = 'downlink';
+        this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
         this.EVENTS_CHANNEL = 'events';
         // List of events that an application can get bound to.
-        this.FRAME_EVENT = '+frame';
-        this.GS_ADDED_EVENT = '+gs';
-        this.GS_REMOVED_EVENT = '-gs';
-        this.GS_UPDATED_EVENT = '*gs';
+        this.FRAME_EVENT = 'frameEv';
+        this.GS_ADDED_EVENT = 'gsAddedEv';
+        this.GS_REMOVED_EVENT = 'gsRemovedEv';
+        this.GS_UPDATED_EVENT = 'gsUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
