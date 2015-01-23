@@ -35,11 +35,11 @@ var app = angular.module('leop-ui', [
     'gantt.tooltips',
     'pusher-angular',
     // level 1 services
+    'pushServices',
     'broadcaster',
     'map-services',
     'celestrak-services',
     'satnet-services',
-    'pushServices',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -60,11 +60,11 @@ var app = angular.module('leop-ui', [
 ]);
 
 // level 1 services
+angular.module('pushServices');
 angular.module('broadcaster');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
-angular.module('pushServices');
 // level 2 services (bussiness logic layer)
 angular.module('marker-models');
 // level 3 services

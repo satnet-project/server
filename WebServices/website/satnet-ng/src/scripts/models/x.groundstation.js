@@ -18,8 +18,10 @@
 
 /** Module definition . */
 angular.module('x-groundstation-models', [
+    'pushServices',
     'broadcaster',
     'satnet-services',
+    'pushServices',
     'marker-models'
 ]);
 
@@ -28,8 +30,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
-    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
+    '$rootScope', '$q', 'satnetPush', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, satnetPush, broadcaster, satnetRPC, markers) {
         'use strict';
 
         /**
@@ -128,6 +130,9 @@ angular.module('x-groundstation-models').service('xgs', [
                 );
                 self.updateGS(id);
             });
+            satnetPush.bindGSAdded(broadcaster.gsAddedPusher);
+            satnetPush.bindGSUpdated(broadcaster.gsUpdatedPusher);
+            satnetPush.bindGSRemoved(broadcaster.gsRemovedPusher);
         };
 
     }

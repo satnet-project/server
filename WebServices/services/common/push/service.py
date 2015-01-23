@@ -34,7 +34,10 @@ class PushService(object):
     ]
 
     TEST_EVENT = 'my_event'
-    FRAME_EVENT = 'frame'
+    FRAME_EVENT = '+frame'
+    GS_ADDED_EVENT = '+gs'
+    GS_REMOVED_EVENT = '-gs'
+    GS_UPDATED_EVENT = '*gs'
 
     # The puser object.
     _service = None

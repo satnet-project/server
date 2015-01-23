@@ -22,6 +22,7 @@
  */
 var app = angular.module('satnet-ui', [
     // AngularJS libraries
+    'pushServices',
     'jsonrpc',
     'ngCookies',
     'ngResource',
@@ -29,6 +30,7 @@ var app = angular.module('satnet-ui', [
     'remoteValidation',
     'nya.bootstrap.select',
     'ngIdle',
+    'pusher-angular',
     // level 1 services/models
     'broadcaster',
     'map-services',
@@ -51,6 +53,7 @@ var app = angular.module('satnet-ui', [
 ]);
 
 // level 1 services
+angular.module('pushServices');
 angular.module('broadcaster');
 angular.module('map-services');
 angular.module('satnet-services');

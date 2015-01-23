@@ -59,6 +59,16 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
+        this.gsAddedPusher = function (id_object) {
+            this.gsAdded(id_object.identifier);
+        };
+        this.gsRemovedPusher = function (id_object) {
+            this.gsRemoved(id_object.identifier);
+        };
+        this.gsUpdatedPusher = function (id_object) {
+            this.gsUpdated(id_object.identifier);
+        };
+
         this.SC_ADDED_EVENT = 'sc.added';
         this.SC_REMOVED_EVENT = 'sc.removed';
         this.SC_UPDATED_EVENT = 'sc.updated';

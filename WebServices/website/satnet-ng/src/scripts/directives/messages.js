@@ -90,11 +90,7 @@ angular.module('messagesDirective', [
                         );
                     });
 
-                satnetPush.bind(
-                    satnetPush.DOWNLINK_CHANNEL,
-                    satnetPush.FRAME_EVENT,
-                    $scope._pushMessage
-                );
+                satnetPush.bindFrameReceived($scope._pushMessage);
 
             };
 

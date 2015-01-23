@@ -24,7 +24,7 @@ logger = logging.getLogger('leop')
 class CommunicationsPush(object):
     """Push service
     Object that contains a set of static but convenient methods that facilitate
-    the usase of the remote PUSH services.
+    the usage of the remote PUSH services.
     """
 
     @staticmethod

@@ -40,6 +40,7 @@ module.exports = function (grunt) {
             },
             main: {
                 src: [
+                    'src/scripts/services/push.js',
                     'src/scripts/services/celestrak.js',
                     'src/scripts/services/broadcaster.js',
                     'src/scripts/services/satnet.js',

@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.db import models as django_models
 import logging
 from services.accounts.models import UserProfile
-from user_sessions import models as usession_models
 
 logger = logging.getLogger('network')
 
@@ -52,7 +51,7 @@ class Client(django_models.Model):
         UserProfile,
         verbose_name='Reference to the profile of the user'
     )
-    session = django_models.ForeignKey(
-      usession_models.Session,
-      verbose_name='Reference to the session of the user'
+    is_sw_client = django_models.BooleanField(
+        'Defines whether this client is a remote software application or not',
+        default=False
     )

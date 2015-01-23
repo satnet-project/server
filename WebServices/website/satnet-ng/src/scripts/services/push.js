@@ -24,7 +24,7 @@ angular.module('pushServices', []);
  * through JSON RPC. It defines a common error handler for all the errors that
  * can be overriden by users.
  */
-angular.module('satnet-services').service('satnetPush', [
+angular.module('pushServices').service('satnetPush', [
     '$log', '$pusher',
     function ($log, $pusher) {
         'use strict';
@@ -38,7 +38,10 @@ angular.module('satnet-services').service('satnetPush', [
         this.DOWNLINK_CHANNEL = 'downlink';
         this.EVENTS_CHANNEL = 'events';
         // List of events that an application can get bound to.
-        this.FRAME_EVENT = 'frame';
+        this.FRAME_EVENT = '+frame';
+        this.GS_ADDED_EVENT = '+gs';
+        this.GS_REMOVED_EVENT = '-gs';
+        this.GS_UPDATED_EVENT = '*gs';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
@@ -53,7 +56,7 @@ angular.module('satnet-services').service('satnetPush', [
          */
         this._init = function () {
 
-            this._client = new Pusher(this._API_KEY);
+            this._client = new Pusher(this._API_KEY, { encrypted: true });
             this._service = $pusher(this._client);
             this._service.connection.bind('state_change', this._logConnection);
             $log.info('[push] pusher.com service initialized!');
@@ -100,6 +103,35 @@ angular.module('satnet-services').service('satnetPush', [
                 throw 'Not subscribed to this channel, name = ' + channel_name;
             }
             this._service.channel(channel_name).bind(event_name, callback_fn);
+        };
+
+        /**
+         * Binds the given callback function to the reception of any event
+         * frames on the downlink channel.
+         * @param callback_fn Callback function to be bound
+         */
+        this.bindFrameReceived = function (callback_fn) {
+            this.bind(this.DOWNLINK_CHANNEL, this.FRAME_EVENT, callback_fn);
+        };
+
+        /**
+         * Binds a callback function to the event with the name provided and
+         * triggered through the specific events channel.
+         * @param name Name of the event
+         * @param callback_fn Callback function
+         */
+        this.bindEvent = function (name, callback_fn) {
+            this.bind(this.EVENTS_CHANNEL, name, callback_fn);
+        };
+
+        this.bindGSAdded = function (callback_fn) {
+            this.bindEvent(this.GS_ADDED_EVENT, callback_fn);
+        };
+        this.bindGSRemoved = function (callback_fn) {
+            this.bindEvent(this.GS_REMOVED_EVENT, callback_fn);
+        };
+        this.bindGSUpdated = function (callback_fn) {
+            this.bindEvent(this.GS_UPDATED_EVENT, callback_fn);
         };
 
         this._init();

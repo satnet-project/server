@@ -50,6 +50,5 @@ def logged_in_receiver(sender, request, user, **kwargs):
     :param kwargs: Additional arguments
     """
     client_models.Client.objects.get_or_create(
-        user=account_models.UserProfile.objects.get(username=user.username),
-        session_id = request.session.session_key
+        user=account_models.UserProfile.objects.get(username=user.username)
     )
