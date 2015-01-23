@@ -15,8 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
 import pusher
 from website import settings as satnet_cfg
+
+logger = logging.getLogger('common')
 
 
 class PushService(object):
@@ -25,19 +28,19 @@ class PushService(object):
     pusher.com webservice.
     """
     TEST_CHANNEL = 'test_channel'
-    DOWNLINK_CHANNEL = 'downlink'
-    EVENTS_CHANNEL = 'events'
+    CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
+    LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
     SATNET_CHANNELS = [
         TEST_CHANNEL,
-        DOWNLINK_CHANNEL,
-        EVENTS_CHANNEL
+        LEOP_DOWNLINK_CHANNEL,
+        CONFIGURATION_EVENTS_CHANNEL
     ]
 
     TEST_EVENT = 'my_event'
-    FRAME_EVENT = '+frame'
-    GS_ADDED_EVENT = '+gs'
-    GS_REMOVED_EVENT = '-gs'
-    GS_UPDATED_EVENT = '*gs'
+    FRAME_EVENT = 'frameEv'
+    GS_ADDED_EVENT = 'gsAddedEv'
+    GS_REMOVED_EVENT = 'gsRemovedEv'
+    GS_UPDATED_EVENT = 'gsUpdatedEv'
 
     # The puser object.
     _service = None
@@ -118,5 +121,11 @@ class PushService(object):
             raise Exception(
                 'Channel does not exist, name = ' + str(channel_name)
             )
+
+        logger.info(
+            '[push] channel = <' + str(channel_name) +
+            '>, event = <' + str(event_name) +
+            '>, data = <' + str(data) + '>'
+        )
 
         self._channels[channel_name].trigger(event_name, data)

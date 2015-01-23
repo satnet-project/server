@@ -56,13 +56,9 @@ class TestPassiveCommunications(TestCase):
         # Invoking the JRPC method should provoke the creation of a new element
         # in the passive messages table that should trigger the transmission of
         # the element itself through the push service.
-        self.assertEquals(
-            comms_jrpc.store_passive_message(
-                groundstation_id=self.__gs_1_id,
-                timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
-                doppler_shift=0.0,
-                message=self.__short_message
-            ),
-            1,
-            'Message ID expected to be 1'
+        comms_jrpc.store_passive_message(
+            groundstation_id=self.__gs_1_id,
+            timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
+            doppler_shift=0.0,
+            message=self.__short_message
         )

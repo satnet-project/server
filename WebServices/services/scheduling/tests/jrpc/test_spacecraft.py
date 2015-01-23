@@ -24,7 +24,7 @@ import logging
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.configuration import signals
+from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers\
     import serialization as jrpc_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs
@@ -80,10 +80,10 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        signals.connect_availability_2_operational()
-        signals.connect_channels_2_compatibility()
-        signals.connect_compatibility_2_operational()
-        signals.connect_rules_2_availability()
+        model_signals.connect_availability_2_operational()
+        model_signals.connect_channels_2_compatibility()
+        model_signals.connect_compatibility_2_operational()
+        model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()

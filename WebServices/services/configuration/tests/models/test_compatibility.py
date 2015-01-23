@@ -19,7 +19,7 @@ from django import test
 import logging
 
 from services.common.testing import helpers as db_tools
-from services.configuration import signals
+from services.configuration.signals import models as model_signals
 from services.configuration.models import bands, compatibility
 
 
@@ -57,7 +57,7 @@ class SegmentCompatibilityTest(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        signals.connect_channels_2_compatibility()
+        model_signals.connect_channels_2_compatibility()
 
     def test_compatibility_case_1(self):
         """
