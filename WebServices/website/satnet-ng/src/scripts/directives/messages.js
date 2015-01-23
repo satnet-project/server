@@ -15,12 +15,20 @@
 */
 
 angular.module('messagesDirective', [
-    'satnet-services', 'ui-leop-modalufo-controllers'
+    'satnet-services', 'pushServices', 'ui-leop-modalufo-controllers'
 ])
     .constant('MAX_MESSAGES', 20)
     .controller('messagesCtrl', [
-        '$rootScope', '$scope', 'satnetRPC', 'oArrays', 'MAX_MESSAGES',
-        function ($rootScope, $scope, satnetRPC, oArrays, MAX_MESSAGES) {
+        '$rootScope', '$scope',
+        'satnetRPC', 'satnetPush', 'oArrays', 'MAX_MESSAGES',
+        function (
+            $rootScope,
+            $scope,
+            satnetRPC,
+            satnetPush,
+            oArrays,
+            MAX_MESSAGES
+        ) {
             'use strict';
 
             $scope.data = [];
@@ -37,6 +45,10 @@ angular.module('messagesDirective', [
                 if ($scope.data.length === MAX_MESSAGES) {
                     $scope.data.splice(0, 1);
                 }
+                console.log(
+                    '[messages] Message pushed, message = ' +
+                        JSON.stringify(message)
+                );
                 oArrays.insertSorted($scope.data, 'timestamp', message);
             };
 
@@ -77,6 +89,12 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
+
+                satnetPush.bind(
+                    satnetPush.DOWNLINK_CHANNEL,
+                    satnetPush.FRAME_EVENT,
+                    $scope._pushMessage
+                );
 
             };
 

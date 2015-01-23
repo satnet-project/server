@@ -3458,12 +3458,20 @@ angular.module('countdownDirective', [ 'satnet-services' ])
 */
 
 angular.module('messagesDirective', [
-    'satnet-services', 'ui-leop-modalufo-controllers'
+    'satnet-services', 'pushServices', 'ui-leop-modalufo-controllers'
 ])
     .constant('MAX_MESSAGES', 20)
     .controller('messagesCtrl', [
-        '$rootScope', '$scope', 'satnetRPC', 'oArrays', 'MAX_MESSAGES',
-        function ($rootScope, $scope, satnetRPC, oArrays, MAX_MESSAGES) {
+        '$rootScope', '$scope',
+        'satnetRPC', 'satnetPush', 'oArrays', 'MAX_MESSAGES',
+        function (
+            $rootScope,
+            $scope,
+            satnetRPC,
+            satnetPush,
+            oArrays,
+            MAX_MESSAGES
+        ) {
             'use strict';
 
             $scope.data = [];
@@ -3480,6 +3488,10 @@ angular.module('messagesDirective', [
                 if ($scope.data.length === MAX_MESSAGES) {
                     $scope.data.splice(0, 1);
                 }
+                console.log(
+                    '[messages] Message pushed, message = ' +
+                        JSON.stringify(message)
+                );
                 oArrays.insertSorted($scope.data, 'timestamp', message);
             };
 
@@ -3520,6 +3532,12 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
+
+                satnetPush.bind(
+                    satnetPush.DOWNLINK_CHANNEL,
+                    satnetPush.FRAME_EVENT,
+                    $scope._pushMessage
+                );
 
             };
 
@@ -3878,11 +3896,13 @@ var app = angular.module('leop-ui', [
     'gantt.labels',
     'gantt.movable',
     'gantt.tooltips',
+    'pusher-angular',
     // level 1 services
     'broadcaster',
     'map-services',
     'celestrak-services',
     'satnet-services',
+    'pushServices',
     // level 2 services/models
     'marker-models',
     // level 3 services/models
@@ -3907,6 +3927,7 @@ angular.module('broadcaster');
 angular.module('map-services');
 angular.module('celestrak-services');
 angular.module('satnet-services');
+angular.module('pushServices');
 // level 2 services (bussiness logic layer)
 angular.module('marker-models');
 // level 3 services
