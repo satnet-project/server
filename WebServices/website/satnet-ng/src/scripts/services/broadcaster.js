@@ -60,6 +60,9 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
         };
 
         this.gsAddedPusher = function (id_object) {
+            console.log(
+                '[broadcaster] id_object = ' + JSON.stringify(id_object)
+            );
             this.gsAdded(id_object.identifier);
         };
         this.gsRemovedPusher = function (id_object) {
