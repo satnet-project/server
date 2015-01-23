@@ -48,7 +48,8 @@ def get_messages(launch_id, start):
     launch = launch_models.Launch.objects.get(identifier=launch_id)
     launch_gss = launch.groundstations.all()
 
-    start_dt = pytz.utc.localize(dt_parser.parse(start))
+    # start_dt = pytz.utc.localize(dt_parser.parse(start))
+    start_dt = dt_parser.parse(start).astimezone(pytz.utc)
     end_dt = misc.get_now_utc()
     start_ts = misc.get_utc_timestamp(start_dt)
     end_ts = misc.get_utc_timestamp(end_dt)

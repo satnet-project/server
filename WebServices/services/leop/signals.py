@@ -15,12 +15,14 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db.models import signals as django_signals
 from django import dispatch as django_dispatch
+from django.db.models import signals as django_signals
 import logging
+from services.communications import models as comms_models
+from services.leop import push as leop_push
 from services.leop.models import launch as launch_models
 
-logger = logging.getLogger('simulation')
+logger = logging.getLogger('leop')
 
 
 @django_dispatch.receiver(
@@ -42,3 +44,21 @@ def launch_deleted_handler(sender, instance, **kwargs):
             '@pre-delete (SIGNAL): No TLE associated with launch, id = ' +
                 str(instance.identifier)
         )
+
+
+@django_dispatch.receiver(
+    django_signals.post_save, sender=comms_models.PassiveMessage
+)
+def message_received_handler(sender, instance, created, raw, **kwargs):
+    """
+    Handler that feeds the received messages to the clients connected through
+    the push suscription services.
+    :param instance: Instance of the new message received
+    :param created: Flag that marks whether this objects has just been created
+    :param raw: Flag that marks whether this object is stable or not
+    :param kwargs: Additional parameters
+    """
+    if not created or raw:
+        return
+
+    leop_push.CommunicationsPush.trigger_received_frame_event(instance)

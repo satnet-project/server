@@ -281,6 +281,16 @@ create_secrets()
     echo "EMAIL_HOST_USER='XXXXXX@gmail.com'" >> $webservices_secrets_email
     echo "EMAIL_HOST_PASSWORD='XXXXXXXX'" >> $webservices_secrets_email
     echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email
+    
+    echo ">>> Generating pusher.com configuration file..."
+    echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
+    echo 'Press any key to continue...'
+    read
+
+    echo "PUSHER_APP_ID = '12345'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+
 }
 
 # ### Method that configures a given root with the virtualenvirment required,
@@ -428,6 +438,7 @@ webservices_secrets_init="$webservices_secrets_dir/__init__.py"
 webservices_secrets_auth="$webservices_secrets_dir/auth.py"
 webservices_secrets_database="$webservices_secrets_dir/database.py"
 webservices_secrets_email="$webservices_secrets_dir/email.py"
+webservices_secrets_pusher="$webservices_secrets_dir/pusher.py"
 webservices_venv_dir="$webservices_dir/.venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"

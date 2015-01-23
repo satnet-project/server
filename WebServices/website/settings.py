@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import os
 import sys
-from secrets import auth, database, email
+from secrets import auth, database, email, pusher
 
 
 # Django website for WebServices project.
@@ -378,3 +378,8 @@ RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 
 # ### SATNET specific settings
 JRPC_PERMISSIONS = False
+
+# ### pusher.com configuration
+PUSHER_APP_ID = pusher.PUSHER_APP_ID
+PUSHER_APP_KEY = pusher.PUSHER_APP_KEY
+PUSHER_APP_SECRET = pusher.PUSHER_APP_SECRET

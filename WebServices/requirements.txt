@@ -1,6 +1,5 @@
 Django==1.6.5
 Markdown==2.5.1
-South==1.0.2
 Twisted==14.0.0
 argparse==1.2.1
 cffi==0.8.6
@@ -28,6 +27,9 @@ django-user-sessions==1.1.0
 djangorestframework==2.4.3
 djorm-pgarray==1.1
 eventlog==0.8.0
+geoip2==2.1.0
+ipaddr==2.1.11
+maxminddb==1.1.1
 numpy==1.9.1
 oauthlib==0.6.3
 psycopg2==2.5.3

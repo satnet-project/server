@@ -235,7 +235,7 @@ a.button-red {
 
 .my-dd-btn, .my-exit-btn {
   background: black;
-  border-radius: 5px;
+  border-radius: 0;
   border-color: black;
   opacity: 0.8; }
 
@@ -246,7 +246,7 @@ a.button-red {
   font-weight: bolder;
   vertical-align: middle;
   padding: 15px 5px 5px 5px;
-  top: -5px;
+  top: -15px;
   opacity: 0.8; }
 
 .my-rotated-menu {
@@ -278,17 +278,16 @@ a.button-red {
   float: right;
   width: 250px; }
 
-.base-area, .gs-area, .sc-area, .n-area, .passes-area, .messages-area {
+.base-area, .gs-area, .sc-area, .n-area, .countdown, .passes-area, .messages-area {
   opacity: 0.8;
   line-height: 40px;
-  border-radius: 5px;
   background-color: black;
   font-size: 10pt;
   color: #A6A6A6; }
 
 .base-area-title, .gs-area-title, .n-area-title, .passes-title, .messages-title {
   font-weight: bold;
-  font-size: 105%;
+  font-size: 80%;
   text-align: center;
   vertical-align: middle;
   height: 35px; }
@@ -730,10 +729,7 @@ a.button-red {
   color: #ff0000; }
 
 .countdown {
-  background-color: black;
-  opacity: 0.8;
-  padding: 10px;
-  border-radius: 10px; }
+  padding: 10px; }
   .countdown p {
     vertical-align: middle;
     color: white;

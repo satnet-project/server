@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.db import models as django_models
 import logging
 from services.accounts.models import UserProfile
-#from django.contrib.sessions.models import Session
 from user_sessions import models as usession_models
 
 logger = logging.getLogger('network')

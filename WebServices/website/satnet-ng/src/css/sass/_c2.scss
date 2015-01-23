@@ -24,7 +24,7 @@ $area_corner: 5px;
 
 .my-dd-btn {
   background: $bg_color;
-  border-radius: $area_corner;
+  border-radius: 0;
   border-color: $bg_color;
   opacity: $opacity;
 }
@@ -36,7 +36,7 @@ $area_corner: 5px;
   font-weight: bolder;
   vertical-align: middle;
   padding: 15px 5px 5px 5px;
-  top: -$area_corner;
+  top: -3*$area_corner;
   opacity: 0.8;
 }
 
@@ -91,7 +91,6 @@ $log_items_margin_left: $area_corner + 7px;
 .base-area {
   opacity: $opacity;
   line-height: 40px;
-  border-radius: $area_corner;
   background-color: $bg_color;
   font-size: 10pt;
   color: $fg_color;
@@ -99,7 +98,7 @@ $log_items_margin_left: $area_corner + 7px;
 
 .base-area-title {
   font-weight: bold;
-  font-size: 105%;
+  font-size: 80%;
   text-align: center;
   vertical-align: middle;
   height: $title_h;

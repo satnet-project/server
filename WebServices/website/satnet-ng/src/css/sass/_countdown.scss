@@ -14,12 +14,9 @@
 
 @import 'main';
 
-.countdown {
+.countdown { @extend .base-area;
 
-  background-color: $karbon;
-  opacity: $opacity;
   padding: 10px;
-  border-radius: 10px;
 
   p {
     vertical-align: middle;

@@ -17,9 +17,33 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from services.leop.jrpc.serializers import launch as launch_serializers
 
-
+PUSH_K_FRAME = 'frame'
 JRPC_K_TS = 'timestamp'
 JRPC_K_MESSAGE = 'message'
+
+
+def serialize_push_frame(message):
+    """PUSH serialization
+    Serializes the given message into a JRPC-like structure.
+    :param message: Message object as read from the database.
+    :return: JSON structure that can be transported
+    """
+    return {
+        PUSH_K_FRAME: serialize_message(message)
+    }
+
+
+def serialize_message(message):
+    """JRPC serialization
+    Serializes the given message into a JRPC-like structure.
+    :param message: Message object as read from the database.
+    :return: JSON structure that can be transported
+    """
+    return {
+        launch_serializers.JRPC_K_GS_ID: message.groundstation.identifier,
+        JRPC_K_TS: message.groundstation_timestamp,
+        JRPC_K_MESSAGE: message.message
+    }
 
 
 def serialize_messages(messages):
@@ -32,11 +56,6 @@ def serialize_messages(messages):
     serial_messages = []
 
     for m in messages:
-
-        serial_messages.append({
-            launch_serializers.JRPC_K_GS_ID: m.groundstation.identifier,
-            JRPC_K_TS: m.groundstation_timestamp,
-            JRPC_K_MESSAGE: m.message
-        })
+        serial_messages.append(serialize_message(m))
 
     return serial_messages
