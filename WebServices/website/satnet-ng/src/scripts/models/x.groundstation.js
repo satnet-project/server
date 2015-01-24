@@ -18,8 +18,8 @@
 
 /** Module definition . */
 angular.module('x-groundstation-models', [
-    'pushServices',
     'broadcaster',
+    'pushServices',
     'satnet-services',
     'pushServices',
     'marker-models'

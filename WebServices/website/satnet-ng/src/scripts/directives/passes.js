@@ -15,7 +15,7 @@
 */
 
 angular.module('passDirective', [
-    'satnet-services', 'ui-leop-modalufo-controllers'
+    'broadcaster', 'satnet-services', 'ui-leop-modalufo-controllers'
 ])
     .service('passSlotsService', [
         '$rootScope', 'satnetRPC', 'oArrays',
@@ -98,15 +98,44 @@ angular.module('passDirective', [
         }
     ])
     .controller('passSlotsCtrl', [
-        '$scope', 'passSlotsService',
-        function ($scope, passSlotsService) {
+        '$rootScope', '$scope', 'passSlotsService', 'broadcaster',
+        function ($rootScope, $scope, passSlotsService, broadcaster) {
             'use strict';
 
             $scope.data = [];
-            $scope.init = function () {
+
+            $scope._initData = function () {
                 passSlotsService.getPasses().then(function (g_slots) {
                     angular.extend($scope.data, g_slots);
                 });
+            };
+
+            $scope._initListeners = function () {
+                $rootScope.$on(
+                    broadcaster.PASSES_UPDATED,
+                    function (event, id) {
+                        console.log(
+                            '@passes-updated-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+                $rootScope.$on(
+                    broadcaster.LEOP_GSS_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gs-assigned-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope.init();

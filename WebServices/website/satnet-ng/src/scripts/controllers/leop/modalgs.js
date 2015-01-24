@@ -19,7 +19,7 @@
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
-    [ 'broadcaster', 'satnet-services' ]
+    ['broadcaster', 'satnet-services']
 );
 
 /**
@@ -39,7 +39,6 @@ angular.module('ui-leop-modalgs-controllers')
             broadcaster,
             satnetRPC
         ) {
-
             'use strict';
 
             $scope.gsIds = {};
@@ -51,14 +50,30 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.ll_changed = false;
 
-            $scope.init = function () {
-                console.log('init, leop_id = ' + $rootScope.leop_id);
+            $scope._initData = function () {
                 satnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
+            };
+
+            $scope._initListeners = function () {
+                $rootScope.$on(
+                    broadcaster.LEOP_GSS_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gss-updated-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope.selectGs = function () {

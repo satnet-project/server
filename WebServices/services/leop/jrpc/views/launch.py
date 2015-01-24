@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
+from services.common.push import service as satnet_push
 from services.configuration.models import segments as segment_models
 from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
@@ -24,6 +25,7 @@ from services.leop.jrpc.serializers import launch as launch_serial
 from services.simulation.models import passes as pass_models
 from services.simulation.jrpc.serializers import passes as pass_serializers
 from website import settings as satnet_settings
+
 
 @rpc4django.rpcmethod(
     name='leop.gs.list',
@@ -125,11 +127,20 @@ def add_groundstations(launch_id, groundstations, **kwargs):
         raise Exception('No groundstations provided')
 
     # Serialization to a JSON-RPC-like object
-    return launch_serial.serialize_leop_id(
+    result = launch_serial.serialize_leop_id(
         launch_models.Launch.objects.add_ground_stations(
             launch_id, groundstations
         )
     )
+
+    # Push notification event service
+    satnet_push.PushService().trigger_event(
+        satnet_push.PushService.LEOP_EVENTS_CHANNEL,
+        satnet_push.PushService.LEOP_GSS_UPDATED_EVENT,
+        result
+    )
+
+    return result
 
 
 @rpc4django.rpcmethod(
@@ -155,9 +166,18 @@ def remove_groundstations(launch_id, groundstations, **kwargs):
         return launch_serial.serialize_leop_id(launch_id)
 
     # Serialization to a JSON-RPC-like object
-    return launch_models.Launch.objects.remove_groundstations(
+    launch_models.Launch.objects.remove_groundstations(
         launch_id, groundstations
     )
+
+    # Push notification event service
+    satnet_push.PushService().trigger_event(
+        satnet_push.PushService.LEOP_EVENTS_CHANNEL,
+        satnet_push.PushService.LEOP_GSS_UPDATED_EVENT,
+        launch_serial.serialize_leop_id(launch_id)
+    )
+
+    return True
 
 
 @rpc4django.rpcmethod(

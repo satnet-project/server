@@ -19,7 +19,7 @@ import logging
 import pusher
 from website import settings as satnet_cfg
 
-logger = logging.getLogger('common')
+logger = logging.getLogger('push')
 
 
 class PushService(object):
@@ -30,10 +30,14 @@ class PushService(object):
     TEST_CHANNEL = 'test_channel'
     LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
     CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
+    SIMULATION_EVENTS_CHANNEL = 'simulation.events.ch'
+    LEOP_EVENTS_CHANNEL = 'leop.events.ch'
     SATNET_CHANNELS = [
         TEST_CHANNEL,
         LEOP_DOWNLINK_CHANNEL,
-        CONFIGURATION_EVENTS_CHANNEL
+        CONFIGURATION_EVENTS_CHANNEL,
+        SIMULATION_EVENTS_CHANNEL,
+        LEOP_EVENTS_CHANNEL
     ]
 
     TEST_EVENT = 'my_event'
@@ -41,6 +45,8 @@ class PushService(object):
     GS_ADDED_EVENT = 'gsAddedEv'
     GS_REMOVED_EVENT = 'gsRemovedEv'
     GS_UPDATED_EVENT = 'gsUpdatedEv'
+    PASSES_UPDATED_EVENT = 'passesUpdatedEv'
+    LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv'
 
     # The puser object.
     _service = None
@@ -121,6 +127,9 @@ class PushService(object):
             raise Exception(
                 'Channel does not exist, name = ' + str(channel_name)
             )
+
+        if satnet_cfg.TESTING:
+            return
 
         logger.info(
             '[push] channel = <' + str(channel_name) +

@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
 import sys
 import urllib2
 from django.test.runner import DiscoverRunner
@@ -30,6 +31,7 @@ class SatnetTestRunner(DiscoverRunner):
 
     def setup_databases(self, **kwargs):
 
+        verbose_testing = False
         db = DiscoverRunner(SatnetTestRunner, self).setup_databases(**kwargs)
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
@@ -63,5 +65,8 @@ class SatnetTestRunner(DiscoverRunner):
         # 4) Initialization of the available communication channel bands.
         db_tools.init_available()
         print ' done!'
+
+        if not verbose_testing:
+            logging.getLogger('push').setLevel(level=logging.CRITICAL)
 
         return db

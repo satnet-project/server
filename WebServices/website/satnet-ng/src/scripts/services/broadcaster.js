@@ -28,12 +28,27 @@ angular.module('broadcaster').service('broadcaster', [
 
         'use strict';
 
+        /**********************************************************************/
+        /************************************************* INTERNAL CALLBACKS */
+        /**********************************************************************/
+
         this.GS_ADDED_EVENT = 'gs.added';
         this.GS_REMOVED_EVENT = 'gs.removed';
         this.GS_UPDATED_EVENT = 'gs.updated';
         this.GS_AVAILABLE_ADDED_EVENT = 'gs.available.added';
         this.GS_AVAILABLE_REMOVED_EVENT = 'gs.available.removed';
         this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
+        this.PASSES_UPDATED = 'passes.updated';
+        this.LEOP_GSS_UPDATED_EVENT = 'leop.gss.updated';
+
+        /**
+         * Function that broadcasts the event associated with the creation of a
+         * new GroundStation available for the LEOP cluster.
+         * @param identifier The identifier of the GroundStation.
+         */
+        this.gsAvailableAddedInternal = function (identifier) {
+            $rootScope.$broadcast('gs.available.added', identifier);
+        };
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -62,9 +77,9 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
-        this.gsAvailableAddedInternal = function (identifier) {
-            $rootScope.$broadcast('gs.available.added', identifier);
-        };
+        /**********************************************************************/
+        /***************************************************** PUSH CALLBACKS */
+        /**********************************************************************/
 
         this.gsAvailableAdded = function (id_object) {
             $rootScope.$broadcast('gs.available.added', id_object.identifier);
@@ -75,6 +90,50 @@ angular.module('broadcaster').service('broadcaster', [
         this.gsAvailableUpdated = function (id_object) {
             $rootScope.$broadcast('gs.available.updated', id_object.identifier);
         };
+        this.passesUpdated = function () {
+            $rootScope.$broadcast('passes.updated', {});
+        };
+        this.leopGssUpdated = function (leop_id) {
+            if ($rootScope.leop_id !== leop_id.identifier) {
+                return;
+            }
+            $rootScope.$broadcast('leop.gss.updated');
+        };
+
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_ADDED_EVENT,
+            this.gsAvailableAdded,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_REMOVED_EVENT,
+            this.gsAvailableRemoved,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_UPDATED_EVENT,
+            this.gsAvailableUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.SIMULATION_CHANNEL,
+            satnetPush.PASSES_UPDATED_EVENT,
+            this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_GSS_UPDATED_EVENT,
+            this.leopGssUpdated,
+            this
+        );
+
+        /**********************************************************************/
+        /************************************************* INTERNAL CALLBACKS */
+        /**********************************************************************/
 
         this.SC_ADDED_EVENT = 'sc.added';
         this.SC_REMOVED_EVENT = 'sc.removed';
@@ -106,25 +165,6 @@ angular.module('broadcaster').service('broadcaster', [
         this.scUpdated = function (identifier) {
             $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
-
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_ADDED_EVENT,
-            this.gsAvailableAdded,
-            this
-        );
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_REMOVED_EVENT,
-            this.gsAvailableRemoved,
-            this
-        );
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_UPDATED_EVENT,
-            this.gsAvailableUpdated,
-            this
-        );
 
     }
 ]);

@@ -37,17 +37,23 @@ angular.module('pushServices').service('satnetPush', [
         // Names of the channels for subscription
         this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
         this.EVENTS_CHANNEL = 'configuration.events.ch';
+        this.SIMULATION_CHANNEL = 'simulation.events.ch';
+        this.LEOP_CHANNEL = 'leop.events.ch';
         // List of events that an application can get bound to.
         this.FRAME_EVENT = 'frameEv';
         this.GS_ADDED_EVENT = 'gsAddedEv';
         this.GS_REMOVED_EVENT = 'gsRemovedEv';
         this.GS_UPDATED_EVENT = 'gsUpdatedEv';
+        this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
+        this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
             'test_channel',
             this.DOWNLINK_CHANNEL,
-            this.EVENTS_CHANNEL
+            this.EVENTS_CHANNEL,
+            this.SIMULATION_CHANNEL,
+            this.LEOP_CHANNEL
         ];
 
         /**
@@ -124,7 +130,7 @@ angular.module('pushServices').service('satnetPush', [
          * triggered through the specific events channel.
          * @param name Name of the event
          * @param callback_fn Callback function
-         */
+         *
         this.bindEvent = function (name, callback_fn) {
             this.bind(this.EVENTS_CHANNEL, name, callback_fn, this);
         };
@@ -138,6 +144,7 @@ angular.module('pushServices').service('satnetPush', [
         this.bindGSUpdated = function (callback_fn) {
             this.bindEvent(this.GS_UPDATED_EVENT, callback_fn);
         };
+        */
 
         this._init();
 
@@ -330,12 +337,27 @@ angular.module('broadcaster').service('broadcaster', [
 
         'use strict';
 
+        /**********************************************************************/
+        /************************************************* INTERNAL CALLBACKS */
+        /**********************************************************************/
+
         this.GS_ADDED_EVENT = 'gs.added';
         this.GS_REMOVED_EVENT = 'gs.removed';
         this.GS_UPDATED_EVENT = 'gs.updated';
         this.GS_AVAILABLE_ADDED_EVENT = 'gs.available.added';
         this.GS_AVAILABLE_REMOVED_EVENT = 'gs.available.removed';
         this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
+        this.PASSES_UPDATED = 'passes.updated';
+        this.LEOP_GSS_UPDATED_EVENT = 'leop.gss.updated';
+
+        /**
+         * Function that broadcasts the event associated with the creation of a
+         * new GroundStation available for the LEOP cluster.
+         * @param identifier The identifier of the GroundStation.
+         */
+        this.gsAvailableAddedInternal = function (identifier) {
+            $rootScope.$broadcast('gs.available.added', identifier);
+        };
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -364,9 +386,9 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
-        this.gsAvailableAddedInternal = function (identifier) {
-            $rootScope.$broadcast('gs.available.added', identifier);
-        };
+        /**********************************************************************/
+        /***************************************************** PUSH CALLBACKS */
+        /**********************************************************************/
 
         this.gsAvailableAdded = function (id_object) {
             $rootScope.$broadcast('gs.available.added', id_object.identifier);
@@ -377,6 +399,50 @@ angular.module('broadcaster').service('broadcaster', [
         this.gsAvailableUpdated = function (id_object) {
             $rootScope.$broadcast('gs.available.updated', id_object.identifier);
         };
+        this.passesUpdated = function () {
+            $rootScope.$broadcast('passes.updated', {});
+        };
+        this.leopGssUpdated = function (leop_id) {
+            if ($rootScope.leop_id !== leop_id.identifier) {
+                return;
+            }
+            $rootScope.$broadcast('leop.gss.updated');
+        };
+
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_ADDED_EVENT,
+            this.gsAvailableAdded,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_REMOVED_EVENT,
+            this.gsAvailableRemoved,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_UPDATED_EVENT,
+            this.gsAvailableUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.SIMULATION_CHANNEL,
+            satnetPush.PASSES_UPDATED_EVENT,
+            this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_GSS_UPDATED_EVENT,
+            this.leopGssUpdated,
+            this
+        );
+
+        /**********************************************************************/
+        /************************************************* INTERNAL CALLBACKS */
+        /**********************************************************************/
 
         this.SC_ADDED_EVENT = 'sc.added';
         this.SC_REMOVED_EVENT = 'sc.removed';
@@ -408,25 +474,6 @@ angular.module('broadcaster').service('broadcaster', [
         this.scUpdated = function (identifier) {
             $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
-
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_ADDED_EVENT,
-            this.gsAvailableAdded,
-            this
-        );
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_REMOVED_EVENT,
-            this.gsAvailableRemoved,
-            this
-        );
-        satnetPush.bind(
-            satnetPush.EVENTS_CHANNEL,
-            satnetPush.GS_UPDATED_EVENT,
-            this.gsAvailableUpdated,
-            this
-        );
 
     }
 ]);;/**
@@ -1732,8 +1779,8 @@ angular.module('x-server-models').service('xserver', [
 
 /** Module definition . */
 angular.module('x-groundstation-models', [
-    'pushServices',
     'broadcaster',
+    'pushServices',
     'satnet-services',
     'pushServices',
     'marker-models'
@@ -2255,7 +2302,7 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
 /** Module definition (empty array is vital!). */
 angular.module(
     'ui-leop-modalgs-controllers',
-    [ 'broadcaster', 'satnet-services' ]
+    ['broadcaster', 'satnet-services']
 );
 
 /**
@@ -2275,7 +2322,6 @@ angular.module('ui-leop-modalgs-controllers')
             broadcaster,
             satnetRPC
         ) {
-
             'use strict';
 
             $scope.gsIds = {};
@@ -2287,14 +2333,30 @@ angular.module('ui-leop-modalgs-controllers')
 
             $scope.ll_changed = false;
 
-            $scope.init = function () {
-                console.log('init, leop_id = ' + $rootScope.leop_id);
+            $scope._initData = function () {
                 satnetRPC.readAllLEOPGS($rootScope.leop_id)
                     .then(function (data) {
-                        console.log('leop.gs.list, data = ' + JSON.stringify(data));
                         if (data === null) { return; }
                         $scope.gsIds = data;
                     });
+            };
+
+            $scope._initListeners = function () {
+                $rootScope.$on(
+                    broadcaster.LEOP_GSS_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gss-updated-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope.selectGs = function () {
@@ -3767,7 +3829,6 @@ angular.module('messagesDirective', [
              * Initializes this controller.
              */
             $scope.init = function () {
-
                 var now = moment().utc(),
                     yesterday = now.subtract(7, 'days');
 
@@ -3782,9 +3843,7 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
-
                 satnetPush.bindFrameReceived($scope._pushMessage);
-
             };
 
             $scope.init();
@@ -3874,7 +3933,7 @@ angular.module('logNotifierDirective', [])
 */
 
 angular.module('passDirective', [
-    'satnet-services', 'ui-leop-modalufo-controllers'
+    'broadcaster', 'satnet-services', 'ui-leop-modalufo-controllers'
 ])
     .service('passSlotsService', [
         '$rootScope', 'satnetRPC', 'oArrays',
@@ -3957,15 +4016,44 @@ angular.module('passDirective', [
         }
     ])
     .controller('passSlotsCtrl', [
-        '$scope', 'passSlotsService',
-        function ($scope, passSlotsService) {
+        '$rootScope', '$scope', 'passSlotsService', 'broadcaster',
+        function ($rootScope, $scope, passSlotsService, broadcaster) {
             'use strict';
 
             $scope.data = [];
-            $scope.init = function () {
+
+            $scope._initData = function () {
                 passSlotsService.getPasses().then(function (g_slots) {
                     angular.extend($scope.data, g_slots);
                 });
+            };
+
+            $scope._initListeners = function () {
+                $rootScope.$on(
+                    broadcaster.PASSES_UPDATED,
+                    function (event, id) {
+                        console.log(
+                            '@passes-updated-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+                $rootScope.$on(
+                    broadcaster.LEOP_GSS_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gs-assigned-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope.init();

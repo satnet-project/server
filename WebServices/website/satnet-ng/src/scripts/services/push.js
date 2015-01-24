@@ -37,17 +37,23 @@ angular.module('pushServices').service('satnetPush', [
         // Names of the channels for subscription
         this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
         this.EVENTS_CHANNEL = 'configuration.events.ch';
+        this.SIMULATION_CHANNEL = 'simulation.events.ch';
+        this.LEOP_CHANNEL = 'leop.events.ch';
         // List of events that an application can get bound to.
         this.FRAME_EVENT = 'frameEv';
         this.GS_ADDED_EVENT = 'gsAddedEv';
         this.GS_REMOVED_EVENT = 'gsRemovedEv';
         this.GS_UPDATED_EVENT = 'gsUpdatedEv';
+        this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
+        this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
             'test_channel',
             this.DOWNLINK_CHANNEL,
-            this.EVENTS_CHANNEL
+            this.EVENTS_CHANNEL,
+            this.SIMULATION_CHANNEL,
+            this.LEOP_CHANNEL
         ];
 
         /**
@@ -124,7 +130,7 @@ angular.module('pushServices').service('satnetPush', [
          * triggered through the specific events channel.
          * @param name Name of the event
          * @param callback_fn Callback function
-         */
+         *
         this.bindEvent = function (name, callback_fn) {
             this.bind(this.EVENTS_CHANNEL, name, callback_fn, this);
         };
@@ -138,6 +144,7 @@ angular.module('pushServices').service('satnetPush', [
         this.bindGSUpdated = function (callback_fn) {
             this.bindEvent(this.GS_UPDATED_EVENT, callback_fn);
         };
+        */
 
         this._init();
 

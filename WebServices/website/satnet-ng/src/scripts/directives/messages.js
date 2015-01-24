@@ -74,7 +74,6 @@ angular.module('messagesDirective', [
              * Initializes this controller.
              */
             $scope.init = function () {
-
                 var now = moment().utc(),
                     yesterday = now.subtract(7, 'days');
 
@@ -89,9 +88,7 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
-
                 satnetPush.bindFrameReceived($scope._pushMessage);
-
             };
 
             $scope.init();

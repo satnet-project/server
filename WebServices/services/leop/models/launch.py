@@ -45,6 +45,7 @@ class LaunchManager(django_models.Manager):
         launch = self.get(identifier=launch_id)
 
         for i in groundstations:
+
             gs = segment_models.GroundStation.objects.get(identifier=i)
             launch.groundstations.add(gs)
 
@@ -68,7 +69,6 @@ class LaunchManager(django_models.Manager):
             launch.groundstations.remove(g)
 
         launch.save()
-
         return True
 
     def add_unknown(self, launch_id, object_id):
