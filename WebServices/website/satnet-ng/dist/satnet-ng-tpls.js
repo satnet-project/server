@@ -111,4 +111,9 @@ angular.module('satnet-ui').run(['$templateCache', function($templateCache) {
     "<input type=\"checkbox\" name=\"passes-toggle\" id=\"passes-toggle\"><div ng-controller=\"passSlotsCtrl\" class=\"passes-area\"><div class=\"passes-title\"><label for=\"passes-toggle\"></label></div><div ng-hide=\"data.length\"><p class=\"no-items-red\">(no passes)</p></div><div ng-show=\"data.length\" gantt class=\"passes-content\" data=\"data\" allow-side-resizing=\"false\" auto-expand=\"both\" template-url=\"templates/passes/myGanttTpl.html\"><gantt-labels></gantt-labels><gantt-movable></gantt-movable><gantt-tooltips></gantt-tooltips></div><div style=\"height: 25px\"></div></div>"
   );
 
+
+  $templateCache.put('templates/splash/splash.html',
+    "<div id=\"splash\" ng-cloak class=\"ng-cloak splash-bg\"><div class=\"splash-logo\"><embed src=\"static/images/logo.svg\"></div><div class=\"splash-title\">Accessing {{ leop_id }} LEOP network</div></div>"
+  );
+
 }]);

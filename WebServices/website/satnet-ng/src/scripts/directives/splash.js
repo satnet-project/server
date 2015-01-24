@@ -1,4 +1,5 @@
-/* Copyright 2013, 2014 Ricardo Tubio-Pardavila
+/*
+   Copyright 2014 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -10,16 +11,25 @@
    distributed under the License is distributed on an "AS IS" BASIS,
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
-   limitations under the License. */
+   limitations under the License.
+*/
 
-@import 'main';
-@import 'buttons';
-@import 'c2';
-@import 'leop';
-@import 'markers';
-@import 'narea';
-@import 'countdown';
-@import 'passes';
-@import 'messages';
-@import 'splash';
-@import 'pace/corner';
+angular.module('splashDirective', [])
+    .controller('splashCtrl', [
+        '$rootScope', '$scope',
+        function ($rootScope, $scope) {
+            'use strict';
+
+            $scope.leop_id = $rootScope.leop_id;
+
+        }
+    ])
+    .directive('splash', function () {
+        'use strict';
+
+        return {
+            restrict: 'E',
+            templateUrl: 'templates/splash/splash.html'
+        };
+
+    });

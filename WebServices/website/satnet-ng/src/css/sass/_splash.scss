@@ -13,13 +13,21 @@
    limitations under the License. */
 
 @import 'main';
-@import 'buttons';
-@import 'c2';
-@import 'leop';
-@import 'markers';
-@import 'narea';
-@import 'countdown';
-@import 'passes';
-@import 'messages';
-@import 'splash';
-@import 'pace/corner';
+
+
+.splash-bg {
+  background-color: $karbon;
+  opacity: $opacity;
+}
+
+.splash-logo {
+  width: 300px;
+  position: absolute;
+  bottom: 10%;
+  right: 10%;
+}
+
+.splash-title {
+  color: white;
+  font-weight: bold;
+}

@@ -105,6 +105,7 @@ angular.module('passDirective', [
             $scope.data = [];
 
             $scope._initData = function () {
+                $scope.data = [];
                 passSlotsService.getPasses().then(function (g_slots) {
                     angular.extend($scope.data, g_slots);
                 });

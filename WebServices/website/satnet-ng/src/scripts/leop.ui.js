@@ -56,7 +56,8 @@ var app = angular.module('leop-ui', [
     'logNotifierDirective',
     'countdownDirective',
     'passDirective',
-    'messagesDirective'
+    'messagesDirective',
+    'splashDirective'
 ]);
 
 // level 1 services
@@ -82,6 +83,7 @@ angular.module('logNotifierDirective');
 angular.module('countdownDirective');
 angular.module('passDirective');
 angular.module('messagesDirective');
+angular.module('splashDirective');
 
 /**
  * Configuration of the main AngularJS logger so that it broadcasts all logging
