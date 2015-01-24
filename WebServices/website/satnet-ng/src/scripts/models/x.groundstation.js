@@ -30,8 +30,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', '$q', 'satnetPush', 'broadcaster', 'satnetRPC', 'markers',
-    function ($rootScope, $q, satnetPush, broadcaster, satnetRPC, markers) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
         'use strict';
 
         /**
@@ -53,10 +53,22 @@ angular.module('x-groundstation-models').service('xgs', [
          * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
         this.initAllLEOP = function (leop_id) {
-            var self = this;
+            var self = this, p = [];
             return satnetRPC.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
-                    return self._initAll(gss.leop_gs_inuse);
+                    angular.forEach(gss.leop_gs_inuse, function (gs) {
+                        p.push(self.addGS(gs));
+                    });
+                    angular.forEach(gss.leop_gs_available, function (gs) {
+                        p.push(self.addUnconnectedGS(gs));
+                    });
+                    return $q.all(p).then(function (gs_ids) {
+                        var ids = [];
+                        angular.forEach(gs_ids, function (id) {
+                            ids.push(id);
+                        });
+                        return ids;
+                    });
                 });
         };
 
@@ -90,6 +102,22 @@ angular.module('x-groundstation-models').service('xgs', [
         };
 
         /**
+         * Adds a new GroundStation together with its marker, using the
+         * configuration object that it retrieves from the server. It does not
+         * include the connection line with the server.
+         *
+         * @param identifier Identififer of the GroundStation to be added.
+         * @returns String Identifier of the just-created object.
+         */
+        this.addUnconnectedGS = function (identifier) {
+            return satnetRPC.rCall('gs.get', [identifier]).then(
+                function (data) {
+                    return markers.createUnconnectedGSMarker(data);
+                }
+            );
+        };
+
+        /**
          * Updates the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
@@ -111,6 +139,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * Private method that creates the event listeners for this service.
          */
         this.initListeners = function () {
+
             var self = this;
             $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
                 console.log(
@@ -130,9 +159,25 @@ angular.module('x-groundstation-models').service('xgs', [
                 );
                 self.updateGS(id);
             });
-            satnetPush.bindGSAdded(broadcaster.gsAddedPusher);
-            satnetPush.bindGSUpdated(broadcaster.gsUpdatedPusher);
-            satnetPush.bindGSRemoved(broadcaster.gsRemovedPusher);
+            $rootScope.$on(broadcaster.GS_AVAILABLE_ADDED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-added-event, event = ' + event + ', id = ' + id
+                );
+                self.addUnconnectedGS(id);
+            });
+            $rootScope.$on(broadcaster.GS_AVAILABLE_REMOVED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
+                );
+                self.removeGS(id);
+            });
+            $rootScope.$on(broadcaster.GS_AVAILABLE_UPDATED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-updated-event, event = ' + event + ', id = ' + id
+                );
+                self.updateGS(id);
+            });
+
         };
 
     }

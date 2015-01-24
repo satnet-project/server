@@ -36,7 +36,7 @@ angular.module('pushServices').service('satnetPush', [
 
         // Names of the channels for subscription
         this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
-        this.EVENTS_CHANNEL = 'events';
+        this.EVENTS_CHANNEL = 'configuration.events.ch';
         // List of events that an application can get bound to.
         this.FRAME_EVENT = 'frameEv';
         this.GS_ADDED_EVENT = 'gsAddedEv';
@@ -111,7 +111,12 @@ angular.module('pushServices').service('satnetPush', [
          * @param callback_fn Callback function to be bound
          */
         this.bindFrameReceived = function (callback_fn) {
-            this.bind(this.DOWNLINK_CHANNEL, this.FRAME_EVENT, callback_fn);
+            this.bind(
+                this.DOWNLINK_CHANNEL,
+                this.FRAME_EVENT,
+                callback_fn,
+                this
+            );
         };
 
         /**
@@ -121,7 +126,7 @@ angular.module('pushServices').service('satnetPush', [
          * @param callback_fn Callback function
          */
         this.bindEvent = function (name, callback_fn) {
-            this.bind(this.EVENTS_CHANNEL, name, callback_fn);
+            this.bind(this.EVENTS_CHANNEL, name, callback_fn, this);
         };
 
         this.bindGSAdded = function (callback_fn) {

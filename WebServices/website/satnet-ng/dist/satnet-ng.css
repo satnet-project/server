@@ -259,6 +259,12 @@ a.button-red {
 .my-dd-menu {
   transform: rotate(90deg); }
 
+.menu-li-title {
+  font-size: 75%;
+  font-style: italic;
+  font-weight: bold;
+  text-align: right; }
+
 .left-menu {
   position: absolute;
   top: 0;
@@ -917,10 +923,10 @@ a.button-red {
   text-align: center; }
 
 #messages-toggle + div label:after {
-  content: "messages"; }
+  content: "data frames"; }
 
 #messages-toggle:checked + div label:after {
-  content: "messages"; }
+  content: "data frames"; }
 
 #messages-toggle:checked ~ .messages-area {
   top: -240px; }

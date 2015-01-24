@@ -36,7 +36,7 @@ angular.module('pushServices').service('satnetPush', [
 
         // Names of the channels for subscription
         this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
-        this.EVENTS_CHANNEL = 'events';
+        this.EVENTS_CHANNEL = 'configuration.events.ch';
         // List of events that an application can get bound to.
         this.FRAME_EVENT = 'frameEv';
         this.GS_ADDED_EVENT = 'gsAddedEv';
@@ -111,7 +111,12 @@ angular.module('pushServices').service('satnetPush', [
          * @param callback_fn Callback function to be bound
          */
         this.bindFrameReceived = function (callback_fn) {
-            this.bind(this.DOWNLINK_CHANNEL, this.FRAME_EVENT, callback_fn);
+            this.bind(
+                this.DOWNLINK_CHANNEL,
+                this.FRAME_EVENT,
+                callback_fn,
+                this
+            );
         };
 
         /**
@@ -121,7 +126,7 @@ angular.module('pushServices').service('satnetPush', [
          * @param callback_fn Callback function
          */
         this.bindEvent = function (name, callback_fn) {
-            this.bind(this.EVENTS_CHANNEL, name, callback_fn);
+            this.bind(this.EVENTS_CHANNEL, name, callback_fn, this);
         };
 
         this.bindGSAdded = function (callback_fn) {
@@ -314,19 +319,23 @@ angular.module('celestrak-services').service('celestrak', [function () {
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('broadcaster', []);
+angular.module('broadcaster', ['pushServices']);
 
 /**
  * Service used for broadcasting UI events in between controllers.
  */
-angular.module('broadcaster').service('broadcaster', [ '$rootScope',
-    function ($rootScope) {
+angular.module('broadcaster').service('broadcaster', [
+    '$rootScope', 'satnetPush',
+    function ($rootScope, satnetPush) {
 
         'use strict';
 
         this.GS_ADDED_EVENT = 'gs.added';
         this.GS_REMOVED_EVENT = 'gs.removed';
         this.GS_UPDATED_EVENT = 'gs.updated';
+        this.GS_AVAILABLE_ADDED_EVENT = 'gs.available.added';
+        this.GS_AVAILABLE_REMOVED_EVENT = 'gs.available.removed';
+        this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -343,7 +352,6 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
          * @param identifier The identifier of the GroundStation.
          */
         this.gsRemoved = function (identifier) {
-            console.log('@broadcaster.gsRemoved, id = ' + identifier);
             $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
@@ -356,14 +364,18 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
-        this.gsAddedPusher = function (id_object) {
-            this.gsAdded(id_object.identifier);
+        this.gsAvailableAddedInternal = function (identifier) {
+            $rootScope.$broadcast('gs.available.added', identifier);
         };
-        this.gsRemovedPusher = function (id_object) {
-            this.gsRemoved(id_object.identifier);
+
+        this.gsAvailableAdded = function (id_object) {
+            $rootScope.$broadcast('gs.available.added', id_object.identifier);
         };
-        this.gsUpdatedPusher = function (id_object) {
-            this.gsUpdated(id_object.identifier);
+        this.gsAvailableRemoved = function (id_object) {
+            $rootScope.$broadcast('gs.available.removed', id_object.identifier);
+        };
+        this.gsAvailableUpdated = function (id_object) {
+            $rootScope.$broadcast('gs.available.updated', id_object.identifier);
         };
 
         this.SC_ADDED_EVENT = 'sc.added';
@@ -397,7 +409,27 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
             $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
 
-    }]);;/**
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_ADDED_EVENT,
+            this.gsAvailableAdded,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_REMOVED_EVENT,
+            this.gsAvailableRemoved,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_UPDATED_EVENT,
+            this.gsAvailableUpdated,
+            this
+        );
+
+    }
+]);;/**
  * Copyright 2014 Ricardo Tubio-Pardavila
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1323,8 +1355,7 @@ angular.module('marker-models')
              * @param cfg The configuration of the GroundStation.
              * @returns Angular leaflet marker.
              */
-            this.createGSMarker = function (cfg) {
-
+            this.createUnconnectedGSMarker = function (cfg) {
                 var id = cfg.groundstation_id;
 
                 this.getScope().markers[this.createMarkerKey(id)] = {
@@ -1346,6 +1377,20 @@ angular.module('marker-models')
                     identifier: id
                 };
 
+                return id;
+            };
+
+            /**
+             * Creates a new marker object for the given GroundStation, adding
+             * the connector to the server.
+             *
+             * @param cfg The configuration of the GroundStation.
+             * @returns Angular leaflet marker.
+             */
+            this.createGSMarker = function (cfg) {
+
+                var id = cfg.groundstation_id;
+                this.createUnconnectedGSMarker(cfg);
                 this.createGSConnector(id);
                 return id;
 
@@ -1385,7 +1430,9 @@ angular.module('marker-models')
                     ),
                     m_key = this.getMarkerKey(identifier);
                 delete this.getScope().markers[m_key];
-                delete this.getScope().paths[p_key];
+                if (this.getScope().paths.hasOwnProperty(p_key)) {
+                    delete this.getScope().paths[p_key];
+                }
             };
 
             /******************************************************************/
@@ -1697,8 +1744,8 @@ angular.module('x-groundstation-models', [
  * service and the basic GroundStation models.
  */
 angular.module('x-groundstation-models').service('xgs', [
-    '$rootScope', '$q', 'satnetPush', 'broadcaster', 'satnetRPC', 'markers',
-    function ($rootScope, $q, satnetPush, broadcaster, satnetRPC, markers) {
+    '$rootScope', '$q', 'broadcaster', 'satnetRPC', 'markers',
+    function ($rootScope, $q, broadcaster, satnetRPC, markers) {
         'use strict';
 
         /**
@@ -1720,10 +1767,22 @@ angular.module('x-groundstation-models').service('xgs', [
          * @returns {ng.IPromise<[String]>} Identifier of the read GS.
          */
         this.initAllLEOP = function (leop_id) {
-            var self = this;
+            var self = this, p = [];
             return satnetRPC.rCall('leop.gs.list', [leop_id])
                 .then(function (gss) {
-                    return self._initAll(gss.leop_gs_inuse);
+                    angular.forEach(gss.leop_gs_inuse, function (gs) {
+                        p.push(self.addGS(gs));
+                    });
+                    angular.forEach(gss.leop_gs_available, function (gs) {
+                        p.push(self.addUnconnectedGS(gs));
+                    });
+                    return $q.all(p).then(function (gs_ids) {
+                        var ids = [];
+                        angular.forEach(gs_ids, function (id) {
+                            ids.push(id);
+                        });
+                        return ids;
+                    });
                 });
         };
 
@@ -1757,6 +1816,22 @@ angular.module('x-groundstation-models').service('xgs', [
         };
 
         /**
+         * Adds a new GroundStation together with its marker, using the
+         * configuration object that it retrieves from the server. It does not
+         * include the connection line with the server.
+         *
+         * @param identifier Identififer of the GroundStation to be added.
+         * @returns String Identifier of the just-created object.
+         */
+        this.addUnconnectedGS = function (identifier) {
+            return satnetRPC.rCall('gs.get', [identifier]).then(
+                function (data) {
+                    return markers.createUnconnectedGSMarker(data);
+                }
+            );
+        };
+
+        /**
          * Updates the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
@@ -1778,6 +1853,7 @@ angular.module('x-groundstation-models').service('xgs', [
          * Private method that creates the event listeners for this service.
          */
         this.initListeners = function () {
+
             var self = this;
             $rootScope.$on(broadcaster.GS_ADDED_EVENT, function (event, id) {
                 console.log(
@@ -1797,9 +1873,25 @@ angular.module('x-groundstation-models').service('xgs', [
                 );
                 self.updateGS(id);
             });
-            satnetPush.bindGSAdded(broadcaster.gsAddedPusher);
-            satnetPush.bindGSUpdated(broadcaster.gsUpdatedPusher);
-            satnetPush.bindGSRemoved(broadcaster.gsRemovedPusher);
+            $rootScope.$on(broadcaster.GS_AVAILABLE_ADDED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-added-event, event = ' + event + ', id = ' + id
+                );
+                self.addUnconnectedGS(id);
+            });
+            $rootScope.$on(broadcaster.GS_AVAILABLE_REMOVED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-removed-event, event = ' + event + ', id = ' + id
+                );
+                self.removeGS(id);
+            });
+            $rootScope.$on(broadcaster.GS_AVAILABLE_UPDATED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-updated-event, event = ' + event + ', id = ' + id
+                );
+                self.updateGS(id);
+            });
+
         };
 
     }
@@ -2069,6 +2161,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
         'use strict';
 
         $scope.gsIds = [];
+        $scope.gsAvailableIds = [];
 
         $scope.panToGS = function (groundstation_id) {
             markers.panToGSMarker(groundstation_id).then(
@@ -2094,6 +2187,9 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
                 .then(function (data) {
                     if ((data !== null) && (data.leop_gs_inuse !== undefined)) {
                         $scope.gsIds = data.leop_gs_inuse.slice(0);
+                    }
+                    if ((data !== null) && (data.leop_gs_available !== undefined)) {
+                        $scope.gsAvailableIds = data.leop_gs_available.slice(0);
                     }
                 });
         };
@@ -2124,9 +2220,7 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
         $scope.refreshSCList = function () {
             satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
                 .then(function (data) {
-                    if (data !== null) {
-                        $scope.scIds = data.slice(0);
-                    }
+                    if (data !== null) { $scope.scIds = data.slice(0); }
                 });
         };
         $scope.panToSC = function (groundstation_id) {
@@ -2277,6 +2371,7 @@ angular.module('ui-leop-modalgs-controllers')
                         gs_id = $scope.gsIds.toRemove[i].groundstation_id;
                         r_ids.push(gs_id);
                         broadcaster.gsRemoved(gs_id);
+                        broadcaster.gsAvailableAddedInternal(gs_id);
                     }
                     satnetRPC.rCall(
                         'leop.gs.remove',

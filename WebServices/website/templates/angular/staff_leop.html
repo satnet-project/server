@@ -69,7 +69,13 @@
         <p>Ground Stations</p><span class='caret'></span>
     </button>
     <ul class='dropdown-menu my-dd-menu' role='menu'>
+        <li><a class='menu-li-title'>(assigned)</a></li>
         <li ng-repeat="g in gsIds">
+            <a class='my-menu-item' href='#' ng-click="panToGS(g)">{{ g }}</a>
+        </li>
+        <li class='divider'></li>
+        <li><a class='menu-li-title'>(available)</a></li>
+        <li ng-repeat="g in gsAvailableIds">
             <a class='my-menu-item' href='#' ng-click="panToGS(g)">{{ g }}</a>
         </li>
         <li class='divider'></li>

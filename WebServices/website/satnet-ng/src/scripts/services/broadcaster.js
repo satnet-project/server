@@ -17,19 +17,23 @@
  */
 
 /** Module definition (empty array is vital!). */
-angular.module('broadcaster', []);
+angular.module('broadcaster', ['pushServices']);
 
 /**
  * Service used for broadcasting UI events in between controllers.
  */
-angular.module('broadcaster').service('broadcaster', [ '$rootScope',
-    function ($rootScope) {
+angular.module('broadcaster').service('broadcaster', [
+    '$rootScope', 'satnetPush',
+    function ($rootScope, satnetPush) {
 
         'use strict';
 
         this.GS_ADDED_EVENT = 'gs.added';
         this.GS_REMOVED_EVENT = 'gs.removed';
         this.GS_UPDATED_EVENT = 'gs.updated';
+        this.GS_AVAILABLE_ADDED_EVENT = 'gs.available.added';
+        this.GS_AVAILABLE_REMOVED_EVENT = 'gs.available.removed';
+        this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -46,7 +50,6 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
          * @param identifier The identifier of the GroundStation.
          */
         this.gsRemoved = function (identifier) {
-            console.log('@broadcaster.gsRemoved, id = ' + identifier);
             $rootScope.$broadcast(this.GS_REMOVED_EVENT, identifier);
         };
 
@@ -59,14 +62,18 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
             $rootScope.$broadcast(this.GS_UPDATED_EVENT, identifier);
         };
 
-        this.gsAddedPusher = function (id_object) {
-            this.gsAdded(id_object.identifier);
+        this.gsAvailableAddedInternal = function (identifier) {
+            $rootScope.$broadcast('gs.available.added', identifier);
         };
-        this.gsRemovedPusher = function (id_object) {
-            this.gsRemoved(id_object.identifier);
+
+        this.gsAvailableAdded = function (id_object) {
+            $rootScope.$broadcast('gs.available.added', id_object.identifier);
         };
-        this.gsUpdatedPusher = function (id_object) {
-            this.gsUpdated(id_object.identifier);
+        this.gsAvailableRemoved = function (id_object) {
+            $rootScope.$broadcast('gs.available.removed', id_object.identifier);
+        };
+        this.gsAvailableUpdated = function (id_object) {
+            $rootScope.$broadcast('gs.available.updated', id_object.identifier);
         };
 
         this.SC_ADDED_EVENT = 'sc.added';
@@ -100,4 +107,24 @@ angular.module('broadcaster').service('broadcaster', [ '$rootScope',
             $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
         };
 
-    }]);
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_ADDED_EVENT,
+            this.gsAvailableAdded,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_REMOVED_EVENT,
+            this.gsAvailableRemoved,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.EVENTS_CHANNEL,
+            satnetPush.GS_UPDATED_EVENT,
+            this.gsAvailableUpdated,
+            this
+        );
+
+    }
+]);

@@ -28,8 +28,8 @@ class PushService(object):
     pusher.com webservice.
     """
     TEST_CHANNEL = 'test_channel'
-    CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
     LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
+    CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
     SATNET_CHANNELS = [
         TEST_CHANNEL,
         LEOP_DOWNLINK_CHANNEL,

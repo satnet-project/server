@@ -32,6 +32,7 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
         'use strict';
 
         $scope.gsIds = [];
+        $scope.gsAvailableIds = [];
 
         $scope.panToGS = function (groundstation_id) {
             markers.panToGSMarker(groundstation_id).then(
@@ -57,6 +58,9 @@ angular.module('ui-leop-menu-controllers').controller('LEOPGSMenuCtrl', [
                 .then(function (data) {
                     if ((data !== null) && (data.leop_gs_inuse !== undefined)) {
                         $scope.gsIds = data.leop_gs_inuse.slice(0);
+                    }
+                    if ((data !== null) && (data.leop_gs_available !== undefined)) {
+                        $scope.gsAvailableIds = data.leop_gs_available.slice(0);
                     }
                 });
         };
@@ -87,9 +91,7 @@ angular.module('ui-leop-menu-controllers').controller('clusterMenuCtrl', [
         $scope.refreshSCList = function () {
             satnetRPC.rCall('leop.sc.list', [$rootScope.leop_id])
                 .then(function (data) {
-                    if (data !== null) {
-                        $scope.scIds = data.slice(0);
-                    }
+                    if (data !== null) { $scope.scIds = data.slice(0); }
                 });
         };
         $scope.panToSC = function (groundstation_id) {

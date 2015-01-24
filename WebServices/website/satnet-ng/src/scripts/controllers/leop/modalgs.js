@@ -135,6 +135,7 @@ angular.module('ui-leop-modalgs-controllers')
                         gs_id = $scope.gsIds.toRemove[i].groundstation_id;
                         r_ids.push(gs_id);
                         broadcaster.gsRemoved(gs_id);
+                        broadcaster.gsAvailableAddedInternal(gs_id);
                     }
                     satnetRPC.rCall(
                         'leop.gs.remove',

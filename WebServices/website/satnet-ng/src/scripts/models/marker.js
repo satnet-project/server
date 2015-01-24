@@ -330,8 +330,7 @@ angular.module('marker-models')
              * @param cfg The configuration of the GroundStation.
              * @returns Angular leaflet marker.
              */
-            this.createGSMarker = function (cfg) {
-
+            this.createUnconnectedGSMarker = function (cfg) {
                 var id = cfg.groundstation_id;
 
                 this.getScope().markers[this.createMarkerKey(id)] = {
@@ -353,6 +352,20 @@ angular.module('marker-models')
                     identifier: id
                 };
 
+                return id;
+            };
+
+            /**
+             * Creates a new marker object for the given GroundStation, adding
+             * the connector to the server.
+             *
+             * @param cfg The configuration of the GroundStation.
+             * @returns Angular leaflet marker.
+             */
+            this.createGSMarker = function (cfg) {
+
+                var id = cfg.groundstation_id;
+                this.createUnconnectedGSMarker(cfg);
                 this.createGSConnector(id);
                 return id;
 
@@ -392,7 +405,9 @@ angular.module('marker-models')
                     ),
                     m_key = this.getMarkerKey(identifier);
                 delete this.getScope().markers[m_key];
-                delete this.getScope().paths[p_key];
+                if (this.getScope().paths.hasOwnProperty(p_key)) {
+                    delete this.getScope().paths[p_key];
+                }
             };
 
             /******************************************************************/
