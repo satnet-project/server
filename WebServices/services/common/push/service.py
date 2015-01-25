@@ -47,6 +47,7 @@ class PushService(object):
     GS_REMOVED_EVENT = 'gsRemovedEv'
     GS_UPDATED_EVENT = 'gsUpdatedEv'
     PASSES_UPDATED_EVENT = 'passesUpdatedEv'
+    GROUNDTRACK_UPDATED_EVENT = 'groundtrackUpdatedEv'
     LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv'
     LEOP_UPDATED_EVENT = 'leopUpdatedEv'
     LEOP_UFO_IDENTIFIED = 'leopUFOIdentifiedEv'

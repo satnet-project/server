@@ -129,6 +129,9 @@ angular.module('broadcaster').service('broadcaster', [
         this.passesUpdated = function () {
             $rootScope.$broadcast('passes.updated', {});
         };
+        this.scGtUpdated = function (data) {
+            $rootScope.$broadcast('sc.updated', data.identifier);
+        };
         this.leopGssUpdated = function (leop_id) {
             if ($rootScope.leop_id !== leop_id.identifier) {
                 return;
@@ -142,27 +145,19 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast('leop.updated', leop_id);
         };
         this.leopUfoIdentified = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.added', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.added', data.spacecraft_id);
         };
         this.leopUfoUpdated = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.updated', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.updated', data.spacecraft_id);
         };
         this.leopUfoForgot = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.removed', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.removed', data.spacecraft_id);
         };
         this.leopSCUpdated = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
+            if ($rootScope.leop_id !== data.launch_id) { return; }
             $rootScope.$broadcast('sc.updated', data.launch_sc_id);
         };
 
@@ -188,6 +183,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.SIMULATION_CHANNEL,
             satnetPush.PASSES_UPDATED_EVENT,
             this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.SIMULATION_CHANNEL,
+            satnetPush.GT_UPDATED_EVENT,
+            this.scGtUpdated,
             this
         );
         satnetPush.bind(

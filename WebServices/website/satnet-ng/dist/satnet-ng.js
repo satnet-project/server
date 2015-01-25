@@ -45,6 +45,7 @@ angular.module('pushServices').service('satnetPush', [
         this.GS_REMOVED_EVENT = 'gsRemovedEv';
         this.GS_UPDATED_EVENT = 'gsUpdatedEv';
         this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
+        this.GT_UPDATED_EVENT = 'groundtrackUpdatedEv';
         this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
         this.LEOP_UPDATED_EVENT = 'leopUpdatedEv';
         this.LEOP_UFO_IDENTIFIED_EVENT = 'leopUFOIdentifiedEv';
@@ -441,6 +442,9 @@ angular.module('broadcaster').service('broadcaster', [
         this.passesUpdated = function () {
             $rootScope.$broadcast('passes.updated', {});
         };
+        this.scGtUpdated = function (data) {
+            $rootScope.$broadcast('sc.updated', data.identifier);
+        };
         this.leopGssUpdated = function (leop_id) {
             if ($rootScope.leop_id !== leop_id.identifier) {
                 return;
@@ -454,27 +458,19 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast('leop.updated', leop_id);
         };
         this.leopUfoIdentified = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.added', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.added', data.spacecraft_id);
         };
         this.leopUfoUpdated = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.updated', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.updated', data.spacecraft_id);
         };
         this.leopUfoForgot = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
-            $rootScope.$broadcast('sc.removed', data.ufo_id);
+            if ($rootScope.leop_id !== data.launch_id) { return; }
+            $rootScope.$broadcast('sc.removed', data.spacecraft_id);
         };
         this.leopSCUpdated = function (data) {
-            if ($rootScope.leop_id !== data.launch_id) {
-                return;
-            }
+            if ($rootScope.leop_id !== data.launch_id) { return; }
             $rootScope.$broadcast('sc.updated', data.launch_sc_id);
         };
 
@@ -500,6 +496,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.SIMULATION_CHANNEL,
             satnetPush.PASSES_UPDATED_EVENT,
             this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.SIMULATION_CHANNEL,
+            satnetPush.GT_UPDATED_EVENT,
+            this.scGtUpdated,
             this
         );
         satnetPush.bind(
@@ -998,18 +1000,6 @@ angular.module('map-services')
              */
             this.getBaseLayers = function () {
                 return {
-                    esri_baselayer: {
-                        name: 'ESRI Base Layer',
-                        type: 'xyz',
-                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-                        layerOptions: {
-                            noWrap: false,
-                            continuousWorld: false,
-                            minZoom: MIN_ZOOM,
-                            maxZoom: MAX_ZOOM,
-                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
-                        }
-                    },
                     osm_baselayer: {
                         name: 'OSM Base Layer',
                         type: 'xyz',
@@ -1021,7 +1011,33 @@ angular.module('map-services')
                             maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
+                    },
+                    esri_baselayer: {
+                        name: 'ESRI Base Layer',
+                        type: 'xyz',
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                        layerOptions: {
+                            noWrap: false,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                        }
                     }
+                    /*,
+                    acetate_terrain: {
+                        name: 'Acetate Terrain',
+                        type: 'xyz',
+                        url: 'http://a{s}.acetate.geoiq.com/tiles/terrain/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            noWrap: false,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth'
+                        }
+                    }
+                    */
                 };
             };
 
@@ -3154,7 +3170,7 @@ angular.module('ui-leop-modalufo-controllers')
                         object.sc_identifier = data.sc_identifier;
                         $scope._addIdentified(object_id, object);
                         $scope._removeEditing(object_id);
-                        broadcaster.scUpdated(object.sc_identifier);
+                        //broadcaster.scUpdated(object.sc_identifier);
                     },
                     function (data) {
                         err_msg += JSON.stringify(data);

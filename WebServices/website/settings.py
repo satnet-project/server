@@ -250,7 +250,7 @@ LOGGING = {
         },
         'rpc4django': {
             'handlers': ['console'],
-            'level': 'CRITICAL',
+            'level': 'DEBUG',
             'propagate': True,
         },
         'accounts': {

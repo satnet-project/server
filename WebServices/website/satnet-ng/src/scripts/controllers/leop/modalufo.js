@@ -630,7 +630,7 @@ angular.module('ui-leop-modalufo-controllers')
                         object.sc_identifier = data.sc_identifier;
                         $scope._addIdentified(object_id, object);
                         $scope._removeEditing(object_id);
-                        broadcaster.scUpdated(object.sc_identifier);
+                        //broadcaster.scUpdated(object.sc_identifier);
                     },
                     function (data) {
                         err_msg += JSON.stringify(data);

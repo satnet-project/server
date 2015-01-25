@@ -22,6 +22,7 @@ from services.configuration.models import segments as segment_models
 from services.leop import push as launch_push
 from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
+from services.leop.models import ufos as ufo_models
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.simulation.models import passes as pass_models
 from services.simulation.jrpc.serializers import passes as pass_serializers
@@ -234,7 +235,9 @@ def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
 
-    launch_push.LaunchPush.trigger_ufo_identified(launch_id, object_id)
+    launch_push.LaunchPush.trigger_ufo_identified(
+        launch_id, object_id, spacecraft_id
+    )
 
     return {
         launch_serial.JRPC_K_OBJECT_ID: object_id,
@@ -254,8 +257,15 @@ def forget(launch_id, object_id):
     :param object_id: Identifier for the unknown object
     :return: True if the operation was succesful
     """
+    spacecraft_id = ufo_models.IdentifiedObject.objects.get(
+        identifier=object_id
+    ).spacecraft.identifier
     result = launch_models.Launch.objects.forget(launch_id, object_id)
-    launch_push.LaunchPush.trigger_ufo_forgotten(launch_id, object_id)
+
+    launch_push.LaunchPush.trigger_ufo_forgotten(
+        launch_id, object_id, spacecraft_id
+    )
+
     return result
 
 
@@ -277,7 +287,9 @@ def update(launch_id, object_id, callsign, tle_l1, tle_l2):
     object_id, spacecraft_id = launch_models.Launch.objects.update_identified(
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
-    launch_push.LaunchPush.trigger_ufo_updated(launch_id, object_id)
+    launch_push.LaunchPush.trigger_ufo_updated(
+        launch_id, object_id, spacecraft_id
+    )
     return {
         launch_serial.JRPC_K_OBJECT_ID: object_id,
         launch_serial.JRPC_K_SC_ID: spacecraft_id

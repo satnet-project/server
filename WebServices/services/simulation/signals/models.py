@@ -20,6 +20,7 @@ from django import dispatch as django_dispatch
 import logging
 from services.configuration.models import segments
 from services.configuration.models import tle as tle_models
+from services.simulation import push as simulation_push
 from services.simulation.models import groundtracks as gt_models
 from services.simulation.models import passes as pass_models
 
@@ -129,6 +130,10 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
         gt.delete()
         gt_models.GroundTrack.objects.create(instance)
 
+        simulation_push.SimulationPush.trigger_gt_updated_event(
+            instance.identifier
+        )
+
         pass_models.PassSlots.objects.remove_pass_slots_sc(instance)
         pass_models.PassSlots.objects.create_pass_slots_sc(instance)
 
@@ -176,3 +181,7 @@ def tle_updated(sender, instance, created, raw, **kwargs):
         spacecraft = gt.spacecraft
         gt.delete()
         gt_models.GroundTrack.objects.create(spacecraft)
+
+        simulation_push.SimulationPush.trigger_gt_updated_event(
+            spacecraft.identifier
+        )

@@ -42,7 +42,7 @@ class LaunchPush(object):
         )
 
     @staticmethod
-    def trigger_ufo_identified(launch_id, ufo_id):
+    def trigger_ufo_identified(launch_id, ufo_id, spacecraft_id):
         """
         This method triggers the event that marks the identification of a given
         UFO as a spacecraft.
@@ -54,41 +54,45 @@ class LaunchPush(object):
             push_service.PushService.LEOP_UFO_IDENTIFIED,
             {
                 'launch_id': str(launch_id),
-                'ufo_id': str(ufo_id)
+                'ufo_id': str(ufo_id),
+                'spacecraft_id': str(spacecraft_id)
             }
         )
 
     @staticmethod
-    def trigger_ufo_updated(launch_id, ufo_id):
+    def trigger_ufo_updated(launch_id, ufo_id, spacecraft_id):
         """
         This method triggers the event that marks the identification of a given
         UFO as a spacecraft.
         :param launch_id: Identifier of the Launch
-        :param ufo_id: Identifier of the UFO.
+        :param ufo_id: Identifier of the UFO
+        :param spacecraft_id: Identifier of the spacecraft linked to this UFO
         """
         push_service.PushService().trigger_event(
             push_service.PushService.LEOP_EVENTS_CHANNEL,
             push_service.PushService.LEOP_UFO_UPDATED,
             {
                 'launch_id': str(launch_id),
-                'ufo_id': str(ufo_id)
+                'ufo_id': str(ufo_id),
+                'spacecraft_id': str(spacecraft_id)
             }
         )
 
     @staticmethod
-    def trigger_ufo_forgotten(launch_id, ufo_id):
+    def trigger_ufo_forgotten(launch_id, ufo_id, spacecraft_id):
         """
         This method triggers the event that marks to the clients that the
         server has <forgotten> about a given UFO as a spacecraft.
         :param launch_id: Identifier of the Launch
-        :param ufo_id: Identifier of the UFO.
+        :param ufo_id: Identifier of the UFO (matches spacecraft_id xxxx)
         """
         push_service.PushService().trigger_event(
             push_service.PushService.LEOP_EVENTS_CHANNEL,
             push_service.PushService.LEOP_UFO_FORGOTTEN,
             {
                 'launch_id': str(launch_id),
-                'ufo_id': str(ufo_id)
+                'ufo_id': str(ufo_id),
+                'spacecraft_id': str(spacecraft_id)
             }
         )
 

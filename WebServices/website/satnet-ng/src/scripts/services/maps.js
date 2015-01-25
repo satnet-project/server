@@ -225,18 +225,6 @@ angular.module('map-services')
              */
             this.getBaseLayers = function () {
                 return {
-                    esri_baselayer: {
-                        name: 'ESRI Base Layer',
-                        type: 'xyz',
-                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
-                        layerOptions: {
-                            noWrap: false,
-                            continuousWorld: false,
-                            minZoom: MIN_ZOOM,
-                            maxZoom: MAX_ZOOM,
-                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
-                        }
-                    },
                     osm_baselayer: {
                         name: 'OSM Base Layer',
                         type: 'xyz',
@@ -248,7 +236,33 @@ angular.module('map-services')
                             maxZoom: MAX_ZOOM,
                             attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                         }
+                    },
+                    esri_baselayer: {
+                        name: 'ESRI Base Layer',
+                        type: 'xyz',
+                        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+                        layerOptions: {
+                            noWrap: false,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'
+                        }
                     }
+                    /*,
+                    acetate_terrain: {
+                        name: 'Acetate Terrain',
+                        type: 'xyz',
+                        url: 'http://a{s}.acetate.geoiq.com/tiles/terrain/{z}/{x}/{y}.png',
+                        layerOptions: {
+                            noWrap: false,
+                            continuousWorld: false,
+                            minZoom: MIN_ZOOM,
+                            maxZoom: MAX_ZOOM,
+                            attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth'
+                        }
+                    }
+                    */
                 };
             };
 

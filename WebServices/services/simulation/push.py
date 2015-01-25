@@ -36,3 +36,18 @@ class SimulationPush(object):
             satnet_push.PushService.PASSES_UPDATED_EVENT,
             {}
         )
+
+    @staticmethod
+    def trigger_gt_updated_event(spacecraft_id):
+        """
+        Triggers the transmission of this event through the pusher.com service.
+        """
+        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
+        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
+        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
+
+        satnet_push.PushService().trigger_event(
+            satnet_push.PushService.SIMULATION_EVENTS_CHANNEL,
+            satnet_push.PushService.GROUNDTRACK_UPDATED_EVENT,
+            {'identifier': str(spacecraft_id)}
+        )
