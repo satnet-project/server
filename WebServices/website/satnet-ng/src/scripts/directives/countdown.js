@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-angular.module('countdownDirective', [ 'satnet-services' ])
+angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
     .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
     .controller('countdownCtrl', [
-        '$rootScope', '$log', '$scope', '$timeout', 'satnetRPC',
-        function ($rootScope, $log, $scope, $timeout, satnetRPC) {
+        '$rootScope', '$log', '$scope', '$timeout', 'broadcaster', 'satnetRPC',
+        function ($rootScope, $log, $scope, $timeout, broadcaster, satnetRPC) {
             'use strict';
 
             $scope.cd = {
@@ -61,7 +61,7 @@ angular.module('countdownDirective', [ 'satnet-services' ])
                 }, 990);
             };
 
-            $scope._init = function (cfg) {
+            $scope._initData = function (cfg) {
                 var now = moment().utc();
                 $scope.cd._launch = moment(cfg.date);
                 $scope.cd._diff = moment.duration($scope.cd._launch.diff(now));
@@ -70,12 +70,21 @@ angular.module('countdownDirective', [ 'satnet-services' ])
 
             $scope.init = function () {
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (cfg) { $scope._init(cfg); }
+                    function (cfg) { $scope._initData(cfg); }
                 );
                 $scope.$on('cluster-cfg-updated', function (id, cfg) {
                     console.log('EVENT, id = ' + id);
-                    $log.info('@countdown: updating cluster, cfg = ' + cfg);
-                    $scope._init(cfg);
+                    $log.info(
+                        '@countdown: updating cluster, cfg = ' +
+                            JSON.stringify(cfg)
+                    );
+                    $scope._initData(cfg);
+                });
+                $scope.$on(broadcaster.LEOP_UPDATED_EVENT, function (id, leop_id) {
+                    console.log('EVENT, ev = ' + id + ', leop_id = ' + leop_id);
+                    satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                        function (cfg) { $scope._initData(cfg); }
+                    );
                 });
             };
 

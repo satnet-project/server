@@ -378,29 +378,53 @@ angular.module('ui-leop-modalufo-controllers')
             $scope.is_anonymous = $rootScope.is_anonymous;
             $scope.cluster = {};
 
-            $scope._init = function (data) {
-                $scope.cluster.identifier = data.identifier;
-                $scope.cluster.sc_identifier = data.sc_identifier;
-                $scope.cluster.old_tle_l1 = data.tle_l1;
-                $scope.cluster.old_tle_l2 = data.tle_l2;
-                $scope.cluster.tle_l1 = data.tle_l1;
-                $scope.cluster.tle_l2 = data.tle_l2;
-                $scope.cluster.date = data.date;
-                $scope.cluster.max_objects = MAX_OBJECTS;
-                $scope.cluster.no_objects = 0;
-                $scope.cluster.edit = false;
+            $scope._initData = function () {
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                    function (data) {
+                        console.log(
+                            '[modal-ufo] leop cfg = ' + JSON.stringify(data)
+                        );
+                        $scope.cluster.identifier = data.identifier;
+                        $scope.cluster.sc_identifier = data.sc_identifier;
+                        $scope.cluster.old_tle_l1 = data.tle_l1;
+                        $scope.cluster.old_tle_l2 = data.tle_l2;
+                        $scope.cluster.tle_l1 = data.tle_l1;
+                        $scope.cluster.tle_l2 = data.tle_l2;
+                        $scope.cluster.date = data.date;
+                        $scope.cluster.max_objects = MAX_OBJECTS;
+                        $scope.cluster.no_objects = 0;
+                        $scope.cluster.edit = false;
 
-                oArrays.parseInt(data.ufos, 'object_id');
-                $scope.cluster.ufos =
-                    $scope._objArr2Dict(data.ufos);
-                $scope.cluster.no_ufos = $scope._ufosSize();
+                        oArrays.parseInt(data.ufos, 'object_id');
+                        $scope.cluster.ufos =
+                            $scope._objArr2Dict(data.ufos);
+                        $scope.cluster.no_ufos = $scope._ufosSize();
 
-                $scope.cluster.editing = {};
-                $scope.cluster.no_editing = 0;
+                        $scope.cluster.editing = {};
+                        $scope.cluster.no_editing = 0;
 
-                $scope.cluster.identified =
-                    $scope._objArr2Dict(data.identified);
-                $scope.cluster.no_identified = $scope._identifiedSize();
+                        $scope.cluster.identified =
+                            $scope._objArr2Dict(data.identified);
+                        $scope.cluster.no_identified = $scope._identifiedSize();
+                    }
+                );
+            };
+
+            $scope._initListeners = function () {
+                $scope.$on(
+                    broadcaster.LEOP_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '[modalufo] ev = ' + event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope._objArr2Dict = function (array) {
@@ -504,18 +528,6 @@ angular.module('ui-leop-modalufo-controllers')
                     $scope.cluster.no_ufos +
                     $scope.cluster.no_editing +
                     $scope.cluster.no_identified;
-            };
-
-            $scope.init = function () {
-                var scope = $scope;
-                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (data) {
-                        console.log(
-                            '[modal-ufo] cluster cfg = ' + JSON.stringify(data)
-                        );
-                        scope._init(data);
-                    }
-                );
             };
 
             $scope.add = function () {

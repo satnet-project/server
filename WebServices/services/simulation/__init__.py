@@ -19,4 +19,4 @@ __author__ = 'rtubiopa@calpoly.edu'
 from services.simulation.jrpc.views import groundtracks
 
 # Signals
-from services.simulation.signals import models, push
+from services.simulation.signals import models

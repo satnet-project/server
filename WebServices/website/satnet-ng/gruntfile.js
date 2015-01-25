@@ -201,6 +201,13 @@ module.exports = function (grunt) {
                 }
             }
         },
+        preview: {
+            html: {
+                cwd: 'src/templates',
+                dest: 'http://localhost:9000',
+                src: ["**/*.html"]
+            }
+        },
         watch: {
             build: {
                 files: [
@@ -218,6 +225,12 @@ module.exports = function (grunt) {
                     'tests/**/*.html'
                 ],
                 tasks: ['test']
+            },
+            html: {
+                files: [
+                    'src/templates/**/*'
+                ],
+                tasks: ['preview']
             }
         }
     });
@@ -234,6 +247,7 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-qunit');
     grunt.loadNpmTasks('grunt-angular-templates');
     grunt.loadNpmTasks('grunt-karma');
+    grunt.loadNpmTasks('grunt-preview');
 
     // register your tasks
     grunt.registerTask('test', ['qunit']);

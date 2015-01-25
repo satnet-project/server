@@ -13,6 +13,7 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
 __author__ = 'rtubiopa@calpoly.edu'
 
 # It is necessary to import this module here for rpc4django to detect the RPC
@@ -20,4 +21,4 @@ __author__ = 'rtubiopa@calpoly.edu'
 from services.leop.jrpc.views import launch, messages
 
 # Signals to be imported
-from services.leop import signals
+from services.leop.signals import models, push

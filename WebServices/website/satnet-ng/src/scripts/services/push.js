@@ -46,10 +46,10 @@ angular.module('pushServices').service('satnetPush', [
         this.GS_UPDATED_EVENT = 'gsUpdatedEv';
         this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
         this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
+        this.LEOP_UPDATED_EVENT = 'leopUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
-            'test_channel',
             this.DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
@@ -60,7 +60,7 @@ angular.module('pushServices').service('satnetPush', [
          * Initializes the pusher service.
          * @private
          */
-        this._init = function () {
+        this._initData = function () {
 
             this._client = new Pusher(this._API_KEY, { encrypted: true });
             this._service = $pusher(this._client);
@@ -146,7 +146,7 @@ angular.module('pushServices').service('satnetPush', [
         };
         */
 
-        this._init();
+        this._initData();
 
     }
 

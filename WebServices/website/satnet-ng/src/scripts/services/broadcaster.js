@@ -40,6 +40,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
         this.PASSES_UPDATED = 'passes.updated';
         this.LEOP_GSS_UPDATED_EVENT = 'leop.gss.updated';
+        this.LEOP_UPDATED_EVENT = 'leop.updated';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -97,7 +98,18 @@ angular.module('broadcaster').service('broadcaster', [
             if ($rootScope.leop_id !== leop_id.identifier) {
                 return;
             }
-            $rootScope.$broadcast('leop.gss.updated');
+            $rootScope.$broadcast('leop.gss.updated', leop_id);
+        };
+        this.leopUpdated = function (leop_id) {
+            console.log(
+                '@@@@@@@@@@@@leop.gss.updated, leop_id.identifier = ' +
+                    leop_id.identifier
+            );
+            if ($rootScope.leop_id !== leop_id.identifier) {
+                return;
+            }
+            console.log('@@@@@@@@@@@@ XXXXXXXXXXXXXx');
+            $rootScope.$broadcast('leop.updated', leop_id);
         };
 
         satnetPush.bind(
@@ -122,6 +134,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.SIMULATION_CHANNEL,
             satnetPush.PASSES_UPDATED_EVENT,
             this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_UPDATED_EVENT,
+            this.leopUpdated,
             this
         );
         satnetPush.bind(

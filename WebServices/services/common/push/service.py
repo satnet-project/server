@@ -47,6 +47,7 @@ class PushService(object):
     GS_UPDATED_EVENT = 'gsUpdatedEv'
     PASSES_UPDATED_EVENT = 'passesUpdatedEv'
     LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv'
+    LEOP_UPDATED_EVENT = 'leopUpdatedEv'
 
     # The puser object.
     _service = None

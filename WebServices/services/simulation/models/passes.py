@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.db import models as django_models
 from services.common import simulation
 from services.configuration.models import segments as segment_models
+from services.simulation import push as simulation_push
 
 
 class PassManager(django_models.Manager):
@@ -73,6 +74,7 @@ class PassManager(django_models.Manager):
 
             all_slots += slots
 
+        simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
 
     def create_pass_slots_gs(self, groundstation):
@@ -99,6 +101,7 @@ class PassManager(django_models.Manager):
 
             all_slots += slots
 
+        simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
 
     def propagate_pass_slots(self):
@@ -125,6 +128,7 @@ class PassManager(django_models.Manager):
 
                 all_slots += slots
 
+        simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
 
     def remove_pass_slots_sc(self, spacecraft):
@@ -133,6 +137,7 @@ class PassManager(django_models.Manager):
         :param spacecraft: Spacecraft object
         """
         self.filter(spacecraft=spacecraft).delete()
+        simulation_push.SimulationPush.trigger_passes_updated_event()
 
     def remove_pass_slots_gs(self, groundstation):
         """Manager method
@@ -140,6 +145,7 @@ class PassManager(django_models.Manager):
         :param groundstation: Groundstation object
         """
         self.filter(groundstation=groundstation).delete()
+        simulation_push.SimulationPush.trigger_passes_updated_event()
 
 
 class PassSlots(django_models.Model):

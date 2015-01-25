@@ -46,10 +46,10 @@ angular.module('pushServices').service('satnetPush', [
         this.GS_UPDATED_EVENT = 'gsUpdatedEv';
         this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
         this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
+        this.LEOP_UPDATED_EVENT = 'leopUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
-            'test_channel',
             this.DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
@@ -60,7 +60,7 @@ angular.module('pushServices').service('satnetPush', [
          * Initializes the pusher service.
          * @private
          */
-        this._init = function () {
+        this._initData = function () {
 
             this._client = new Pusher(this._API_KEY, { encrypted: true });
             this._service = $pusher(this._client);
@@ -146,7 +146,7 @@ angular.module('pushServices').service('satnetPush', [
         };
         */
 
-        this._init();
+        this._initData();
 
     }
 
@@ -349,6 +349,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.GS_AVAILABLE_UPDATED_EVENT = 'gs.available.updated';
         this.PASSES_UPDATED = 'passes.updated';
         this.LEOP_GSS_UPDATED_EVENT = 'leop.gss.updated';
+        this.LEOP_UPDATED_EVENT = 'leop.updated';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -406,7 +407,18 @@ angular.module('broadcaster').service('broadcaster', [
             if ($rootScope.leop_id !== leop_id.identifier) {
                 return;
             }
-            $rootScope.$broadcast('leop.gss.updated');
+            $rootScope.$broadcast('leop.gss.updated', leop_id);
+        };
+        this.leopUpdated = function (leop_id) {
+            console.log(
+                '@@@@@@@@@@@@leop.gss.updated, leop_id.identifier = ' +
+                    leop_id.identifier
+            );
+            if ($rootScope.leop_id !== leop_id.identifier) {
+                return;
+            }
+            console.log('@@@@@@@@@@@@ XXXXXXXXXXXXXx');
+            $rootScope.$broadcast('leop.updated', leop_id);
         };
 
         satnetPush.bind(
@@ -431,6 +443,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.SIMULATION_CHANNEL,
             satnetPush.PASSES_UPDATED_EVENT,
             this.passesUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_UPDATED_EVENT,
+            this.leopUpdated,
             this
         );
         satnetPush.bind(
@@ -2838,29 +2856,53 @@ angular.module('ui-leop-modalufo-controllers')
             $scope.is_anonymous = $rootScope.is_anonymous;
             $scope.cluster = {};
 
-            $scope._init = function (data) {
-                $scope.cluster.identifier = data.identifier;
-                $scope.cluster.sc_identifier = data.sc_identifier;
-                $scope.cluster.old_tle_l1 = data.tle_l1;
-                $scope.cluster.old_tle_l2 = data.tle_l2;
-                $scope.cluster.tle_l1 = data.tle_l1;
-                $scope.cluster.tle_l2 = data.tle_l2;
-                $scope.cluster.date = data.date;
-                $scope.cluster.max_objects = MAX_OBJECTS;
-                $scope.cluster.no_objects = 0;
-                $scope.cluster.edit = false;
+            $scope._initData = function () {
+                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                    function (data) {
+                        console.log(
+                            '[modal-ufo] leop cfg = ' + JSON.stringify(data)
+                        );
+                        $scope.cluster.identifier = data.identifier;
+                        $scope.cluster.sc_identifier = data.sc_identifier;
+                        $scope.cluster.old_tle_l1 = data.tle_l1;
+                        $scope.cluster.old_tle_l2 = data.tle_l2;
+                        $scope.cluster.tle_l1 = data.tle_l1;
+                        $scope.cluster.tle_l2 = data.tle_l2;
+                        $scope.cluster.date = data.date;
+                        $scope.cluster.max_objects = MAX_OBJECTS;
+                        $scope.cluster.no_objects = 0;
+                        $scope.cluster.edit = false;
 
-                oArrays.parseInt(data.ufos, 'object_id');
-                $scope.cluster.ufos =
-                    $scope._objArr2Dict(data.ufos);
-                $scope.cluster.no_ufos = $scope._ufosSize();
+                        oArrays.parseInt(data.ufos, 'object_id');
+                        $scope.cluster.ufos =
+                            $scope._objArr2Dict(data.ufos);
+                        $scope.cluster.no_ufos = $scope._ufosSize();
 
-                $scope.cluster.editing = {};
-                $scope.cluster.no_editing = 0;
+                        $scope.cluster.editing = {};
+                        $scope.cluster.no_editing = 0;
 
-                $scope.cluster.identified =
-                    $scope._objArr2Dict(data.identified);
-                $scope.cluster.no_identified = $scope._identifiedSize();
+                        $scope.cluster.identified =
+                            $scope._objArr2Dict(data.identified);
+                        $scope.cluster.no_identified = $scope._identifiedSize();
+                    }
+                );
+            };
+
+            $scope._initListeners = function () {
+                $scope.$on(
+                    broadcaster.LEOP_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '[modalufo] ev = ' + event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+            };
+
+            $scope.init = function () {
+                $scope._initData();
+                $scope._initListeners();
             };
 
             $scope._objArr2Dict = function (array) {
@@ -2964,18 +3006,6 @@ angular.module('ui-leop-modalufo-controllers')
                     $scope.cluster.no_ufos +
                     $scope.cluster.no_editing +
                     $scope.cluster.no_identified;
-            };
-
-            $scope.init = function () {
-                var scope = $scope;
-                satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (data) {
-                        console.log(
-                            '[modal-ufo] cluster cfg = ' + JSON.stringify(data)
-                        );
-                        scope._init(data);
-                    }
-                );
             };
 
             $scope.add = function () {
@@ -3663,11 +3693,11 @@ angular.module('ui-modalsc-controllers').controller('EditSCModalCtrl', [
    limitations under the License.
 */
 
-angular.module('countdownDirective', [ 'satnet-services' ])
+angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
     .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
     .controller('countdownCtrl', [
-        '$rootScope', '$log', '$scope', '$timeout', 'satnetRPC',
-        function ($rootScope, $log, $scope, $timeout, satnetRPC) {
+        '$rootScope', '$log', '$scope', '$timeout', 'broadcaster', 'satnetRPC',
+        function ($rootScope, $log, $scope, $timeout, broadcaster, satnetRPC) {
             'use strict';
 
             $scope.cd = {
@@ -3710,7 +3740,7 @@ angular.module('countdownDirective', [ 'satnet-services' ])
                 }, 990);
             };
 
-            $scope._init = function (cfg) {
+            $scope._initData = function (cfg) {
                 var now = moment().utc();
                 $scope.cd._launch = moment(cfg.date);
                 $scope.cd._diff = moment.duration($scope.cd._launch.diff(now));
@@ -3719,12 +3749,21 @@ angular.module('countdownDirective', [ 'satnet-services' ])
 
             $scope.init = function () {
                 satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
-                    function (cfg) { $scope._init(cfg); }
+                    function (cfg) { $scope._initData(cfg); }
                 );
                 $scope.$on('cluster-cfg-updated', function (id, cfg) {
                     console.log('EVENT, id = ' + id);
-                    $log.info('@countdown: updating cluster, cfg = ' + cfg);
-                    $scope._init(cfg);
+                    $log.info(
+                        '@countdown: updating cluster, cfg = ' +
+                            JSON.stringify(cfg)
+                    );
+                    $scope._initData(cfg);
+                });
+                $scope.$on(broadcaster.LEOP_UPDATED_EVENT, function (id, leop_id) {
+                    console.log('EVENT, ev = ' + id + ', leop_id = ' + leop_id);
+                    satnetRPC.rCall('leop.cfg', [$rootScope.leop_id]).then(
+                        function (cfg) { $scope._initData(cfg); }
+                    );
                 });
             };
 
