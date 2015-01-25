@@ -21,7 +21,7 @@ from services.leop.jrpc.serializers import messages as message_serializers
 logger = logging.getLogger('leop')
 
 
-class CommunicationsPush(object):
+class LaunchPush(object):
     """Push service
     Object that contains a set of static but convenient methods that facilitate
     the usage of the remote PUSH services.
@@ -39,4 +39,72 @@ class CommunicationsPush(object):
             push_service.PushService.LEOP_DOWNLINK_CHANNEL,
             push_service.PushService.FRAME_EVENT,
             message_serializers.serialize_push_frame(message)
+        )
+
+    @staticmethod
+    def trigger_ufo_identified(launch_id, ufo_id):
+        """
+        This method triggers the event that marks the identification of a given
+        UFO as a spacecraft.
+        :param launch_id: Identifier of the Launch
+        :param ufo_id: Identifier of the UFO.
+        """
+        push_service.PushService().trigger_event(
+            push_service.PushService.LEOP_EVENTS_CHANNEL,
+            push_service.PushService.LEOP_UFO_IDENTIFIED,
+            {
+                'launch_id': str(launch_id),
+                'ufo_id': str(ufo_id)
+            }
+        )
+
+    @staticmethod
+    def trigger_ufo_updated(launch_id, ufo_id):
+        """
+        This method triggers the event that marks the identification of a given
+        UFO as a spacecraft.
+        :param launch_id: Identifier of the Launch
+        :param ufo_id: Identifier of the UFO.
+        """
+        push_service.PushService().trigger_event(
+            push_service.PushService.LEOP_EVENTS_CHANNEL,
+            push_service.PushService.LEOP_UFO_UPDATED,
+            {
+                'launch_id': str(launch_id),
+                'ufo_id': str(ufo_id)
+            }
+        )
+
+    @staticmethod
+    def trigger_ufo_forgotten(launch_id, ufo_id):
+        """
+        This method triggers the event that marks to the clients that the
+        server has <forgotten> about a given UFO as a spacecraft.
+        :param launch_id: Identifier of the Launch
+        :param ufo_id: Identifier of the UFO.
+        """
+        push_service.PushService().trigger_event(
+            push_service.PushService.LEOP_EVENTS_CHANNEL,
+            push_service.PushService.LEOP_UFO_FORGOTTEN,
+            {
+                'launch_id': str(launch_id),
+                'ufo_id': str(ufo_id)
+            }
+        )
+
+    @staticmethod
+    def trigger_leop_sc_updated(launch_id, launch_sc_id):
+        """
+        Triggers the transmission of the event that reports the update of the
+        SC related directly with the cluster.
+        :param launch_id: Identifier of the Launch
+        :param launch_sc_id: Identifier of the Spacecraft for the cluster
+        """
+        push_service.PushService().trigger_event(
+            push_service.PushService.LEOP_EVENTS_CHANNEL,
+            push_service.PushService.LEOP_SC_UPDATED,
+            {
+                'launch_id': str(launch_id),
+                'launch_sc_id': str(launch_sc_id)
+            }
         )

@@ -28,16 +28,17 @@ class PushService(object):
     pusher.com webservice.
     """
     TEST_CHANNEL = 'test_channel'
-    LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
     CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
     SIMULATION_EVENTS_CHANNEL = 'simulation.events.ch'
     LEOP_EVENTS_CHANNEL = 'leop.events.ch'
+    LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
+
     SATNET_CHANNELS = [
         TEST_CHANNEL,
-        LEOP_DOWNLINK_CHANNEL,
         CONFIGURATION_EVENTS_CHANNEL,
         SIMULATION_EVENTS_CHANNEL,
-        LEOP_EVENTS_CHANNEL
+        LEOP_EVENTS_CHANNEL,
+        LEOP_DOWNLINK_CHANNEL
     ]
 
     TEST_EVENT = 'my_event'
@@ -48,6 +49,10 @@ class PushService(object):
     PASSES_UPDATED_EVENT = 'passesUpdatedEv'
     LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv'
     LEOP_UPDATED_EVENT = 'leopUpdatedEv'
+    LEOP_UFO_IDENTIFIED = 'leopUFOIdentifiedEv'
+    LEOP_UFO_UPDATED = 'leopUFOIdentifiedEv'
+    LEOP_UFO_FORGOTTEN = 'leopUFOForgottenEv'
+    LEOP_SC_UPDATED = 'leopSCUpdatedEv'
 
     # The puser object.
     _service = None

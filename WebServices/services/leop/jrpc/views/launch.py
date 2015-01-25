@@ -19,6 +19,7 @@ import rpc4django
 from django.core import exceptions as django_ex
 from services.common.push import service as satnet_push
 from services.configuration.models import segments as segment_models
+from services.leop import push as launch_push
 from services.leop import utils as launch_utils
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import launch as launch_serial
@@ -232,6 +233,9 @@ def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
     object_id, spacecraft_id = launch_models.Launch.objects.identify(
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
+
+    launch_push.LaunchPush.trigger_ufo_identified(launch_id, object_id)
+
     return {
         launch_serial.JRPC_K_OBJECT_ID: object_id,
         launch_serial.JRPC_K_SC_ID: spacecraft_id
@@ -250,7 +254,9 @@ def forget(launch_id, object_id):
     :param object_id: Identifier for the unknown object
     :return: True if the operation was succesful
     """
-    return launch_models.Launch.objects.forget(launch_id, object_id)
+    result = launch_models.Launch.objects.forget(launch_id, object_id)
+    launch_push.LaunchPush.trigger_ufo_forgotten(launch_id, object_id)
+    return result
 
 
 @rpc4django.rpcmethod(
@@ -271,6 +277,7 @@ def update(launch_id, object_id, callsign, tle_l1, tle_l2):
     object_id, spacecraft_id = launch_models.Launch.objects.update_identified(
         launch_id, object_id, callsign, tle_l1, tle_l2
     )
+    launch_push.LaunchPush.trigger_ufo_updated(launch_id, object_id)
     return {
         launch_serial.JRPC_K_OBJECT_ID: object_id,
         launch_serial.JRPC_K_SC_ID: spacecraft_id
@@ -316,6 +323,7 @@ def set_configuration(launch_id, configuration):
         tle_l1=cfg_params[1],
         tle_l2=cfg_params[2]
     )
+
     return launch.identifier
 
 

@@ -47,6 +47,9 @@ angular.module('pushServices').service('satnetPush', [
         this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
         this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
         this.LEOP_UPDATED_EVENT = 'leopUpdatedEv';
+        this.LEOP_UFO_IDENTIFIED_EVENT = 'leopUFOIdentifiedEv';
+        this.LEOP_UFO_FORGOTTEN_EVENT = 'leopUFOForgottenEv';
+        this.LEOP_SC_UPDATED_EVENT = 'leopSCUpdatedEv';
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [

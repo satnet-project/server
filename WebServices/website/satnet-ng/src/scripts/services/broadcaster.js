@@ -79,6 +79,41 @@ angular.module('broadcaster').service('broadcaster', [
         };
 
         /**********************************************************************/
+        /************************************************* INTERNAL CALLBACKS */
+        /**********************************************************************/
+
+        this.SC_ADDED_EVENT = 'sc.added';
+        this.SC_REMOVED_EVENT = 'sc.removed';
+        this.SC_UPDATED_EVENT = 'sc.updated';
+
+        /**
+         * Function that broadcasts the event associated with the creation of a
+         * new Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
+         */
+        this.scAdded = function (identifier) {
+            $rootScope.$broadcast(this.SC_ADDED_EVENT, identifier);
+        };
+
+        /**
+         * Function that broadcasts the event associated with the removal of a
+         * new Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
+         */
+        this.scRemoved = function (identifier) {
+            $rootScope.$broadcast(this.SC_REMOVED_EVENT, identifier);
+        };
+
+        /**
+         * Function that broadcasts the event associated with the update of
+         * new Spacececraft.
+         * @param identifier The identifier of the Spacececraft.
+         */
+        this.scUpdated = function (identifier) {
+            $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
+        };
+
+        /**********************************************************************/
         /***************************************************** PUSH CALLBACKS */
         /**********************************************************************/
 
@@ -101,15 +136,34 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast('leop.gss.updated', leop_id);
         };
         this.leopUpdated = function (leop_id) {
-            console.log(
-                '@@@@@@@@@@@@leop.gss.updated, leop_id.identifier = ' +
-                    leop_id.identifier
-            );
             if ($rootScope.leop_id !== leop_id.identifier) {
                 return;
             }
-            console.log('@@@@@@@@@@@@ XXXXXXXXXXXXXx');
             $rootScope.$broadcast('leop.updated', leop_id);
+        };
+        this.leopUfoIdentified = function (data) {
+            if ($rootScope.leop_id !== data.launch_id) {
+                return;
+            }
+            $rootScope.$broadcast('sc.added', data.ufo_id);
+        };
+        this.leopUfoUpdated = function (data) {
+            if ($rootScope.leop_id !== data.launch_id) {
+                return;
+            }
+            $rootScope.$broadcast('sc.updated', data.ufo_id);
+        };
+        this.leopUfoForgot = function (data) {
+            if ($rootScope.leop_id !== data.launch_id) {
+                return;
+            }
+            $rootScope.$broadcast('sc.removed', data.ufo_id);
+        };
+        this.leopSCUpdated = function (data) {
+            if ($rootScope.leop_id !== data.launch_id) {
+                return;
+            }
+            $rootScope.$broadcast('sc.updated', data.launch_sc_id);
         };
 
         satnetPush.bind(
@@ -148,41 +202,30 @@ angular.module('broadcaster').service('broadcaster', [
             this.leopGssUpdated,
             this
         );
-
-        /**********************************************************************/
-        /************************************************* INTERNAL CALLBACKS */
-        /**********************************************************************/
-
-        this.SC_ADDED_EVENT = 'sc.added';
-        this.SC_REMOVED_EVENT = 'sc.removed';
-        this.SC_UPDATED_EVENT = 'sc.updated';
-
-        /**
-         * Function that broadcasts the event associated with the creation of a
-         * new Spacececraft.
-         * @param identifier The identifier of the Spacececraft.
-         */
-        this.scAdded = function (identifier) {
-            $rootScope.$broadcast(this.SC_ADDED_EVENT, identifier);
-        };
-
-        /**
-         * Function that broadcasts the event associated with the removal of a
-         * new Spacececraft.
-         * @param identifier The identifier of the Spacececraft.
-         */
-        this.scRemoved = function (identifier) {
-            $rootScope.$broadcast(this.SC_REMOVED_EVENT, identifier);
-        };
-
-        /**
-         * Function that broadcasts the event associated with the update of
-         * new Spacececraft.
-         * @param identifier The identifier of the Spacececraft.
-         */
-        this.scUpdated = function (identifier) {
-            $rootScope.$broadcast(this.SC_UPDATED_EVENT, identifier);
-        };
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_UFO_IDENTIFIED_EVENT,
+            this.leopUfoIdentified,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_UFO_UPDATED_EVENT,
+            this.leopUfoUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_UFO_FORGOTTEN_EVENT,
+            this.leopUfoForgot,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_CHANNEL,
+            satnetPush.LEOP_SC_UPDATED_EVENT,
+            this.leopSCUpdated,
+            this
+        );
 
     }
 ]);

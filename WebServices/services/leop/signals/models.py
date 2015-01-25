@@ -61,4 +61,4 @@ def message_received_handler(sender, instance, created, raw, **kwargs):
     if not created or raw:
         return
 
-    leop_push.CommunicationsPush.trigger_received_frame_event(instance)
+    leop_push.LaunchPush.trigger_received_frame_event(instance)

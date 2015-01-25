@@ -22,6 +22,7 @@ from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
 from services.configuration.signals import models as cfg_models_signals
+from services.leop import push as leop_push
 from services.leop import utils as leop_utils
 from services.leop.models import ufos as ufo_models
 
@@ -345,6 +346,10 @@ class Launch(django_models.Model):
 
         if tle_l1 and tle_l2:
             if self.tle.first_line != tle_l1 or self.tle.second_line != tle_l2:
+
+                leop_push.LaunchPush.trigger_leop_sc_updated(
+                    self.identifier, self.cluster_spacecraft_id
+                )
 
                 cfg_models_signals.update_tle_signal.send(
                     sender=self, identifier=self.tle.identifier,
