@@ -392,6 +392,19 @@ angular.module('marker-models')
             };
 
             /**
+             * Removes the connector for the given gs_marker (if it exists).
+             * @param identifier Identifier of the gs_marker.
+             */
+            this.removeGSConnector = function (identifier) {
+                var p_key = this.getMarkerKey(
+                        this.createConnectorIdentifier(identifier)
+                    );
+                if (this.getScope().paths.hasOwnProperty(p_key)) {
+                    delete this.getScope().paths[p_key];
+                }
+            };
+
+            /**
              * Removes a given GroundStation marker, together with its
              * associated connector path to the server and with the identifier
              * within the servers lists of bounded GroundStations.
@@ -400,14 +413,9 @@ angular.module('marker-models')
              *                      are going to be removed.
              */
             this.removeGSMarker = function (identifier) {
-                var p_key = this.getMarkerKey(
-                        this.createConnectorIdentifier(identifier)
-                    ),
-                    m_key = this.getMarkerKey(identifier);
+                var m_key = this.getMarkerKey(identifier);
                 delete this.getScope().markers[m_key];
-                if (this.getScope().paths.hasOwnProperty(p_key)) {
-                    delete this.getScope().paths[p_key];
-                }
+                this.removeGSConnector(identifier);
             };
 
             /******************************************************************/

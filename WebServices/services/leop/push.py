@@ -16,6 +16,7 @@
 
 import logging
 from services.common.push import service as push_service
+from services.leop.jrpc.serializers import launch as launch_serial
 from services.leop.jrpc.serializers import messages as message_serializers
 
 logger = logging.getLogger('leop')
@@ -40,6 +41,51 @@ class LaunchPush(object):
             push_service.PushService.FRAME_EVENT,
             message_serializers.serialize_push_frame(message)
         )
+
+    @staticmethod
+    def trigger_gss_assigned(launch_id, groundstations):
+        """
+        This method triggers the event that notifies to the connected clients
+        that some new groundstations have been assigned to the related launch.
+        :param launch_id: Identifier of the launch
+        :param groundstations: Identifier of the groundstations assigned (array)
+        """
+        push_service.PushService().trigger_event(
+            push_service.PushService.LEOP_EVENTS_CHANNEL,
+            push_service.PushService.LEOP_GSS_UPDATED_EVENT,
+            launch_serial.serialize_leop_id(launch_id)
+        )
+
+        for g in groundstations:
+
+            push_service.PushService().trigger_event(
+                push_service.PushService.LEOP_EVENTS_CHANNEL,
+                push_service.PushService.LEOP_GS_ASSIGNED_EVENT,
+                {
+                    'launch_id': str(launch_id),
+                    'groundstation_id': str(g)
+                }
+            )
+
+    @staticmethod
+    def trigger_gss_released(launch_id, groundstations):
+        """
+        This method triggers the event that notifies to the connected clients
+        that some groundstations have been released from the related launch.
+        :param launch_id: Identifier of the launch
+        :param groundstations: Identifier of the groundstations assigned (array)
+        """
+
+        for g in groundstations:
+
+            push_service.PushService().trigger_event(
+                push_service.PushService.LEOP_EVENTS_CHANNEL,
+                push_service.PushService.LEOP_GS_RELEASED_EVENT,
+                {
+                    'launch_id': str(launch_id),
+                    'groundstation_id': str(g)
+                }
+            )
 
     @staticmethod
     def trigger_ufo_identified(launch_id, ufo_id, spacecraft_id):

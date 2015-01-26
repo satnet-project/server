@@ -1,6 +1,5 @@
 Django==1.6.5
 Markdown==2.5.1
-South==1.0.2
 Twisted==14.0.0
 argparse==1.2.1
 cffi==0.8.6

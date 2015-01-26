@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 from django.core import exceptions as django_ex
-from services.common.push import service as satnet_push
 from services.configuration.models import segments as segment_models
 from services.leop import push as launch_push
 from services.leop import utils as launch_utils
@@ -136,11 +135,7 @@ def add_groundstations(launch_id, groundstations, **kwargs):
     )
 
     # Push notification event service
-    satnet_push.PushService().trigger_event(
-        satnet_push.PushService.LEOP_EVENTS_CHANNEL,
-        satnet_push.PushService.LEOP_GSS_UPDATED_EVENT,
-        result
-    )
+    launch_push.LaunchPush.trigger_gss_assigned(launch_id, groundstations)
 
     return result
 
@@ -173,11 +168,7 @@ def remove_groundstations(launch_id, groundstations, **kwargs):
     )
 
     # Push notification event service
-    satnet_push.PushService().trigger_event(
-        satnet_push.PushService.LEOP_EVENTS_CHANNEL,
-        satnet_push.PushService.LEOP_GSS_UPDATED_EVENT,
-        launch_serial.serialize_leop_id(launch_id)
-    )
+    launch_push.LaunchPush.trigger_gss_released(launch_id, groundstations)
 
     return True
 

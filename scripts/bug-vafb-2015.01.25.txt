@@ -1,0 +1,14 @@
+[satnetRPC] Error invoking = <gs.add>, with params = <[
+"gs-vafb",
+"VAFB0X",
+"15.00",
+"34.615127",
+"-120.476074"
+
+]>, description = <{"message":"AttributeError(\"'NoneType' object has no attribute 'datetime'\",)","code":104,"name":"JSONRPCError"}>
+[@18:18:51.271]
+
+{"0":{"message":"AttributeError(\"'NoneType' object has no attribute 'datetime'\",)","code":104,"name":"JSONRPCError"}}
+[@18:18:51.209]
+
+[satnetRPC] Invoked service = <gs.get>, params = ["gs-vafb"]

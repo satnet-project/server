@@ -118,6 +118,24 @@ angular.module('x-groundstation-models').service('xgs', [
         };
 
         /**
+         * "Connects" the given groundstation to the server by adding the
+         * necessary line.
+         * @param identifier Identifier of the gs
+         */
+        this.connectGS = function (identifier) {
+            markers.createGSConnector(identifier);
+        };
+
+        /**
+         * "Disconnects" the GS marker by removing the line that binds it to
+         * the server marker.
+         * @param identifier Identifier of the gs
+         */
+        this.disconnectGS = function (identifier) {
+            markers.removeGSConnector(identifier);
+        };
+
+        /**
          * Updates the markers for the given GroundStation object.
          * @param identifier Identifier of the GroundStation object.
          */
@@ -158,6 +176,18 @@ angular.module('x-groundstation-models').service('xgs', [
                     '@on-gs-updated-event, event = ' + event + ', id = ' + id
                 );
                 self.updateGS(id);
+            });
+            $rootScope.$on(broadcaster.LEOP_GS_ASSIGNED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-assigned-event, event = ' + event + ', id = ' + id
+                );
+                self.connectGS(id);
+            });
+            $rootScope.$on(broadcaster.LEOP_GS_RELEASED_EVENT, function (event, id) {
+                console.log(
+                    '@on-gs-released-event, event = ' + event + ', id = ' + id
+                );
+                self.disconnectGS(id);
             });
             $rootScope.$on(broadcaster.GS_AVAILABLE_ADDED_EVENT, function (event, id) {
                 console.log(

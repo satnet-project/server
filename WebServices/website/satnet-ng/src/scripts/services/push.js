@@ -47,6 +47,8 @@ angular.module('pushServices').service('satnetPush', [
         this.PASSES_UPDATED_EVENT = 'passesUpdatedEv';
         this.GT_UPDATED_EVENT = 'groundtrackUpdatedEv';
         this.LEOP_GSS_UPDATED_EVENT = 'leopGSsUpdatedEv';
+        this.LEOP_GS_ASSIGNED_EVENT = 'leopGSAssignedEv';
+        this.LEOP_GS_RELEASED_EVENT = 'leopGSReleasedEv';
         this.LEOP_UPDATED_EVENT = 'leopUpdatedEv';
         this.LEOP_UFO_IDENTIFIED_EVENT = 'leopUFOIdentifiedEv';
         this.LEOP_UFO_FORGOTTEN_EVENT = 'leopUFOForgottenEv';
