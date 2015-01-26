@@ -268,6 +268,11 @@ LOGGING = {
             'level': 'DEBUG',
             'propagate': True,
         },
+        'push': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True,
+        },
         'communications': {
             'handlers': ['console'],
             'level': 'DEBUG',

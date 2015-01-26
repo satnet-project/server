@@ -15,17 +15,17 @@
 */
 
 angular.module('messagesDirective', [
-    'satnet-services', 'pushServices', 'ui-leop-modalufo-controllers'
+    'satnet-services', 'broadcaster', 'ui-leop-modalufo-controllers'
 ])
     .constant('MAX_MESSAGES', 20)
     .controller('messagesCtrl', [
         '$rootScope', '$scope',
-        'satnetRPC', 'satnetPush', 'oArrays', 'MAX_MESSAGES',
+        'satnetRPC', 'broadcaster', 'oArrays', 'MAX_MESSAGES',
         function (
             $rootScope,
             $scope,
             satnetRPC,
-            satnetPush,
+            broadcaster,
             oArrays,
             MAX_MESSAGES
         ) {
@@ -70,6 +70,18 @@ angular.module('messagesDirective', [
                 });
             };
 
+            $scope._initListeners = function () {
+                $scope.$on(
+                    broadcaster.LEOP_FRAME_RX_EVENT,
+                    function (event, data) {
+                        console.log(
+                            '[modalufo] ev = ' + event + ', id = ' + data
+                        );
+                        $scope._pushMessage(data);
+                    }
+                );
+            };
+
             /**
              * Initializes this controller.
              */
@@ -88,7 +100,9 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
-                satnetPush.bindFrameReceived($scope._pushMessage);
+
+                $scope._initListeners();
+
             };
 
             $scope.init();

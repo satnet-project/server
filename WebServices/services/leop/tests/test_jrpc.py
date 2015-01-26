@@ -748,3 +748,11 @@ class TestLaunchViews(test.TestCase):
                 actual, expected
             ))
         )
+
+    def test_trigger_message_event(self):
+        """UNIT test
+        Validates the trigger of the message event by this service.
+        """
+        message_2 = db_tools.create_message(
+            self.__gs_2, message=db_tools.MESSAGE__2_TEST
+        )

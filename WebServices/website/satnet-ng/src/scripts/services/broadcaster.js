@@ -43,6 +43,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.LEOP_GS_ASSIGNED_EVENT = 'leop.gs.assigned';
         this.LEOP_GS_RELEASED_EVENT = 'leop.gs.released';
         this.LEOP_UPDATED_EVENT = 'leop.updated';
+        this.LEOP_FRAME_RX_EVENT = 'leop.frame.rx';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -182,6 +183,9 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast('sc.updated', data.launch_sc_id);
             $rootScope.$broadcast('passes.updated', {});
         };
+        this.leopFrameReceived = function (data) {
+            $rootScope.$broadcast('leop.frame.rx', data.frame);
+        };
 
         satnetPush.bind(
             satnetPush.EVENTS_CHANNEL,
@@ -259,6 +263,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.LEOP_CHANNEL,
             satnetPush.LEOP_SC_UPDATED_EVENT,
             this.leopSCUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_DOWNLINK_CHANNEL,
+            satnetPush.FRAME_EVENT,
+            this.leopFrameReceived,
             this
         );
 

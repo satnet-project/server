@@ -137,13 +137,14 @@ class PushService(object):
                 'Channel does not exist, name = ' + str(channel_name)
             )
 
-        if satnet_cfg.TESTING:
-            return
-
         logger.info(
             '[push] channel = <' + str(channel_name) +
             '>, event = <' + str(event_name) +
             '>, data = <' + str(data) + '>'
         )
+
+        if satnet_cfg.TESTING and channel_name != self.LEOP_DOWNLINK_CHANNEL:
+            logger.warning('[push] Service is in testing mode, returning...')
+            return
 
         self._channels[channel_name].trigger(event_name, data)

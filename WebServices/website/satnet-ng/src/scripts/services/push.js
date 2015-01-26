@@ -35,7 +35,7 @@ angular.module('pushServices').service('satnetPush', [
         this._service = null;
 
         // Names of the channels for subscription
-        this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
+        this.LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch';
         this.EVENTS_CHANNEL = 'configuration.events.ch';
         this.SIMULATION_CHANNEL = 'simulation.events.ch';
         this.LEOP_CHANNEL = 'leop.events.ch';
@@ -56,7 +56,7 @@ angular.module('pushServices').service('satnetPush', [
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
-            this.DOWNLINK_CHANNEL,
+            this.LEOP_DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
             this.LEOP_CHANNEL
@@ -124,7 +124,7 @@ angular.module('pushServices').service('satnetPush', [
          */
         this.bindFrameReceived = function (callback_fn) {
             this.bind(
-                this.DOWNLINK_CHANNEL,
+                this.LEOP_DOWNLINK_CHANNEL,
                 this.FRAME_EVENT,
                 callback_fn,
                 this

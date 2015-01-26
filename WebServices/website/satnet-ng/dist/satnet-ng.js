@@ -35,7 +35,7 @@ angular.module('pushServices').service('satnetPush', [
         this._service = null;
 
         // Names of the channels for subscription
-        this.DOWNLINK_CHANNEL = 'leop.downlink.channel';
+        this.LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch';
         this.EVENTS_CHANNEL = 'configuration.events.ch';
         this.SIMULATION_CHANNEL = 'simulation.events.ch';
         this.LEOP_CHANNEL = 'leop.events.ch';
@@ -56,7 +56,7 @@ angular.module('pushServices').service('satnetPush', [
 
         // List of channels that the service automatically subscribes to.
         this._channel_names = [
-            this.DOWNLINK_CHANNEL,
+            this.LEOP_DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
             this.LEOP_CHANNEL
@@ -124,7 +124,7 @@ angular.module('pushServices').service('satnetPush', [
          */
         this.bindFrameReceived = function (callback_fn) {
             this.bind(
-                this.DOWNLINK_CHANNEL,
+                this.LEOP_DOWNLINK_CHANNEL,
                 this.FRAME_EVENT,
                 callback_fn,
                 this
@@ -358,6 +358,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.LEOP_GS_ASSIGNED_EVENT = 'leop.gs.assigned';
         this.LEOP_GS_RELEASED_EVENT = 'leop.gs.released';
         this.LEOP_UPDATED_EVENT = 'leop.updated';
+        this.LEOP_FRAME_RX_EVENT = 'leop.frame.rx';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -497,6 +498,9 @@ angular.module('broadcaster').service('broadcaster', [
             $rootScope.$broadcast('sc.updated', data.launch_sc_id);
             $rootScope.$broadcast('passes.updated', {});
         };
+        this.leopFrameReceived = function (data) {
+            $rootScope.$broadcast('leop.frame.rx', data.frame);
+        };
 
         satnetPush.bind(
             satnetPush.EVENTS_CHANNEL,
@@ -574,6 +578,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.LEOP_CHANNEL,
             satnetPush.LEOP_SC_UPDATED_EVENT,
             this.leopSCUpdated,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.LEOP_DOWNLINK_CHANNEL,
+            satnetPush.FRAME_EVENT,
+            this.leopFrameReceived,
             this
         );
 
@@ -3945,17 +3955,17 @@ angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
 */
 
 angular.module('messagesDirective', [
-    'satnet-services', 'pushServices', 'ui-leop-modalufo-controllers'
+    'satnet-services', 'broadcaster', 'ui-leop-modalufo-controllers'
 ])
     .constant('MAX_MESSAGES', 20)
     .controller('messagesCtrl', [
         '$rootScope', '$scope',
-        'satnetRPC', 'satnetPush', 'oArrays', 'MAX_MESSAGES',
+        'satnetRPC', 'broadcaster', 'oArrays', 'MAX_MESSAGES',
         function (
             $rootScope,
             $scope,
             satnetRPC,
-            satnetPush,
+            broadcaster,
             oArrays,
             MAX_MESSAGES
         ) {
@@ -4000,6 +4010,18 @@ angular.module('messagesDirective', [
                 });
             };
 
+            $scope._initListeners = function () {
+                $scope.$on(
+                    broadcaster.LEOP_FRAME_RX_EVENT,
+                    function (event, data) {
+                        console.log(
+                            '[modalufo] ev = ' + event + ', id = ' + data
+                        );
+                        $scope._pushMessage(data);
+                    }
+                );
+            };
+
             /**
              * Initializes this controller.
              */
@@ -4018,7 +4040,9 @@ angular.module('messagesDirective', [
                                 JSON.stringify($scope.data)
                         );
                     });
-                satnetPush.bindFrameReceived($scope._pushMessage);
+
+                $scope._initListeners();
+
             };
 
             $scope.init();
