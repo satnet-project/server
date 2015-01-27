@@ -33,6 +33,7 @@ def propagate_groundtracks():
     gt_models.GroundTrack.objects.propagate_groundtracks()
     logger.info('> Propagated!')
 
+
 @decorators.daily()
 def propagate_passes():
     """Periodic task.
