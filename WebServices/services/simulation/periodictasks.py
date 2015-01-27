@@ -40,5 +40,5 @@ def propagate_passes():
     Spacecraft.
     """
     logger.info('[DAILY] >>> Propagating passes')
-    pass_models.PassSlots.objects.propagate_groundtracks()
+    pass_models.PassSlots.objects.propagate_pass_slots()
     logger.info('> Propagated!')
