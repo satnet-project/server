@@ -26,9 +26,9 @@ $min_top: $messages_area_h + 20px;
 .messages-area { @extend .base-area;
   width: 55%;
   position: absolute;
-  top: -$area_corner;
+  bottom: -$area_corner;
   right: 10%;
-  transition: top 300ms ease-in-out 125ms;
+  transition: bottom 300ms ease-in-out 125ms;
 }
 .messages-title { @extend .base-area-title;
   border-top: solid $fg_color $separator_h;
@@ -83,4 +83,4 @@ $min_top: $messages_area_h + 20px;
 
 #messages-toggle + div label:after { content: "data frames"; }
 #messages-toggle:checked + div label:after { content: "data frames"; }
-#messages-toggle:checked ~ .messages-area { top: -$min_top; }
+#messages-toggle:checked ~ .messages-area { bottom: -$min_top; }
