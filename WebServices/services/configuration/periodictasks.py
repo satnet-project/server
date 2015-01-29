@@ -25,7 +25,7 @@ logger = logging.getLogger('configuration')
 
 @decorators.daily()
 def populate_slots():
-    """Periodic task.
+    """Periodic task
     Task to be executed periodically for updating the pass slots with the
     following ones (3 days in advance). The addition of a new
     AvailabilitySlot triggers the automatic (through signal) addition of all
@@ -34,11 +34,12 @@ def populate_slots():
     """
     logger.info('[DAILY] >>> Populating slots')
     availability.AvailabilitySlot.objects.propagate_slots()
+    logger.info('> Populated!')
 
 
 @decorators.daily()
 def clean_slots():
-    """Periodic task.
+    """Periodic task
     This task cleans all the old AvailabilitySlots from the database. Since
     the deletion of a given AvailabilitySlot triggers the deletion of the
     associated OperationalSlots, it is not necessary to clean the
@@ -52,11 +53,24 @@ def clean_slots():
     old_slots.delete()
     logger.info('> Deleted!')
 
+
 @decorators.daily()
 def update_tle_database():
-    """
+    """Periodic task
     Task to be executed periodically for cleaning up all users whose activation
     key is expired and they did not complete still their registration process.
     """
-    logger.info("Updating TLE database, daily task execution!")
+    logger.info("Updating Celestrak TLE database, daily task execution!")
     tle.TwoLineElementsManager.load_celestrak()
+    logger.info('Updated!')
+
+
+@decorators.every(minutes=5)
+def update_polysat_tles():
+    """Periodic task
+    Task to be executed periodically for updating the TLEs from Polysat
+    database.
+    """
+    logger.info('Updating Polysat TLE database, every 5 minutes!')
+    tle.TwoLineElementsManager.load_polysat()
+    logger.info('Updated!')

@@ -64,6 +64,17 @@ class TwoLineElementsManager(models.Manager):
         except exceptions.ObjectDoesNotExist:
             return self.create(source, l0, l1, l2)
 
+    POLYSAT_URL = 'https://satnet.aero.calpoly.edu/celestrak/cubesat.txt'
+
+    @staticmethod
+    def load_polysat():
+        """
+        Loads the TLEs from internal polysat resources.
+        """
+        TwoLineElementsManager.load_tles(
+            source=TwoLineElementsManager.POLYSAT_URL
+        )
+
     @staticmethod
     def load_celestrak():
         """
