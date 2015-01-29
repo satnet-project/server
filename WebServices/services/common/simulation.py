@@ -38,12 +38,18 @@ class OrbitalSimulator(object):
     # the simulations can be verified.
     _test_mode = False
 
-    def set_debug(self, on=True):
+    # Flag that indicates whether the invokation of one of the methods that
+    # internally calls the routines for the actual mathematical simulations,
+    # must raise an Exception instead of properly executing the method itself.
+    _fail_test = False
+
+    def set_debug(self, on=True, fail=False):
         """
         This method sets the OrbitalSimulator debug mode ON (on=True) or OFF
         (on=False). Default: on=True
         """
         self._test_mode = on
+        self._fail_test = fail
 
     def get_debug(self):
         """Returns the debug flag for the Simulation object.
@@ -69,11 +75,11 @@ class OrbitalSimulator(object):
         :return: Tuple (l0, l1, l2)
         """
         if isinstance(l0, unicode):
-            l0 = unicodedata.normalize('NFKD', l0).encode('ascii','ignore')
+            l0 = unicodedata.normalize('NFKD', l0).encode('ascii', 'ignore')
         if isinstance(l1, unicode):
-            l1 = unicodedata.normalize('NFKD', l1).encode('ascii','ignore')
+            l1 = unicodedata.normalize('NFKD', l1).encode('ascii', 'ignore')
         if isinstance(l2, unicode):
-            l2 = unicodedata.normalize('NFKD', l2).encode('ascii','ignore')
+            l2 = unicodedata.normalize('NFKD', l2).encode('ascii', 'ignore')
 
         return l0, l1, l2
 
@@ -268,7 +274,9 @@ class OrbitalSimulator(object):
         defined horizon.
         """
         if self._test_mode:
-            #logger.warning('Simulator is in TESTING mode.')
+            if self._fail_test:
+                raise Exception('TEST TEST TEST EXCEPTION')
+
             return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []
@@ -348,6 +356,10 @@ class OrbitalSimulator(object):
         """
         if (start is None) or (end is None):
             (start, end) = self.get_simulation_window()
+
+        if self._test_mode:
+            if self._fail_test:
+                raise Exception('TEST TEST TEST EXCEPTION')
 
         self.set_spacecraft(spacecraft_tle)
 

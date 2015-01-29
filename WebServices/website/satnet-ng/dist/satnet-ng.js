@@ -3973,6 +3973,14 @@ angular.module('messagesDirective', [
 
             $scope.data = [];
 
+            $scope.cfg = {
+                hideContent: false
+            };
+
+            $scope.toggle = function () {
+                $scope.cfg.hideContent = !$scope.cfg.hideContent;
+            };
+
             /**
              * This function pushes a new element into the array using the
              * insertion algorithm and keeping the array sorted by timestamp. It

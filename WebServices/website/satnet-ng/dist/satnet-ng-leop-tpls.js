@@ -48,7 +48,7 @@ angular.module('leop-ui').run(['$templateCache', function($templateCache) {
 
 
   $templateCache.put('templates/messages/messages.html',
-    "<input type=\"checkbox\" name=\"messages-toggle\" id=\"messages-toggle\"><div ng-controller=\"messagesCtrl\" class=\"messages-area\"><div class=\"messages-top-padding\"></div><div ng-hide=\"data.length\"><p class=\"no-items-red\">(no data frames)</p></div><div class=\"messages-content\"><div class=\"message-row\" ng-repeat=\"m in data\"><div class=\"message-ts-cell\"><p>{{ m.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</p></div><div class=\"message-gs-cell\"><p>{{ m.gs_identifier }}</p></div><div class=\"message-data-cell\"><span>{{ m.message }}</span></div></div></div><div class=\"messages-title\"><label for=\"messages-toggle\"></label></div></div>"
+    "<input type=\"checkbox\" name=\"messages-toggle\" id=\"messages-toggle\"><div ng-controller=\"messagesCtrl\" class=\"messages-area\"><div class=\"messages-top-padding\"></div><div class=\"animate-show\" ng-show=\"!cfg.hideContent\"><div ng-hide=\"data.length\"><p class=\"no-items-red\">(no data frames)</p></div><div class=\"messages-content\"><div class=\"message-row\" ng-repeat=\"m in data\"><div class=\"message-ts-cell\"><p>{{ m.timestamp | date:'yyyy-MM-dd HH:mm:ss Z'}}</p></div></div><div class=\"message-gs-cell\"><p>{{ m.gs_identifier }}</p></div><div class=\"message-data-cell\"><span>{{ m.message }}</span></div></div></div><div class=\"messages-title\" ng-click=\"toggle()\"><label for=\"messages-toggle\"></label></div></div>"
   );
 
 
