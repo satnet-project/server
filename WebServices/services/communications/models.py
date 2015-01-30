@@ -20,7 +20,7 @@ from services.configuration.models import segments as segment_models
 
 
 class PassiveMessage(models.Model):
-    """Message model class for received out-of-operations messages.
+    """Message model class for received out-of-operations messages
     This class models the messages to be sent from Ground Stations to the
     network with the data passively received from satellites. This means that
     no remote operation has to be scheduled for the data to be received.

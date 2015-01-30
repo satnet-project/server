@@ -42,10 +42,6 @@ class SimulationPush(object):
         """
         Triggers the transmission of this event through the pusher.com service.
         """
-        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
-        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
-        print 'GT GT GT GT GT GT GT GT GT GT GT GT'
-
         satnet_push.PushService().trigger_event(
             satnet_push.PushService.SIMULATION_EVENTS_CHANNEL,
             satnet_push.PushService.GROUNDTRACK_UPDATED_EVENT,

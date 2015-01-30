@@ -4224,6 +4224,7 @@ angular.module('passDirective', [
             $scope._initData = function () {
                 $scope.data = [];
                 passSlotsService.getPasses().then(function (g_slots) {
+                    console.log('>>> passes = ' + JSON.stringify(g_slots));
                     angular.extend($scope.data, g_slots);
                 });
             };

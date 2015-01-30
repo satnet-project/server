@@ -280,6 +280,9 @@ class OrbitalSimulator(object):
             tr, azr, tt, altt, ts, azs = self._observer.next_pass(self._body)
             self._body.compute(self._observer)
 
+            if not tr or not ts:
+                return pass_slots
+
             dt_tr = misc.localize_datetime_utc(tr.datetime())
             dt_ts = misc.localize_datetime_utc(ts.datetime())
 

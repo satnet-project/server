@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
 from services.common.testing import helpers as db_tools
+from services.configuration.models import tle as tle_models
 from services.simulation.models import passes as pass_models
 
 
@@ -93,4 +94,36 @@ class TestModels(test.TestCase):
                 groundstation=self.__gs_1
             ).exists(),
             'GroundStation associated pass slots should have been removed'
+        )
+
+    def test_firebird(self):
+        """UNIT test
+        Test carried out to find what is the problem with the Firebird TLE and
+        UVIGO groundstation.
+        """
+        self.__tle_fb_id = 'FirebirdTEST'
+        self.__tle_fb_l1 = '1 99991U          15030.59770833 -.00001217  ' \
+                           '00000-0 -76033-4 0 00007'
+        self.__tle_fb_l2 = '2 99991 099.0667 036.7936 0148154 343.1198 ' \
+                           '145.4319 15.00731498000018'
+
+        self.__tle_fb = tle_models.TwoLineElement.objects.create(
+            'testingsource',
+            self.__tle_fb_id, self.__tle_fb_l1, self.__tle_fb_l2
+        )
+        self.__sc_fb = db_tools.create_sc(
+            user_profile=self.__user, tle_id=self.__tle_fb_id
+        )
+
+        self.__gs_uvigo_id = 'uvigo-gs'
+        self.__gs_uvigo_e = 0
+        self.__gs_uvigo_lat = 42.170075
+        self.__gs_uvigo_lng = -8.68826
+
+        self.__gs_uvigo = db_tools.create_gs(
+            user_profile=self.__user,
+            identifier=self.__gs_uvigo_id,
+            latitude=self.__gs_uvigo_lat,
+            longitude=self.__gs_uvigo_lng,
+            contact_elevation=self.__gs_uvigo_e
         )
