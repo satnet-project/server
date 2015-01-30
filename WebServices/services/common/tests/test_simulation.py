@@ -23,13 +23,13 @@ import numpy
 from pytz import utc as pytz_utc
 from services.common import simulation, misc
 from services.common.testing import helpers as db_tools
-from services.configuration.models import tle
+from services.configuration.models import tle as tle_models
 from services.simulation.models import groundtracks as simulation_models
 
 
 class TestSimulation(TestCase):
     """
-    Validation of the simulation module..
+    Validation of the simulation module.
     """
 
     def setUp(self):
@@ -82,7 +82,7 @@ class TestSimulation(TestCase):
 
         self.__simulator.set_groundstation(self.__gs_1)
         self.__simulator.set_spacecraft(
-            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
+            tle_models.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
         )
 
         if self.__verbose_testing:
@@ -111,7 +111,7 @@ class TestSimulation(TestCase):
         (start, end) = self.__simulator.get_simulation_window()
 
         groundtrack = self.__simulator.calculate_groundtrack(
-            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            tle_models.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
             start=start, end=end, timestep=step
         )
 
@@ -141,7 +141,7 @@ class TestSimulation(TestCase):
         (start, end) = self.__simulator.get_simulation_window()
 
         groundtrack_1_m = self.__simulator.calculate_groundtrack(
-            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            tle_models.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
             start=start, end=end, timestep=step
         )
 
@@ -155,3 +155,39 @@ class TestSimulation(TestCase):
         var_1_m_lng = numpy.std(array_1_m, dtype=numpy.float64)
 
         print 'var_1_m = (' + str(var_1_m_lat) + ', ' + str(var_1_m_lng) + ')'
+
+    def test_passes(self):
+
+        print '>>> @now = ' + str(datetime.now())
+
+        self.__tle_fb_id = u'FirebirdTEST'
+        self.__tle_fb_l1 = u'1 99991U          15030.59770833 -.00001217  ' \
+                           u'00000-0 -76033-4 0 00007'
+        self.__tle_fb_l2 = u'2 99991 099.0667 036.7936 0148154 343.1198 ' \
+                           u'145.4319 15.00731498000018'
+
+        self.__tle_fb = tle_models.TwoLineElement.objects.create(
+            'testingsource',
+            self.__tle_fb_id, self.__tle_fb_l1, self.__tle_fb_l2
+        )
+        self.__sc_fb = db_tools.create_sc(
+            user_profile=self.__test_user_profile, tle_id=self.__tle_fb_id
+        )
+
+        self.__gs_uvigo_id = 'uvigo-gs'
+        self.__gs_uvigo_e = 0
+        self.__gs_uvigo_lat = 42.170075
+        self.__gs_uvigo_lng = -8.68826
+
+        self.__gs_uvigo = db_tools.create_gs(
+            user_profile=self.__test_user_profile,
+            identifier=self.__gs_uvigo_id,
+            latitude=self.__gs_uvigo_lat,
+            longitude=self.__gs_uvigo_lng,
+            contact_elevation=self.__gs_uvigo_e
+        )
+
+        self.__simulator.set_spacecraft(self.__tle_fb)
+        self.__simulator.set_groundstation(self.__gs_uvigo)
+        window = self.__simulator.get_simulation_window()
+        slots = self.__simulator.calculate_pass_slot(window[0], window[1])

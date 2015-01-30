@@ -276,7 +276,6 @@ class OrbitalSimulator(object):
         if self._test_mode:
             if self._fail_test:
                 raise Exception('TEST TEST TEST EXCEPTION')
-
             return OrbitalSimulator._create_test_operational_slots(start, end)
 
         pass_slots = []

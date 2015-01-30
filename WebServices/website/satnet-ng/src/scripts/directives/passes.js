@@ -27,6 +27,24 @@ angular.module('passDirective', [
             };
 
             /**
+             * Transforms a localize date in the ISO format into a UTC date
+             * object.
+             * @param isostring ISO formatted string
+             * @returns {Date} UTC Date object
+             */
+            this.isostring_2_utc = function (isostring) {
+                var isodate = new Date(isostring);
+                return new Date(
+                    isodate.getUTCFullYear(),
+                    isodate.getUTCMonth(),
+                    isodate.getUTCDate(),
+                    isodate.getUTCHours(),
+                    isodate.getUTCMinutes(),
+                    isodate.getUTCSeconds()
+                );
+            };
+
+            /**
              * Creates a Gantt-like slot object from the slot read from the
              * server.
              * @param slot Slot as read from the server.
@@ -37,16 +55,21 @@ angular.module('passDirective', [
              * @private
              */
             this._createSlot = function (slot) {
+
+                var date_from_utc = this.isostring_2_utc(slot.slot_start),
+                    date_to_utc = this.isostring_2_utc(slot.slot_end);
+
                 return {
                     name: this._generateRowName(slot),
                     classes: 'my-gantt-row',
                     tasks: [{
                         name: slot.sc_identifier,
                         classes: 'my-gantt-cell',
-                        from: new Date(slot.slot_start),
-                        to: new Date(slot.slot_end)
+                        from: date_from_utc,
+                        to: date_to_utc
                     }]
                 };
+
             };
 
             /**

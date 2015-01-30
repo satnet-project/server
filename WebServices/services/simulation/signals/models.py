@@ -63,7 +63,7 @@ def groundstation_updated(
     if created or raw:
         return
 
-    if update_fields is None:
+    if not update_fields:
         return
 
     if 'latitude' in update_fields or 'longitude' in update_fields:

@@ -22,6 +22,7 @@ from djorm_pgarray import fields as pgarray_fields
 from services.common import simulation as simulator, misc
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
+
 logger = logging.getLogger('simulation')
 
 
