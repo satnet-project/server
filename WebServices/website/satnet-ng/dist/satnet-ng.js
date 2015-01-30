@@ -3051,6 +3051,10 @@ angular.module('ui-leop-modalufo-controllers')
                 $scope._initListeners();
             };
 
+            $scope.isAuto = function (object) {
+                return object.select_tle === 'manual';
+            };
+
             $scope._objArr2Dict = function (array) {
                 return oArrays.array2dict(array, 'object_id');
             };
@@ -3099,6 +3103,7 @@ angular.module('ui-leop-modalufo-controllers')
                     tle_l2: '',
                     callsign: '',
                     edit: true,
+                    tle_select: 'manual',
                     past: 'ufo'
                 };
                 $scope.cluster.no_editing += 1;
@@ -3111,6 +3116,7 @@ angular.module('ui-leop-modalufo-controllers')
                     tle_l2: cfg.tle_l2,
                     callsign: cfg.callsign,
                     edit: true,
+                    tle_select: cfg.tle_select,
                     past: 'identified'
                 };
                 $scope.cluster.no_editing += 1;
@@ -3972,6 +3978,14 @@ angular.module('messagesDirective', [
             'use strict';
 
             $scope.data = [];
+
+            $scope.cfg = {
+                hideContent: false
+            };
+
+            $scope.toggle = function () {
+                $scope.cfg.hideContent = !$scope.cfg.hideContent;
+            };
 
             /**
              * This function pushes a new element into the array using the

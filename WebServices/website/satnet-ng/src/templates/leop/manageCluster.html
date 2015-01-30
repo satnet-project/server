@@ -141,6 +141,11 @@
                             </div>
                         </div>
 
+                        <form name="tle-select" ng-controller="tleSelectCtrl">
+                            <input type="radio" ng-model="i.tle_select" value='manual'>manual</input>
+                            <input type="radio" ng-model="i.tle_select" value='auto'>auto</input>
+                        </form>
+
                         <div style='display: table-row'>
 
                             <div style='display: table-cell'>
@@ -168,6 +173,21 @@
                                 </div>
                             </div>
 
+                        </div>
+
+                        <div style='display: table-row'>
+                            <div style='display: table-cell'>
+                                <div class='control-group'
+                                    ng-class="{ 'has-error': form.i_tle_id.$invalid }">
+                                    <label class='control-label' for='i_tle_id'>TLE ID</label>
+                                    <input type='text' name='i_tle_id'
+                                        class='form-control' style='width: 100%'
+                                        ng-disabled="!i.edit"
+                                        ng-model="i.tle_id"
+                                        ng-pattern='/^[a-zA-Z0-9]{3,8}$/'
+                                        required />
+                                </div>
+                            </div>
                         </div>
 
                         <div style='display: table-row'>

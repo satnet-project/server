@@ -129,49 +129,41 @@ class GroundTrackManager(models.Manager):
         os = simulator.OrbitalSimulator()
         (start, end) = os.get_update_window()
 
-        logger.info(
-            '[@propagate_groundtracks] start = ' +
-            str(start) + ', end = ' + str(end)
-        )
+        logger.info('window = (' + str(start) + ', ' + str(end) + ')')
 
         for gt in self.all():
 
-            try:
-                logger.info(
-                    '[@propagate_groundtracks] gt.len (BEFORE) = ' +
-                        str(len(gt.ts))
-                )
-            except Exception as ex:
-                logger.error(
-                    '[@propagate_groundtracks] Exception logging, ex = ' +
-                    str(ex)
-                )
-                pass
+            if gt.timestamp:
+                logger.info('gt.len (BEFORE) = ' + str(gt))
+            else:
+                logger.info('gt.len is empty')
 
             # 1) remove old groundtrack points
             gt = GroundTrackManager.remove_old(gt)
-            # 2) new groundtrack points
-            ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(
-                os.calculate_groundtrack(
-                    spacecraft_tle=gt.tle, start=start, end=end
-                )
-            )
-            # 3) create and store updated groundtrack
-            gt = GroundTrackManager.append_new(gt, ts, lat, lng)
-            # 4) the updated groundtrack is saved to the database.
-            gt.save()
 
             try:
-                logger.info(
-                    '[@propagate_groundtracks] gt.len (AFTER) = ' +
-                    str(len(gt.ts))
+
+                # 2) new groundtrack points
+                new_gt = os.calculate_groundtrack(
+                    spacecraft_tle=gt.tle, start=start, end=end
                 )
+                ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(new_gt)
+                # 3) create and store updated groundtrack
+                gt = GroundTrackManager.append_new(gt, ts, lat, lng)
+                # 4) the updated groundtrack is saved to the database.
+                gt.save()
+
+                if gt:
+                    logger.info('gt.len (AFTER) = ' + str(gt))
+                else:
+                    logger.info('[@propagate_groundtracks] gt is None')
+
             except Exception as ex:
-                logger.error(
-                    '[@propagate_groundtracks] Exception logging, ex = ' +
-                    str(ex)
+
+                logger.warning(
+                    'Error while propagating groundtrack = ' + str(gt)
+                    + 'ex = ' + str(ex.message)
                 )
-                pass
 
 
 class GroundTrack(models.Model):
@@ -204,3 +196,18 @@ class GroundTrack(models.Model):
     timestamp = pgarray_fields.BigIntegerArrayField(
         'UTC time at which the spacecraft is going to pass over this point'
     )
+
+    def __unicode__(self):
+        """Unicode
+        Returns a unicode representation of the state of this object.
+        :return: Unicode string
+        """
+        result = '>>> groundtrack object, info = '\
+            + 'sc.id = ' + str(self.spacecraft.identifier) + '\n'\
+            + 'tle.id = ' + str(self.tle.identifier) + '\n'
+
+        if self.timestamp:
+            ts = 'timestamp = ' + str(self.timestamp)
+            result += result
+
+        return result

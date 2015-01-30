@@ -876,8 +876,7 @@ a.button-red {
   width: 55%;
   position: absolute;
   top: -5px;
-  right: 10%;
-  transition: top 300ms ease-in-out 125ms; }
+  right: 10%; }
 
 .messages-title {
   border-top: solid #A6A6A6 2px; }
@@ -927,9 +926,6 @@ a.button-red {
 
 #messages-toggle:checked + div label:after {
   content: "data frames"; }
-
-#messages-toggle:checked ~ .messages-area {
-  top: -240px; }
 
 /* Copyright 2013, 2014 Ricardo Tubio-Pardavila
 

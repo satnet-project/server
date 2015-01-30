@@ -16,9 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models as django_models
+import logging
 from services.common import simulation
 from services.configuration.models import segments as segment_models
 from services.simulation import push as simulation_push
+
+logger = logging.getLogger('simulation')
 
 
 class PassManager(django_models.Manager):
@@ -46,6 +49,44 @@ class PassManager(django_models.Manager):
         """
         self._simulator.set_spacecraft(spacecraft.tle)
 
+    def _calculate_passes(self, spacecraft, groundstation, window=None):
+        """Private method
+        Calculates all the pass slots for the given spacecraft, groundstation
+        pair during the simulation window returned by the simulator.
+        :param spacecraft: The spacecraft object
+        :param groundstation: The groundstation object
+        :param window: Start, end tuple that define the simulation window
+        :return: Array with the pass slots
+        """
+        all_slots = []
+
+        if not window:
+            window = simulation.OrbitalSimulator.get_simulation_window()
+
+        try:
+
+            slots = self._simulator.calculate_pass_slot(window[0], window[1])
+
+            for s in slots:
+
+                self.create(
+                    spacecraft=spacecraft, groundstation=groundstation,
+                    start=s[0], end=s[1]
+                )
+
+            all_slots += slots
+
+        except Exception as ex:
+
+            logger.warning(
+                'Error while creating pass slots, context = '
+                + 'sc.id = ' + str(spacecraft.identifier) + '\n'
+                + 'tle.id = ' + str(spacecraft.tle.identifier) + '\n'
+                + 'ex = ' + str(ex.message)
+            )
+
+        return all_slots
+
     def create_pass_slots_sc(self, spacecraft):
         """Manager method
         Creates all the passes in the table for this spacecraft with all the
@@ -58,21 +99,7 @@ class PassManager(django_models.Manager):
         for groundstation in segment_models.GroundStation.objects.all():
 
             self._simulator.set_groundstation(groundstation)
-
-            window_start, window_end = \
-                simulation.OrbitalSimulator.get_simulation_window()
-            slots = self._simulator.calculate_pass_slot(
-                window_start, window_end
-            )
-
-            for s in slots:
-
-                self.create(
-                    spacecraft=spacecraft, groundstation=groundstation,
-                    start=s[0], end=s[1]
-                )
-
-            all_slots += slots
+            all_slots += self._calculate_passes(spacecraft, groundstation)
 
         simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
@@ -89,17 +116,7 @@ class PassManager(django_models.Manager):
         for spacecraft in segment_models.Spacecraft.objects.all():
 
             self.set_spacecraft(spacecraft)
-
-            w_start, w_end = simulation.OrbitalSimulator.get_simulation_window()
-            slots = self._simulator.calculate_pass_slot(w_start, w_end)
-
-            for s in slots:
-                self.create(
-                    spacecraft=spacecraft, groundstation=groundstation,
-                    start=s[0], end=s[1]
-                )
-
-            all_slots += slots
+            all_slots += self._calculate_passes(spacecraft, groundstation)
 
         simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
@@ -110,23 +127,18 @@ class PassManager(django_models.Manager):
         spacecraft pairs.
         """
         all_slots = []
+        window = simulation.OrbitalSimulator.get_update_window()
 
         for groundstation in segment_models.GroundStation.objects.all():
+
             self._simulator.set_groundstation(groundstation)
 
             for spacecraft in segment_models.Spacecraft.objects.all():
+
                 self.set_spacecraft(spacecraft)
-
-                w_start, w_end = simulation.OrbitalSimulator.get_update_window()
-                slots = self._simulator.calculate_pass_slot(w_start, w_end)
-
-                for s in slots:
-                    self.create(
-                        spacecraft=spacecraft, groundstation=groundstation,
-                        start=s[0], end=s[1]
-                    )
-
-                all_slots += slots
+                all_slots += self._calculate_passes(
+                    spacecraft, groundstation, window
+                )
 
         simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots

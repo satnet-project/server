@@ -17,11 +17,17 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from django import test
+from services.common.testing import helpers as db_tools
+from services.common import simulation as simulator
 from services.configuration.models import segments as segment_models
-from services.simulation.models import groundtracks as simulation_models
+from services.simulation.models import groundtracks as groundtrack_models
+from services.simulation.models import passes as pass_models
 
 
 class PeriodicSimulationTest(test.TestCase):
+    """UNIT tests
+    Tests for the validation of the periodic simulations.
+    """
 
     def setUp(self):
         """Test setup.
@@ -34,21 +40,34 @@ class PeriodicSimulationTest(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
+    def test_simulation_error(self):
+        """Error test
+        Validates the fail mode for the simulator.
+        """
+        sim = simulator.OrbitalSimulator()
+        sim.set_debug(fail=True)
+        sc = segment_models.Spacecraft.objects.get(identifier='sc-canx-2')
+        try:
+            sim.calculate_groundtrack(sc.tle)
+            self.fail('Should have thrown an exception')
+        except Exception:
+            pass
+
     def test_propagate_groundtracks(self):
-        """Periodic task test.
+        """Periodic task test
         Test that validates the periodical propagation of the groundtracks. It
         uses the spacecraft created when the database was initialized some
         time ago at the beginning of the test.
         """
         sc = segment_models.Spacecraft.objects.get(identifier='sc-canx-2')
-        gt_i = simulation_models.GroundTrack.objects.get(spacecraft=sc)
+        gt_i = groundtrack_models.GroundTrack.objects.get(spacecraft=sc)
 
         self.assertNotEquals(
             len(gt_i.timestamp), 0, 'Initial GroundTrack should not be empty'
         )
 
-        simulation_models.GroundTrack.objects.propagate_groundtracks()
-        gt_f = simulation_models.GroundTrack.objects.get(spacecraft=sc)
+        groundtrack_models.GroundTrack.objects.propagate_groundtracks()
+        gt_f = groundtrack_models.GroundTrack.objects.get(spacecraft=sc)
 
         self.assertNotEquals(
             len(gt_f.timestamp), 0, 'Final GroundTrack should not be empty'
@@ -57,4 +76,28 @@ class PeriodicSimulationTest(test.TestCase):
         self.assertNotEquals(
             len(gt_i.timestamp), len(gt_f.timestamp),
             'Final and initial GroundTracks should have different lengths'
+        )
+
+    def test_propagate_passes(self):
+        """Periodict task test
+        Test that validates the periodical propagation of the pass slots.
+        """
+        pass_models.PassSlots.objects.propagate_pass_slots()
+
+        self.assertEquals(
+            len(pass_models.PassSlots.objects.all()), 0, 'No pass slots'
+        )
+
+        db_tools.create_gs()
+        initial_p_slots = len(pass_models.PassSlots.objects.all())
+        self.assertNotEquals(
+            initial_p_slots, 0, 'There should be some pass slots available'
+        )
+
+        pass_models.PassSlots.objects.propagate_pass_slots()
+        propagated_p_slots = len(pass_models.PassSlots.objects.all())
+
+        self.assertNotEquals(
+            propagated_p_slots, initial_p_slots,
+            'Propagation should have added more pass slots'
         )
