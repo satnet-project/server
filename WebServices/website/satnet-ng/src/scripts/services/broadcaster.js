@@ -186,6 +186,10 @@ angular.module('broadcaster').service('broadcaster', [
         this.leopFrameReceived = function (data) {
             $rootScope.$broadcast('leop.frame.rx', data.frame);
         };
+        this.leopFrameReceived = function (data) {
+            $rootScope.$broadcast('keep.alive', {});
+            console.log('ALIVE!');
+        };
 
         satnetPush.bind(
             satnetPush.EVENTS_CHANNEL,
@@ -269,6 +273,12 @@ angular.module('broadcaster').service('broadcaster', [
             satnetPush.LEOP_DOWNLINK_CHANNEL,
             satnetPush.FRAME_EVENT,
             this.leopFrameReceived,
+            this
+        );
+        satnetPush.bind(
+            satnetPush.NETWORK_EVENTS_CHANNEL,
+            satnetPush.KEEP_ALIVE,
+            this.keepAliveReceived,
             this
         );
 

@@ -29,6 +29,7 @@ class PushService(object):
     """
     TEST_CHANNEL = 'test_channel'
     CONFIGURATION_EVENTS_CHANNEL = 'configuration.events.ch'
+    NETWORK_EVENTS_CHANNEL = 'network.events.ch'
     SIMULATION_EVENTS_CHANNEL = 'simulation.events.ch'
     LEOP_EVENTS_CHANNEL = 'leop.events.ch'
     LEOP_DOWNLINK_CHANNEL = 'leop.downlink.ch'
@@ -41,6 +42,7 @@ class PushService(object):
         LEOP_DOWNLINK_CHANNEL
     ]
 
+    KEEP_ALIVE = 'keep_alive'
     TEST_EVENT = 'my_event'
     FRAME_EVENT = 'frameEv'
     GS_ADDED_EVENT = 'gsAddedEv'
