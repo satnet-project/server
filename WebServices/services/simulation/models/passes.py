@@ -181,3 +181,9 @@ class PassSlots(django_models.Model):
 
     start = django_models.DateTimeField('Slot start')
     end = django_models.DateTimeField('Slot end')
+
+    def __unicode__(self):
+        """Unicode string
+        :return: Unicode string
+        """
+        return '>>> pass: ' + str(self.start) + ', ' + str(self.end)

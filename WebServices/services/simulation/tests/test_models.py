@@ -127,3 +127,9 @@ class TestModels(test.TestCase):
             longitude=self.__gs_uvigo_lng,
             contact_elevation=self.__gs_uvigo_e
         )
+
+        for p in pass_models.PassSlots.objects.filter(
+                spacecraft=self.__sc_fb
+        ).all():
+
+            print p
