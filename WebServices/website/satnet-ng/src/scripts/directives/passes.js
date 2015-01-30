@@ -147,10 +147,30 @@ angular.module('passDirective', [
                     }
                 );
                 $rootScope.$on(
-                    broadcaster.LEOP_GSS_UPDATED_EVENT,
+                    broadcaster.LEOP_GS_UPDATED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gs-updated-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+                $rootScope.$on(
+                    broadcaster.LEOP_GS_ASSIGNED_EVENT,
                     function (event, id) {
                         console.log(
                             '@gs-assigned-event, event = ' +
+                                event + ', id = ' + id
+                        );
+                        $scope._initData();
+                    }
+                );
+                $rootScope.$on(
+                    broadcaster.LEOP_GS_RELEASED_EVENT,
+                    function (event, id) {
+                        console.log(
+                            '@gs-released-event, event = ' +
                                 event + ', id = ' + id
                         );
                         $scope._initData();
