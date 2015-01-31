@@ -15,6 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import base64
+import datadiff
 from django import test as django_test
 from services.common import ax25
 
@@ -24,7 +26,24 @@ class AX25Tests(django_test.TestCase):
     Validate the library for AX25 packet enconding/decoding.
     """
 
+    __ax25_frame_1 = '7E96709A9A9E40E0AE8468948C9261F0HHHH7E'
+    __ax25_frame_1_b64 = base64.b64encode(__ax25_frame_1)
+
     def test_decode_ax25(self):
 
-        p = ax25.decode_base64('')
+        p = ax25.AX25Packet.decode_base64(self.__ax25_frame_1_b64)
         print '>>> p = ' + p.__unicode__()
+
+        expected = {
+            'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
+            'start_flag': '7E',
+            'destination': '96709A9A9E40E0',
+            'source': 'AE8468948C9261',
+            'end_flag': '7E'
+        }
+
+        actual = p.as_dictionary()
+        self.assertEquals(
+            actual, expected,
+            'Results differ, diff = ' + str(datadiff.diff(actual, expected))
+        )
