@@ -78,6 +78,6 @@ $min_bottom: $p_area_h - 50px;
   text-align: center;
 }
 
-#passes-toggle + div label:after { content: "passes"; }
-#passes-toggle:checked + div label:after { content: "passes"; }
+#passes-toggle + div label:after { content: "passes (LOCAL TIME)"; }
+#passes-toggle:checked + div label:after { content: "passes (LOCAL TIME)"; }
 #passes-toggle:checked ~ .passes-area { bottom: -$min_bottom; }

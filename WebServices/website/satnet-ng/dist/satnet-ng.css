@@ -822,10 +822,10 @@ a.button-red {
   text-align: center; }
 
 #passes-toggle + div label:after {
-  content: "passes"; }
+  content: "passes (LOCAL TIME)"; }
 
 #passes-toggle:checked + div label:after {
-  content: "passes"; }
+  content: "passes (LOCAL TIME)"; }
 
 #passes-toggle:checked ~ .passes-area {
   bottom: -300px; }
