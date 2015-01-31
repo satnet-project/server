@@ -33,7 +33,8 @@ angular.module('passDirective', [
              * @returns {Date} UTC Date object
              */
             this.isostring_2_utc = function (isostring) {
-                var isodate = new Date(isostring);
+                return new Date(isostring);
+                /*
                 return new Date(
                     isodate.getUTCFullYear(),
                     isodate.getUTCMonth(),
@@ -42,6 +43,7 @@ angular.module('passDirective', [
                     isodate.getUTCMinutes(),
                     isodate.getUTCSeconds()
                 );
+                */
             };
 
             /**

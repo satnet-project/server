@@ -505,7 +505,7 @@ angular.module('broadcaster').service('broadcaster', [
         };
         this.leopFrameReceived = function (data) {
             $rootScope.$broadcast('keep.alive', {});
-            console.log('KEEP ALIVE!');
+            console.log('ALIVE!');
         };
 
         satnetPush.bind(
@@ -4176,7 +4176,8 @@ angular.module('passDirective', [
              * @returns {Date} UTC Date object
              */
             this.isostring_2_utc = function (isostring) {
-                var isodate = new Date(isostring);
+                return new Date(isostring);
+                /*
                 return new Date(
                     isodate.getUTCFullYear(),
                     isodate.getUTCMonth(),
@@ -4185,6 +4186,7 @@ angular.module('passDirective', [
                     isodate.getUTCMinutes(),
                     isodate.getUTCSeconds()
                 );
+                */
             };
 
             /**

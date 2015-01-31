@@ -17,6 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import base64
 import logging
+from services.common import misc
+
 logger = logging.getLogger('common')
 
 
@@ -30,18 +32,33 @@ class AX25Packet(object):
     Simple AX25 packet decoder.
     """
 
-    flag = 0x00
+    flag = 0x7E
     destination = ''
     source = ''
 
-    @staticmethod
-    def decode_base64(string):
-        """Factory-like decoder
-        Simple method for decoding the basic fields from the AX.25 frame that
-        comes in a BASE64 string.
-        :param string: BASE 64 string with the AX.25 frame
-        :return: AX.25 packet object
-        """
-        p = AX25Packet()
-        p.raw_packet = base64.b64decode(string)
+    raw_packet = None
 
+    def __unicode__(self):
+        """Unicode string
+        Representation of this object as an Unicode string.
+        :return: Unicode string
+        """
+        return misc.dict_2_string({
+            'raw_packet': self.raw_packet,
+            'flag': self.flag,
+            'destination': self.destination,
+            'source': self.source
+        })
+
+
+def decode_base64(string):
+    """Factory-like decoder
+    Simple method for decoding the basic fields from the AX.25 frame that
+    comes in a BASE64 string.
+    :param string: BASE 64 string with the AX.25 frame
+    :return: AX.25 packet object
+    """
+    p = AX25Packet()
+    p.raw_packet = base64.b64decode(string)
+
+    return p

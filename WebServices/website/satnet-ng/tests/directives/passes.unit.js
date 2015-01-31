@@ -50,8 +50,8 @@ test('basic _parseSlots tests', function () {
         input = [{
             gs_identifier: 'my-gs-1',
             sc_identifier: 'my-sc-1',
-            slot_start: '2002-12-25T00:00:00-06:39',
-            slot_end: '2002-12-25T01:00:00-06:39'
+            slot_start: '2002-12-25T00:00:00Z',
+            slot_end: '2002-12-25T01:00:00Z'
         }],
         expected = [{
             name: 'my-gs-1 / my-sc-1',
@@ -59,8 +59,8 @@ test('basic _parseSlots tests', function () {
             tasks: [{
                 name: 'my-sc-1',
                 classes: 'my-gantt-cell',
-                from: new Date('2002-12-25T00:00:00-06:39'),
-                to: new Date('2002-12-25T01:00:00-06:39')
+                from: new Date('2002-12-25T00:00:00Z'),
+                to: new Date('2002-12-25T01:00:00Z')
             }]
         }];
 
@@ -80,8 +80,8 @@ test('basic _parseSlots tests', function () {
         from: new Date('2002-12-26T00:00:00-06:39'),
         to: new Date('2002-12-26T01:00:00-06:39')
     });
-    actual = passSlotsService._parseSlots(input);
 
+    actual = passSlotsService._parseSlots(input);
     deepEqual(actual, expected, 'Should have returned a different result');
 
     // 3) basic simple slot
@@ -101,8 +101,8 @@ test('basic _parseSlots tests', function () {
             to: new Date('2002-12-27T01:00:00-06:39')
         }]
     });
-    actual = passSlotsService._parseSlots(input);
 
+    actual = passSlotsService._parseSlots(input);
     deepEqual(actual, expected, 'Should have returned a different result');
 
 });

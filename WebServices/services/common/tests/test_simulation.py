@@ -158,8 +158,6 @@ class TestSimulation(TestCase):
 
     def test_passes(self):
 
-        print '>>> @now = ' + str(datetime.now())
-
         self.__tle_fb_id = u'FirebirdTEST'
         self.__tle_fb_l1 = u'1 99991U          15030.59770833 -.00001217  ' \
                            u'00000-0 -76033-4 0 00007'

@@ -24,5 +24,7 @@ class AX25Tests(django_test.TestCase):
     Validate the library for AX25 packet enconding/decoding.
     """
 
-    def __test(self):
-        ax25.AX25Packet.decode_base64('')
+    def test_decode_ax25(self):
+
+        p = ax25.decode_base64('')
+        print '>>> p = ' + p.__unicode__()
