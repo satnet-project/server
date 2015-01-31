@@ -61,6 +61,7 @@ angular.module('pushServices').service('satnetPush', [
             this.LEOP_DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
+            this.NETWORK_EVENTS_CHANNEL,
             this.LEOP_CHANNEL
         ];
 

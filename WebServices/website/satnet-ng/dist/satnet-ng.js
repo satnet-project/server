@@ -61,6 +61,7 @@ angular.module('pushServices').service('satnetPush', [
             this.LEOP_DOWNLINK_CHANNEL,
             this.EVENTS_CHANNEL,
             this.SIMULATION_CHANNEL,
+            this.NETWORK_EVENTS_CHANNEL,
             this.LEOP_CHANNEL
         ];
 
@@ -505,7 +506,7 @@ angular.module('broadcaster').service('broadcaster', [
         };
         this.leopFrameReceived = function (data) {
             $rootScope.$broadcast('keep.alive', {});
-            console.log('ALIVE!');
+            console.log('ALIVE! data = ' + JSON.stringify(data));
         };
 
         satnetPush.bind(
