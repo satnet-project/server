@@ -34,18 +34,34 @@ class AX25Tests(django_test.TestCase):
         Validates the decoding tool for handling AX.25 frames within Base64 or
         hex strings.
         """
+        # ### 1) Basic decoding: no PID or FCS
         p = ax25.AX25Packet.decode_base64(self.__ax25_frame_1_b64)
-
         expected = {
             'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
             'start_flag': '7E',
             'destination': '96709A9A9E40E0',
             'source': 'AE8468948C9261',
-            'PID': 'F0',
-            'FCS': 'HHHH',
-            'end_flag': '7E',
+            'end_flag': '7E'
         }
+        actual = p.as_dictionary()
+        self.assertEquals(
+            actual, expected,
+            'Results differ, diff = ' + str(datadiff.diff(actual, expected))
+        )
 
+        # 2) Basic decoding: PID and FCS
+        p = ax25.AX25Packet.decode_base64(
+            self.__ax25_frame_1_b64, read_fcs=True, read_pid=True
+        )
+        expected = {
+            'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
+            'start_flag': '7E',
+            'destination': '96709A9A9E40E0',
+            'source': 'AE8468948C9261',
+            'pid': 'F0',
+            'fcs': 'HHHH',
+            'end_flag': '7E'
+        }
         actual = p.as_dictionary()
         self.assertEquals(
             actual, expected,
