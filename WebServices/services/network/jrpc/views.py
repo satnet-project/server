@@ -15,8 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-# Signals
-from services.network import signals
+from rpc4django import rpcmethod
 
-# JRPC methods
-from services.network.jrpc import views
+
+@rpcmethod(
+    name='network.keepAlive',
+    signature=[],
+    login_required=True
+)
+def keep_alive():
+    """JRPC method
+    Simple method used to keep alive the server connection.
+    :return: True
+    """
+    return True

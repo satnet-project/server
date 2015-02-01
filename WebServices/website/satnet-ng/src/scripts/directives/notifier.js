@@ -14,11 +14,11 @@
    limitations under the License.
 */
 
-angular.module('logNotifierDirective', ['broadcaster'])
+angular.module('logNotifierDirective', [])
     .constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
     .controller('logNotifierCtrl', [
-        '$scope', '$filter', 'broadcaster', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, broadcaster, TIMESTAMP_FORMAT) {
+        '$scope', '$filter', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, TIMESTAMP_FORMAT) {
             'use strict';
 
             $scope.eventLog = [];
@@ -44,9 +44,6 @@ angular.module('logNotifierDirective', ['broadcaster'])
             });
             $scope.$on('debEvent', function (event, message) {
                 $scope.logEvent(event, message);
-            });
-            $scope.$on(broadcaster.KEEP_ALIVE_EVENT, function (event, message) {
-                $scope.logEvent(event, 'KEEP ALIVE');
             });
 
         }

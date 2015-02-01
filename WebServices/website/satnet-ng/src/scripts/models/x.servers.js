@@ -25,12 +25,24 @@ angular.module('x-server-models', ['satnet-services', 'marker-models']);
  * bussiness logic with the basic models.
  */
 angular.module('x-server-models').service('xserver', [
-    '$location', 'satnetRPC',  'markers',
-    function ($location, satnetRPC, markers) {
+    '$rootScope', '$location', 'broadcaster', 'satnetRPC',  'markers',
+    function ($rootScope, $location, broadcaster, satnetRPC, markers) {
 
         'use strict';
 
+        this._initListeners = function () {
+            $rootScope.on(
+                broadcaster.KEEP_ALIVE_EVENT,
+                function (event, message) {
+                    satnetRPC.alive().then(function (data) {
+                        console.log('alive!');
+                    });
+                }
+            )
+        };
+
         this.initStandalone = function () {
+            this._initListeners();
             var identifier = $location.host();
             return satnetRPC.getServerLocation(identifier)
                 .then(function (data) {

@@ -30,9 +30,11 @@ class AX25Tests(django_test.TestCase):
     __ax25_frame_1_b64 = base64.b64encode(__ax25_frame_1)
 
     def test_decode_ax25(self):
-
+        """Unit test
+        Validates the decoding tool for handling AX.25 frames within Base64 or
+        hex strings.
+        """
         p = ax25.AX25Packet.decode_base64(self.__ax25_frame_1_b64)
-        print '>>> p = ' + p.__unicode__()
 
         expected = {
             'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',

@@ -15,8 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-# Signals
-from services.network import signals
+from django import test as django_test
+from services.network.jrpc import views as net_jrpc
 
-# JRPC methods
-from services.network.jrpc import views
+
+class JRPCTest(django_test.TestCase):
+    """JRPC unit tests
+    Class with the tests that validate the JRPC methods for this service.
+    """
+
+    def test_keep_alive(self):
+        """Unit test
+        Test that validates the keep alive JRPC method.
+        """
+        self.assertTrue(net_jrpc.keep_alive(), 'Should have returned true')

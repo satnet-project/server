@@ -35,6 +35,7 @@ angular.module('satnet-services').service('satnetRPC', [
         this._configuration = jsonrpc.newService('configuration', _rpc);
         this._simulation = jsonrpc.newService('simulation', _rpc);
         this._leop = jsonrpc.newService('leop', _rpc);
+        this._network = jsonrpc.newService('network', _rpc);
 
         this._services = {
             // Configuration methods (Ground Stations)
@@ -102,7 +103,10 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.ufo.update':
                 this._leop.createMethod('launch.update'),
             'leop.messages':
-                this._leop.createMethod('getMessages')
+                this._leop.createMethod('getMessages'),
+            // NETWORK services
+            'net.alive':
+                this._network.createMethod('keepAlive')
         };
 
         /**
@@ -131,6 +135,17 @@ angular.module('satnet-services').service('satnetRPC', [
                 }
             );
         };
+
+        /**
+         * Simple convenience method for invoking the remote keep alive of the
+         * network sevice.
+         * @returns {*} Promise that returns True.
+         */
+        this.alive = function () {
+            return this.rCall('net.alive', []).then(function () {
+                return true;
+            });
+        }
 
         /**
          * Retrieves the user location using an available Internet service.

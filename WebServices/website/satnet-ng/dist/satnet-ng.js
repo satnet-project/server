@@ -341,8 +341,8 @@ angular.module('broadcaster', ['pushServices']);
  * Service used for broadcasting UI events in between controllers.
  */
 angular.module('broadcaster').service('broadcaster', [
-    '$rootScope', 'satnetPush',
-    function ($rootScope, satnetPush) {
+    '$rootScope', '$log', 'satnetPush',
+    function ($rootScope, $log, satnetPush) {
 
         'use strict';
 
@@ -508,6 +508,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.keepAliveReceived = function (data) {
             $rootScope.$broadcast('KEEP_ALIVE', {});
             console.log('ALIVE! data = ' + JSON.stringify(data));
+            $log.log('alive');
         };
 
         satnetPush.bind(
@@ -639,6 +640,7 @@ angular.module('satnet-services').service('satnetRPC', [
         this._configuration = jsonrpc.newService('configuration', _rpc);
         this._simulation = jsonrpc.newService('simulation', _rpc);
         this._leop = jsonrpc.newService('leop', _rpc);
+        this._network = jsonrpc.newService('network', _rpc);
 
         this._services = {
             // Configuration methods (Ground Stations)
@@ -706,7 +708,10 @@ angular.module('satnet-services').service('satnetRPC', [
             'leop.ufo.update':
                 this._leop.createMethod('launch.update'),
             'leop.messages':
-                this._leop.createMethod('getMessages')
+                this._leop.createMethod('getMessages'),
+            // NETWORK services
+            'net.alive':
+                this._network.createMethod('keepAlive')
         };
 
         /**
@@ -735,6 +740,17 @@ angular.module('satnet-services').service('satnetRPC', [
                 }
             );
         };
+
+        /**
+         * Simple convenience method for invoking the remote keep alive of the
+         * network sevice.
+         * @returns {*} Promise that returns True.
+         */
+        this.alive = function () {
+            return this.rCall('net.alive', []).then(function () {
+                return true;
+            });
+        }
 
         /**
          * Retrieves the user location using an available Internet service.
@@ -1887,12 +1903,24 @@ angular.module('x-server-models', ['satnet-services', 'marker-models']);
  * bussiness logic with the basic models.
  */
 angular.module('x-server-models').service('xserver', [
-    '$location', 'satnetRPC',  'markers',
-    function ($location, satnetRPC, markers) {
+    '$rootScope', '$location', 'broadcaster', 'satnetRPC',  'markers',
+    function ($rootScope, $location, broadcaster, satnetRPC, markers) {
 
         'use strict';
 
+        this._initListeners = function () {
+            $rootScope.on(
+                broadcaster.KEEP_ALIVE_EVENT,
+                function (event, message) {
+                    satnetRPC.alive().then(function (data) {
+                        console.log('alive!');
+                    });
+                }
+            )
+        };
+
         this.initStandalone = function () {
+            this._initListeners();
             var identifier = $location.host();
             return satnetRPC.getServerLocation(identifier)
                 .then(function (data) {
@@ -4099,11 +4127,11 @@ angular.module('messagesDirective', [
    limitations under the License.
 */
 
-angular.module('logNotifierDirective', ['broadcaster'])
+angular.module('logNotifierDirective', [])
     .constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
     .controller('logNotifierCtrl', [
-        '$scope', '$filter', 'broadcaster', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, broadcaster, TIMESTAMP_FORMAT) {
+        '$scope', '$filter', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, TIMESTAMP_FORMAT) {
             'use strict';
 
             $scope.eventLog = [];
@@ -4129,9 +4157,6 @@ angular.module('logNotifierDirective', ['broadcaster'])
             });
             $scope.$on('debEvent', function (event, message) {
                 $scope.logEvent(event, message);
-            });
-            $scope.$on(broadcaster.KEEP_ALIVE_EVENT, function (event, message) {
-                $scope.logEvent(event, 'KEEP ALIVE');
             });
 
         }

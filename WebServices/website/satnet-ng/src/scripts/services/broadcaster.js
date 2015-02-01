@@ -23,8 +23,8 @@ angular.module('broadcaster', ['pushServices']);
  * Service used for broadcasting UI events in between controllers.
  */
 angular.module('broadcaster').service('broadcaster', [
-    '$rootScope', 'satnetPush',
-    function ($rootScope, satnetPush) {
+    '$rootScope', '$log', 'satnetPush',
+    function ($rootScope, $log, satnetPush) {
 
         'use strict';
 
@@ -190,6 +190,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.keepAliveReceived = function (data) {
             $rootScope.$broadcast('KEEP_ALIVE', {});
             console.log('ALIVE! data = ' + JSON.stringify(data));
+            $log.log('alive');
         };
 
         satnetPush.bind(
