@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import base64
 import rpc4django
 
 from services.common import misc
@@ -51,6 +52,11 @@ def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
         raise Exception(
             'GroundStation does not exist! id = ' + str(groundstation_id)
         )
+
+    # Tries to decode the message in BASE64, if wrong, an exception is thrown.
+    # Otherwise, this is just a check for the message, the message will be
+    # stored in BASE64 in the database anyway.
+    base64.b64decode(message)
 
     message_o = comm_models.PassiveMessage.objects.create(
         groundstation=groundstation,

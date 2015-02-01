@@ -125,12 +125,19 @@ def create_sc(
     )
 
 
+import base64
 MESSAGE__1_TEST = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 MESSAGE__2_TEST = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
                             'AAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7d' \
                             'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
                             'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
                             'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
+MESSAGE_BASE64 = base64.b64encode(
+    'Base64 is a group of similar binary-to-text encoding schemes '
+    'that represent binary data in an ASCII string format by '
+    'translating it into a radix-64 representation. The term Base64 '
+    'originates from a specific MIME content transfer encoding.'
+)
 
 
 def create_message(groundstation, message=MESSAGE__1_TEST):

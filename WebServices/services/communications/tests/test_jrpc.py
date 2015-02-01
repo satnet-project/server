@@ -38,12 +38,6 @@ class TestPassiveCommunications(TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        self.__short_message = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
-        self.__long_message = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
-                              'AAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7d' \
-                              'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
-                              'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
-                              'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
 
     def test_store_message_null(self):
         """Unit test method.
@@ -85,17 +79,17 @@ class TestPassiveCommunications(TestCase):
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
                 doppler_shift=0.0,
-                message=self.__short_message
+                message=db_tools.MESSAGE_BASE64
             ),
-            1,
-            'Message ID expected to be 1'
+            2,
+            'Message ID expected not to be none'
         )
 
-        message = comms_models.PassiveMessage.objects.get(pk=1).message
+        message = comms_models.PassiveMessage.objects.get(pk=2).message
         self.assertEquals(
-            self.__short_message, message,
+            db_tools.MESSAGE_BASE64, message,
             'In-database stored message differs, diff = ' + str(
-                difflib.ndiff(self.__short_message, message))
+                difflib.ndiff(db_tools.MESSAGE_BASE64, message))
         )
 
         if self.__verbose_testing:
@@ -107,17 +101,17 @@ class TestPassiveCommunications(TestCase):
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
                 doppler_shift=0.0,
-                message=self.__long_message
+                message=db_tools.MESSAGE_BASE64
             ),
-            2,
+            3,
             'Message ID expected to be 2'
         )
 
         message = comms_models.PassiveMessage.objects.get(pk=2).message
         self.assertEquals(
-            self.__long_message, message,
+            db_tools.MESSAGE_BASE64, message,
             'In-database stored message differs, diff = ' + str(
-                difflib.ndiff(self.__long_message, message))
+                difflib.ndiff(db_tools.MESSAGE_BASE64, message))
         )
 
         if self.__verbose_testing:

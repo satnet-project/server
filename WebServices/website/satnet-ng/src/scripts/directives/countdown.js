@@ -14,11 +14,23 @@
    limitations under the License.
 */
 
-angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
+angular.module('countdownDirective', ['broadcaster', 'satnet-services'])
     .constant('COUNTDOWN_END_EV', 'launch-countdown-end')
+    .constant('CLOCK_BEAT_MS', 990)
+    .constant('KEEP_ALIVE_MS', 300000)
     .controller('countdownCtrl', [
-        '$rootScope', '$log', '$scope', '$timeout', 'broadcaster', 'satnetRPC',
-        function ($rootScope, $log, $scope, $timeout, broadcaster, satnetRPC) {
+        '$rootScope', '$log', '$scope', '$timeout',
+        'broadcaster', 'satnetRPC', 'CLOCK_BEAT_MS', 'KEEP_ALIVE_MS',
+        function (
+            $rootScope,
+            $log,
+            $scope,
+            $timeout,
+            broadcaster,
+            satnetRPC,
+            CLOCK_BEAT_MS,
+            KEEP_ALIVE_MS
+        ) {
             'use strict';
 
             $scope.cd = {
@@ -28,7 +40,8 @@ angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
                 hide: false,
                 _launch: {},
                 _diff: {},
-                _timer: {}
+                _timer: {},
+                _alive: {}
             };
 
             $scope._endBeat = function () {
@@ -58,7 +71,16 @@ angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
                     $scope.cd.diff = $scope.cd._diff.toISOString();
                     $scope.beat();
 
-                }, 990);
+                }, CLOCK_BEAT_MS);
+            };
+
+            $scope.alive = function () {
+                $scope.cd._alive = $timeout(function () {
+                    satnetRPC.alive().then(function (data) {
+                        console.log('alive! data = ' + JSON.stringify(data));
+                    });
+                    $scope.alive();
+                }, KEEP_ALIVE_MS);
             };
 
             $scope._initData = function (cfg) {
@@ -66,6 +88,8 @@ angular.module('countdownDirective', [ 'broadcaster', 'satnet-services' ])
                 $scope.cd._launch = moment(cfg.date);
                 $scope.cd._diff = moment.duration($scope.cd._launch.diff(now));
                 $scope.beat();
+                $scope.alive();
+                console.log('X');
             };
 
             $scope.init = function () {

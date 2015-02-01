@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import base64
 import logging
 from django import test
 from services.common import misc
@@ -61,6 +62,12 @@ class TestCommunicationsViews(test.TestCase):
                               'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
                               'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
                               'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
+        self.__b64_message = base64.b64encode(
+            'Base64 is a group of similar binary-to-text encoding schemes '
+            'that represent binary data in an ASCII string format by '
+            'translating it into a radix-64 representation. The term Base64 '
+            'originates from a specific MIME content transfer encoding.'
+        )
 
         if not self.__verbose_testing:
             logging.getLogger('communications').setLevel(level=logging.CRITICAL)
@@ -90,7 +97,7 @@ class TestCommunicationsViews(test.TestCase):
             groundstation_id=self.__gs_1_id,
             timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
             doppler_shift=0.0,
-            message=self.__long_message
+            message=self.__b64_message
         )
         view = comms_views.PassiveMessages()
         view.request = self.__request
@@ -102,7 +109,7 @@ class TestCommunicationsViews(test.TestCase):
             groundstation_id=self.__gs_1_id,
             timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
             doppler_shift=0.0,
-            message=self.__long_message
+            message=self.__b64_message
         )
         view = comms_views.PassiveMessages()
         view.request = self.__request
@@ -119,7 +126,7 @@ class TestCommunicationsViews(test.TestCase):
             groundstation_id=self.__gs_2_id,
             timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
             doppler_shift=0.0,
-            message=self.__short_message
+            message=self.__b64_message
         )
         view = comms_views.PassiveMessages()
         view.request = self.__request_gs_2

@@ -68,5 +68,7 @@ class SatnetTestRunner(DiscoverRunner):
 
         if not verbose_testing:
             logging.getLogger('push').setLevel(level=logging.CRITICAL)
+            logging.getLogger('common').setLevel(level=logging.CRITICAL)
+            logging.getLogger('communications').setLevel(level=logging.CRITICAL)
 
         return db

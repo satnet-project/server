@@ -729,7 +729,7 @@ class TestLaunchViews(test.TestCase):
 
         # 3.b) database fed with fake data frame
         message_2 = db_tools.create_message(
-            self.__gs_2, message=db_tools.MESSAGE__2_TEST
+            self.__gs_2, message=db_tools.MESSAGE_BASE64
         )
 
         # 3.c) service finally invoked
@@ -740,7 +740,7 @@ class TestLaunchViews(test.TestCase):
         expected.append({
             launch_serial.JRPC_K_GS_ID: self.__gs_2_id,
             messages_serial.JRPC_K_TS: message_2.groundstation_timestamp,
-            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE__2_TEST
+            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64
         })
         self.assertEquals(
             actual, expected,
@@ -754,5 +754,5 @@ class TestLaunchViews(test.TestCase):
         Validates the trigger of the message event by this service.
         """
         message_2 = db_tools.create_message(
-            self.__gs_2, message=db_tools.MESSAGE__2_TEST
+            self.__gs_2, message=db_tools.MESSAGE_BASE64
         )
