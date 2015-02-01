@@ -1909,14 +1909,15 @@ angular.module('x-server-models').service('xserver', [
         'use strict';
 
         this._initListeners = function () {
-            $rootScope.on(
+            $rootScope.$on(
                 broadcaster.KEEP_ALIVE_EVENT,
                 function (event, message) {
+                    console.log('ev = ' + event + ', msg = ' + message);
                     satnetRPC.alive().then(function (data) {
-                        console.log('alive!');
+                        console.log('alive! data = ' + JSON.stringify(data));
                     });
                 }
-            )
+            );
         };
 
         this.initStandalone = function () {
