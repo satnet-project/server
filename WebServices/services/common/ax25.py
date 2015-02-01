@@ -85,7 +85,6 @@ class AX25Packet(object):
         p.raw_packet = raw_packet
 
         flag = p.raw_packet[AX25Packet.START_FLAG_POS:AX25Packet.FLAG_LEN]
-        print ' flag = ' + flag
         if flag != AX25Packet.FLAG:
             raise Exception('Packet does not start with mandatory FLAG')
         p.start_flag = flag
@@ -96,22 +95,20 @@ class AX25Packet(object):
         p.end_flag = AX25Packet.FLAG
 
         p.destination = p.raw_packet[
-            AX25Packet.DEST_ADDR_POS: AX25Packet.DEST_ADDR_LEN
+            AX25Packet.DEST_ADDR_POS:
+            AX25Packet.DEST_ADDR_POS + AX25Packet.DEST_ADDR_LEN
         ]
-        print '>>> DEST_ADDR = ' + str(AX25Packet.DEST_ADDR_POS) + ':' + \
-              str(AX25Packet.DEST_ADDR_LEN)
-
         p.source = p.raw_packet[
-            AX25Packet.SRC_ADDR_POS: AX25Packet.SRC_ADDR_LEN
+            AX25Packet.SRC_ADDR_POS:
+            AX25Packet.SRC_ADDR_POS + AX25Packet.SRC_ADDR_LEN
         ]
-        print '>>> SRC_ADDR = ' + str(AX25Packet.SRC_ADDR_POS) + ':' + \
-              str(AX25Packet.SRC_ADDR_LEN)
-
         p.pid = p.raw_packet[
-            AX25Packet.PID_POS: AX25Packet.PID_LEN
+            AX25Packet.PID_POS:
+            AX25Packet.PID_POS + AX25Packet.PID_LEN
         ]
         p.fcs = p.raw_packet[
-            AX25Packet.FCS_POS: AX25Packet.FCS_LEN
+            AX25Packet.FCS_POS:
+            AX25Packet.FCS_POS + AX25Packet.FCS_LEN
         ]
 
         return p

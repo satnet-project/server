@@ -39,7 +39,9 @@ class AX25Tests(django_test.TestCase):
             'start_flag': '7E',
             'destination': '96709A9A9E40E0',
             'source': 'AE8468948C9261',
-            'end_flag': '7E'
+            'PID': 'F0',
+            'FCS': 'HHHH',
+            'end_flag': '7E',
         }
 
         actual = p.as_dictionary()

@@ -362,6 +362,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.LEOP_GS_RELEASED_EVENT = 'leop.gs.released';
         this.LEOP_UPDATED_EVENT = 'leop.updated';
         this.LEOP_FRAME_RX_EVENT = 'leop.frame.rx';
+        this.KEEP_ALIVE_EVENT = 'KEEP_ALIVE';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -504,8 +505,8 @@ angular.module('broadcaster').service('broadcaster', [
         this.leopFrameReceived = function (data) {
             $rootScope.$broadcast('leop.frame.rx', data.frame);
         };
-        this.leopFrameReceived = function (data) {
-            $rootScope.$broadcast('keep.alive', {});
+        this.keepAliveReceived = function (data) {
+            $rootScope.$broadcast('KEEP_ALIVE', {});
             console.log('ALIVE! data = ' + JSON.stringify(data));
         };
 
@@ -730,9 +731,7 @@ angular.module('satnet-services').service('satnetRPC', [
                         '>, with params = <' + JSON.stringify(params) +
                         '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
-                    throw error.message
-                        .replace(/Exception\('/g, '')
-                        .replace(/',\)/g, '');
+                    throw msg;
                 }
             );
         };
@@ -4100,11 +4099,11 @@ angular.module('messagesDirective', [
    limitations under the License.
 */
 
-angular.module('logNotifierDirective', [])
+angular.module('logNotifierDirective', ['broadcaster'])
     .constant('TIMESTAMP_FORMAT', 'HH:mm:ss.sss')
     .controller('logNotifierCtrl', [
-        '$scope', '$filter', 'TIMESTAMP_FORMAT',
-        function ($scope, $filter, TIMESTAMP_FORMAT) {
+        '$scope', '$filter', 'broadcaster', 'TIMESTAMP_FORMAT',
+        function ($scope, $filter, broadcaster, TIMESTAMP_FORMAT) {
             'use strict';
 
             $scope.eventLog = [];
@@ -4130,6 +4129,9 @@ angular.module('logNotifierDirective', [])
             });
             $scope.$on('debEvent', function (event, message) {
                 $scope.logEvent(event, message);
+            });
+            $scope.$on(broadcaster.KEEP_ALIVE_EVENT, function (event, message) {
+                $scope.logEvent(event, 'KEEP ALIVE');
             });
 
         }

@@ -44,6 +44,7 @@ angular.module('broadcaster').service('broadcaster', [
         this.LEOP_GS_RELEASED_EVENT = 'leop.gs.released';
         this.LEOP_UPDATED_EVENT = 'leop.updated';
         this.LEOP_FRAME_RX_EVENT = 'leop.frame.rx';
+        this.KEEP_ALIVE_EVENT = 'KEEP_ALIVE';
 
         /**
          * Function that broadcasts the event associated with the creation of a
@@ -186,8 +187,8 @@ angular.module('broadcaster').service('broadcaster', [
         this.leopFrameReceived = function (data) {
             $rootScope.$broadcast('leop.frame.rx', data.frame);
         };
-        this.leopFrameReceived = function (data) {
-            $rootScope.$broadcast('keep.alive', {});
+        this.keepAliveReceived = function (data) {
+            $rootScope.$broadcast('KEEP_ALIVE', {});
             console.log('ALIVE! data = ' + JSON.stringify(data));
         };
 

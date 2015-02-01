@@ -127,9 +127,7 @@ angular.module('satnet-services').service('satnetRPC', [
                         '>, with params = <' + JSON.stringify(params) +
                         '>, description = <' + JSON.stringify(error) + '>';
                     $log.warn(msg);
-                    throw error.message
-                        .replace(/Exception\('/g, '')
-                        .replace(/',\)/g, '');
+                    throw msg;
                 }
             );
         };
