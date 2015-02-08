@@ -16,11 +16,23 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
+from django.contrib.sites import models as site_models
 import pytz
 import sys
 import StringIO
 import unicodedata
 import socket
+
+
+def create_site(apps, schema_editor):
+    """Data Migrations
+    Creates the initial site for the server.
+    :return: Reference to the site object just created
+    """
+    return site_models.Site.objects.create(
+        name='The SATNet Network',
+        domain='localhost:8000'
+    )
 
 
 def get_fqdn(ip_address):

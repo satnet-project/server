@@ -68,7 +68,11 @@ class SpacecraftChannel(models.Model):
 
     objects = SpacecraftChannelManager()
 
-    enabled = models.BooleanField('Enables the usage of this channel.')
+    enabled = models.BooleanField(
+        'Enables the usage of this channel',
+        default=True
+    )
+
     identifier = models.CharField(
         'Unique identifier',
         max_length=30,
@@ -201,7 +205,11 @@ class GroundStationChannel(models.Model):
         app_label = 'configuration'
     objects = GroundStationChannelManager()
 
-    enabled = models.BooleanField('Enables the usage of this channel.')
+    enabled = models.BooleanField(
+        'Enables the usage of this channel',
+        default=True
+    )
+
     identifier = models.CharField(
         'Unique identifier',
         max_length=30,

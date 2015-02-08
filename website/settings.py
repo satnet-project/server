@@ -175,7 +175,6 @@ INSTALLED_APPS = (
     # ### default applications
     'django.contrib.auth',
     'django.contrib.contenttypes',
-    #'django.contrib.sessions',
     'user_sessions',
     'django.contrib.sites',
     'django.contrib.messages',
@@ -184,12 +183,9 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'session_security',
-    'leaflet',
     'periodically',
     'rpc4django',
-    'rest_framework',
     'django_extensions',
-    # 'south',
     'datetimewidget',
 
     # ### developed applications

@@ -192,3 +192,23 @@ class UserProfile(auth_models.User):
         'Flag that sets this user as an anonymous user',
         default=False
     )
+
+
+def create_admin_profile(apps, schema_editor):
+    """Data migrations
+    This method creates the profile for the initial administrator user added
+    by default by django manage.py.
+    """
+    UserProfile.objects.create(
+        user_ptr=auth_models.User.objects.get(is_superuser=True),
+        organization='The SATNet Network',
+        country='US'
+    )
+
+
+def remove_admin_profile(apps, schema_editor):
+    """Data migrations
+    Reverse data migration that destroys the user profile initially created
+    for the administrator.
+    """
+    UserProfile.objects.get(pk=1).delete()

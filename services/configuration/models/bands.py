@@ -147,15 +147,20 @@ class AvailableBands(models.Model):
     IARU_range = models.CharField('IARU Range', max_length=4)
     IARU_band = models.CharField('IARU Band', max_length=6)
     AMSAT_letter = models.CharField('AMSAT Letter', max_length=4)
-    IARU_allocation_minimum_frequency =\
-        models.DecimalField('Minimum frequency (MHz)',
-                            max_digits=24, decimal_places=6)
-    IARU_allocation_maximum_frequency =\
-        models.DecimalField('Maximum frequency (MHz)',
-                            max_digits=24, decimal_places=6)
 
-    uplink = models.BooleanField('Uplink permitted')
-    downlink = models.BooleanField('Downlink permitted')
+    IARU_allocation_minimum_frequency = models.DecimalField(
+        'Minimum frequency (MHz)',
+        max_digits=24,
+        decimal_places=6
+    )
+    IARU_allocation_maximum_frequency = models.DecimalField(
+        'Maximum frequency (MHz)',
+        max_digits=24,
+        decimal_places=6
+    )
+
+    uplink = models.BooleanField('Uplink permitted', default=False)
+    downlink = models.BooleanField('Downlink permitted', default=False)
 
     # Custom model manager
     objects = AvailableBandsManager()

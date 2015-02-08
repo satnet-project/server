@@ -29,6 +29,28 @@ logger = logging.getLogger('accounts')
 
 
 @django_dispatch.receiver(
+    django_signals.post_save,
+    sender=auth_models.User
+)
+def user_migrated(sender, instance, created, raw, **kwargs):
+    """Data Migration
+    Creates the user profile for the added superuser.
+    :param sender: Reference to the sender.
+    :param instance: Reference to object
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates whether the database is stable or not
+    :param kwargs: Additional arguments.
+    """
+    if not created or raw:
+        return
+
+    if instance.pk != 1:
+        return
+
+    account_models.create_admin_profile(None, None)
+
+
+@django_dispatch.receiver(
     django_signals.pre_delete, sender=user_session_models.Session
 )
 def session_closed_handler(sender, instance, **kwargs):

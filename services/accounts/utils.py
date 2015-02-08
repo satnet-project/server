@@ -15,17 +15,15 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from allauth.account import utils as allauth_utils, models as allauth_models
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-
-from allauth.account import utils as allauth_utils, models as allauth_models
-
 import logging
 import re
 import random
 
-
 logger = logging.getLogger(__name__)
+
 p = re.compile('^op_([0-9]+)$')
 p_id = re.compile('([0-9]+)')
 

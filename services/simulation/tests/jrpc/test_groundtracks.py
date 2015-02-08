@@ -27,6 +27,7 @@ from services.simulation.jrpc.views import groundtracks as simulation_jrpc
 from services.simulation.jrpc.serializers import groundtracks as \
     simulation_serializer
 from services.simulation.models import groundtracks as simulation_models
+import simplekml
 
 
 class JRPCSimulationTest(test.TestCase):
@@ -75,7 +76,6 @@ class JRPCSimulationTest(test.TestCase):
         track = simulation_serializer\
             .SimulationSerializer().serialize_groundtrack(gt_f)
 
-        import simplekml
         kml = simplekml.Kml()
         for p in track:
             if self.__verbose_testing:

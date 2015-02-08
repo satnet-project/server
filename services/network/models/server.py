@@ -86,7 +86,7 @@ class ServerManager(django_models.Manager):
         latitude, longitude = gis.get_remote_user_location(ip_address)
         timestamp = misc.get_utc_timestamp()
 
-        owner = account_models.UserProfile.objects.filter(is_staff=True)[0]
+        owner = account_models.UserProfile.objects.get(pk=1)
 
         return super(ServerManager, self).create(
             identifier=identifier, ip_address=ip_address,
