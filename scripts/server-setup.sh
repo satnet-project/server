@@ -301,7 +301,7 @@ create_travis_secrets()
     mkdir -p $webservices_secrets_dir
     [[ -e $webservices_secrets_init ]] || touch $webservices_secrets_init
 
-    __secret_key=$( ./django-secret-key-generator.py )
+    __secret_key=$( ./"$django_keygen" )
     echo ">>> Generating django's SECRET_KEY=$__secret_key"
     echo "SECRET_KEY='$__secret_key'" > $webservices_secrets_auth
 
