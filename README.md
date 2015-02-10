@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/satnet-project/server.svg?branch=development)](https://travis-ci.org/satnet-project/server)
+
 satnet-server
 ================
 
