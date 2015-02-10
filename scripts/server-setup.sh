@@ -459,6 +459,7 @@ usage()
 # ### Main variables and parameters
 script_path="$( cd "$( dirname "$0" )" && pwd )"
 debian_packages="$script_path/debian.packages"
+django_keygen="$script_path/django-secret-key-generator.py"
 project_path=$( readlink -e "$script_path/.." )
 webservices_dir="$project_path"
 webservices_secrets_dir="$webservices_dir/website/secrets"
