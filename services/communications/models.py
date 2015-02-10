@@ -16,9 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
+from services.common import misc
 from services.configuration.models import segments as segment_models
-from services.scheduling.models import operational as operational_models
 from services.configuration.models import channels as channel_models
+from services.scheduling.models import operational as operational_models
 
 
 class PassiveMessage(models.Model):
@@ -66,6 +67,7 @@ class PassiveMessage(models.Model):
                str(self.groundstation_timestamp) + ', (BASE64)=' +\
                str(self.message)
 
+
 class MessageManager(models.Manager):
     """
     Manager for the messages.
@@ -74,16 +76,21 @@ class MessageManager(models.Manager):
     database.
     """
 
-    def create(self, operational_slot, gs_channel, sc_channel, upwards, forwarded, tx_timestamp, message):
+    def create(
+        self,
+        operational_slot,
+        gs_channel, sc_channel,
+        upwards, forwarded,
+        tx_timestamp, message
+    ):
         """Creates the object in the database.
         Creates the object in the database with the data provided and including
         the current UTC timestamp as the timestamp of the moment at which this
         message was received in the server.
-        :param gs_channel_id: Identifier of the channel of the GroundStation
-                                that retrieved this message.
-        :param gs_timestamp: Timestamp of the moment at which this message was
+        :param gs_channel: Identifier of the channel of the GroundStation that
+                            retrieved this message.
+        :param tx_timestamp: Timestamp of the moment at which this message was
                                 received at the GroundStation.
-        :param doppler_shift: Doppler shift during the reception of the message.
         :param message: Binary message to be stored in the database.
         """
         return super(MessageManager, self).create(
@@ -97,8 +104,12 @@ class MessageManager(models.Manager):
             message=message
         )
 
-    def markForwarded(self):
-       pass
+    def mark_forwarded(self):
+        """
+
+        :return:
+        """
+        pass
 
 
 class Message(models.Model):
@@ -125,20 +136,19 @@ class Message(models.Model):
     )
 
     upwards = models.BooleanField(
-        'Message relay direction(upwards = GS-to-SC, downwards = SC-to-GS)'
+        'Message relay direction(upwards = GS-to-SC, downwards = SC-to-GS)',
+        default=False
     )
     forwarded = models.BooleanField(
-        'Flag that indicates whether the message has already been forwarded '
-        'to the receiver'
+        'Whether this message has already been forwarded to the receiver',
+        default=False
     )
 
     reception_timestamp = models.BigIntegerField(
-        'Timestamp that indicates the moment when this message was received at'
-        'the server.'
+        'Timestamp at which this message was received at the server'
     )
     transmission_timestamp = models.BigIntegerField(
-        'Timestamp that indicates the moment when this message was '
-        'transmitted to the receiver'
+        'Timestamp at which this message was forwarded to the receiver'
     )
 
     message = models.BinaryField('Message raw data')
