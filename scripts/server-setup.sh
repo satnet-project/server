@@ -280,7 +280,8 @@ create_secrets()
     echo "EMAIL_HOST_USER='XXXXXX@gmail.com'" >> $webservices_secrets_email
     echo "EMAIL_HOST_PASSWORD='XXXXXXXX'" >> $webservices_secrets_email
     echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email
-    
+    echo "EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
+
     echo ">>> Generating pusher.com configuration file..."
     echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
     echo 'Press any key to continue...'
@@ -445,6 +446,7 @@ usage()
     echo "Usage: $0 [-p] #Configures PostgreSQL"
     echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET."
     echo "Usage: $0 [-s] #Creates the <secrets> module with initial values."
+    echo "Usage: $0 [-t] #Creates the <secrets> module with the cfg for TRAVIS."
     echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
     echo "Usage: $0 [-v] #Configure virtualenv"
     echo "Usage: $0 [-x] #Configures Apache web server"
@@ -486,7 +488,7 @@ if [ $# -lt 1 ] ; then
     exit 0
 fi
 
-while getopts ":abcikprsovx" opt; do
+while getopts ":abcikprstovx" opt; do
     case $opt in
         a)
             echo 'This process is not unattended, user interaction is required.'
@@ -547,6 +549,12 @@ while getopts ":abcikprsovx" opt; do
         s)
             echo 'Creating <secrets>...'
             create_secrets
+            echo 'DONE'
+            exit 1;
+            ;;
+        t)
+            echo 'Creating TRAVIS <secrets>...'
+            create_travis_secrets
             echo 'DONE'
             exit 1;
             ;;
