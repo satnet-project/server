@@ -17,6 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
 from services.configuration.models import segments as segment_models
+from services.scheduling.models import operational as operational_models
+from services.configuration.models import channels as channel_models
 
 
 class PassiveMessage(models.Model):
@@ -95,8 +97,8 @@ class MessageManager(models.Manager):
             message=message
         )
 
-      def markForwarded():
-        pass
+    def markForwarded(self):
+       pass
 
 
 class Message(models.Model):
@@ -109,16 +111,16 @@ class Message(models.Model):
     objects = MessageManager()
 
     operational_slot = models.ForeignKey(
-        operational.OperationalSlot,
+        operational_models.OperationalSlot,
         verbose_name='OperationalSlot during which the message was transmitted'
     )
 
     groundstation_channel = models.ForeignKey(
-        channels.GroundStationChannel,
+        channel_models.GroundStationChannel,
         verbose_name='GroundStation channel that tx/rx this message'
     )
     spacecraft_channel = models.ForeignKey(
-        channels.SpacecraftChannel,
+        channel_models.SpacecraftChannel,
         verbose_name='Spacecraft channel that tx/rx this message'
     )
 
