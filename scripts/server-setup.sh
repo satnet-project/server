@@ -557,7 +557,7 @@ while getopts ":abcikprstovx" opt; do
             echo 'Creating TRAVIS <secrets>...'
             create_travis_secrets
             echo 'DONE'
-            exit 1;
+            exit 0;
             ;;
         o)
             echo 'Configuring Crontab...'
@@ -586,4 +586,4 @@ while getopts ":abcikprstovx" opt; do
 
 done
 
-exit 0
+exit 1
