@@ -102,7 +102,6 @@ __apache_server_ports='/etc/apache2/ports.conf'
 __apache_server_certificates_dir='/etc/apache2/certificates'
 __apache_server_certificate="$__apache_server_certificates_dir/$CERTIFICATE_NAME"
 __apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
-__apache_document_root="$webservices_static_dir"
 __apache_rotate_logs="/usr/local/apache/bin/rotatelogs"
 __phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
 __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
@@ -293,6 +292,38 @@ create_secrets()
 
 }
 
+__secret_key_file='secret.key'
+# ### Method that creates the <secrets> directory and initializes it with the
+# passwords for accessing to the database and to the email account.
+create_travis_secrets()
+{
+    mkdir -p $webservices_secrets_dir
+    [[ -e $webservices_secrets_init ]] || touch $webservices_secrets_init
+
+    __secret_key=$( ./django-secret-key-generator.py )
+    echo ">>> Generating django's SECRET_KEY=$__secret_key"
+    echo "SECRET_KEY='$__secret_key'" > $webservices_secrets_auth
+
+    echo 'DATABASES = {' > $webservices_secrets_database
+    echo "    'default': {" >> $webservices_secrets_database
+    echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
+    echo "        'NAME': '$django_db'," >> $webservices_secrets_database
+    echo "        'USER': 'postgres'," >> $webservices_secrets_database
+    echo "        'PASSWORD': ," >> $webservices_secrets_database
+    echo "        'HOST': 'localhost'," >> $webservices_secrets_database
+    echo "        'PORT': ''," >> $webservices_secrets_database
+    echo "    }" >> $webservices_secrets_database
+    echo "}" >> $webservices_secrets_database
+
+    echo "EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'" > $webservices_secrets_email
+    echo "EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
+
+    echo "PUSHER_APP_ID = '12345'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+
+}
+
 # ### Method that configures a given root with the virtualenvirment required,
 # all the pip packages and the directories.
 configure_root()
@@ -350,8 +381,7 @@ configure_crontab()
     __crontab_command="source $webservices_venv_activate && $__django_runtasks"
     __crontab_task="30 23 * * * $__crontab_user $__crontab_command"
 
-    --directory-prefix
-    __celestrak_command="wget -r --level=1 --no-parent --directory-prefix=$__wget_dir $__celestrak_url"
+    #__celestrak_command="wget -r --level=1 --no-parent --directory-prefix=$__wget_dir $__celestrak_url"
     __celestrak_task="00 23 * * * $__crontab_user $__crontab_command"
 
     echo '# Adding crontab task for django-periodically...' | sudo tee $__crontab_conf
