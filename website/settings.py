@@ -344,12 +344,15 @@ SESSION_SECURITY_EXPIRE_AFTER = 600
 ########################################################################## EMAIL
 ################################################################################
 EMAIL_BACKEND = email.EMAIL_BACKEND
-EMAIL_FILE_PATH = email.EMAIL_FILE_PATH
-EMAIL_HOST = email.EMAIL_HOST
-EMAIL_PORT = email.EMAIL_PORT
-EMAIL_HOST_USER = email.EMAIL_HOST_USER
-EMAIL_HOST_PASSWORD = email.EMAIL_HOST_PASSWORD
-EMAIL_USE_TLS = email.EMAIL_USE_TLS
+
+if hasattr(email, 'EMAIL_FILE_PATH'):
+    EMAIL_FILE_PATH = email.EMAIL_FILE_PATH
+else:
+    EMAIL_HOST = email.EMAIL_HOST
+    EMAIL_PORT = email.EMAIL_PORT
+    EMAIL_HOST_USER = email.EMAIL_HOST_USER
+    EMAIL_HOST_PASSWORD = email.EMAIL_HOST_PASSWORD
+    EMAIL_USE_TLS = email.EMAIL_USE_TLS
 
 # https://github.com/dstufft/django-passwords/
 PASSWORD_MIN_LENGTH = 8
