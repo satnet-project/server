@@ -160,16 +160,6 @@ TEMPLATE_DIRS = (
 
 TEST_RUNNER = 'website.tests.SatnetTestRunner'
 
-# ### TODO When migrating to Django >= 1.7, change to data migration...
-# ### directories with fixtures for database
-FIXTURE_DIRS = (
-    os.path.join(os.path.dirname(__file__), 'fixtures'),
-    os.path.join(
-        os.path.dirname(__file__),
-        '..', 'services', 'accounts', 'fixtures'
-    ),
-)
-
 INSTALLED_APPS = (
 
     # ### default applications

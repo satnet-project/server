@@ -79,11 +79,6 @@ urlpatterns = urls.patterns(
     # ### ########################################## REST, AJAX, JRPC INTERFACES
     # ### ######################################################################
 
-    # ### Django REST framework (api)
-    urls.url(
-        r'^api-auth/',
-        urls.include('rest_framework.urls', namespace='rest_framework')
-    ),
     # ### AJAX, configuration service
     urls.url(
         r'configuration/',
