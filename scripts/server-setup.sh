@@ -586,4 +586,4 @@ while getopts ":abcikprstovx" opt; do
 
 done
 
-exit 1
+exit 0
