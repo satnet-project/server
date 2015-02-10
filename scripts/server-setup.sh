@@ -310,7 +310,7 @@ create_travis_secrets()
     echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
     echo "        'NAME': '$django_db'," >> $webservices_secrets_database
     echo "        'USER': 'postgres'," >> $webservices_secrets_database
-    echo "        'PASSWORD': ," >> $webservices_secrets_database
+    echo "        'PASSWORD': ''," >> $webservices_secrets_database
     echo "        'HOST': 'localhost'," >> $webservices_secrets_database
     echo "        'PORT': ''," >> $webservices_secrets_database
     echo "    }" >> $webservices_secrets_database
