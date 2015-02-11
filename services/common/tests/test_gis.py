@@ -33,12 +33,12 @@ class TestGis(TestCase):
         result = gis.get_region(location_1[0], location_1[1])
         actual_country = result[gis.COUNTRY_SHORT_NAME]
         actual_region = result[gis.REGION_SHORT_NAME]
-        self.assertEquals(
+        self.assertEqual(
             expected_country, actual_country,
             'Altitudes differ, expected = ' + str(expected_country)
             + ', actual = ' + str(actual_country)
         )
-        self.assertEquals(
+        self.assertEqual(
             expected_region, actual_region,
             'Resolutions differ, expected = ' + str(expected_region)
             + ', actual = ' + str(actual_region)
@@ -55,12 +55,12 @@ class TestGis(TestCase):
         (actual_h_1, actual_r_1) = gis.get_altitude(
             location_1[0], location_1[1]
         )
-        self.assertEquals(
+        self.assertEqual(
             expected_h_1, actual_h_1,
             'Altitudes differ, expected = ' + str(expected_h_1)
             + ', actual = ' + str(actual_h_1)
         )
-        self.assertEquals(
+        self.assertEqual(
             expected_r_1, actual_r_1,
             'Resolutions differ, expected = ' + str(expected_r_1)
             + ', actual = ' + str(actual_r_1)
@@ -128,7 +128,7 @@ class TestGis(TestCase):
 
             actual = gis.latlng_2_degrees(t['input'])
 
-            self.assertEquals(
+            self.assertEqual(
                 actual, t['expected'], 'Wrong result, a = ' +
                 str(actual) + ', e = '+ str(t['expected'])
             )

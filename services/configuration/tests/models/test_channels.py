@@ -73,7 +73,7 @@ class TestModels(test.TestCase):
         supported by the configuration service.
         """
         if self.__verbose_testing:
-            print '>>>>> get_availability_slots'
+            print('>>>>> get_availability_slots')
 
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id
@@ -85,20 +85,20 @@ class TestModels(test.TestCase):
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_1)
         if self.__verbose_testing:
-            print 'slots = ' + str(len(
+            print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
                     self.__gs_1_ch_1
                 )
-            ))
+            )))
 
         rule_2 = db_tools.create_jrpc_daily_rule()
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_2)
         if self.__verbose_testing:
-            print 'slots = ' + str(len(
+            print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
                     self.__gs_1_ch_1
                 )
-            ))
+            )))
 
         rule_3 = db_tools.create_jrpc_once_rule(
             operation=jrpc_keys.RULE_OP_REMOVE,
@@ -106,11 +106,11 @@ class TestModels(test.TestCase):
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_3)
         if self.__verbose_testing:
-            print 'slots = ' + str(len(
+            print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
                     self.__gs_1_ch_1
                 )
-            ))
+            )))
 
         rule_4 = db_tools.create_jrpc_once_rule(
             operation=jrpc_keys.RULE_OP_REMOVE,
@@ -118,14 +118,14 @@ class TestModels(test.TestCase):
         )
         jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_4)
         if self.__verbose_testing:
-            print 'slots = ' + str(len(
+            print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
                     self.__gs_1_ch_1
                 )
-            ))
+            )))
 
         rules_n = len(rules.AvailabilityRule.objects.all())
-        self.assertEquals(
+        self.assertEqual(
             rules_n, 4,
             'Incorrect number of rules, expected = 4, actual = ' + str(rules_n)
         )
@@ -134,16 +134,16 @@ class TestModels(test.TestCase):
             self.__gs_1_ch_1
         )
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(), name='RULES'
             )
             misc.print_list(actual_s, name='AVAILABLE')
 
-        self.assertEquals(
+        self.assertEqual(
             len(actual_s), 1,
             'Wrong number of available slots, e = 2, actual = ' + str(len(
                 actual_s

@@ -67,8 +67,8 @@ class TestLeopViews(test.TestCase):
         cm.request = self.__request_1
 
         qs = cm.get_queryset()
-        self.assertEquals(len(qs), 0 , 'No LEOPs should be owned by user 1.')
+        self.assertEqual(len(qs), 0 , 'No LEOPs should be owned by user 1.')
 
         cm.request = self.__request_3
         qs_2 = cm.get_queryset()
-        self.assertEquals(len(qs_2), 1 , '1 LEOP should be owned by user 2.')
+        self.assertEqual(len(qs_2), 1 , '1 LEOP should be owned by user 2.')

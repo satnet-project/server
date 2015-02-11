@@ -80,7 +80,7 @@ class JRPCChannelsTest(TestCase):
         the channels of either GroundStations or Spacecraft.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_get_channel_options)'
+            print('>>> TEST (test_get_channel_options)')
 
         actual_o = jrpc_channels_if.get_options()
         expected_o = {
@@ -92,7 +92,7 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.BITRATES_K: ['300', '600', '900'],
             jrpc_serial.BANDWIDTHS_K: ['12.500000000', '25.000000000']
         }
-        self.assertEquals(
+        self.assertEqual(
             actual_o, expected_o,
             'Options differ! diff = ' + str(
                 datadiff.diff(actual_o, expected_o)
@@ -105,14 +105,14 @@ class JRPCChannelsTest(TestCase):
         channel already exists or not.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channel_is_unique)'
+            print('>>> TEST (test_gs_channel_is_unique)')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_is_unique(self.__gs_1_ch_1_id),
             True,
             'Channel should exist already!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_is_unique('CH-FAKE'),
             False,
             'Channel should not exist yet!'
@@ -124,14 +124,14 @@ class JRPCChannelsTest(TestCase):
         channel already exists or not.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_channel_is_unique)'
+            print('>>> TEST (test_sc_channel_is_unique)')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_is_unique(self.__sc_1_ch_1_id),
             True,
             'Channel should exist already!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_is_unique('CH-FAKE'),
             False,
             'Channel should not exist yet!'
@@ -142,7 +142,7 @@ class JRPCChannelsTest(TestCase):
         This test validates the JRPC method that creates a new channel.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channel_create)'
+            print('>>> TEST (test_gs_channel_create)')
 
         try:
             jrpc_channels_if.gs_channel_create(
@@ -162,7 +162,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
@@ -186,7 +186,7 @@ class JRPCChannelsTest(TestCase):
         This test validates the JRPC method that creates a new channel.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_channel_create)'
+            print('>>> TEST (test_sc_channel_create)')
 
         try:
             jrpc_channels_if.sc_channel_create(
@@ -204,7 +204,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
@@ -241,7 +241,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
@@ -258,14 +258,14 @@ class JRPCChannelsTest(TestCase):
             True,
             'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_delete(
                 self.__gs_1_id, self.__gs_1_ch_2_id
             ),
             True,
             'Channel should have been removed!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_is_unique(self.__gs_1_ch_2_id),
             False,
             'Channel should not exist yet!'
@@ -291,7 +291,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
@@ -306,14 +306,14 @@ class JRPCChannelsTest(TestCase):
             True,
             'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_delete(
                 self.__sc_1_id, self.__sc_1_ch_2_id
             ),
             True,
             'Channel should have been removed!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_is_unique(self.__sc_1_ch_2_id),
             False,
             'Channel should not exist yet!'
@@ -347,7 +347,7 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.BITRATES_K: [300, 600, 900],
             jrpc_serial.BANDWIDTHS_K: [12.500000000]
         }
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
@@ -362,11 +362,11 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
-            print datadiff.diff(actual_c, expected_c)
+            print(datadiff.diff(actual_c, expected_c))
 
-        self.assertEquals(
+        self.assertEqual(
             actual_c, expected_c,
-            'Configuration dictionaries do not match! Diff = ' + unicode(
+            'Configuration dictionaries do not match! Diff = ' + str(
                 datadiff.diff(actual_c, expected_c)
             )
         )
@@ -400,7 +400,7 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.BANDWIDTH_K: 12.500000000
         }
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
@@ -415,9 +415,9 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
-            print datadiff.diff(actual_c, expected_c)
+            print(datadiff.diff(actual_c, expected_c))
 
-        self.assertEquals(
+        self.assertEqual(
             actual_c, expected_c,
             'Configuration dictionaries do not match!'
         )
@@ -498,13 +498,13 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.CH_ID_K: self.__gs_1_ch_1_id,
             jrpc_serial.BAND_K: 'UHF / U / 435000000.000000 / 438000000.000000',
             jrpc_serial.AUTOMATED_K: False,
-            jrpc_serial.MODULATIONS_K: [unicode('AFSK'), unicode('FM')],
-            jrpc_serial.POLARIZATIONS_K: [unicode('LHCP'), unicode('RHCP')],
+            jrpc_serial.MODULATIONS_K: [str('AFSK'), str('FM')],
+            jrpc_serial.POLARIZATIONS_K: [str('LHCP'), str('RHCP')],
             jrpc_serial.BITRATES_K: [300, 600],
             jrpc_serial.BANDWIDTHS_K: [25]
         }
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, expected_c
             ),
@@ -520,7 +520,7 @@ class JRPCChannelsTest(TestCase):
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
 
-        self.assertEquals(
+        self.assertEqual(
             actual_c, expected_c,
             'Configuration dictionaries do not match!, diff = \n'
             + str(datadiff.diff(actual_c, expected_c))
@@ -603,7 +603,7 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.BANDWIDTH_K: 25
         }
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, expected_c
             ),
@@ -619,7 +619,7 @@ class JRPCChannelsTest(TestCase):
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
 
-        self.assertEquals(
+        self.assertEqual(
             actual_c, expected_c,
             'Configuration dictionaries do not match!, diff = \n'
             + str(datadiff.diff(actual_c, expected_c))

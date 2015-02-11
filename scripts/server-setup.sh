@@ -249,9 +249,9 @@ create_secrets()
     mkdir -p $webservices_secrets_dir
     [[ -e $webservices_secrets_init ]] || touch $webservices_secrets_init
 
-    __secret_key=$( ./django-secret-key-generator.py )
+    __secret_key=$( "$django_keygen" )
     echo ">>> Generating django's SECRET_KEY=$__secret_key"
-    echo "SECRET_KEY='$__secret_key'" > $webservices_secrets_auth
+    echo "SECRET_KEY = '$__secret_key'" > $webservices_secrets_auth
 
     echo '>>> Generating database access configuration file...'
     echo ">>> $webservices_secrets_database should be updated in case the user/password for the database change."
@@ -274,12 +274,12 @@ create_secrets()
     echo 'Press any key to continue...'
     read
 
-    echo "EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
-    echo "EMAIL_HOST='smtp.gmail.com'" >> $webservices_secrets_email
-    echo "EMAIL_PORT=587" >> $webservices_secrets_email
-    echo "EMAIL_HOST_USER='XXXXXX@gmail.com'" >> $webservices_secrets_email
-    echo "EMAIL_HOST_PASSWORD='XXXXXXXX'" >> $webservices_secrets_email
-    echo "EMAIL_USE_TLS=True" >> $webservices_secrets_email
+    echo "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
+    echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
+    echo "EMAIL_PORT = 587" >> $webservices_secrets_email
+    echo "EMAIL_HOST_USER = 'XXXXXX@gmail.com'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_PASSWORD = 'XXXXXXXX'" >> $webservices_secrets_email
+    echo "EMAIL_USE_TLS = True" >> $webservices_secrets_email
     echo "EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
 
     echo ">>> Generating pusher.com configuration file..."

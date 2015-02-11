@@ -51,7 +51,7 @@ class TestPassiveCommunications(TestCase):
         the registered remote web clients of the push service.
         """
         if self.__verbose_testing:
-            print '>>> test_push_downlink_frame'
+            print('>>> test_push_downlink_frame')
 
         # Invoking the JRPC method should provoke the creation of a new element
         # in the passive messages table that should trigger the transmission of

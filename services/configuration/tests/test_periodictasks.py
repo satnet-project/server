@@ -78,10 +78,10 @@ class TestSlotPropagation(test.TestCase):
         database when no rules are available (empty database stability check).
         """
         if self.__verbose_testing:
-            print '>>> test_propagate_empty_db:'
+            print('>>> test_propagate_empty_db:')
 
         periodictasks.populate_slots()
-        self.assertEquals(
+        self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()),
             0,
             'No slots should have been created!'
@@ -93,7 +93,7 @@ class TestSlotPropagation(test.TestCase):
         rules.
         """
         if self.__verbose_testing:
-            print '>>> test_propagate_simple:'
+            print('>>> test_propagate_simple:')
 
         now = misc.get_now_utc()
         r_1_s_time = now + datetime.timedelta(minutes=10)
@@ -121,7 +121,7 @@ class TestSlotPropagation(test.TestCase):
             operational.OperationalSlot.objects.values_list('start', 'end')
         )
 
-        self.assertEquals(
+        self.assertEqual(
             actual_pre, expected_pre,
             'Wrong OperationalSlots (pre-propagate), diff = ' + str(
                 datadiff.diff(actual_pre, expected_pre)
@@ -148,7 +148,7 @@ class TestSlotPropagation(test.TestCase):
             operational.OperationalSlot.objects.values_list('start', 'end')
         )
 
-        self.assertEquals(
+        self.assertEqual(
             actual_post, expected_post,
             'Wrong OperationalSlots (post-propagate), diff = ' + str(
                 datadiff.diff(actual_post, expected_post)

@@ -138,20 +138,18 @@ class AvailabilityRuleManager(models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
-            r_list = c.objects\
+            r_list = list(c.objects\
                 .filter(availabilityrule_ptr__gs_channel=gs_channel)\
                 .filter(availabilityrule_ptr__operation=ADD_SLOTS)\
                 .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0])\
-                .values()
+                .filter(availabilityrule_ptr__ending_date__gt=interval[0]).values())
             if r_list:
                 add_slots += r_list
-            r_list = c.objects\
+            r_list = list(c.objects\
                 .filter(availabilityrule_ptr__gs_channel=gs_channel)\
                 .filter(availabilityrule_ptr__operation=REMOVE_SLOTS)\
                 .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0])\
-                .values()
+                .filter(availabilityrule_ptr__ending_date__gt=interval[0]).values())
             if r_list:
                 remove_slots += r_list
 

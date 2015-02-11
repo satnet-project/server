@@ -43,6 +43,6 @@ class UtilsTest(TestCase):
         name_1 = account_utils.generate_random_username()
         name_2 = account_utils.generate_random_username()
 
-        self.assertNotEquals(
+        self.assertNotEqual(
             name_1, name_2, 'Generated names should be different'
         )

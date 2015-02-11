@@ -43,5 +43,5 @@ application = get_wsgi_application()
 
 # Load local server definition:
 from services.network.models import server as server_models
-print '>>> Loading local server information...'
+print('>>> Loading local server information...')
 server_models.ServerManager().load_local_server()

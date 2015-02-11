@@ -63,15 +63,15 @@ class TestAvailability(test.TestCase):
         defined. Therefore, no slot should be generated or added.
         """
         if self.__verbose_testing:
-            print '##### test_add_slots: no rules'
+            print('##### test_add_slots: no rules')
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
         )
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 0, 'No new available slots should\'ve been generated.'
         )
-        self.assertEquals(
+        self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()), 0,
             'No AvailabilitySlots expected.'
         )
@@ -83,7 +83,7 @@ class TestAvailability(test.TestCase):
         Therefore, a single slot should be generated and added to the database.
         """
         if self.__verbose_testing:
-            print '##### test_add_slots: single once rule'
+            print('##### test_add_slots: single once rule')
 
         jrpc_rules_if.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id,
@@ -93,10 +93,10 @@ class TestAvailability(test.TestCase):
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
         )
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 1, '1 slot expected, got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()), 1,
             '1 AvailabilitySlot was expected.'
         )
@@ -106,7 +106,7 @@ class TestAvailability(test.TestCase):
         Tests the generation of slots for a given daily rule.
         """
         if self.__verbose_testing:
-            print '##### test_generate_slots_daily_rule'
+            print('##### test_generate_slots_daily_rule')
 
         utc_dt = datetime.datetime.now(pytz.timezone('UTC'))
         utc_i_date = utc_dt
@@ -128,10 +128,10 @@ class TestAvailability(test.TestCase):
             self.__gs_1_ch_1
         )
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 3, '3 slots expected, got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()), 3,
             '3 AvailabilitySlots were expected.'
         )
@@ -143,7 +143,7 @@ class TestAvailability(test.TestCase):
         """
         #self.__verbose_testing = True
         if self.__verbose_testing:
-            print '##### test_add_slots: several rules (1)'
+            print('##### test_add_slots: several rules (1)')
 
         # R1) ADD+ONCE (+1 slot)
         rule_1_id = jrpc_rules_if.add_rule(
@@ -153,11 +153,11 @@ class TestAvailability(test.TestCase):
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
         )
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
         )
         av_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), 1, '1 slot expected, got = ' + str(len(av_slots))
         )
 
@@ -179,10 +179,10 @@ class TestAvailability(test.TestCase):
         av_slots = availability.AvailabilitySlot.objects.all()
 
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@2'
             )
@@ -190,12 +190,12 @@ class TestAvailability(test.TestCase):
 
         expected_slots = 2
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), expected_slots,
             'A_SLOTS, expected ' + str(expected_slots)
             + ', got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), expected_slots,
             'AV_SLOTS, expected ' + str(expected_slots)
             + ', got = ' + str(len(a_slots))
@@ -215,10 +215,10 @@ class TestAvailability(test.TestCase):
         av_slots = availability.AvailabilitySlot.objects.all()
 
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@3'
             )
@@ -226,12 +226,12 @@ class TestAvailability(test.TestCase):
 
         expected_slots = 1
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), expected_slots,
             'A_SLOTS, expected ' + str(expected_slots)
             + ', got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), expected_slots,
             'AV_SLOTS, expected ' + str(expected_slots)
             + ', got = ' + str(len(a_slots))
@@ -251,10 +251,10 @@ class TestAvailability(test.TestCase):
         av_slots = availability.AvailabilitySlot.objects.all()
 
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@4'
             )
@@ -262,12 +262,12 @@ class TestAvailability(test.TestCase):
 
         expected = 0
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), expected,
             'A_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), expected,
             'AV_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
@@ -286,10 +286,10 @@ class TestAvailability(test.TestCase):
         av_slots = availability.AvailabilitySlot.objects.all()
 
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@5'
             )
@@ -297,12 +297,12 @@ class TestAvailability(test.TestCase):
 
         expected = 1
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), expected,
             'A_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), expected,
             'AV_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
@@ -321,10 +321,10 @@ class TestAvailability(test.TestCase):
         av_slots = availability.AvailabilitySlot.objects.all()
 
         if self.__verbose_testing:
-            print '>>> today_utc = ' + str(misc.get_today_utc())
-            print '>>> window = ' + str(
+            print('>>> today_utc = ' + str(misc.get_today_utc()))
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@6'
             )
@@ -332,12 +332,12 @@ class TestAvailability(test.TestCase):
 
         expected = 2
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), expected,
             'A_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
         )
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), expected,
             'AV_SLOTS, expected ' + str(expected)
             + ', got = ' + str(len(a_slots))
@@ -352,11 +352,11 @@ class TestAvailability(test.TestCase):
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
         )
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
         )
         av_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), 1, '1 slots expected, got = ' + str(len(av_slots))
         )
 
@@ -375,11 +375,11 @@ class TestAvailability(test.TestCase):
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
             self.__gs_1_ch_1
         )
-        self.assertEquals(
+        self.assertEqual(
             len(a_slots), 0, 'None slots expected, got = ' + str(len(a_slots))
         )
         av_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEquals(
+        self.assertEqual(
             len(av_slots), 0, '0 slots expected, got = ' + str(len(av_slots))
         )
 
@@ -397,15 +397,15 @@ class TestAvailability(test.TestCase):
         applicable within a defined interval.
         """
         if self.__verbose_testing:
-            print '##### test_get_availability_slots:'
+            print('##### test_get_availability_slots:')
 
         # 0) Stability with None...
-        self.assertEquals(
+        self.assertEqual(
             availability.AvailabilitySlot.objects.get_applicable(None), [],
             '[] should be the result!'
         )
         # 1) Stability with []...
-        self.assertEquals(
+        self.assertEqual(
             availability.AvailabilitySlot.objects.get_applicable(
                 groundstation_channel=self.__gs_1_ch_1,
             ), [],
@@ -443,15 +443,15 @@ class TestAvailability(test.TestCase):
         ]
 
         if self.__verbose_testing:
-            print '>>> window = ' + str(
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES@1'
             )
             misc.print_list(a_slots, name='AVAILABLE@1')
 
-        self.assertEquals(
+        self.assertEqual(
             a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
                 a_slots, x_slots
             ))
@@ -476,19 +476,19 @@ class TestAvailability(test.TestCase):
         ]
 
         if self.__verbose_testing:
-            print '>>> window = ' + str(
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(x_slots, name='XSLOTS@2')
             misc.print_list(a_slots, name='AVAILABLE@2')
 
-        self.assertEquals(
+        self.assertEqual(
             a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
                 a_slots, x_slots
             ))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             a_slots, x_slots,
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, x_slots))
         )
@@ -508,7 +508,7 @@ class TestAvailability(test.TestCase):
                 a_slots[0][2]
             )
         )]
-        self.assertEquals(
+        self.assertEqual(
             a_slots, x_slots,
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, x_slots))
         )
@@ -521,7 +521,7 @@ class TestAvailability(test.TestCase):
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
         )
-        self.assertEquals(
+        self.assertEqual(
             a_slots, [],
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
         )
@@ -534,7 +534,7 @@ class TestAvailability(test.TestCase):
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
         )
-        self.assertEquals(
+        self.assertEqual(
             a_slots, [],
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
         )
@@ -547,7 +547,7 @@ class TestAvailability(test.TestCase):
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
         )
-        self.assertEquals(
+        self.assertEqual(
             a_slots, [],
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
         )
@@ -560,7 +560,7 @@ class TestAvailability(test.TestCase):
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=self.__gs_1_ch_1, start=start, end=end
         )
-        self.assertEquals(
+        self.assertEqual(
             a_slots, [],
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
         )

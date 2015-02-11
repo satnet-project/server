@@ -96,7 +96,7 @@ class JRPCTestTle(test.TestCase):
         ]
         a_sections = tle_jrpc.get_celestrak_sections()
 
-        self.assertEquals(
+        self.assertEqual(
             a_sections, e_sections,
             'Celestrak sections do not match, diff = ' + str(
                 datadiff.diff(a_sections, e_sections)
@@ -109,18 +109,18 @@ class JRPCTestTle(test.TestCase):
         resouces.
         """
         if self.__verbose_testing:
-            print '>>> get_celestrak_resource'
+            print('>>> get_celestrak_resource')
 
-        for s in celestrak.CelestrakDatabase.CELESTRAK_RESOURCES.keys():
+        for s in list(celestrak.CelestrakDatabase.CELESTRAK_RESOURCES.keys()):
 
             tle_resource = tle_jrpc.get_celestrak_resource(s)
             if self.__verbose_testing:
-                print '>>> resource = ' + misc.dict_2_string(tle_resource)
+                print('>>> resource = ' + misc.dict_2_string(tle_resource))
 
             for t in tle_resource['tle_list']:
 
                 tle_id = t['spacecraft_tle_id']
-                self.assertNotEquals(
+                self.assertNotEqual(
                     len(str(tle_id)), 0, "Id for TLE cannot be empty"
                 )
                 ephem.readtle(
@@ -143,7 +143,7 @@ class JRPCTestTle(test.TestCase):
         }
         a_result = tle_jrpc.get_spacecraft_tle(self.__sc_1_id)
 
-        self.assertEquals(
+        self.assertEqual(
             a_result[segment_serializer.SC_ID_K],
             e_result[segment_serializer.SC_ID_K],
             'Spacecraft identifiers do not match, a = '
@@ -151,7 +151,7 @@ class JRPCTestTle(test.TestCase):
             + str(e_result[segment_serializer.SC_ID_K])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             a_result[segment_serializer.SC_TLE_ID_K],
             e_result[segment_serializer.SC_TLE_ID_K],
             'TLE identifiers do not match, a = '
@@ -159,13 +159,13 @@ class JRPCTestTle(test.TestCase):
             + str(e_result[segment_serializer.SC_TLE_ID_K])
         )
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_result[tle_serializer.TleSerializer.TLE_LINE_1_K]),
             tle_serializer.TleSerializer.LEN_TLE_LINE_1,
             'Length of TLEs Line 1 does not match!'
         )
 
-        self.assertEquals(
+        self.assertEqual(
             len(a_result[tle_serializer.TleSerializer.TLE_LINE_2_K]),
             tle_serializer.TleSerializer.LEN_TLE_LINE_2,
             'Length of TLEs Line 2 does not match!'

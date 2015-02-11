@@ -101,7 +101,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         Validates the JRPC method <gs_get_operational_slots>
         """
         if self.__verbose_testing:
-            print '##### test_gs_get_operational_slots'
+            print('##### test_gs_get_operational_slots')
         operational.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant GroundStation
@@ -113,7 +113,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
 
         # 2) basic test, should not generate slots until the GS is added,
         # raising an exception to confirm it
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -127,7 +127,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         # 3) basic test, should generate 2 FREE slots
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
@@ -179,7 +179,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 ).isoformat()
             },
         ]
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -187,7 +187,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -196,7 +196,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),

@@ -78,7 +78,7 @@ class TestSimulation(TestCase):
         # ### TODO what is the influence of body.compute(observer) within the
         # ### TODO simulation loop?
         if self.__verbose_testing:
-            print '>>> test_calculate_pass_slot:'
+            print('>>> test_calculate_pass_slot:')
 
         self.__simulator.set_groundstation(self.__gs_1)
         self.__simulator.set_spacecraft(
@@ -86,7 +86,7 @@ class TestSimulation(TestCase):
         )
 
         if self.__verbose_testing:
-            print self.__simulator.__unicode__()
+            print(self.__simulator.__unicode__())
 
         pass_slots = self.__simulator.calculate_pass_slot(
             start=pytz_utc.localize(datetime.today()),
@@ -94,9 +94,9 @@ class TestSimulation(TestCase):
         )
 
         if self.__verbose_testing:
-            print '# ### RESULTS:'
+            print('# ### RESULTS:')
             for p in pass_slots:
-                print '[' + str(p[0]) + ', ' + str(p[1]) + ']'
+                print('[' + str(p[0]) + ', ' + str(p[1]) + ']')
 
     def test_calculate_groundtrack(self):
         """
@@ -105,7 +105,7 @@ class TestSimulation(TestCase):
         of expected points for that groundtrack.
         """
         if self.__verbose_testing:
-            print '>>> test_calculate_groundtrack:'
+            print('>>> test_calculate_groundtrack:')
 
         step = timedelta(minutes=1)
         (start, end) = self.__simulator.get_simulation_window()
@@ -117,8 +117,8 @@ class TestSimulation(TestCase):
 
         if self.__verbose_testing:
             for p in groundtrack:
-                print '>> @' + str(p['timestamp']) + ', ('\
-                    + str(p['latitude']) + ',' + str(p['longitude']) + ')'
+                print('>> @' + str(p['timestamp']) + ', ('\
+                    + str(p['latitude']) + ',' + str(p['longitude']) + ')')
                 #print '>> @' + str(p['timestamp']) + ', dd = ('\
                 #    + str(gis.degrees_2_float(p['latitude'])) + ','\
                 #    + str(gis.degrees_2_float(p['longitude'])) + ')'
@@ -126,7 +126,7 @@ class TestSimulation(TestCase):
         e_n_points = int(math.ceil(
             (end - start).total_seconds()/step.total_seconds()
         ))
-        self.assertEquals(
+        self.assertEqual(
             e_n_points, len(groundtrack),
             'Number of points differs! e = ' + str(e_n_points)
             + ', a = ' + str(len(groundtrack))
@@ -135,7 +135,7 @@ class TestSimulation(TestCase):
     def __test_groundtrack_variation(self):
 
         if self.__verbose_testing:
-            print '>>> test_groundtrack_statistics:'
+            print('>>> test_groundtrack_statistics:')
 
         step = timedelta(minutes=1)
         (start, end) = self.__simulator.get_simulation_window()
@@ -154,15 +154,15 @@ class TestSimulation(TestCase):
         var_1_m_lat = numpy.std(array_1_m, dtype=numpy.float64)
         var_1_m_lng = numpy.std(array_1_m, dtype=numpy.float64)
 
-        print 'var_1_m = (' + str(var_1_m_lat) + ', ' + str(var_1_m_lng) + ')'
+        print('var_1_m = (' + str(var_1_m_lat) + ', ' + str(var_1_m_lng) + ')')
 
     def test_passes(self):
 
-        self.__tle_fb_id = u'FirebirdTEST'
-        self.__tle_fb_l1 = u'1 99991U          15030.59770833 -.00001217  ' \
-                           u'00000-0 -76033-4 0 00007'
-        self.__tle_fb_l2 = u'2 99991 099.0667 036.7936 0148154 343.1198 ' \
-                           u'145.4319 15.00731498000018'
+        self.__tle_fb_id = 'FirebirdTEST'
+        self.__tle_fb_l1 = '1 99991U          15030.59770833 -.00001217  ' \
+                           '00000-0 -76033-4 0 00007'
+        self.__tle_fb_l2 = '2 99991 099.0667 036.7936 0148154 343.1198 ' \
+                           '145.4319 15.00731498000018'
 
         self.__tle_fb = tle_models.TwoLineElement.objects.create(
             'testingsource',

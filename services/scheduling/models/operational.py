@@ -35,12 +35,12 @@ DATE_END = 'date_end'
 STATE = 'slot_state'
 
 # Possible states for the slots.
-STATE_FREE = unicode('FREE')
-STATE_SELECTED = unicode('SELECTED')
-STATE_RESERVED = unicode('RESERVED')
-STATE_DENIED = unicode('DENIED')
-STATE_CANCELED = unicode('CANCELED')
-STATE_REMOVED = unicode('REMOVED')
+STATE_FREE = str('FREE')
+STATE_SELECTED = str('SELECTED')
+STATE_RESERVED = str('RESERVED')
+STATE_DENIED = str('DENIED')
+STATE_CANCELED = str('CANCELED')
+STATE_REMOVED = str('REMOVED')
 
 
 class OperationalSlotsManager(models.Manager):

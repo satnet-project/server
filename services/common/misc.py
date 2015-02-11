@@ -19,7 +19,7 @@ import datetime
 from django.contrib.sites import models as site_models
 import pytz
 import sys
-import StringIO
+import io
 import unicodedata
 import socket
 
@@ -66,15 +66,15 @@ def print_list(l, name=None, output=sys.stdout):
     :param l: The list to be printed out.
     """
     if len(l) == 0:
-        print >> output, 'Empty list'
+        print('Empty list', file=output)
         return
 
     if name is None:
         name = str(l[0].__class__)
 
-    print >> output, '>>>>>>> list = ' + name + ', len = ' + str(len(l))
+    print('>>>>>>> list = ' + name + ', len = ' + str(len(l)), file=output)
     for l_i in l:
-        print >> output, str(l_i)
+        print(str(l_i), file=output)
 
 
 def list_2_string(l, list_name='List'):
@@ -84,7 +84,7 @@ def list_2_string(l, list_name='List'):
     :param list_name: The name for this list
     :return: String object with the list printed within
     """
-    buff = StringIO.StringIO()
+    buff = io.StringIO()
     print_list(l, name=list_name, output=buff)
     return buff.getvalue()
 
@@ -101,25 +101,25 @@ def print_dictionary(d, nested_level=0, output=sys.stdout, spacing='   '):
     dictionaries.
     """
     if type(d) == dict:
-        print >> output, '%s{' % (nested_level * spacing)
-        for k, v in d.items():
+        print('%s{' % (nested_level * spacing), file=output)
+        for k, v in list(d.items()):
             if hasattr(v, '__iter__'):
-                print >> output, '%s%s:' % ((nested_level + 1) * spacing, k)
+                print('%s%s:' % ((nested_level + 1) * spacing, k), file=output)
                 print_dictionary(v, nested_level + 1, output)
             else:
-                print >> output, '%s%s: %s' % ((nested_level + 1) * spacing,
-                                               k, v)
-        print >> output, '%s}' % (nested_level * spacing)
+                print('%s%s: %s' % ((nested_level + 1) * spacing,
+                                               k, v), file=output)
+        print('%s}' % (nested_level * spacing), file=output)
     elif type(d) == list:
-        print >> output, '%s[' % (nested_level * spacing)
+        print('%s[' % (nested_level * spacing), file=output)
         for v in d:
             if hasattr(v, '__iter__'):
                 print_dictionary(v, nested_level + 1, output)
             else:
-                print >> output, '%s%s' % ((nested_level + 1) * spacing, v)
-        print >> output, '%s]' % (nested_level * spacing)
+                print('%s%s' % ((nested_level + 1) * spacing, v), file=output)
+        print('%s]' % (nested_level * spacing), file=output)
     else:
-        print >> output, '%s%s' % (nested_level * spacing, d)
+        print('%s%s' % (nested_level * spacing, d), file=output)
 
 
 def dict_2_string(d):
@@ -129,7 +129,7 @@ def dict_2_string(d):
     :param d: The dictionary to be printed in the string
     :return: String object with the dictionary printed within
     """
-    buff = StringIO.StringIO()
+    buff = io.StringIO()
     print_dictionary(d, output=buff)
     return buff.getvalue()
 

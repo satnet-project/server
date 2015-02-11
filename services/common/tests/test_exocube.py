@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import base64
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from django.test import TestCase
 from services.common import misc
 from services.common.testing import helpers as db_tools
@@ -61,9 +61,9 @@ class TestExocube(TestCase):
         remote ExoCube service.
         """
         if self.__verbose_testing:
-            print '>>> test_exocube_service'
+            print('>>> test_exocube_service')
 
-        self.assertEquals(
+        self.assertEqual(
             comms_jrpc.store_passive_message(
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
@@ -78,7 +78,7 @@ class TestExocube(TestCase):
         """
         Manual test to start setting up the service.
         """
-        print 'test_exocube_wrong_mission_name'
+        print('test_exocube_wrong_mission_name')
 
         post_data_1 = {
             'mission': 'exocube',
@@ -95,18 +95,18 @@ class TestExocube(TestCase):
             'packet': 'C09C6C86A040400296966C908E861503CC450000F700004000011184968141931DE0000001C350000200E34D0501C7C79660724969000500090050006A00A374FE015D74FF02776B00C56C00C31C006A001C00C36A004A006B00C3000000000000966A006A006A00C2D2580000D1270000003E09B30400000024F400000A30000113DC000DB800000425C80009E18800D513B0A3E4000000B2007200001E29000000000000A600A600000000000000000000000000000000000067FFCD01EE00000000000000000000000080000000000027013700000D1A00045794000000004E364350202031000000000000000000000000FF00000000DA6C05A0008700C300000000000000C0'
         }
         data = json.dumps(post_data_1)
-        request = urllib2.Request(EXOCUBE_URL, data)
+        request = urllib.request.Request(EXOCUBE_URL, data)
         request.add_header('content-type', 'application/json')
         request.add_header('content-length', str(len(data)))
-        result = urllib2.urlopen(request)
+        result = urllib.request.urlopen(request)
         content = result.read()
-        print content
+        print(content)
 
     def ____test_exocube_ok(self):
         """
         Manual test to start setting up the service.
         """
-        print 'test_exocube_ok'
+        print('test_exocube_ok')
         post_data_2 = {
             'mission': 'ExoCube',
             'live': '0',
@@ -122,10 +122,10 @@ class TestExocube(TestCase):
             'packet': 'C09C6C86A040400296966C908E861503CC450000F700004000011184968141931DE0000001C350000200E34D0501C7C79660724969000500090050006A00A374FE015D74FF02776B00C56C00C31C006A001C00C36A004A006B00C3000000000000966A006A006A00C2D2580000D1270000003E09B30400000024F400000A30000113DC000DB800000425C80009E18800D513B0A3E4000000B2007200001E29000000000000A600A600000000000000000000000000000000000067FFCD01EE00000000000000000000000080000000000027013700000D1A00045794000000004E364350202031000000000000000000000000FF00000000DA6C05A0008700C300000000000000C0'
         }
         data = json.dumps(post_data_2)
-        request = urllib2.Request(EXOCUBE_URL, data)
+        request = urllib.request.Request(EXOCUBE_URL, data)
         request.add_header('content-type', 'application/json')
         request.add_header('content-length', str(len(data)))
-        result = urllib2.urlopen(request)
+        result = urllib.request.urlopen(request)
         content = result.read()
         self.assertIsNotNone(content, 'A response was expected')
-        print content
+        print(content)

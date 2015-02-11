@@ -50,7 +50,7 @@ class TestSerialization(test.TestCase):
         ISO-8601 string with Time and TimeZone.
         """
         if self.__verbose_testing:
-            print '>>> test_serialize_iso8601_date:'
+            print('>>> test_serialize_iso8601_date:')
 
         dt = datetime.datetime.now(pytz.timezone('US/Pacific'))
 
@@ -70,10 +70,10 @@ class TestSerialization(test.TestCase):
         actual = serialization.serialize_iso8601_date(birthday)
 
         if self.__verbose_testing:
-            print 'e = ' + str(expected)
-            print 'a = ' + str(actual)
+            print('e = ' + str(expected))
+            print('a = ' + str(actual))
 
-        self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
+        self.assertEqual(actual, expected, 'Wrong ISO-8601 format.')
 
         self.__verbose_testing = False
 
@@ -83,7 +83,7 @@ class TestSerialization(test.TestCase):
         datetime.datetime object.
         """
         if self.__verbose_testing:
-            print '>>> test_deserialize_iso8601_date:'
+            print('>>> test_deserialize_iso8601_date:')
 
         if datetime.datetime.now(pytz.timezone('US/Pacific')).tzname() == 'PDT':
             in_param = '1984-07-17T00:00:00-07:00'
@@ -105,10 +105,10 @@ class TestSerialization(test.TestCase):
         actual = serialization.deserialize_iso8601_date(in_param)
 
         if self.__verbose_testing:
-            print 'e = ' + str(expected)
-            print 'a = ' + str(actual)
+            print('e = ' + str(expected))
+            print('a = ' + str(actual))
 
-        self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
+        self.assertEqual(actual, expected, 'Wrong ISO-8601 format.')
         self.__verbose_testing = False
 
     def test_serialize_iso8601_time(self):
@@ -117,7 +117,7 @@ class TestSerialization(test.TestCase):
         ISO-8601 string with Date and TimeZone.
         """
         if self.__verbose_testing:
-            print '\n>>> test_serialize_iso8601_time:'
+            print('\n>>> test_serialize_iso8601_time:')
 
         dt = datetime.datetime.now(pytz.timezone('US/Pacific'))
 
@@ -130,10 +130,10 @@ class TestSerialization(test.TestCase):
         actual = serialization.serialize_iso8601_time(midnight)
 
         if self.__verbose_testing:
-            print 'e = ' + str(expected)
-            print 'a = ' + str(actual)
+            print('e = ' + str(expected))
+            print('a = ' + str(actual))
 
-        self.assertEquals(actual, expected, 'Wrong ISO-8601 format.')
+        self.assertEqual(actual, expected, 'Wrong ISO-8601 format.')
 
     def test_deserialize_iso8601_time(self):
         """
@@ -141,7 +141,7 @@ class TestSerialization(test.TestCase):
         datetime.datetime object.
         """
         if self.__verbose_testing:
-            print '\n>>> test_deserialize_iso8601_time:'
+            print('\n>>> test_deserialize_iso8601_time:')
 
         if datetime.datetime.now(pytz.timezone('US/Pacific')).tzname() == 'PDT':
             in_param = '01:00:00-07:00'
@@ -153,10 +153,10 @@ class TestSerialization(test.TestCase):
         actual = serialization.deserialize_iso8601_time(in_param)
 
         if self.__verbose_testing:
-            print 'e = ' + str(expected)
-            print 'a = ' + str(actual)
+            print('e = ' + str(expected))
+            print('a = ' + str(actual))
 
-        self.assertEquals(
+        self.assertEqual(
             actual.isoformat(), expected, 'Wrong ISO-8601 format.'
         )
         self.__verbose_testing = False

@@ -58,7 +58,7 @@ class TestRules(test.TestCase):
         Validates the generation of slots by a daily rule.
         """
         if self.__verbose_testing:
-            print '>>> test_1_generate_available_slots_daily:'
+            print('>>> test_1_generate_available_slots_daily:')
 
         now = misc.get_now_utc()
         r_1_s_time = now + datetime.timedelta(minutes=30)
@@ -93,12 +93,12 @@ class TestRules(test.TestCase):
         )
 
         if self.__verbose_testing:
-            print '>>> window = ' + str(
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(actual, name='Generated Slots')
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
                 actual, expected
             ))
@@ -112,7 +112,7 @@ class TestRules(test.TestCase):
         rule when the slot has already started.
         """
         if self.__verbose_testing:
-            print '>>> test_2_a_slots_daily_first_cut:'
+            print('>>> test_2_a_slots_daily_first_cut:')
 
         today = misc.get_today_utc()
         now = misc.get_now_utc()
@@ -130,11 +130,11 @@ class TestRules(test.TestCase):
         )
 
         if self.__verbose_testing:
-            print 'UTC now = ' + str(now)
-            print 'UTC today = ' + str(misc.get_today_utc())
-            print '$ window = ' + str(
+            print('UTC now = ' + str(now))
+            print('UTC today = ' + str(misc.get_today_utc()))
+            print('$ window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(rules.AvailabilityRule.objects.all())
             misc.print_list(availability.AvailabilitySlot.objects.all())
 
@@ -159,7 +159,7 @@ class TestRules(test.TestCase):
             misc.print_list(actual, name='ACTUAL_VALUES')
             misc.print_list(expected, name='EXPECTED_LIST')
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
                 actual, expected
             ))
@@ -174,7 +174,7 @@ class TestRules(test.TestCase):
         starts in the future.
         """
         if self.__verbose_testing:
-            print '>>> test_3_a_slots_daily_future:'
+            print('>>> test_3_a_slots_daily_future:')
 
         now = misc.get_now_utc()
         r_1_s_time = now + datetime.timedelta(minutes=10)
@@ -204,7 +204,7 @@ class TestRules(test.TestCase):
             )
         )
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
                 actual, expected
             ))

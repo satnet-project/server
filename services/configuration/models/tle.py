@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 import sys
-from urllib2 import urlopen as urllib2_urlopen
+from urllib.request import urlopen as urllib2_urlopen
 from django.core import exceptions, validators
 from django.db import models
 from services.common import misc

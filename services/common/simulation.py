@@ -74,11 +74,11 @@ class OrbitalSimulator(object):
         :param l2: Line#2 of the TLE file
         :return: Tuple (l0, l1, l2)
         """
-        if isinstance(l0, unicode):
+        if isinstance(l0, str):
             l0 = unicodedata.normalize('NFKD', l0).encode('ascii', 'ignore')
-        if isinstance(l1, unicode):
+        if isinstance(l1, str):
             l1 = unicodedata.normalize('NFKD', l1).encode('ascii', 'ignore')
-        if isinstance(l2, unicode):
+        if isinstance(l2, str):
             l2 = unicodedata.normalize('NFKD', l2).encode('ascii', 'ignore')
 
         return l0, l1, l2

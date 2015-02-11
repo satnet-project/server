@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import os
 import sys
-from secrets import auth, database, email, pusher
+from .secrets import auth, database, email, pusher
 
 
 # Django website for WebServices project.
@@ -103,7 +103,7 @@ SECRET_KEY = auth.SECRET_KEY
 
 if TESTING:
     from django.db.models import signals
-    import utils
+    from . import utils
     signals.post_syncdb.connect(utils.test_create_admin)
 
 # List of callables that know how to import templates from various sources.
@@ -114,7 +114,7 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
-    #'django.contrib.sessions.middleware.SessionMiddleware',
+    # 'django.contrib.sessions.middleware.SessionMiddleware',
     'user_sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -325,7 +325,7 @@ CSRF_FAILURE_VIEW = 'services.accounts.views.csrf_failure_handler'
 AUTH_PROFILE_MODULE = 'services.accounts.UserProfile'
 
 ################################################################################
-####################################################################### SESSIONS
+# ##################################################################### SESSIONS
 ################################################################################
 # ### Session engine changed: user_sessions improvement
 SESSION_ENGINE = 'user_sessions.backends.db'
@@ -341,7 +341,7 @@ SESSION_SECURITY_EXPIRE_AFTER = 600
 # SESSION_SECURITY_PASSIVE_URLS = 
 
 ################################################################################
-########################################################################## EMAIL
+# ######################################################################## EMAIL
 ################################################################################
 EMAIL_BACKEND = email.EMAIL_BACKEND
 

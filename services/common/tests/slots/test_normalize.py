@@ -46,9 +46,9 @@ class NormalizeSlotsTest(test.TestCase):
         Case A for normalizing slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING NORMALIZE, CASE A'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING NORMALIZE, CASE A')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         s = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=1))
@@ -70,9 +70,9 @@ class NormalizeSlotsTest(test.TestCase):
         Case B for normalizing slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING NORMALIZE, CASE B'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING NORMALIZE, CASE B')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         s = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=2))
@@ -94,9 +94,9 @@ class NormalizeSlotsTest(test.TestCase):
         Case C for normalizing slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING NORMALIZE, CASE C'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING NORMALIZE, CASE C')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         s = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=5))
@@ -118,9 +118,9 @@ class NormalizeSlotsTest(test.TestCase):
         Case COMPLEX#1 for normalizing slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING NORMALIZE, CASE COMPLEX#1: ABC'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING NORMALIZE, CASE COMPLEX#1: ABC')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         s = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=1))
@@ -154,9 +154,9 @@ class NormalizeSlotsTest(test.TestCase):
         Case COMPLEX#2 for normalizing slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING NORMALIZE, CASE COMPLEX#2: continuous ABC'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING NORMALIZE, CASE COMPLEX#2: continuous ABC')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         s = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=1))

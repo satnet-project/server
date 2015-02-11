@@ -49,7 +49,7 @@ def user_details(request):
     user = get_object_or_404(models.UserProfile, pk=user_id)
     fields = ['username', 'first_name', 'last_name', 'organization', 'email']
     user_dict = form_models.model_to_dict(user, fields)
-    user_dict['country'] = unicode(user.country.name)
+    user_dict['country'] = str(user.country.name)
     
     return user_dict
 
@@ -63,13 +63,13 @@ def user_verification(request):
     """
     logger.info(__name__ + ', user_verification (AJAX)')
     for x in request.POST:
-        print (x, ':', request.POST[x])
+        print((x, ':', request.POST[x]))
 
     if not 'user_list' in request.POST:
-        print (__name__ + ', user_verification, raising BadRequest.')
+        print((__name__ + ', user_verification, raising BadRequest.'))
         raise Exception("'user_list' not found as a POST parameter.")
 
-    value = unicode(request.POST['user_list'])
+    value = str(request.POST['user_list'])
     user_list = json.loads(value)
 
     if site_models.Site._meta.installed:
@@ -94,6 +94,6 @@ def user_verification(request):
 
     j_v_users = json.dumps(v_users)
     result = dict(user_list=j_v_users)
-    print (__name__ + ', user_verification, j_v_users = ' + j_v_users)
+    print((__name__ + ', user_verification, j_v_users = ' + j_v_users))
 
     return result

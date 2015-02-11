@@ -108,9 +108,9 @@ class OperationalModels(test.TestCase):
         OperationalSlots should be available only in bewteen steps 3 and 4.
         """
         if self.__verbose_testing:
-            print '##### test_add_slots: no rules'
+            print('##### test_add_slots: no rules')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -131,7 +131,7 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
@@ -153,13 +153,13 @@ class OperationalModels(test.TestCase):
                 operational.OperationalSlot.objects.all(), 'OperationalSlots'
             )
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Simulated operational slots differ from expected!'
             'actual = ' + str(actual) + ', expected = ' + str(expected)
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id
@@ -169,8 +169,8 @@ class OperationalModels(test.TestCase):
         )
 
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
@@ -179,23 +179,23 @@ class OperationalModels(test.TestCase):
         )
 
         if self.__verbose_testing:
-            print '>>> window = ' + str(
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(rules.AvailabilityRule.objects.all())
             misc.print_list(availability.AvailabilitySlot.objects.all())
             misc.print_list(operational.OperationalSlot.objects.all())
             misc.print_list(actual)
             misc.print_list(expected)
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
@@ -203,22 +203,22 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -228,15 +228,15 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
@@ -260,16 +260,16 @@ class OperationalModels(test.TestCase):
         and in between steps 5 and 6.
         """
         if self.__verbose_testing:
-            print '##### test_add_slots: no rules'
+            print('##### test_add_slots: no rules')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -291,22 +291,22 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (unicode(operational.STATE_FREE),),
-            (unicode(operational.STATE_FREE),)
+            (str(operational.STATE_FREE),),
+            (str(operational.STATE_FREE),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_FREE
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_FREE
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
@@ -314,15 +314,15 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),)
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
@@ -344,20 +344,20 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_FREE),),
-            (unicode(operational.STATE_FREE),)
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_FREE),),
+            (str(operational.STATE_FREE),)
         ]
         actual = list(
             operational.OperationalSlot.objects.all().values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Wrong slots..., diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -367,17 +367,17 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
@@ -402,16 +402,16 @@ class OperationalModels(test.TestCase):
         and in between steps 5 and 6.
         """
         if self.__verbose_testing:
-            print '##### test_add_slots: no rules'
+            print('##### test_add_slots: no rules')
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -433,22 +433,22 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (unicode(operational.STATE_FREE),),
-            (unicode(operational.STATE_FREE),)
+            (str(operational.STATE_FREE),),
+            (str(operational.STATE_FREE),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_FREE
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_FREE
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
@@ -456,22 +456,22 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),)
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
@@ -479,15 +479,15 @@ class OperationalModels(test.TestCase):
             ), True, 'Channel should have been created!'
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),)
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED
@@ -509,15 +509,15 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_FREE),),
-            (unicode(operational.STATE_FREE),)
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_FREE),),
+            (str(operational.STATE_FREE),)
         ]
         actual = list(
             operational.OperationalSlot.objects.all().values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Wrong slots..., diff = ' + str(datadiff.diff(actual, expected))
         )
@@ -537,8 +537,8 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_2_id, 0, 'Rule should have been added!')
         expected = [
-            (unicode(operational.STATE_FREE),),
-            (unicode(operational.STATE_FREE),)
+            (str(operational.STATE_FREE),),
+            (str(operational.STATE_FREE),)
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
@@ -546,12 +546,12 @@ class OperationalModels(test.TestCase):
                 .get(identifier=self.__gs_1_ch_2_id)
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Wrong slots..., diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_channels_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -561,19 +561,19 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
-            (unicode(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
+            (str(operational.STATE_REMOVED),),
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
                 state=operational.STATE_REMOVED
             ).values_list('state')
         )
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
                 operational.STATE_REMOVED

@@ -15,4 +15,4 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-print '>>> Testing <services.accounts>...'
+print('>>> Testing <services.accounts>...')

@@ -36,7 +36,7 @@ class JRPCSegmentsTest(test.TestCase):
         """
         expected_ll = '{"latitude": "35.347099", "longitude": "-120.455299"}'
         ll = configuration_ajax.user_geoip(request=self.__http_request)
-        self.assertEquals(
+        self.assertEqual(
             ll.content, expected_ll,
             'Expected CalPoly location = ' + str(expected_ll)
             + ', found = ' + str(ll.content)

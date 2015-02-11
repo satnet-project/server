@@ -20,7 +20,7 @@ from django.core import exceptions
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-import utils
+from . import utils
 from services.accounts import models as account_models
 
 

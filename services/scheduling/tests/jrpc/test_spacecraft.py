@@ -50,7 +50,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
 
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
-        self.__sc_1_ch_1_id = unicode('xatcobeo-fm')
+        self.__sc_1_ch_1_id = str('xatcobeo-fm')
         self.__sc_1_ch_1_cfg = {
             jrpc_cfg_serial.FREQUENCY_K: '437000000',
             jrpc_cfg_serial.MODULATION_K: 'FM',
@@ -59,7 +59,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             jrpc_cfg_serial.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
-        self.__gs_1_ch_1_id = unicode('gs-la-fm')
+        self.__gs_1_ch_1_id = str('gs-la-fm')
         self.__gs_1_ch_1_cfg = {
             jrpc_cfg_serial.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
@@ -103,7 +103,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         Validates the JRPC method <sc_get_operational_slots>
         """
         if self.__verbose_testing:
-            print '##### test_sc_get_operational_slots'
+            print('##### test_sc_get_operational_slots')
         operational.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant Spacecraft
@@ -115,7 +115,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
 
         # 2) basic test, should not generate slots until the GS is added,
         # raising an exception to confirm it
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
@@ -129,7 +129,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # 3) basic test, should generate 2 FREE slots
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -157,7 +157,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         actual = jrpc_sc_scheduling.get_operational_slots(self.__sc_1_id)
         expected = [
             {
-                operational.SLOT_IDENTIFIER: unicode('1'),
+                operational.SLOT_IDENTIFIER: str('1'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -169,7 +169,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
             {
-                operational.SLOT_IDENTIFIER: unicode('2'),
+                operational.SLOT_IDENTIFIER: str('2'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -181,7 +181,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
         ]
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -189,7 +189,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -198,7 +198,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
@@ -211,7 +211,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         Validates the JRPC method <sc_get_changes>.
         """
         if self.__verbose_testing:
-            print '##### test_sc_get_changes'
+            print('##### test_sc_get_changes')
         operational.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant Spacecraft
@@ -224,14 +224,14 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### channels required for the tests
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -261,7 +261,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
         expected = [
             {
-                operational.SLOT_IDENTIFIER: unicode('1'),
+                operational.SLOT_IDENTIFIER: str('1'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -273,7 +273,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
             {
-                operational.SLOT_IDENTIFIER: unicode('2'),
+                operational.SLOT_IDENTIFIER: str('2'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -285,7 +285,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
         ]
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -321,7 +321,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
         expected = [
             {
-                operational.SLOT_IDENTIFIER: unicode('3'),
+                operational.SLOT_IDENTIFIER: str('3'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -333,7 +333,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
             {
-                operational.SLOT_IDENTIFIER: unicode('4'),
+                operational.SLOT_IDENTIFIER: str('4'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_FREE,
@@ -345,7 +345,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
         ]
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -353,7 +353,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -362,7 +362,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
@@ -375,18 +375,18 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         Validates the method for the selection of the slots.
         """
         if self.__verbose_testing:
-            print '##### test_sc_get_changes'
+            print('##### test_sc_get_changes')
         operational.OperationalSlot.objects.reset_ids_counter()
 
         # ### channels required for the tests
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
             ), True, 'Channel should have been created!'
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -417,7 +417,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
 
         expected = [
             {
-                operational.SLOT_IDENTIFIER: unicode('1'),
+                operational.SLOT_IDENTIFIER: str('1'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_SELECTED,
@@ -429,7 +429,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ).isoformat()
             },
             {
-                operational.SLOT_IDENTIFIER: unicode('2'),
+                operational.SLOT_IDENTIFIER: str('2'),
                 operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
                 operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
                 operational.STATE: operational.STATE_SELECTED,
@@ -442,9 +442,9 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             },
         ]
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
-            'Expected different slots!, diff = ' + unicode(datadiff.diff(
+            'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
             ))
         )
@@ -452,7 +452,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         # 2) The changes should be notified now to the compatible gs, but only
         # once!
         actual = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -469,7 +469,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -478,7 +478,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),

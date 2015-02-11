@@ -55,7 +55,7 @@ class JRPCSegmentsTest(test.TestCase):
 
         self.__sc_1_id = 'sc-xatcobeo'
         self.__sc_1_callsign = 'BABA00'
-        self.__sc_1_tle_id = unicode('HUMSAT-D')
+        self.__sc_1_tle_id = str('HUMSAT-D')
         self.__sc_1_ch_1_id = 'xatcobeo-qpsk-1'
         self.__sc_1_ch_2_id = 'xatcobeo-gmsk-2'
         self.__sc_1_ch_1_f = 437000000
@@ -65,10 +65,10 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
         self.__sc_2_id = 'sc-swisscube'
-        self.__sc_2_tle_id = unicode('SWISSCUBE')
+        self.__sc_2_tle_id = str('SWISSCUBE')
 
         self.__sc_3_id = 'sc-somp'
-        self.__sc_3_tle_id = unicode('SOMP')
+        self.__sc_3_tle_id = str('SOMP')
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -120,7 +120,7 @@ class JRPCSegmentsTest(test.TestCase):
         "params":["gs-kam","kam88xx","15.00","56.559482","-199.687500"]
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_create)'
+            print('>>> TEST (test_gs_create)')
 
         gs_id = jrpc_gs.create(
             identifier='gs-kam',
@@ -146,7 +146,7 @@ class JRPCSegmentsTest(test.TestCase):
             "params":["afdasf","asdfafd","15.00","34.786739","-120.997925"]
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_create_2)'
+            print('>>> TEST (test_gs_create_2)')
 
         try:
             jrpc_gs.create(
@@ -167,7 +167,7 @@ class JRPCSegmentsTest(test.TestCase):
         the JRPC method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_list)'
+            print('>>> TEST (test_gs_list)')
         gs_list = jrpc_gs.list_groundstations(request=self.__http_request)
         self.assertItemsEqual(
             gs_list, [self.__gs_1_id, self.__gs_2_id], 'Wrong GS identifiers'
@@ -179,7 +179,7 @@ class JRPCSegmentsTest(test.TestCase):
         returned through the JRPC method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_list)'
+            print('>>> TEST (test_sc_list)')
         sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
         self.assertItemsEqual(
             sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
@@ -191,14 +191,14 @@ class JRPCSegmentsTest(test.TestCase):
         correspondent JRPC method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_add)'
+            print('>>> TEST (test_sc_add)')
 
         result = jrpc_sc.create(
             self.__sc_3_id, 'xxxcs', self.__sc_3_tle_id,
             request=self.__http_request
         )
 
-        self.assertEquals(
+        self.assertEqual(
             result['spacecraft_id'], self.__sc_3_id,
             'Error creating the SC, expected id = '
             + str(self.__sc_3_id) + ', actual id = ' + str(result[
@@ -206,7 +206,7 @@ class JRPCSegmentsTest(test.TestCase):
             ])
         )
 
-        self.assertNotEquals(
+        self.assertNotEqual(
             segments.Spacecraft.objects.get(identifier=self.__sc_3_id), None,
             'SC id = <' + str(self.__sc_3_id) + '>, should have been found'
         )
@@ -217,7 +217,7 @@ class JRPCSegmentsTest(test.TestCase):
         method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channels)'
+            print('>>> TEST (test_gs_channels)')
         ch_list = jrpc_gs.list_channels(self.__gs_1_id)
         self.assertItemsEqual(
             ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__gs_1_ch_1_id],
@@ -230,7 +230,7 @@ class JRPCSegmentsTest(test.TestCase):
         method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_channels)'
+            print('>>> TEST (test_sc_channels)')
         ch_list = jrpc_sc.list_channels(self.__sc_1_id)
         self.assertItemsEqual(
             ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__sc_1_ch_1_id],
@@ -243,14 +243,14 @@ class JRPCSegmentsTest(test.TestCase):
         method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_get_configuration):'
+            print('>>> TEST (test_gs_get_configuration):')
         cfg = jrpc_serial.deserialize_gs_configuration(
             jrpc_gs.get_configuration(self.__gs_1_id)
         )
         if self.__verbose_testing:
             misc.print_dictionary(cfg)
             misc.print_dictionary(self.__gs_1_configuration)
-        self.assertEquals(
+        self.assertEqual(
             cfg, self.__gs_1_configuration,
             'Wrong configuration returned, diff = \n'
             + str(datadiff.diff(cfg, self.__gs_1_configuration))
@@ -263,7 +263,7 @@ class JRPCSegmentsTest(test.TestCase):
         get_configuration JRPC method of the same interface.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_get_configuration):'
+            print('>>> TEST (test_gs_get_configuration):')
 
         cfg = jrpc_serial.serialize_gs_configuration(
             segments.GroundStation.objects.get(identifier=self.__gs_1_id)
@@ -276,13 +276,13 @@ class JRPCSegmentsTest(test.TestCase):
         ]
         cfg[jrpc_serial.GS_ALTITUDE_K] = 1608.63793945312
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_gs.set_configuration(self.__gs_1_id, cfg),
             self.__gs_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
-        self.assertEquals(
+        self.assertEqual(
             actual_cfg, cfg,
             'Wrong configuration returned, diff = \n'
             + str(datadiff.diff(actual_cfg, cfg))
@@ -294,11 +294,11 @@ class JRPCSegmentsTest(test.TestCase):
         method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_get_configuration):'
+            print('>>> TEST (test_sc_get_configuration):')
         cfg = jrpc_serial.deserialize_sc_configuration(
             jrpc_sc.get_configuration(self.__sc_1_id)
         )
-        self.assertEquals(
+        self.assertEqual(
             cfg, self.__sc_1_configuration, 'Wrong configuration returned'
         )
 
@@ -309,7 +309,7 @@ class JRPCSegmentsTest(test.TestCase):
         get_configuration JRPC method of the same interface.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_sc_get_configuration):'
+            print('>>> TEST (test_sc_get_configuration):')
         cfg = jrpc_serial.serialize_sc_configuration(
             segments.Spacecraft.objects.get(identifier=self.__sc_1_id)
         )
@@ -317,26 +317,26 @@ class JRPCSegmentsTest(test.TestCase):
         old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
         cfg[jrpc_serial.SC_CALLSIGN_K] = 'CHANGED'
         cfg[jrpc_serial.SC_TLE_ID_K] = 'HUMSAT-D'
-        self.assertEquals(
+        self.assertEqual(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             self.__sc_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
-        self.assertEquals(
+        self.assertEqual(
             actual_cfg, cfg, 'Configurations differ'
             + ', e = ' + str(cfg)
             + ', a = ' + str(actual_cfg)
         )
         cfg[jrpc_serial.SC_CALLSIGN_K] = old_callsign
         cfg[jrpc_serial.SC_TLE_ID_K] = old_tle_id
-        self.assertEquals(
+        self.assertEqual(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             self.__sc_1_id,
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
-        self.assertEquals(
+        self.assertEqual(
             actual_cfg, cfg, 'Configurations differ'
             + ', e = ' + str(cfg)
             + ', a = ' + str(actual_cfg)
@@ -348,7 +348,7 @@ class JRPCSegmentsTest(test.TestCase):
         set of rules for a given channel of a ground station.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channel_add_rule)'
+            print('>>> TEST (test_gs_channel_add_rule)')
 
         # 1) add new rule to the database
         now = misc.get_now_utc()
@@ -386,13 +386,13 @@ class JRPCSegmentsTest(test.TestCase):
         }
 
         if self.__verbose_testing:
-            print '>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:'
+            print('>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:')
             for r in rules_g1c1:
-                print str(r)
-            print '>>> expected_r:'
-            print str(expected_r)
+                print(str(r))
+            print('>>> expected_r:')
+            print(str(expected_r))
 
-        self.assertEquals(
+        self.assertEqual(
             rules_g1c1[0], expected_r, 'Wrong ONCE rule!, diff = ' + str(
                 datadiff.diff(rules_g1c1[0], expected_r)
             )
@@ -406,7 +406,7 @@ class JRPCSegmentsTest(test.TestCase):
         set of rules for a given channel of a ground station.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channel_add_rule)'
+            print('>>> TEST (test_gs_channel_add_rule)')
 
         now = misc.get_now_utc()
         r_1_s_time = now + datetime.timedelta(minutes=30)
@@ -444,13 +444,13 @@ class JRPCSegmentsTest(test.TestCase):
         }
 
         if self.__verbose_testing:
-            print '>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:'
+            print('>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:')
             for r in rules_g1c1:
                 misc.print_dictionary(r)
-            print '>>> expected_r:'
+            print('>>> expected_r:')
             misc.print_dictionary(expected_r)
 
-        self.assertEquals(
+        self.assertEqual(
             rules_g1c1[0], expected_r, 'Wrong DAILY rule!, diff = ' + str(
                 datadiff.diff(rules_g1c1[0], expected_r)
             )
@@ -462,7 +462,7 @@ class JRPCSegmentsTest(test.TestCase):
         set of rules for a given channel of a ground station.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_gs_channel_add_rule)'
+            print('>>> TEST (test_gs_channel_add_rule)')
 
         rule_cfg = db_tools.create_jrpc_once_rule()
         rule_id = jrpc_rules.add_rule(
@@ -477,4 +477,4 @@ class JRPCSegmentsTest(test.TestCase):
             )
         except rules.AvailabilityRule.DoesNotExist as e:
             if self.__verbose_testing:
-                print e.message
+                print(e.message)

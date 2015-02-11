@@ -45,7 +45,7 @@ class TestPassiveCommunications(TestCase):
         communications service under null or empty parameters.
         """
         if self.__verbose_testing:
-            print '>>> test_store_message_null'
+            print('>>> test_store_message_null')
 
         # 1) GS does not exist
         self.assertRaises(
@@ -72,9 +72,9 @@ class TestPassiveCommunications(TestCase):
         Simple test for validating the storage of passive messages.
         """
         if self.__verbose_testing:
-            print '>>> test_store_message'
+            print('>>> test_store_message')
 
-        self.assertEquals(
+        self.assertEqual(
             comms_jrpc.store_passive_message(
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
@@ -86,17 +86,17 @@ class TestPassiveCommunications(TestCase):
         )
 
         message = comms_models.PassiveMessage.objects.get(pk=2).message
-        self.assertEquals(
+        self.assertEqual(
             db_tools.MESSAGE_BASE64, message,
             'In-database stored message differs, diff = ' + str(
                 difflib.ndiff(db_tools.MESSAGE_BASE64, message))
         )
 
         if self.__verbose_testing:
-            print '>>> message_1 (RAW) = ' + str(message)
-            print '>>> message_1 (STR) = ' + str(base64.b64decode(message))
+            print('>>> message_1 (RAW) = ' + str(message))
+            print('>>> message_1 (STR) = ' + str(base64.b64decode(message)))
 
-        self.assertEquals(
+        self.assertEqual(
             comms_jrpc.store_passive_message(
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
@@ -108,12 +108,12 @@ class TestPassiveCommunications(TestCase):
         )
 
         message = comms_models.PassiveMessage.objects.get(pk=2).message
-        self.assertEquals(
+        self.assertEqual(
             db_tools.MESSAGE_BASE64, message,
             'In-database stored message differs, diff = ' + str(
                 difflib.ndiff(db_tools.MESSAGE_BASE64, message))
         )
 
         if self.__verbose_testing:
-            print '>>> message_2 (RAW) = ' + str(message)
-            print '>>> message_2 (STR) = ' + str(base64.b64decode(message))
+            print('>>> message_2 (RAW) = ' + str(message))
+            print('>>> message_2 (STR) = ' + str(base64.b64decode(message)))

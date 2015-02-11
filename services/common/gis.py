@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import logging
 
 logger = logging.getLogger('common')
@@ -38,7 +38,7 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
         return __SLO_LAT__, __SLO_LON__
 
     r = json.loads(
-        urllib2.urlopen(geoplugin_ip + ip).read()
+        urllib.request.urlopen(geoplugin_ip + ip).read()
     )
     latitude = r['geoplugin_latitude']
     longitude = r['geoplugin_longitude']
@@ -78,7 +78,7 @@ def get_region(latitude, longitude):
         + str(latitude) + ',' + str(longitude)\
         + '&sensor=true'
 
-    r = json.loads(urllib2.urlopen(service_url).read())
+    r = json.loads(urllib.request.urlopen(service_url).read())
     country_l, country_s, region_l, region_s = '', '', '', ''
     country_found = False
     region_found = False
@@ -157,7 +157,7 @@ def get_altitude(latitude, longitude):
     # noinspection PyDeprecation
     url = ___G_API_ALTITUDE_URL__ + ___G_API_ALTITUDE_OUTPUT__[0] + \
         '?locations=' + str(latitude) + ',' + str(longitude)
-    r = json.loads(urllib2.urlopen(url).read())
+    r = json.loads(urllib.request.urlopen(url).read())
     return r['results'][0]['elevation'], r['results'][0]['resolution']
 
 

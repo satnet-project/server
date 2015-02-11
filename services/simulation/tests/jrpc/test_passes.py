@@ -74,7 +74,7 @@ class JRPCPassesTest(test.TestCase):
         except segment_models.Spacecraft.DoesNotExist:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             sc_jrpc.create(
                 self.__sc_id, self.__sc_callsign, self.__sc_tle_1_id,
                 **{'request': self.__request}
@@ -82,7 +82,7 @@ class JRPCPassesTest(test.TestCase):
             {segment_serializers.SC_ID_K: self.__sc_id},
             'Should have returned the spacecraft identifier'
         )
-        self.assertEquals(
+        self.assertEqual(
             pass_views.get_sc_passes(self.__sc_id, []), [],
             'No passes, an array should be returned empty'
         )
@@ -92,7 +92,7 @@ class JRPCPassesTest(test.TestCase):
             segment_serializers.SC_CALLSIGN_K: self.__sc_callsign,
             segment_serializers.SC_TLE_ID_K: self.__sc_tle_2_id
         }
-        self.assertEquals(
+        self.assertEqual(
             sc_jrpc.set_configuration(self.__sc_id, sc_cfg),
             self.__sc_id,
             'Should have returned spacecrafts identifier'
@@ -103,13 +103,13 @@ class JRPCPassesTest(test.TestCase):
         self.assertTrue(
             sc_jrpc.delete(self.__sc_id), 'Should have removed the spacecraft'
         )
-        self.assertEquals(
+        self.assertEqual(
             len(pass_models.PassSlots.objects.all()), 0, 'No slot available'
         )
 
         # 4) Ground station addition: should create slots for already-added
         # satellites for general testing purposes (check website.tests)
-        self.assertEquals(
+        self.assertEqual(
             gs_jrpc.create(
                 self.__gs_id, self.__gs_callsign, self.__gs_elevation,
                 self.__gs_latitude, self.__gs_longitude,
@@ -118,14 +118,14 @@ class JRPCPassesTest(test.TestCase):
             {segment_serializers.GS_ID_K: self.__gs_id},
             'Should have returned groundstastions identifier'
         )
-        self.assertNotEquals(
+        self.assertNotEqual(
             len(pass_views.get_sc_passes(self.__test_sc_id)),
             0,
             'Slots should have been added for the sc, id = ' + self.__test_sc_id
         )
 
         # 5) the creation of a new spacecraft should add more slots
-        self.assertEquals(
+        self.assertEqual(
             sc_jrpc.create(
                 self.__sc_id, self.__sc_callsign, self.__sc_tle_1_id,
                 **{'request': self.__request}
@@ -133,7 +133,7 @@ class JRPCPassesTest(test.TestCase):
             {segment_serializers.SC_ID_K: self.__sc_id},
             'Should have returned the spacecraft identifier'
         )
-        self.assertNotEquals(
+        self.assertNotEqual(
             len(pass_views.get_sc_passes(self.__sc_id)),
             0,
             'Slots should have been added for the sc, id = ' + self.__sc_id

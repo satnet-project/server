@@ -48,7 +48,7 @@ def get_user_operations(request):
     """
     operations = {}
 
-    for k, operation in request.iteritems():
+    for k, operation in request.items():
         
         if not p.match(k):
             continue

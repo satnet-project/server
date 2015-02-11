@@ -136,7 +136,7 @@ class TestLaunchViews(test.TestCase):
             a_gs = launch_jrpc.list_groundstations(
                 self.__leop_id, **{'request': self.__request_2}
             )
-            self.assertEquals(
+            self.assertEqual(
                 a_gs, e_gs, 'Unexpected result! diff = ' + str(
                     datadiff.diff(a_gs, e_gs)
                 )
@@ -158,7 +158,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, **{'request': self.__request_2}
         )
 
-        self.assertEquals(
+        self.assertEqual(
             a_gs, e_gs, 'Unexpected result! diff = ' + str(
                 datadiff.diff(a_gs, e_gs)
             )
@@ -208,13 +208,13 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, gss, **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
 
         cluster = launch_models.Launch.objects.get(identifier=self.__leop_id)
-        self.assertEquals(
+        self.assertEqual(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
         )
@@ -254,7 +254,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, None, **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
@@ -263,7 +263,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, [], **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Result differs, diff = ' + str(datadiff.diff(actual, expected))
         )
@@ -275,7 +275,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, gss, **{'request': self.__request_2}
         )
         cluster = launch_models.Launch.objects.get(identifier=self.__leop_id)
-        self.assertEquals(
+        self.assertEqual(
             len(cluster.groundstations.all()), 2,
             'Two groundstations should be part of this cluster object'
         )
@@ -286,7 +286,7 @@ class TestLaunchViews(test.TestCase):
             ),
             'Should have returned True'
         )
-        self.assertEquals(
+        self.assertEqual(
             len(cluster.groundstations.all()), 0,
             'No groundstations should be part of this cluster object'
         )
@@ -306,7 +306,7 @@ class TestLaunchViews(test.TestCase):
         except Exception:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, 1), 1,
             'Identifiers must match'
         )
@@ -317,7 +317,7 @@ class TestLaunchViews(test.TestCase):
             ).unknown_objects.all()
         ]
         e_list = [1]
-        self.assertEquals(
+        self.assertEqual(
             a_list, e_list, 'Data differs in the DB, diff = ' + str(
                 datadiff.diff(a_list, e_list)
             )
@@ -343,7 +343,7 @@ class TestLaunchViews(test.TestCase):
         except Exception:
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, 1), 1,
             'Identifiers must match'
         )
@@ -368,24 +368,24 @@ class TestLaunchViews(test.TestCase):
             self.fail('Wrong arguments, an exception should have been raised')
         except Exception as ex:
             if self.__verbose_testing:
-                print '#1 ex = ' + str(ex)
+                print('#1 ex = ' + str(ex))
             pass
         try:
             launch_jrpc.update(self.__leop_id, None, None, None, None)
             self.fail('Wrong arguments, an exception should have been raised')
         except Exception as ex:
             if self.__verbose_testing:
-                print '#2 ex = ' + str(ex)
+                print('#2 ex = ' + str(ex))
             pass
         try:
             launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None)
             self.fail('Wrong arguments, an exception should have been raised')
         except Exception as ex:
             if self.__verbose_testing:
-                print '#3 ex = ' + str(ex)
+                print('#3 ex = ' + str(ex))
             pass
 
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, self.__ufo_id),
             self.__ufo_id,
             'Should return the same id'
@@ -395,9 +395,9 @@ class TestLaunchViews(test.TestCase):
             self.fail('Wrong arguments, an exception should have been raised')
         except Exception as ex:
             if self.__verbose_testing:
-                print '#4 ex = ' + str(ex)
+                print('#4 ex = ' + str(ex))
             pass
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.identify(
                 self.__leop_id, self.__ufo_id,
                 self.__ufo_callsign, self.__ufo_tle_l1, self.__ufo_tle_l2
@@ -408,7 +408,7 @@ class TestLaunchViews(test.TestCase):
             },
             'Should have returned the id of the UFO and the SC id'
         )
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None),
             {
                 launch_serial.JRPC_K_OBJECT_ID: self.__ufo_id,
@@ -416,7 +416,7 @@ class TestLaunchViews(test.TestCase):
             },
             'Should have returned the id of the UFO and the SC id'
         )
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.update(
                 self.__leop_id, self.__ufo_id,
                 self.__ufo_callsign, self.__ufo_tle_l1, self.__ufo_tle_l2
@@ -427,7 +427,7 @@ class TestLaunchViews(test.TestCase):
             },
             'Should have returned the id of the UFO and the SC id'
         )
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.update(
                 self.__leop_id, self.__ufo_id,
                 self.__ufo_callsign, self.__leop_2_tle_l1, self.__leop_2_tle_l2
@@ -461,7 +461,7 @@ class TestLaunchViews(test.TestCase):
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
-        self.assertEquals(
+        self.assertEqual(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
                 datadiff.diff(a_cfg, e_cfg)
             )
@@ -481,7 +481,7 @@ class TestLaunchViews(test.TestCase):
             ],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
-        self.assertEquals(
+        self.assertEqual(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
                 datadiff.diff(a_cfg, e_cfg)
             )
@@ -512,7 +512,7 @@ class TestLaunchViews(test.TestCase):
                 launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             }]
         }
-        self.assertEquals(
+        self.assertEqual(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
                 datadiff.diff(a_cfg, e_cfg)
             )
@@ -538,7 +538,7 @@ class TestLaunchViews(test.TestCase):
             misc.print_dictionary(a_cfg)
             misc.print_dictionary(e_cfg)
 
-        self.assertEquals(
+        self.assertEqual(
             a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
                 datadiff.diff(a_cfg, e_cfg)
             )
@@ -566,13 +566,13 @@ class TestLaunchViews(test.TestCase):
         actual_date = launch_models.Launch.objects.get(
             identifier=self.__leop_id
         ).date
-        self.assertEquals(
+        self.assertEqual(
             actual_date.isoformat(), self.__leop_date.isoformat(),
             'Date objects should match, diff = ' + str(difflib.ndiff(
                 actual_date.isoformat(), self.__leop_date.isoformat()
             ))
         )
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.set_configuration(self.__leop_id, {
                 launch_serial.JRPC_K_DATE: str(tomorrow.isoformat())
             }),
@@ -582,7 +582,7 @@ class TestLaunchViews(test.TestCase):
         actual_date = launch_models.Launch.objects.get(
             identifier=self.__leop_id
         ).date
-        self.assertEquals(
+        self.assertEqual(
             actual_date.isoformat(), tomorrow.isoformat(),
             'Date objects should match, diff = ' + str(difflib.ndiff(
                 actual_date.isoformat(), tomorrow.isoformat()
@@ -590,7 +590,7 @@ class TestLaunchViews(test.TestCase):
         )
 
         old_gt = simulation_models.GroundTrack.objects.get(tle=self.__leop.tle)
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.set_configuration(self.__leop_id, {
                 launch_serial.JRPC_K_DATE: str(tomorrow.isoformat()),
                 launch_serial.JRPC_K_TLE_L1: self.__leop_2_tle_l1,
@@ -613,19 +613,19 @@ class TestLaunchViews(test.TestCase):
             'TLE (second_line) should have already been updated'
         )
         new_gt = simulation_models.GroundTrack.objects.get(tle=self.__leop.tle)
-        self.assertNotEquals(old_gt, new_gt, 'GroundTracks should be different')
+        self.assertNotEqual(old_gt, new_gt, 'GroundTracks should be different')
 
     def test_get_passes(self):
         """UNIT test (JRPC method)
         Validates the retrieval of the passes for this launch.
         """
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.get_pass_slots(self.__leop_id),
             [],
             'No passes should have been inserted yet'
         )
 
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_groundstations(
                 self.__leop_id, [self.__gs_1_id],
                 **{'request': self.__request_2}
@@ -642,7 +642,7 @@ class TestLaunchViews(test.TestCase):
         )
 
         slots = launch_jrpc.get_pass_slots(self.__leop_id)
-        self.assertNotEquals(
+        self.assertNotEqual(
             len(slots), 0, 'Pass slots should have been created'
         )
 
@@ -677,7 +677,7 @@ class TestLaunchViews(test.TestCase):
             pass
 
         # 2) basic empty response
-        self.assertEquals(
+        self.assertEqual(
             messages_jrpc.get_messages(
                 self.__leop_id, '2002-12-26T00:00:00-06:39'
             ),
@@ -687,7 +687,7 @@ class TestLaunchViews(test.TestCase):
 
         # 3) feeding 1 message, should be retrieved
         # 3.a) gs created and added to the launch
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_groundstations(
                 self.__leop_id, [self.__gs_1_id],
                 **{'request': self.__request_2}
@@ -709,7 +709,7 @@ class TestLaunchViews(test.TestCase):
             messages_serial.JRPC_K_TS: message_1.groundstation_timestamp,
             messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE__1_TEST
         }]
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Single message array expected, diff = ' + str(datadiff.diff(
                 actual, expected
@@ -718,7 +718,7 @@ class TestLaunchViews(test.TestCase):
 
         # 4) multiple groundstations:
         # 4.a) gs created and added to the launch
-        self.assertEquals(
+        self.assertEqual(
             launch_jrpc.add_groundstations(
                 self.__leop_id, [self.__gs_2_id],
                 **{'request': self.__request_2}
@@ -742,7 +742,7 @@ class TestLaunchViews(test.TestCase):
             messages_serial.JRPC_K_TS: message_2.groundstation_timestamp,
             messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64
         })
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Single message array expected, diff = ' + str(datadiff.diff(
                 actual, expected

@@ -78,19 +78,19 @@ class TestCommunicationsViews(test.TestCase):
         of a given user (the one making the request).
         """
         if self.__verbose_testing:
-            print '>>> test_get_queryset:'
+            print('>>> test_get_queryset:')
 
         # 1) User with no ground stations registered
         view = comms_views.PassiveMessages()
         view.request = self.__request_ung
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 0, 'List should be empty')
+        self.assertEqual(len(actual_m), 0, 'List should be empty')
 
         # 2) User with a ground station registered that has no messages
         view = comms_views.PassiveMessages()
         view.request = self.__request
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 0, 'List should be empty')
+        self.assertEqual(len(actual_m), 0, 'List should be empty')
 
         # 3) User with a ground station registered and a message available
         comms_jrpc.store_passive_message(
@@ -102,7 +102,7 @@ class TestCommunicationsViews(test.TestCase):
         view = comms_views.PassiveMessages()
         view.request = self.__request
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 1, 'List should contain one message')
+        self.assertEqual(len(actual_m), 1, 'List should contain one message')
 
         # 4) User with a ground station registered and two messages available
         comms_jrpc.store_passive_message(
@@ -114,13 +114,13 @@ class TestCommunicationsViews(test.TestCase):
         view = comms_views.PassiveMessages()
         view.request = self.__request
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 2, 'List should contain two messages')
+        self.assertEqual(len(actual_m), 2, 'List should contain two messages')
 
         # 5) User 2 should receive no messages from user 1 groundstations
         view = comms_views.PassiveMessages()
         view.request = self.__request_gs_2
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 0, 'List should be empty')
+        self.assertEqual(len(actual_m), 0, 'List should be empty')
 
         comms_jrpc.store_passive_message(
             groundstation_id=self.__gs_2_id,
@@ -131,8 +131,8 @@ class TestCommunicationsViews(test.TestCase):
         view = comms_views.PassiveMessages()
         view.request = self.__request_gs_2
         actual_m = view.get_queryset()
-        self.assertEquals(len(actual_m), 1, 'List should have one message')
+        self.assertEqual(len(actual_m), 1, 'List should have one message')
 
         if self.__verbose_testing:
             for m in actual_m:
-                print '>>> m = ' + str(m)
+                print('>>> m = ' + str(m))

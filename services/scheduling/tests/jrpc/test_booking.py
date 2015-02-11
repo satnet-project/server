@@ -100,7 +100,7 @@ class JRPCBookingProcessTest(test.TestCase):
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
 
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
@@ -114,7 +114,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         # 3) basic test, should generate 2 FREE slots
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
@@ -153,7 +153,7 @@ class JRPCBookingProcessTest(test.TestCase):
 
         """
         if self.__verbose_testing:
-            print '##### test_1_booking'
+            print('##### test_1_booking')
         operational.OperationalSlot.objects.reset_ids_counter()
 
         sc_s_slots = jrpc_sc_scheduling.select_slots(
@@ -163,7 +163,7 @@ class JRPCBookingProcessTest(test.TestCase):
 
         # 1) selection has to be notified only once to the GS
         gs_s_slots = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
-        self.assertEquals(
+        self.assertEqual(
             len(gs_s_slots), 2, 'Selected slots should be 2, selected = ' +
             misc.list_2_string(gs_s_slots)
         )
@@ -180,7 +180,7 @@ class JRPCBookingProcessTest(test.TestCase):
         gs_c_slots = jrpc_gs_scheduling.confirm_selections(
             self.__gs_1_id, [1, 2, 3]
         )
-        self.assertEquals(
+        self.assertEqual(
             len(gs_c_slots), 2, 'Confirmed slots should be 2, selected = ' +
             misc.list_2_string(gs_c_slots)
         )
@@ -191,7 +191,7 @@ class JRPCBookingProcessTest(test.TestCase):
         # 4) Spacecraft operators must be notified with the reservations,
         # but only once!
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEquals(
+        self.assertEqual(
             len(sc_r_slots), 2, 'Reserved slots should be 2, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
@@ -210,14 +210,14 @@ class JRPCBookingProcessTest(test.TestCase):
         # 6) Spacecraft operators must be notified with the cancelations,
         # but only once!
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEquals(
+        self.assertEqual(
             len(sc_r_slots), 2, 'Canceled slots should be 2, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
         self.assertRaises(
             Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
         )
-        self.assertEquals(
+        self.assertEqual(
             len(
                 operational.OperationalSlot.objects.filter(
                     state=operational.STATE_CANCELED
@@ -234,7 +234,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         # 7) SpacecraftOperator retries the selection...
-        self.assertEquals(
+        self.assertEqual(
             len(jrpc_sc_scheduling.select_slots(self.__sc_1_id, [1, 2, 3])),
             2,
             '2 slots must have been selected.'
@@ -244,7 +244,7 @@ class JRPCBookingProcessTest(test.TestCase):
         gs_d_slots = jrpc_gs_scheduling.deny_selections(
             self.__gs_1_id, [1, 2, 3]
         )
-        self.assertEquals(
+        self.assertEqual(
             len(gs_d_slots), 2, 'Denied slots should be 3, selected = ' +
             misc.list_2_string(gs_d_slots)
         )
@@ -252,14 +252,14 @@ class JRPCBookingProcessTest(test.TestCase):
             Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
         )
         sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEquals(
+        self.assertEqual(
             len(sc_r_slots), 2, 'Denied slots should be 3, selected = ' +
             misc.list_2_string(sc_r_slots)
         )
         self.assertRaises(
             Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
         )
-        self.assertEquals(
+        self.assertEqual(
             len(
                 operational.OperationalSlot.objects.filter(
                     state=operational.STATE_DENIED
@@ -276,7 +276,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
@@ -285,7 +285,7 @@ class JRPCBookingProcessTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEquals(
+        self.assertEqual(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),

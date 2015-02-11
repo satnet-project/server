@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import base64
 import logging
 import json
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 from services.common import ax25
 from website import settings as satnet_cfg
 
@@ -91,10 +91,10 @@ class ExocubeService(object):
 
         exocube_data = ExocubeService.create_exocube_data(passive_message)
         data = json.dumps(exocube_data)
-        request = urllib2.Request(ExocubeService.EXOCUBE_URL, data)
+        request = urllib.request.Request(ExocubeService.EXOCUBE_URL, data)
         request.add_header('content-type', 'application/json')
         request.add_header('content-length', str(len(data)))
-        result = urllib2.urlopen(request)
+        result = urllib.request.urlopen(request)
         response = result.read()
 
         if satnet_cfg.TESTING:

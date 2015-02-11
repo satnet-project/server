@@ -99,8 +99,8 @@ def hostname_geoip(request):
     host_ip = socket.gethostbyname(hostname)
     lat, lng = gis.get_remote_user_location(ip=host_ip)
 
-    print '>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +\
-          ', @(' + str(lat) + ', ' + str(lng) + ')'
+    print('>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +\
+          ', @(' + str(lat) + ', ' + str(lng) + ')')
 
     return {'latitude': lat, 'longitude': lng}
 

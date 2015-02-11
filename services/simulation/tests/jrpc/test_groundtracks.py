@@ -64,7 +64,7 @@ class JRPCSimulationTest(test.TestCase):
         gt = simulation_jrpc.get_groundtrack(self.__sc_1_id)
         if self.__verbose_testing:
             misc.print_list(gt)
-            print 'gt.length = ' + str(len(gt))
+            print('gt.length = ' + str(len(gt)))
 
     def test_visualize_groundtracks(self):
         """Basic groundtrack propagation.
@@ -79,8 +79,8 @@ class JRPCSimulationTest(test.TestCase):
         kml = simplekml.Kml()
         for p in track:
             if self.__verbose_testing:
-                print '>>> @, ' + str(p['timestamp']) + ':(' +\
-                    str(p['latitude']) + ',' + str(p['longitude']) + ')'
+                print('>>> @, ' + str(p['timestamp']) + ':(' +\
+                    str(p['latitude']) + ',' + str(p['longitude']) + ')')
             kml.newpoint(
                 name=str(p['timestamp']),
                 coords=[(p['latitude'], p['longitude'])]
@@ -88,7 +88,7 @@ class JRPCSimulationTest(test.TestCase):
         kml.save("test.kml")
 
         if self.__verbose_testing:
-            print '>>> points = ' + str(len(track))
+            print('>>> points = ' + str(len(track)))
 
     def test_remove_sc(self):
         """JRPC remove spacecraft test.
@@ -96,16 +96,16 @@ class JRPCSimulationTest(test.TestCase):
         the database through the correspondent JRPC method.
         """
         if self.__verbose_testing:
-            print '>>> TEST (test_remove_sc)'
+            print('>>> TEST (test_remove_sc)')
 
         try:
             a_id = sc_jrpc.delete(self.__sc_1_id)
-            self.assertEquals(
+            self.assertEqual(
                 a_id, self.__sc_1_id,
                 'Wrong id returned, e = ' + self.__sc_1_id + ', a = ' + a_id
             )
         except Exception as e:
-            print traceback.format_exc()
+            print(traceback.format_exc())
             self.fail('No exception should have been thrown, e = ' + str(e))
 
         if segment_models.Spacecraft.objects.filter(identifier=self.__sc_1_id)\

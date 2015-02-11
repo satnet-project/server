@@ -45,9 +45,9 @@ class MergeSlotsTest(test.TestCase):
         Case A for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE A'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE A')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=1))
@@ -70,9 +70,9 @@ class MergeSlotsTest(test.TestCase):
         Case B for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE B'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE B')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=1, minutes=20))
@@ -95,9 +95,9 @@ class MergeSlotsTest(test.TestCase):
         Case C for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE C'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE C')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc(),
              misc.get_today_utc() + timedelta(hours=5))
@@ -120,9 +120,9 @@ class MergeSlotsTest(test.TestCase):
         Case D for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE D'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE D')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=2),
              misc.get_today_utc() + timedelta(hours=5))
@@ -145,9 +145,9 @@ class MergeSlotsTest(test.TestCase):
         Case E for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE E'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE E')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=2),
              misc.get_today_utc() + timedelta(hours=3))
@@ -170,9 +170,9 @@ class MergeSlotsTest(test.TestCase):
         Case F for merging slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE F'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE F')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=2),
              misc.get_today_utc() + timedelta(hours=3))
@@ -194,9 +194,9 @@ class MergeSlotsTest(test.TestCase):
         Case merging p slots without m slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE NONE M SLOTS'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE NONE M SLOTS')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=2),
              misc.get_today_utc() + timedelta(hours=3))
@@ -225,9 +225,9 @@ class MergeSlotsTest(test.TestCase):
         Case merging multiple ending (+) slots.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, CASE MULITPLE (+)'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, CASE MULITPLE (+)')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=2),
              misc.get_today_utc() + timedelta(hours=3))
@@ -258,9 +258,9 @@ class MergeSlotsTest(test.TestCase):
         Complex case #1.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, COMPLEX CASE #1'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, COMPLEX CASE #1')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=0),
              misc.get_today_utc() + timedelta(hours=1))
@@ -295,9 +295,9 @@ class MergeSlotsTest(test.TestCase):
         Complex case #2.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, COMPLEX CASE #2'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, COMPLEX CASE #2')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=0),
              misc.get_today_utc() + timedelta(hours=1))
@@ -329,9 +329,9 @@ class MergeSlotsTest(test.TestCase):
         Complex case #3.
         """
         if self.__verbose_testing:
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
-            print 'TESTING MERGE, COMPLEX CASE #3'
-            print '$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$'
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
+            print('TESTING MERGE, COMPLEX CASE #3')
+            print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
 
         p = (misc.get_today_utc() + timedelta(hours=0),
              misc.get_today_utc() + timedelta(hours=1))

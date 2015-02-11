@@ -134,7 +134,7 @@ class PendingRegView(ListView):
         :param operations: Dictionary whose keys are the identifiers for the
         users and whose values are the operations to be applied to each user
         """
-        for user_id, op in operations.iteritems():
+        for user_id, op in operations.items():
 
             logger.debug(__name__ + ', op = ' + op + ', on user = ' + user_id)
 

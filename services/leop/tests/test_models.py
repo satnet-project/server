@@ -89,9 +89,9 @@ class TestLaunchModels(test.TestCase):
 
         if self.__verbose_testing:
 
-            print '>>> sc_id (cluster) = ' + str(sc_id)
-            print '>>> tle_id (cluster) = ' + str(tle_id)
-            print '>>> callsign (cluster) = ' + str(callsign)
+            print('>>> sc_id (cluster) = ' + str(sc_id))
+            print('>>> tle_id (cluster) = ' + str(tle_id))
+            print('>>> callsign (cluster) = ' + str(callsign))
 
     def test_delete_launch(self):
         """UNIT test case (model method)
@@ -99,7 +99,7 @@ class TestLaunchModels(test.TestCase):
         resources.
         """
         launch_id = 'XXXlaunch'
-        self.assertEquals(
+        self.assertEqual(
             db_tools.create_launch(identifier=launch_id).identifier,
             launch_id,
             'Create should have returned the same identifier for the launch'
@@ -123,7 +123,7 @@ class TestLaunchModels(test.TestCase):
         """UNIT test case (model method)
         Validates the creation of an unknown object within the database.
         """
-        self.assertEquals(
+        self.assertEqual(
             launch_models.Launch.objects.add_unknown(
                 self.__launch_id, self.__ufo_1_id
             ),
@@ -132,7 +132,7 @@ class TestLaunchModels(test.TestCase):
         )
 
         ufo = self.__launch.unknown_objects.get(identifier=self.__ufo_1_id)
-        self.assertEquals(
+        self.assertEqual(
             ufo.identifier, self.__ufo_1_id, 'Identifiers should be the same'
         )
 
@@ -167,7 +167,7 @@ class TestLaunchModels(test.TestCase):
             self.__launch_id, self.__ufo_1_id, self.__ufo_1_cs,
             self.__tle_l1, self.__tle_l2
         )
-        self.assertEquals(
+        self.assertEqual(
             actual_id[0], self.__ufo_1_id, 'Identifiers should be the same'
         )
 
@@ -213,8 +213,8 @@ class TestLaunchModels(test.TestCase):
 
         if self.__verbose_testing:
 
-            print ' >>> sc_id (object) = ' + str(sc_id)
-            print ' >>> tle_id (object) = ' + str(tle_id)
+            print(' >>> sc_id (object) = ' + str(sc_id))
+            print(' >>> tle_id (object) = ' + str(tle_id))
 
     def test_forget(self):
         """UNIT test case (model method)
@@ -224,7 +224,7 @@ class TestLaunchModels(test.TestCase):
         launch_models.Launch.objects.add_unknown(
             self.__launch_id, self.__ufo_1_id
         )
-        self.assertEquals(
+        self.assertEqual(
             len(simulation_models.GroundTrack.objects.all()), 2,
             'One single track at the beginning'
         )
@@ -279,12 +279,12 @@ class TestLaunchModels(test.TestCase):
         )
 
         # 4) ... and the groundtrack as well.
-        self.assertEquals(
+        self.assertEqual(
             len(simulation_models.GroundTrack.objects.all()), 2,
             'Groundtrack should have been deleted'
         )
 
         if self.__verbose_testing:
 
-            print ' >>> sc_id (object) = ' + str(sc_id)
-            print ' >>> tle_id (object) = ' + str(tle_id)
+            print(' >>> sc_id (object) = ' + str(sc_id))
+            print(' >>> tle_id (object) = ' + str(tle_id))

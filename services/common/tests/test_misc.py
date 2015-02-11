@@ -54,13 +54,13 @@ class TestMisc(test.TestCase):
         Basic test for the generation of UTC timestamps.
         """
         if self.__verbose_testing:
-            print '>>> test_get_utc_timestamp:'
+            print('>>> test_get_utc_timestamp:')
 
         test_datetime = misc.TIMESTAMP_0 + datetime.timedelta(days=1)
         actual_stamp = misc.get_utc_timestamp(test_datetime)
         expected_stamp = datetime.timedelta(days=1).days*24*3600 * 10**6
 
-        self.assertEquals(expected_stamp, actual_stamp, 'Wrong timestamp!')
+        self.assertEqual(expected_stamp, actual_stamp, 'Wrong timestamp!')
 
     def test_utc_database(self):
         """
@@ -68,7 +68,7 @@ class TestMisc(test.TestCase):
         database is converted to UTC or not.
         """
         if self.__verbose_testing:
-            print '>>> test_utc_database:'
+            print('>>> test_utc_database:')
 
         local_dt = datetime.datetime.now(
             pytz.timezone('US/Pacific')
@@ -78,22 +78,22 @@ class TestMisc(test.TestCase):
         )
 
         if self.__verbose_testing:
-            print '>> local_dt = ' + str(local_dt)
-            print '>> local_dt.iso() = ' + str(local_dt.isoformat())
-            print '>> local_dt.date() = ' + str(local_dt.date())
-            print '>> local_dt.time() = ' + str(local_dt.time())
-            print '>> local_dt.time().iso() = ' + str(
+            print('>> local_dt = ' + str(local_dt))
+            print('>> local_dt.iso() = ' + str(local_dt.isoformat()))
+            print('>> local_dt.date() = ' + str(local_dt.date()))
+            print('>> local_dt.time() = ' + str(local_dt.time()))
+            print('>> local_dt.time().iso() = ' + str(
                 local_dt.time().isoformat()
-            )
-            print '>> local_dt.timetz() = ' + str(local_dt.timetz())
-            print '>> local_dt.tzname() = ' + str(local_dt.tzname())
-            print '>> local_dt.utcoffset() = ' + str(local_dt.utcoffset())
-            print '>> utc_dt = ' + str(utc_dt)
-            print '>> utc_dt.iso() = ' + str(utc_dt.isoformat())
-            print '>> utc_dt.date() = ' + str(utc_dt.date())
-            print '>> utc_dt.time() = ' + str(utc_dt.time())
-            print '>> utc_dt.timetz() = ' + str(utc_dt.timetz())
-            print '>> utc_dt.tzname() = ' + str(utc_dt.tzname())
+            ))
+            print('>> local_dt.timetz() = ' + str(local_dt.timetz()))
+            print('>> local_dt.tzname() = ' + str(local_dt.tzname()))
+            print('>> local_dt.utcoffset() = ' + str(local_dt.utcoffset()))
+            print('>> utc_dt = ' + str(utc_dt))
+            print('>> utc_dt.iso() = ' + str(utc_dt.isoformat()))
+            print('>> utc_dt.date() = ' + str(utc_dt.date()))
+            print('>> utc_dt.time() = ' + str(utc_dt.time()))
+            print('>> utc_dt.timetz() = ' + str(utc_dt.timetz()))
+            print('>> utc_dt.tzname() = ' + str(utc_dt.tzname()))
 
         # 1) adds a single UTC rule to the database
         utc_i_date = utc_dt + datetime.timedelta(days=1)
@@ -112,7 +112,7 @@ class TestMisc(test.TestCase):
         )
 
         actual = [
-            unicode(r) for r in rules.AvailabilityRule.objects.all()
+            str(r) for r in rules.AvailabilityRule.objects.all()
         ]
         expected = [
             '+(D):' + utc_i_date.isoformat().split('T')[0]
@@ -121,7 +121,7 @@ class TestMisc(test.TestCase):
             + '>>' + utc_e_time.time().isoformat()
         ]
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected, 'Rules in the database differ, diff = ' +
             str(datadiff.diff(actual, expected))
         )
@@ -144,9 +144,9 @@ class TestMisc(test.TestCase):
         )
 
         if self.__verbose_testing:
-            print '>>> window = ' + str(
+            print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
-            )
+            ))
             misc.print_list(
                 rules.AvailabilityRule.objects.all(),  name='RULES'
             )
@@ -169,7 +169,7 @@ class TestMisc(test.TestCase):
             .split('.')[0]
         ]
 
-        self.assertEquals(
+        self.assertEqual(
             actual, expected, 'Rules in the database differ, diff = ' +
             str(datadiff.diff(actual, expected))
         )
@@ -186,9 +186,9 @@ class TestMisc(test.TestCase):
         """
         self.__verbose_testing = False
         if self.__verbose_testing:
-            print '>>> test_get_fqdn:'
+            print('>>> test_get_fqdn:')
 
         hn, ip = misc.get_fqdn_ip()
         if self.__verbose_testing:
-            print 'fqdn = ' + str(hn) + ', ip = ' + str(ip)
+            print('fqdn = ' + str(hn) + ', ip = ' + str(ip))
         self.__verbose_testing = False

@@ -55,7 +55,7 @@ class TestTle(TestCase):
         not correct, an Exception is throXwn and the test is aborted.
         """
         if self.__verbose_testing:
-            print '>>> test_load_tles'
+            print('>>> test_load_tles')
 
         tle.TwoLineElementsManager.load_tles()
 
@@ -85,7 +85,7 @@ class TestTle(TestCase):
         Tests the usage of the database by an external user.
         """
         if self.__verbose_testing:
-            print '>>> spacecraft_database'
+            print('>>> spacecraft_database')
 
         tle.TwoLineElementsManager.load_tles()
 

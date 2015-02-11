@@ -44,7 +44,7 @@ class AX25Tests(django_test.TestCase):
             'end_flag': '7E'
         }
         actual = p.as_dictionary()
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Results differ, diff = ' + str(datadiff.diff(actual, expected))
         )
@@ -63,7 +63,7 @@ class AX25Tests(django_test.TestCase):
             'end_flag': '7E'
         }
         actual = p.as_dictionary()
-        self.assertEquals(
+        self.assertEqual(
             actual, expected,
             'Results differ, diff = ' + str(datadiff.diff(actual, expected))
         )
