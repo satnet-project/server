@@ -146,7 +146,7 @@ class PushService(object):
             '>, data = <' + str(data) + '>'
         )
 
-        if satnet_cfg.TESTING and channel_name != self.LEOP_DOWNLINK_CHANNEL:
+        if satnet_cfg.TESTING:# and channel_name != self.LEOP_DOWNLINK_CHANNEL:
             logger.warning('[push] Service is in testing mode, returning...')
             return
 
