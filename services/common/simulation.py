@@ -73,13 +73,22 @@ class OrbitalSimulator(object):
         :param l1: Line#1 of the TLE file
         :param l2: Line#2 of the TLE file
         :return: Tuple (l0, l1, l2)
-        """
+
+        OLD encoding change from str to 'ascii', Python 2.7
         if isinstance(l0, str):
             l0 = unicodedata.normalize('NFKD', l0).encode('ascii', 'ignore')
         if isinstance(l1, str):
             l1 = unicodedata.normalize('NFKD', l1).encode('ascii', 'ignore')
         if isinstance(l2, str):
             l2 = unicodedata.normalize('NFKD', l2).encode('ascii', 'ignore')
+        """
+
+        if isinstance(l0, bytes):
+            l0 = str(l0, 'ascii')
+        if isinstance(l1, bytes):
+            l1 = str(l1, 'ascii')
+        if isinstance(l2, bytes):
+            l2 = str(l2, 'ascii')
 
         return l0, l1, l2
 

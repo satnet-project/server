@@ -14,7 +14,7 @@ djorm-pgarray==1.2
 numpy==1.9.1
 oauthlib==0.7.2
 psycopg2==2.6
-pusher==0.8
+pusher-rest==0.1.0
 pyephem==3.7.5.3
 python-dateutil==2.4.0
 python-openid==2.2.5

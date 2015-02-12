@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import json
-import urllib.request, urllib.error, urllib.parse
+import urllib.request
+import urllib.error
 import logging
 
 logger = logging.getLogger('common')
@@ -37,9 +38,10 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     if ip == "127.0.0.1":
         return __SLO_LAT__, __SLO_LON__
 
-    r = json.loads(
-        urllib.request.urlopen(geoplugin_ip + ip).read()
-    )
+    response = urllib.request.urlopen(geoplugin_ip + ip).read()
+    response_str = str(response, 'UTF-8')
+
+    r = json.loads(response_str)
     latitude = r['geoplugin_latitude']
     longitude = r['geoplugin_longitude']
 

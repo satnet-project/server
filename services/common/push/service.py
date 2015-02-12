@@ -62,8 +62,6 @@ class PushService(object):
 
     # The puser object.
     _service = None
-    # Dictionary with the channel objects available (keyed by name).
-    _channels = {}
 
     def __init__(self):
         """Class constructor
@@ -78,15 +76,13 @@ class PushService(object):
         """
         if not self._service:
 
-            self._channels = {}
             self._service = pusher.Pusher(
-                app_id=satnet_cfg.PUSHER_APP_ID,
-                key=satnet_cfg.PUSHER_APP_KEY,
-                secret=satnet_cfg.PUSHER_APP_SECRET
+                config=pusher.Config(
+                    app_id=satnet_cfg.PUSHER_APP_ID,
+                    key=satnet_cfg.PUSHER_APP_KEY,
+                    secret=satnet_cfg.PUSHER_APP_SECRET
+                )
             )
-
-            for channel in self.SATNET_CHANNELS:
-                self.create_channel(channel)
 
     def get_push_service(self):
         """
@@ -104,29 +100,6 @@ class PushService(object):
             self.TEST_CHANNEL, self.TEST_EVENT, {'message': 'TEST'}
         )
 
-    def create_channel(self, name):
-        """
-        Creates a new channel with the given name.
-        :param name: Name of the channel
-        :return: Channel object directly invokable
-        """
-        if name in self._channels:
-            raise Exception('Channel already exists, name = ' + str(name))
-
-        channel = self._service[name]
-        self._channels[name] = channel
-        return name
-
-    def remove_channel(self, name):
-        """
-        Removes an existing channel from the list of available ones.
-        :param name: Name of the channel
-        """
-        if not name in self._channels:
-            raise Exception('Channel does not exist, name = ' + str(name))
-
-        del self._channels[name]
-
     def trigger_event(self, channel_name, event_name, data):
         """
         Triggers the remote execution of an event with the given data. Direct
@@ -135,7 +108,7 @@ class PushService(object):
         :param event_name: Name of the event
         :param data: Data associated to this event
         """
-        if not channel_name in self._channels:
+        if channel_name not in PushService.SATNET_CHANNELS:
             raise Exception(
                 'Channel does not exist, name = ' + str(channel_name)
             )
@@ -146,8 +119,8 @@ class PushService(object):
             '>, data = <' + str(data) + '>'
         )
 
-        if satnet_cfg.TESTING:# and channel_name != self.LEOP_DOWNLINK_CHANNEL:
+        if satnet_cfg.TESTING:
             logger.warning('[push] Service is in testing mode, returning...')
             return
 
-        self._channels[channel_name].trigger(event_name, data)
+        self._service.trigger(channel_name, event_name, data)
