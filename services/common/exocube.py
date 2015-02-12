@@ -36,7 +36,7 @@ class ExocubeService(object):
     last_response = None
 
     @staticmethod
-    def create_exocube_data(passive_message):
+    def create_message(passive_message):
         """
         Creates a JSON-like structure using the information from the just
         received passive message.
@@ -58,7 +58,7 @@ class ExocubeService(object):
         :return: JSON-like structure
         """
 
-        hex_string = base64.b64decode(passive_message.message)
+        hex_string = base64.b64decode(passive_message.message).decode()
 
         return {
             'mission': 'ExoCube',
@@ -89,11 +89,13 @@ class ExocubeService(object):
         except Exception as ex:
             logger.warn('Received PACKET, not AX25, reason = ' + str(ex))
 
-        exocube_data = ExocubeService.create_exocube_data(passive_message)
-        data = json.dumps(exocube_data)
-        request = urllib.request.Request(ExocubeService.EXOCUBE_URL, data)
+        exocube_data = ExocubeService.create_message(passive_message)
+        #data = json.dumps(exocube_data)
+        request = urllib.request.Request(
+            ExocubeService.EXOCUBE_URL, exocube_data
+        )
         request.add_header('content-type', 'application/json')
-        request.add_header('content-length', str(len(data)))
+        request.add_header('content-length', str(len(exocube_data)))
         result = urllib.request.urlopen(request)
         response = result.read()
 

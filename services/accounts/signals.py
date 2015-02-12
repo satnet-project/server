@@ -29,8 +29,7 @@ logger = logging.getLogger('accounts')
 
 
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=auth_models.User
+    django_signals.post_save, sender=auth_models.User
 )
 def user_migrated(sender, instance, created, raw, **kwargs):
     """Data Migration

@@ -27,7 +27,7 @@ class AX25Packet(object):
     Simple AX25 packet decoder.
     """
 
-    FLAG = '7E'
+    FLAG = b'7E'
     FLAG_LEN = len(FLAG)
     DEST_ADDR_LEN = 14  # 2 chars per byte
     SRC_ADDR_LEN = 14  # 2 chars per byte

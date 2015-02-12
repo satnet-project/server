@@ -411,11 +411,20 @@ class AvailabilityRule(models.Model):
         Unicode string representation of the contents of this object.
         """
         child = AvailabilityRule.objects.get_specific_rule(self.pk)
-        return self.__operation2unicode__[self.operation]\
+
+        result = self.__operation2unicode__[self.operation]\
             + self.__periodicity2unicode__[self.periodicity]\
             + ':' + str(self.starting_date)\
             + '>>' + str(self.ending_date)\
             + '_T_' + str(child)
+
+        return result
+
+    def __str__(self):
+        """
+        UTF-8 string representing this object.
+        """
+        return self.__unicode__()
 
 
 class AvailabilityRuleOnceManager(models.Manager):
@@ -458,6 +467,12 @@ class AvailabilityRuleOnce(AvailabilityRule):
         Unicode string representation of the contents of this object.
         """
         return str(self.starting_time) + '>>' + str(self.ending_time)
+
+    def __str__(self):
+        """
+        Returns the string representation of this object.
+        """
+        return self.__unicode__()
 
 
 class AvailabilityRuleDailyManager(models.Manager):
@@ -571,3 +586,9 @@ class AvailabilityRuleWeekly(AvailabilityRule):
         Unicode string representation of the contents of this object.
         """
         return '<WEEKLY PATTERN>'
+
+    def __str__(self):
+        """
+        Returns the string representation of this object.
+        """
+        return self.__unicode__()

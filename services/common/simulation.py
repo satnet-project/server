@@ -19,7 +19,6 @@ import datetime
 import ephem
 import logging
 import numpy
-import unicodedata
 from services.common import gis, misc
 
 logger = logging.getLogger('common')

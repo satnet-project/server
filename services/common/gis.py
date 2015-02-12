@@ -15,10 +15,9 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import json
-import urllib.request
-import urllib.error
 import logging
+
+from services.common import misc
 
 logger = logging.getLogger('common')
 
@@ -38,10 +37,8 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     if ip == "127.0.0.1":
         return __SLO_LAT__, __SLO_LON__
 
-    response = urllib.request.urlopen(geoplugin_ip + ip).read()
-    response_str = str(response, 'UTF-8')
+    r = misc.load_json_url(geoplugin_ip + ip)
 
-    r = json.loads(response_str)
     latitude = r['geoplugin_latitude']
     longitude = r['geoplugin_longitude']
 
@@ -73,14 +70,14 @@ def get_region(latitude, longitude):
     :param longitude: The longitude for the given point.
     :return: {country-long, country-short, region-long, region-short}.
     """
-    # noinspection PyDeprecation
-    service_url = __G_API_GEOCODE_URL__\
+    url = __G_API_GEOCODE_URL__\
         + __G_API_GEOCODE_OUTPUT__[0]\
         + '?latlng='\
         + str(latitude) + ',' + str(longitude)\
         + '&sensor=true'
 
-    r = json.loads(urllib.request.urlopen(service_url).read())
+    r = misc.load_json_url(url)
+
     country_l, country_s, region_l, region_s = '', '', '', ''
     country_found = False
     region_found = False
@@ -156,10 +153,10 @@ def get_altitude(latitude, longitude):
     distance (in meters) between data points from which the elevation was
     interpolated.
     """
-    # noinspection PyDeprecation
     url = ___G_API_ALTITUDE_URL__ + ___G_API_ALTITUDE_OUTPUT__[0] + \
         '?locations=' + str(latitude) + ',' + str(longitude)
-    r = json.loads(urllib.request.urlopen(url).read())
+    r = misc.load_json_url(url)
+
     return r['results'][0]['elevation'], r['results'][0]['resolution']
 
 

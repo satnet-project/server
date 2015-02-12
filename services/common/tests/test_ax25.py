@@ -26,7 +26,7 @@ class AX25Tests(django_test.TestCase):
     Validate the library for AX25 packet enconding/decoding.
     """
 
-    __ax25_frame_1 = '7E96709A9A9E40E0AE8468948C9261F0HHHH7E'
+    __ax25_frame_1 = b'7E96709A9A9E40E0AE8468948C9261F0HHHH7E'
     __ax25_frame_1_b64 = base64.b64encode(__ax25_frame_1)
 
     def test_decode_ax25(self):
@@ -36,12 +36,13 @@ class AX25Tests(django_test.TestCase):
         """
         # ### 1) Basic decoding: no PID or FCS
         p = ax25.AX25Packet.decode_base64(self.__ax25_frame_1_b64)
+
         expected = {
-            'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
-            'start_flag': '7E',
-            'destination': '96709A9A9E40E0',
-            'source': 'AE8468948C9261',
-            'end_flag': '7E'
+            'raw_packet': b'7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
+            'start_flag': b'7E',
+            'destination': b'96709A9A9E40E0',
+            'source': b'AE8468948C9261',
+            'end_flag': b'7E'
         }
         actual = p.as_dictionary()
         self.assertEqual(
@@ -54,13 +55,13 @@ class AX25Tests(django_test.TestCase):
             self.__ax25_frame_1_b64, read_fcs=True, read_pid=True
         )
         expected = {
-            'raw_packet': '7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
-            'start_flag': '7E',
-            'destination': '96709A9A9E40E0',
-            'source': 'AE8468948C9261',
-            'pid': 'F0',
-            'fcs': 'HHHH',
-            'end_flag': '7E'
+            'raw_packet': b'7E96709A9A9E40E0AE8468948C9261F0HHHH7E',
+            'start_flag': b'7E',
+            'destination': b'96709A9A9E40E0',
+            'source': b'AE8468948C9261',
+            'pid': b'F0',
+            'fcs': b'HHHH',
+            'end_flag': b'7E'
         }
         actual = p.as_dictionary()
         self.assertEqual(

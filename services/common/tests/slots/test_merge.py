@@ -31,11 +31,11 @@ class MergeSlotsTest(test.TestCase):
         """
         Nones and empties test.
         """
-        self.assertItemsEqual(
+        self.assertCountEqual(
             [], slots.merge_slots(None, None),
             '[] is the expected response to (None, None)'
         )
-        self.assertItemsEqual(
+        self.assertCountEqual(
             [], slots.merge_slots([], []),
             '[] is the expected response to ([], [])'
         )
@@ -63,7 +63,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE A: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
     def test_merge_case_b(self):
         """
@@ -88,7 +88,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE B: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
     def test_merge_case_c(self):
         """
@@ -113,7 +113,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE C: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
     def test_merge_case_d(self):
         """
@@ -138,7 +138,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE D: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE D: Wrong result!')
 
     def test_merge_case_e(self):
         """
@@ -163,7 +163,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE E: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE E: Wrong result!')
 
     def test_merge_case_f(self):
         """
@@ -187,7 +187,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE F: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE F: Wrong result!')
 
     def test_merge_case_no_m_slots(self):
         """
@@ -216,7 +216,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'CASE NONE M: Wrong result!'
         )
 
@@ -249,7 +249,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'CASE MULTIPLE: Wrong result!'
         )
 
@@ -286,7 +286,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'COMPLEX CASE #1: Wrong result!'
         )
 
@@ -320,7 +320,7 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'COMPLEX CASE #2: Wrong result!'
         )
 
@@ -364,6 +364,6 @@ class MergeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'COMPLEX CASE #1: Wrong result!'
         )

@@ -46,13 +46,6 @@ class TestPusher(TestCase):
         """pusher.com unit test
         Validates the basic usage of the testing channel.
         """
-        try:
-            self.__push_service.create_channel('test_channel')
-            self.fail('The channel exists, an exception shouldve been raised')
-        except Exception:
-            pass
-
         self.__push_service.trigger_event(
             self.__ch_name, self.__ev_name, self.__ev_data
         )
-        self.__push_service.remove_channel(self.__ch_name)

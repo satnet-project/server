@@ -17,10 +17,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 from django.contrib.sites import models as site_models
+import io
+import json
 import pytz
 import sys
-import io
 import unicodedata
+import urllib.request
 import socket
 
 
@@ -140,6 +142,7 @@ def unicode_2_string(unicode_string):
         .normalize('NFKD', unicode_string)\
         .encode('ascii', 'ignore')
 
+
 def get_now_utc(no_microseconds=True):
     """
     This method returns now's datetime object UTC localized.
@@ -161,9 +164,9 @@ def get_now_hour_utc(no_microseconds=True):
     :return: The time object within the UTC timezone.
     """
     if no_microseconds:
-        return datetime.time.utcnow().replace(microsecond=0).time()
+        return datetime.datetime.utcnow().replace(microsecond=0).time()
     else:
-        return datetime.time.utcnow().time()
+        return datetime.datetime.utcnow().time()
 
 
 def get_today_utc():
@@ -232,3 +235,14 @@ def get_utc_timestamp(utc_datetime=None):
         utc_datetime = get_now_utc()
     diff = utc_datetime - TIMESTAMP_0
     return int(diff.total_seconds() * 10**6)
+
+
+def load_json_url(url):
+    """
+    Returns the JSON object as read from a HTTP response.
+    :param url: URL to be invoked
+    :return: JSON-like object
+    """
+    response = urllib.request.urlopen(url).read()
+    response_str = str(response, 'UTF-8')
+    return json.loads(response_str)

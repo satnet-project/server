@@ -41,21 +41,22 @@ class TestExocube(TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        self.__exocube_packet = 'C09C6C86A040400296966C908E861503CC450000F700' \
-                                '004000011184968141931DE0000001C350000200E34D' \
-                                '0501C7C79660724969000500090050006A00A374FE01' \
-                                '5D74FF02776B00C56C00C31C006A001C00C36A004A00' \
-                                '6B00C3000000000000966A006A006A00C2D2580000D1' \
-                                '270000003E09B30400000024F400000A30000113DC00' \
-                                '0DB800000425C80009E18800D513B0A3E4000000B200' \
-                                '7200001E29000000000000A600A60000000000000000' \
-                                '0000000000000000000067FFCD01EE00000000000000' \
-                                '000000000080000000000027013700000D1A00045794' \
-                                '000000004E3643502020310000000000000000000000' \
-                                '00FF00000000DA6C05A0008700C300000000000000C0'
+        self.__exocube_packet = \
+            b'C09C6C86A040400296966C908E861503CC450000F70' \
+            b'0004000011184968141931DE0000001C350000200E34D' \
+            b'0501C7C79660724969000500090050006A00A374FE01' \
+            b'5D74FF02776B00C56C00C31C006A001C00C36A004A00' \
+            b'6B00C3000000000000966A006A006A00C2D2580000D1' \
+            b'270000003E09B30400000024F400000A30000113DC00' \
+            b'0DB800000425C80009E18800D513B0A3E4000000B200' \
+            b'7200001E29000000000000A600A60000000000000000' \
+            b'0000000000000000000067FFCD01EE00000000000000' \
+            b'000000000080000000000027013700000D1A00045794' \
+            b'000000004E3643502020310000000000000000000000' \
+            b'00FF00000000DA6C05A0008700C300000000000000C0'
         self.__exocube_packet_b64 = base64.b64encode(self.__exocube_packet)
 
-    def test_exocube_service(self):
+    def __test_exocube_service(self):
         """UNIT test
         Validates the complete chain: from storing a message to invoking the
         remote ExoCube service.
@@ -68,7 +69,7 @@ class TestExocube(TestCase):
                 groundstation_id=self.__gs_1_id,
                 timestamp=misc.get_utc_timestamp(misc.get_now_utc()),
                 doppler_shift=0.0,
-                message=self.__exocube_packet_b64
+                message=self.__exocube_packet_b64.decode()
             ),
             1,
             'Message ID expected to be 1'

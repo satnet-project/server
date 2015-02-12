@@ -32,11 +32,11 @@ class NormalizeSlotsTest(test.TestCase):
         """
         Nones and empties test.
         """
-        self.assertItemsEqual(
+        self.assertCountEqual(
             [], slots.normalize_slots(None),
             '[] is the expected response to (None)'
         )
-        self.assertItemsEqual(
+        self.assertCountEqual(
             [], slots.normalize_slots([]),
             '[] is the expected response to ([])'
         )
@@ -63,7 +63,7 @@ class NormalizeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE A: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
     def test_normalize_b(self):
         """
@@ -87,7 +87,7 @@ class NormalizeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE B: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
     def test_normalize_c(self):
         """
@@ -111,7 +111,7 @@ class NormalizeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(expected_s, actual_s, 'CASE C: Wrong result!')
+        self.assertCountEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
     def test_normalize_complex_1(self):
         """
@@ -145,7 +145,7 @@ class NormalizeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'CASE COMPLEX#1: Wrong result!'
         )
 
@@ -175,6 +175,6 @@ class NormalizeSlotsTest(test.TestCase):
             misc.print_list(actual_s, name='(A) slots')
             misc.print_list(expected_s, name='(EXPECTED) slots')
 
-        self.assertItemsEqual(
+        self.assertCountEqual(
             expected_s, actual_s, 'CASE COMPLEX#1: Wrong result!'
         )
