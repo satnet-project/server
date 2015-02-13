@@ -90,6 +90,7 @@ def get_region(latitude, longitude):
 
         for a in address_list:
             for t in a[__G_API_TYPES_ARRAY__]:
+
                 if t == __G_API_ADDRESS_COUNTRY_AREA__:
                     country_l = a[__G_API_LONG_NAME__]
                     country_s = a[__G_API_SHORT_NAME__]

@@ -53,7 +53,7 @@ class AvailabilityRuleManager(models.Manager):
         accordance with the periodicity of the rule (ISO8601).
         :return: A reference to the object that holds the new rule.
         """
-        if not periodicity in self.__periodicity2class__:
+        if periodicity not in self.__periodicity2class__:
             raise Exception('Periodicity ' + periodicity + 'not supported.')
 
         db_obj_classname = self.__periodicity2class__[periodicity]
@@ -138,18 +138,30 @@ class AvailabilityRuleManager(models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
-            r_list = list(c.objects\
-                .filter(availabilityrule_ptr__gs_channel=gs_channel)\
-                .filter(availabilityrule_ptr__operation=ADD_SLOTS)\
-                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0]).values())
+            r_list = list(
+                c.objects.filter(
+                    availabilityrule_ptr__gs_channel=gs_channel
+                ).filter(
+                    availabilityrule_ptr__operation=ADD_SLOTS
+                ).filter(
+                    availabilityrule_ptr__starting_date__lt=interval[1]
+                ).filter(
+                    availabilityrule_ptr__ending_date__gt=interval[0]
+                ).values()
+            )
             if r_list:
                 add_slots += r_list
-            r_list = list(c.objects\
-                .filter(availabilityrule_ptr__gs_channel=gs_channel)\
-                .filter(availabilityrule_ptr__operation=REMOVE_SLOTS)\
-                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0]).values())
+            r_list = list(
+                c.objects.filter(
+                    availabilityrule_ptr__gs_channel=gs_channel
+                ).filter(
+                    availabilityrule_ptr__operation=REMOVE_SLOTS
+                ).filter(
+                    availabilityrule_ptr__starting_date__lt=interval[1]
+                ).filter(
+                    availabilityrule_ptr__ending_date__gt=interval[0]
+                ).values()
+            )
             if r_list:
                 remove_slots += r_list
 
@@ -412,8 +424,8 @@ class AvailabilityRule(models.Model):
         """
         child = AvailabilityRule.objects.get_specific_rule(self.pk)
 
-        result = self.__operation2unicode__[self.operation]\
-            + self.__periodicity2unicode__[self.periodicity]\
+        result = self.__operation2unicode__[str(self.operation)]\
+            + self.__periodicity2unicode__[str(self.periodicity)]\
             + ':' + str(self.starting_date)\
             + '>>' + str(self.ending_date)\
             + '_T_' + str(child)
@@ -516,6 +528,12 @@ class AvailabilityRuleDaily(AvailabilityRule):
         """
         return str(self.starting_time.isoformat())\
             + '>>' + str(self.ending_time.isoformat())
+
+    def __str__(self):
+        """
+        Returns the string representation of this object.
+        """
+        return self.__unicode__()
 
 
 class AvailabilityRuleWeeklyManager(models.Manager):
