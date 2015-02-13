@@ -63,10 +63,10 @@ class TestCommunicationsViews(test.TestCase):
                               'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
                               'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
         self.__b64_message = base64.b64encode(
-            'Base64 is a group of similar binary-to-text encoding schemes '
-            'that represent binary data in an ASCII string format by '
-            'translating it into a radix-64 representation. The term Base64 '
-            'originates from a specific MIME content transfer encoding.'
+            b'Base64 is a group of similar binary-to-text encoding schemes '
+            b'that represent binary data in an ASCII string format by '
+            b'translating it into a radix-64 representation. The term Base64 '
+            b'originates from a specific MIME content transfer encoding.'
         )
 
         if not self.__verbose_testing:

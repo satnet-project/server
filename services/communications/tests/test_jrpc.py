@@ -40,7 +40,7 @@ class TestPassiveCommunications(TestCase):
         )
 
     def test_store_message_null(self):
-        """Unit test method.
+        """Unit test method
         Basic unit testing method for checking the behavior of the passive
         communications service under null or empty parameters.
         """
@@ -68,7 +68,7 @@ class TestPassiveCommunications(TestCase):
         )
 
     def test_store_message(self):
-        """UNIT test method.
+        """UNIT test method
         Simple test for validating the storage of passive messages.
         """
         if self.__verbose_testing:
@@ -81,15 +81,15 @@ class TestPassiveCommunications(TestCase):
                 doppler_shift=0.0,
                 message=db_tools.MESSAGE_BASE64
             ),
-            2,
+            1,
             'Message ID expected not to be none'
         )
 
-        message = comms_models.PassiveMessage.objects.get(pk=2).message
+        message = comms_models.PassiveMessage.objects.get(pk=1).message
         self.assertEqual(
-            db_tools.MESSAGE_BASE64, message,
+            db_tools.MESSAGE_BASE64.decode(), message,
             'In-database stored message differs, diff = ' + str(
-                difflib.ndiff(db_tools.MESSAGE_BASE64, message))
+                difflib.ndiff(db_tools.MESSAGE_BASE64.decode(), message))
         )
 
         if self.__verbose_testing:
@@ -103,15 +103,15 @@ class TestPassiveCommunications(TestCase):
                 doppler_shift=0.0,
                 message=db_tools.MESSAGE_BASE64
             ),
-            3,
+            2,
             'Message ID expected to be 2'
         )
 
         message = comms_models.PassiveMessage.objects.get(pk=2).message
         self.assertEqual(
-            db_tools.MESSAGE_BASE64, message,
+            db_tools.MESSAGE_BASE64.decode(), message,
             'In-database stored message differs, diff = ' + str(
-                difflib.ndiff(db_tools.MESSAGE_BASE64, message))
+                difflib.ndiff(db_tools.MESSAGE_BASE64.decode(), message))
         )
 
         if self.__verbose_testing:

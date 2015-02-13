@@ -740,7 +740,7 @@ class TestLaunchViews(test.TestCase):
         expected.append({
             launch_serial.JRPC_K_GS_ID: self.__gs_2_id,
             messages_serial.JRPC_K_TS: message_2.groundstation_timestamp,
-            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64
+            messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64.decode()
         })
         self.assertEqual(
             actual, expected,

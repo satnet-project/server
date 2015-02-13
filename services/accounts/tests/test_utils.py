@@ -34,7 +34,7 @@ class UtilsTest(TestCase):
         
         """
         result = account_utils.get_user_operations(self.inp_guo)
-        self.assertItemsEqual(result, self.out_guo, "Wrong result!")
+        self.assertCountEqual(result, self.out_guo, "Wrong result!")
 
     def test_random_username(self):
         """Unit test.

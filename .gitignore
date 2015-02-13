@@ -4,9 +4,7 @@ __v_env/
 .venv
 .idea
 .env
-_trial_temp
-*.sublime-project
-*.sublime-workspace
+test.kml
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

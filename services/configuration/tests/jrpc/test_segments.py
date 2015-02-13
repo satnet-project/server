@@ -169,7 +169,7 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_gs_list)')
         gs_list = jrpc_gs.list_groundstations(request=self.__http_request)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             gs_list, [self.__gs_1_id, self.__gs_2_id], 'Wrong GS identifiers'
         )
 
@@ -181,7 +181,7 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_sc_list)')
         sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
         )
 
@@ -219,7 +219,7 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channels)')
         ch_list = jrpc_gs.list_channels(self.__gs_1_id)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__gs_1_ch_1_id],
             'Wrong channel identifiers, actual = ' + str(ch_list)
         )
@@ -232,7 +232,7 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channels)')
         ch_list = jrpc_sc.list_channels(self.__sc_1_id)
-        self.assertItemsEqual(
+        self.assertCountEqual(
             ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__sc_1_ch_1_id],
             'Wrong channel identifiers, actual = ' + str(ch_list)
         )

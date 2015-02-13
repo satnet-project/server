@@ -81,8 +81,10 @@ class ExocubeService(object):
         Specific method for sending an AX.25 frame to the EXOCUBE server.
         :param passive_message: Data message to be sent (database model)
         """
-        logger.info('>>> FORWARDING TO EXOCUBE')
+        logger.info('>>> FORWARDING TO EXOCUBE (pass)')
+        pass
 
+        """
         try:
             ax25_p = ax25.AX25Packet.decode_base64(passive_message.message)
             logger.info('Received PACKET, decoded AX25 = ' + str(ax25_p))
@@ -102,3 +104,4 @@ class ExocubeService(object):
         if satnet_cfg.TESTING:
             ExocubeService.last_response = response
         logger.info('Response from exocube server: ' + str(response))
+        """
