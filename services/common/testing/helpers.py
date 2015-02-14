@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import base64
 import datetime
 
 from django.contrib.auth.models import User
@@ -125,7 +126,6 @@ def create_sc(
     )
 
 
-import base64
 MESSAGE__1_TEST = 'QWxhZGRpbjpvcGVuIHNlc2FtZQ=='
 MESSAGE__2_TEST = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
                   'AAAESsSCVCE4y4RKxIg0NICpdErEjhQ4IvIkSsSUBDKx7d' \

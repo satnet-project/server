@@ -158,7 +158,7 @@ TEMPLATE_DIRS = (
     )
 )
 
-TEST_RUNNER = 'website.tests.SatnetTestRunner'
+TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
 INSTALLED_APPS = (
 
@@ -177,6 +177,7 @@ INSTALLED_APPS = (
     'rpc4django',
     'django_extensions',
     'datetimewidget',
+    'django_nose',
 
     # ### developed applications
     'services.accounts',

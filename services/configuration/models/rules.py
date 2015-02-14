@@ -16,8 +16,9 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import datetime, timedelta
-from django.db import models
 import pytz
+
+from django.db import models
 
 from services.common import misc, simulation, slots
 from services.configuration.models import channels

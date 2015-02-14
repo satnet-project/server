@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 import pusher
+
 from website import settings as satnet_cfg
 
 logger = logging.getLogger('push')

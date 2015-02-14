@@ -30,6 +30,10 @@ class SatnetTestRunner(DiscoverRunner):
     """
 
     def setup_databases(self, **kwargs):
+        """
+        Sets up the database together with some additional objects required for
+        the automated tests.
+        """
 
         verbose_testing = False
         db = DiscoverRunner(SatnetTestRunner, self).setup_databases(**kwargs)
