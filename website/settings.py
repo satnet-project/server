@@ -383,4 +383,9 @@ PUSHER_APP_KEY = pusher.PUSHER_APP_KEY
 PUSHER_APP_SECRET = pusher.PUSHER_APP_SECRET
 
 # ### DJANGO NOSE TESTING FRAMEWORK
-NOSE_ARGS = ['--verbosity=3']
+NOSE_ARGS = [
+    '--verbosity=3',
+    '--cover-package=services.accounts,services.common,'
+    'services.communications,services.configuration,services.leop,'
+    'services.network,services.scheduling,services.simulation'
+]
