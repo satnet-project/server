@@ -17,13 +17,15 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 import sys
-import urllib.request, urllib.error, urllib.parse
-from django.test.runner import DiscoverRunner
+import urllib.request
+import urllib.error
+import urllib.parse
+from django_nose import runner as nose_runner
 from services.common.testing import helpers as db_tools
 from services.configuration.models import tle
 
 
-class SatnetTestRunner(DiscoverRunner):
+class SatnetTestRunner(nose_runner.NoseTestSuiteRunner):
     """Custom Test Runner.
     Custom test runner for the SATNet services that pre-loads some information
     in the database for the tests.
@@ -36,7 +38,8 @@ class SatnetTestRunner(DiscoverRunner):
         """
 
         verbose_testing = False
-        db = DiscoverRunner(SatnetTestRunner, self).setup_databases(**kwargs)
+        db = nose_runner.NoseTestSuiteRunner(SatnetTestRunner, self)\
+            .setup_databases()
         sys.stdout.write('>>> Loading CELESTRAK tles: ')
         sys.stdout.flush()
 

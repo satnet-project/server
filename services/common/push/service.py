@@ -68,9 +68,10 @@ class PushService(object):
         """Class constructor
         Initializes the communication with the pusher.com service. It relies on
         the configuration setup from the main website.settings file. It only
-        initializes the object for the push service once, so different instances
-        of this class might be using the same object. This way, it is not
-        necessary to establish a new connection with the service provider.
+        initializes the object for the push service once, so different
+        instances of this class might be using the same object. This way,
+        it is not necessary to establish a new connection with the service
+        provider.
 
         Apart from this, it also registers all the channels specified in the
         array: SATNET_CHANNELS

@@ -158,7 +158,9 @@ TEMPLATE_DIRS = (
     )
 )
 
-TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+# 'django_nose.NoseTestSuiteRunner'
+TEST_RUNNER = 'website.tests.SatnetTestRunner'
+
 
 INSTALLED_APPS = (
 

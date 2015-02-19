@@ -16,6 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
+import json
+
 from services.common.testing import helpers as db_tools
 from services.configuration.ajax import views as configuration_ajax
 
@@ -34,10 +36,16 @@ class JRPCSegmentsTest(test.TestCase):
         Tests the AJAX method that retrieves the estimated location of the IP
         of the user.
         """
-        expected_ll = b'{"longitude": "-120.455299", "latitude": "35.347099"}'
+        expected_ll = {
+            'longitude': '-120.455299',
+            'latitude': '35.347099'
+        }
+
         ll = configuration_ajax.user_geoip(request=self.__http_request)
+        ll_json = json.loads(ll.content.decode("utf-8"))
+
         self.assertEqual(
-            ll.content, expected_ll,
+            ll_json, expected_ll,
             'Expected CalPoly location = ' + str(expected_ll)
             + ', found = ' + str(ll.content)
         )
