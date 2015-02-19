@@ -122,10 +122,7 @@ class TestSlotPropagation(test.TestCase):
         )
 
         self.assertEqual(
-            actual_pre, expected_pre,
-            'Wrong OperationalSlots (pre-propagate), diff = ' + str(
-                datadiff.diff(actual_pre, expected_pre)
-            )
+            actual_pre, expected_pre, 'Wrong OperationalSlots (pre-propagate)'
         )
 
         periodictasks.populate_slots()
