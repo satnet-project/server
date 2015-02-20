@@ -15,7 +15,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
 from django import test
 import logging
@@ -98,11 +97,7 @@ class TestRules(test.TestCase):
             ))
             misc.print_list(actual, name='Generated Slots')
 
-        self.assertEqual(
-            actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected, 'Wrong slots')
 
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
 
@@ -159,11 +154,7 @@ class TestRules(test.TestCase):
             misc.print_list(actual, name='ACTUAL_VALUES')
             misc.print_list(expected, name='EXPECTED_LIST')
 
-        self.assertEqual(
-            actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected, 'Wrong slots')
 
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
         self.__verbose_testing = False
@@ -204,11 +195,7 @@ class TestRules(test.TestCase):
             )
         )
 
-        self.assertEqual(
-            actual, expected, 'Wrong slots, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected, 'Wrong slots')
 
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
         self.__verbose_testing = False
