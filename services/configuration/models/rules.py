@@ -182,14 +182,12 @@ class AvailabilityRuleManager(models.Manager):
 
         i_date = pytz.utc.localize(
             datetime.combine(
-                rule_values['starting_date'],
-                rule_values['starting_time']
+                rule_values['starting_date'], rule_values['starting_time']
             )
         )
         f_date = pytz.utc.localize(
             datetime.combine(
-                rule_values['ending_date'],
-                rule_values['ending_time']
+                rule_values['ending_date'], rule_values['ending_time']
             )
         )
 

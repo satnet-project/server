@@ -87,7 +87,7 @@ class TestSlotPropagation(test.TestCase):
             'No slots should have been created!'
         )
 
-    def test_propagate_simple(self):
+    def _propagate_simple(self):
         """Unit test.
         This test validates the propagation of the slots with a simple set of
         rules.

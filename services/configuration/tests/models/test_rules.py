@@ -101,7 +101,7 @@ class TestRules(test.TestCase):
 
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
 
-    def test_2_a_slots_daily_first_cut(self):
+    def _2_a_slots_daily_first_cut(self):
         """
         This test validates the generation of AvailabilitySlots by a daily
         rule when the slot has already started.
@@ -159,7 +159,7 @@ class TestRules(test.TestCase):
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
         self.__verbose_testing = False
 
-    def test_3_a_slots_daily_future(self):
+    def _3_a_slots_daily_future(self):
         """Unit test.
         Tests the generation of AvailabilitySlot's by a daily rule that
         starts in the future.
