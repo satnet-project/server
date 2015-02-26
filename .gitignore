@@ -1,5 +1,4 @@
 *~
-*.pyc
 __v_env/
 .venv
 .idea
