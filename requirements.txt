@@ -1,4 +1,5 @@
 Django==1.7.4
+PyYAML==3.11
 coverage==3.7.1
 datadiff==1.1.6
 defusedxml==0.4.1
@@ -19,6 +20,7 @@ oauthlib==0.7.2
 psycopg2==2.6
 pusher-rest==0.1.0
 pyephem==3.7.5.3
+python-coveralls==2.5.0
 python-dateutil==2.4.0
 python-openid==2.2.5
 python3-openid==3.0.5
@@ -26,5 +28,6 @@ pytz==2014.10
 requests==2.5.1
 requests-oauthlib==0.4.2
 rpc4django==0.3.0
+sh==1.11
 simplekml==1.2.7
 six==1.9.0

@@ -1,4 +1,7 @@
 language: 'python'
+branches:
+  only:
+    - development_3k
 python:
   - '3.4'
 install:
