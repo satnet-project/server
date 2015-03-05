@@ -77,7 +77,6 @@ class PushService(object):
         array: SATNET_CHANNELS
         """
         if not self._service:
-
             self._service = pusher.Pusher(
                 config=pusher.Config(
                     app_id=satnet_cfg.PUSHER_APP_ID,
