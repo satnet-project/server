@@ -6,7 +6,7 @@ satnet-server
 
 Repository with the source code for the server of the SATNet network.
 
-To install the software for the server of the SATNet network, follow the instructions within the INSTALL file.
+To install the software for the server of the SATNet network, follow the instructions within the INSTALL file. The included installation script is a helper for the installation process and not yet a final completely automated solution. Any help on this issue will be much appreciated.
 
 The wiki together with documentation of the project can be found at:
 
