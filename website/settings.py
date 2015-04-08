@@ -81,9 +81,6 @@ STATICFILES_DIRS = (
         os.path.dirname(__file__), 'static', 'dist'
     ),
     os.path.join(
-        os.path.dirname(__file__), 'satnet-ng', 'dist'
-    ),
-    os.path.join(
         os.path.dirname(__file__), '..', 'services', 'accounts', 'static'
     )
 )

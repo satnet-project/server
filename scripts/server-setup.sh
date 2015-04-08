@@ -31,12 +31,17 @@ install_packages()
     echo '>>> Activating <contrib> and <non-free> repositories...'
     sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
 
-    echo '>>> Activating <wheezy-backports>...'
-    [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
-        echo $backports | sudo tee -a $etc_apt_sources
-    } || {
-        echo '>>> Backports already activated, press any key to continue...'
+    [[ $debian_version -eq '7' ]] && {
+        echo '>>> Debian 7 detected, activating backports...'
         read
+        [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
+            echo $backports | sudo tee -a $etc_apt_sources
+            echo '>>> Backports activated, press any key to continue...'
+            read
+        } || {
+            echo '>>> Backports already activated, press any key to continue...'
+            read
+        }
     }
 
     sudo aptitude update && sudo aptitude dist-upgrade
@@ -105,9 +110,29 @@ __apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
 __apache_rotate_logs="/usr/local/apache/bin/rotatelogs"
 __phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
 __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
+__
 # ### This function configures the apache2 server.
 configure_apache()
 {
+
+    __webservices_python_env_dir="$webservices_dir/.venv/lib/python2.7/site-packages"
+
+    [[ $branch_name == 'development_3k' ]] && {
+        echo ">>> branch: development_3k"
+        virtualenv --python=python3 $webservices_venv_dir
+        __webservices_python_env_dir="$webservices_dir/.venv/lib/python3.4/site-packages"
+        echo ">>> __webservices_python_env_dir = $__webservices_python_env_dir"
+    } || {
+        virtualenv $webservices_venv_dir
+    }
+
+    # ### For Debian Jessie (8), the file configuration for PHPPGADMIN has been
+    # moved to '/etc/apache2/conf-available/phppgadmin.conf'
+    [[ $debian_version -eq '8' ]] && {
+        echo '>>> Debian 8 detected, phppgadmin moved to conf-available...'
+        __phppgadmin_apache_config='/etc/apache2/conf-available/phppgadmin.conf'
+        echo ">>> phppgadmin = $__phppgadmin_apache_config"
+    }
 
     # ### CONFIGURATION OF THE SSL MODULE
     sudo rm -f $__satnet_apache_ssl_conf
@@ -151,7 +176,7 @@ configure_apache()
     #echo "    GnuTLSKeyFile $__apache_server_key" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
-    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$webservices_dir/.venv/lib/python2.7/site-packages" | sudo tee -a $__satnet_apache_conf
+    echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$__webservices_python_env_dir" | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
     echo "        WSGIProcessGroup satnet" | sudo tee -a $__satnet_apache_conf
@@ -185,7 +210,10 @@ configure_apache()
 
     create_apache_keys
 
-    sudo a2dismod gnutls
+    [[ $debian_version -eq '7' ]] && {
+        sudo a2dismod gnutls # gnutls for apache not included in Jessie
+    }
+
     sudo a2enmod wsgi
     sudo a2enmod ssl
     sudo a2enmod headers            # For enabling CORS
@@ -332,8 +360,14 @@ configure_root()
     mkdir -p $webservices_logs_dir
     mkdir -p $webservices_public_html_dir
 
-    [[ -f "$webservices_venv_activate" ]] && rm -Rf $webservices_venv_activate
-    virtualenv $webservices_venv_dir
+    [[ -f "$webservices_venv_activate" ]] && rm -Rf $webservices_venv_dir
+
+    [[ $branch_name == 'development_3k' ]] && {
+        virtualenv --python=python3 $webservices_venv_dir
+    } || {
+        virtualenv $webservices_venv_dir
+    }
+
     [[ ! -f "$webservices_venv_activate" ]] && {
         echo 'Virtual environment activation failed... exiting!'
         exit -1
@@ -341,16 +375,11 @@ configure_root()
 
     [[ ! -d "$webservices_secrets_dir" ]] && create_secrets
 
-    clear && echo '>>>>> Installing Angular dependencies...'
-    install_bower
-    echo 'Press any key to continue'
-    read
-
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
     source $webservices_venv_activate
 
-    pip install -r "$webservices_requirements_txt"  
+    pip install -r "$webservices_requirements_txt"
     python manage.py syncdb
     python manage.py collectstatic
 
@@ -457,8 +486,17 @@ usage()
 
 ################################################################################
 # ### Main variables and parameters
+branch_name=$( git branch | grep '*' | cut -d' ' -f2 )
+debian_version=$( cat /etc/issue | cut -d' ' -f3 | tr -d '[[:space:]]' )
 script_path="$( cd "$( dirname "$0" )" && pwd )"
-debian_packages="$script_path/debian.packages"
+
+[[ $debian_version -eq '7' ]] && {
+    debian_packages="$script_path/debian.7.packages"
+}
+[[ $debian_version -eq '8' ]] && {
+    debian_packages="$script_path/debian.8.packages"
+}
+
 django_keygen="$script_path/django-secret-key-generator.py"
 project_path=$( readlink -e "$script_path/.." )
 webservices_dir="$project_path"
@@ -480,9 +518,13 @@ webservices_static_dir="$webservices_public_html_dir/static"
 
 ################################################################################
 # ### Main execution loop
-echo "script_path = $script_path"
-echo "project_path = $project_path"
-echo "webservices_path = $webservices_dir"
+echo ">>> The script installer is going to be executed within the following autodetected environment:"
+echo "    * branch_name = $branch_name"
+echo "    * debian_version = $debian_version"
+echo "    * debian_packages_file = $debian_packages"
+echo "    * script_path = $script_path"
+echo "    * project_path = $project_path"
+echo "    * webservices_path = $webservices_dir"
 
 if [ $# -lt 1 ] ; then
     usage
