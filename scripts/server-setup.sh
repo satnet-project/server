@@ -28,31 +28,31 @@ backports='deb http://http.debian.net/debian wheezy-backports main contrib non-f
 install_packages()
 {
 
-    echo '>>> Activating <contrib> and <non-free> repositories...'
-    sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
+    [[ $linux_dist == 'Debian' ]] && {
 
-    [[ $debian_version -eq '7' ]] && {
-        echo '>>> Debian 7 detected, activating backports...'
-        read
-        [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
-            echo $backports | sudo tee -a $etc_apt_sources
-            echo '>>> Backports activated, press any key to continue...'
-            read
-        } || {
-            echo '>>> Backports already activated, press any key to continue...'
-            read
+        yell '>>> Activating <contrib> and <non-free> repositories...'
+        try sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
+
+        [[ $debian_version -eq '7' ]] && {
+            echo '>>> Debian 7 detected, activating backports...'
+            [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
+                echo $backports | sudo tee -a $etc_apt_sources
+                echo '>>> Backports activated, press any key to continue...'
+            } || {
+                echo '>>> Backports already activated, press any key to continue...'
+            }
         }
     }
 
-    sudo aptitude update && sudo aptitude dist-upgrade
-    sudo aptitude install $( cat "$debian_packages" )
-    sudo aptitude clean
+    try sudo aptitude update && sudo aptitude dist-upgrade -y
+    try sudo aptitude install $( cat "$linux_packages" ) -y
+    try sudo aptitude clean
 
-    sudo gem install sass
+    try sudo gem install sass
     # TODO: check this dependency (cannot install)
     # sudo gem install compass
 
-    sudo pip install virtualenvwrapper
+    try sudo pip install virtualenvwrapper
 
 }
 
@@ -110,7 +110,7 @@ __apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
 __apache_rotate_logs="/usr/local/apache/bin/rotatelogs"
 __phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
 __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
-__
+
 # ### This function configures the apache2 server.
 configure_apache()
 {
@@ -283,8 +283,6 @@ create_secrets()
 
     echo '>>> Generating database access configuration file...'
     echo ">>> $webservices_secrets_database should be updated in case the user/password for the database change."
-    echo 'Press any key to continue...'
-    read
 
     echo 'DATABASES = {' > $webservices_secrets_database
     echo "    'default': {" >> $webservices_secrets_database
@@ -299,8 +297,6 @@ create_secrets()
 
     echo ">>> Generating email configuration file..."
     echo ">>> $webservices_secrets_email should be updated with the correct email account information."
-    echo 'Press any key to continue...'
-    read
 
     echo "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
     echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
@@ -312,8 +308,6 @@ create_secrets()
 
     echo ">>> Generating pusher.com configuration file..."
     echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
-    echo 'Press any key to continue...'
-    read
 
     echo "PUSHER_APP_ID = '12345'" >> $webservices_secrets_pusher
     echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
@@ -363,9 +357,9 @@ configure_root()
     [[ -f "$webservices_venv_activate" ]] && rm -Rf $webservices_venv_dir
 
     [[ $branch_name == 'development_3k' ]] && {
-        virtualenv --python=python3 $webservices_venv_dir
+        try virtualenv --python=python3 $webservices_venv_dir
     } || {
-        virtualenv $webservices_venv_dir
+        try virtualenv $webservices_venv_dir
     }
 
     [[ ! -f "$webservices_venv_activate" ]] && {
@@ -377,11 +371,11 @@ configure_root()
 
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
-    source $webservices_venv_activate
+    try source $webservices_venv_activate
 
-    pip install -r "$webservices_requirements_txt"
-    python manage.py syncdb
-    python manage.py collectstatic
+    try pip install -r "$webservices_requirements_txt"
+    try python manage.py syncdb
+    try python manage.py collectstatic
 
     deactivate
     cd $script_path
@@ -486,15 +480,26 @@ usage()
 
 ################################################################################
 # ### Main variables and parameters
-branch_name=$( git branch | grep '*' | cut -d' ' -f2 )
-debian_version=$( cat /etc/issue | cut -d' ' -f3 | tr -d '[[:space:]]' )
 script_path="$( cd "$( dirname "$0" )" && pwd )"
 
-[[ $debian_version -eq '7' ]] && {
-    debian_packages="$script_path/debian.7.packages"
+branch_name=$( git branch | grep '*' | cut -d' ' -f2 )
+linux_dist=$( cat /etc/issue.net | cut -d' ' -f1 )
+
+[[ $linux_dist == 'Debian' ]] && {
+
+    debian_version=$( cat /etc/issue.net | cut -d' ' -f3 )
+    [[ $debian_version -eq '7' ]] && {
+        linux_packages="$script_path/debian.$debian_version.packages"
+    }
+    [[ $debian_version -eq '8' ]] && {
+        linux_packages="$script_path/debian.$debian_version.packages"
+    }
+
 }
-[[ $debian_version -eq '8' ]] && {
-    debian_packages="$script_path/debian.8.packages"
+
+[[ $linux_dist == 'Ubuntu' ]] && {
+    ubuntu_version=$( cat /etc/issue.net | cut -d' '  -f2  | cut -d'.' -f1 )
+    linux_packages="$script_path/ubuntu.$ubuntu_version.packages"
 }
 
 django_keygen="$script_path/django-secret-key-generator.py"
@@ -518,13 +523,27 @@ webservices_static_dir="$webservices_public_html_dir/static"
 
 ################################################################################
 # ### Main execution loop
+source ./command-lib.sh
+
 echo ">>> The script installer is going to be executed within the following autodetected environment:"
 echo "    * branch_name = $branch_name"
-echo "    * debian_version = $debian_version"
-echo "    * debian_packages_file = $debian_packages"
+echo "    * linux_dist = $linux_dist"
+
+[[ $linux_dist == 'Debian' ]] && {
+    echo "    * debian_version = $debian_version"
+}
+
+[[ $linux_dist == 'Ubuntu' ]] && {
+    echo "    * ubuntu_version = $ubuntu_version"
+}
+
+echo "    * packages_file = $linux_packages"
 echo "    * script_path = $script_path"
 echo "    * project_path = $project_path"
 echo "    * webservices_path = $webservices_dir"
+
+echo ">>> If the configuration is correct, press any key to start installation..."
+read
 
 if [ $# -lt 1 ] ; then
     usage
@@ -534,11 +553,7 @@ fi
 while getopts ":abcikprstovx" opt; do
     case $opt in
         a)
-            echo 'This process is not unattended, user interaction is required.'
-            echo 'Press any key to continue...'
-            read
-
-            echo 'Installing Debian packages...'
+            clear && echo '>>>>>>> Installing OS native packages...'
             install_packages
             clear && echo '>>>>>>> Configuring PostgreSQL...'
             configure_postgresql
@@ -553,32 +568,29 @@ while getopts ":abcikprstovx" opt; do
             exit 1
             ;;
         b)
-            echo 'Installing Bower and Node.js...'
+            clear && echo 'Installing Bower and Node.js...'
             install_bower
             echo 'DONE'
             exit 1
             ;;
         c)
-            echo 'Creating self-signed certificates...'
+            clear && echo 'Creating self-signed certificates...'
             create_self_signed_cert
             echo 'DONE'
             exit 1;
             ;;
         i)
-            echo 'Installing Debian packages...'
-            echo 'This process is not unattended, user interaction is required.'
-            echo 'Press any key to continue...'
-            read
+            clear && echo '>>>>>>> Installing OS native packages...'
             install_packages
             echo 'DONE'
             ;;
         k)
-            echo 'Creating keys and certificates for Apache...'
+            clear && echo 'Creating keys and certificates for Apache...'
             create_apache_keys
             echo 'DONE'
             ;;
         p)
-            echo 'Configuring PostgreSQL...'
+            clear && echo 'Configuring PostgreSQL...'
             configure_postgresql
             echo 'DONE'
             exit 1
@@ -590,31 +602,31 @@ while getopts ":abcikprstovx" opt; do
             exit 1;
             ;;
         s)
-            echo 'Creating <secrets>...'
+            clear && echo 'Creating <secrets>...'
             create_secrets
             echo 'DONE'
             exit 1;
             ;;
         t)
-            echo 'Creating TRAVIS <secrets>...'
+            clear && echo 'Creating TRAVIS <secrets>...'
             create_travis_secrets
             echo 'DONE'
             exit 0;
             ;;
         o)
-            echo 'Configuring Crontab...'
+            clear && echo 'Configuring Crontab...'
             configure_crontab
             echo 'DONE'
             exit 1
             ;;
         v)
-            echo 'Configuring virtualenv...'
+            clear && echo 'Configuring virtualenv...'
             configure_root
             echo 'DONE'
             exit 1;
             ;;
         x)
-            echo 'Configuring Apache...'
+            clear && echo 'Configuring Apache...'
             configure_apache
             echo 'DONE'
             exit 1;
