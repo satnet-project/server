@@ -72,6 +72,47 @@ ask_password() {
 
 }
 
+# ##############################################################################
+# ### Function that asks for a <visible> string to the user. A visible string is
+# considered to be any string whose input process can be visualized by the user
+# or by anyonelse around while typing. An example of this can be the input
+# process of an email account.
+# This function includes the following features:
+# * Maximum number of tries (3 by default)
+# * String confirmation
+# ##############################################################################
+ask_visible() {
+
+    string_1=''
+    string_2=''
+    MAX_TRIES='3'
+    ACTUAL_TRIES='1'
+
+    until [ $MAX_TRIES -lt $ACTUAL_TRIES ]
+    do
+
+        string_1=''
+        string_2=''
+
+        read -p "$1: " string_1
+        read -p "Repeat $1: " string_2
+
+        [[ $string_1 == $string_2 ]] && {
+            __INPUT_STRING=$string_1
+            return $RET_OK
+        } || {
+            echo 'Strings do not match!'
+            let "ACTUAL_TRIES++"
+            continue
+        }
+
+    done
+
+    echo 'Maximum number of tries reached!!!'
+    return $RET_ERR
+
+}
+
 yell() { echo "$0: $*" >&2; }
 die() { yell "$*"; exit $RET_ERR; }
 try() { "$@" || die "cannot $*"; }
