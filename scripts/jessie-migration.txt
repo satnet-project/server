@@ -1,0 +1,8 @@
+1) sed: can't read /etc/apache2/conf.d/phppgadmin: No such file or directory
+    * problem that appeared with using the installer for Debian/Jessie
+    * must check the compatibility with the new configuration files for the new
+        Debian version, maybe now the phpgpadmin website is setup in a different
+        manner.
+
+2) libapache2-mod-gnutls: no candidate version found within Jessie.
+    * problem while enabling GNUTLS module during Apache configuration.
