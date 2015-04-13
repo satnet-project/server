@@ -542,9 +542,6 @@ echo "    * script_path = $script_path"
 echo "    * project_path = $project_path"
 echo "    * webservices_path = $webservices_dir"
 
-echo ">>> If the configuration is correct, press any key to start installation..."
-read
-
 if [ $# -lt 1 ] ; then
     usage
     exit 0
