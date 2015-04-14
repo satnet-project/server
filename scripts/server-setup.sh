@@ -47,12 +47,14 @@ install_packages()
     try sudo aptitude update && sudo aptitude dist-upgrade -y
     try sudo aptitude install $( cat "$linux_packages" ) -y
     try sudo aptitude clean
-
-    try sudo gem install sass
-    # TODO: check this dependency (cannot install)
-    # sudo gem install compass
-
     try sudo pip install virtualenvwrapper
+
+    # ### ######################################################################
+    # ### PATCHED: no longer required since JS dependencies are managed from
+    # within satnet-ng project
+    # [[ ! $(whihc sass)]] && try sudo gem install sass
+    # [[ ! $(whihc compass)]] && try sudo gem install compass
+    # ### ######################################################################
 
 }
 
@@ -119,11 +121,12 @@ configure_apache()
 
     [[ $branch_name == 'development_3k' ]] && {
         echo ">>> branch: development_3k"
-        virtualenv --python=python3 $webservices_venv_dir
+        # virtualenv --python=python3 $webservices_venv_dir
         __webservices_python_env_dir="$webservices_dir/.venv/lib/python3.4/site-packages"
         echo ">>> __webservices_python_env_dir = $__webservices_python_env_dir"
     } || {
-        virtualenv $webservices_venv_dir
+        echo ">>> branch: NON dev_3k"
+        # virtualenv $webservices_venv_dir
     }
 
     # ### For Debian Jessie (8), the file configuration for PHPPGADMIN has been
@@ -228,8 +231,7 @@ configure_apache()
 __pgsql_batch='/tmp/__pgsql_batch'
 __pgsql_user='postgres'
 django_db='satnet_db'
-django_user='satnet'
-django_user_password='satnet'
+django_db_user='satnet'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
 {
@@ -241,23 +243,36 @@ configure_postgresql()
     #echo "\password postgres" > $__pgsql_batch
     #sudo -u postgres psql -f $__pgsql_batch
 
-    if [[ $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]]
-    then
-        echo ">>>> Creating postgres database, name = <$django_db>"
-        sudo -u postgres createdb $django_db
-    else
-        echo ">>>> Database db = $django_db already exists, skipping..."
-    fi
+    # ### 1) Create database:
 
-    if [[ ! $( sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$django_user'" ) -eq 1 ]]
-    then
-        echo ">>>> Creating postgres user = <$django_user>"
-        sudo -u postgres createuser -r -l -S -E -P -d $django_user
-        echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_user;" > $__pgsql_batch
-        sudo -u postgres psql -f $__pgsql_batch
-    else
-        echo ">>>> Postgres user = <$django_user> already exists, skipping..."
-    fi
+    [[ ! $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]] && {
+        echo ">>>> Database db = $django_db already exists, removing..."
+        try sudo -u postgres dropdb $django_db
+    }
+
+    echo ">>>> Creating postgres database, name = <$django_db>"
+    try sudo -u postgres createdb $django_db
+
+    # ### 2) Create user for accessing the database:
+
+    [[ $( sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$django_db_user'" ) -eq 1 ]] && {
+        echo ">>>> Postgres user = <$django_db_user> already exists, removing..."
+        try sudo -u postgres dropuser $django_db_user
+    }
+
+    echo ">>>> Creating postgres user = <$django_db_user>"
+
+    # ### ##################################################################
+    # ### PATCH: originally the next command was executed as shown in the line below, with a password prompt
+    # sudo -u postgres createuser -r -l -S -E -P -d $django_db_user
+    try sudo -u postgres createuser -r -l -S -E -d $django_db_user
+    try ask_password
+    django_db_password=$__PASSWORD
+    # ### ##################################################################
+
+    try sudo -u postgres psql -U postgres -d postgres -c "alter user $django_db_user with password '$__PASSWORD';"
+    echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_db_user;" > $__pgsql_batch
+    try sudo -u postgres psql -f $__pgsql_batch
 
 }
 
@@ -265,7 +280,7 @@ configure_postgresql()
 remove_postgresql()
 {
     sudo -u postgres dropdb $django_db
-    sudo -u postgres dropuser $django_user
+    sudo -u postgres dropuser $django_db_user
 }
 
 
@@ -288,8 +303,8 @@ create_secrets()
     echo "    'default': {" >> $webservices_secrets_database
     echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
     echo "        'NAME': '$django_db'," >> $webservices_secrets_database
-    echo "        'USER': '$django_user'," >> $webservices_secrets_database
-    echo "        'PASSWORD': XXXX," >> $webservices_secrets_database
+    echo "        'USER': '$django_db_user'," >> $webservices_secrets_database
+    echo "        'PASSWORD': '$django_db_password'," >> $webservices_secrets_database
     echo "        'HOST': 'localhost'," >> $webservices_secrets_database
     echo "        'PORT': ''," >> $webservices_secrets_database
     echo "    }" >> $webservices_secrets_database
@@ -298,11 +313,31 @@ create_secrets()
     echo ">>> Generating email configuration file..."
     echo ">>> $webservices_secrets_email should be updated with the correct email account information."
 
+    echo ">>> Notifications TLS SMTP server account information:"
+    try ask_visible 'server URL'
+    smtp_url=$__INPUT_STRING
+    try ask_visible 'server port'
+    smtp_port=$__INPUT_STRING
+    try ask_visible 'username'
+    smtp_email=$__INPUT_STRING
+    try ask_password
+    smtp_password=$__PASSWORD
+
     echo "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
-    echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
-    echo "EMAIL_PORT = 587" >> $webservices_secrets_email
-    echo "EMAIL_HOST_USER = 'XXXXXX@gmail.com'" >> $webservices_secrets_email
-    echo "EMAIL_HOST_PASSWORD = 'XXXXXXXX'" >> $webservices_secrets_email
+    
+    # ##########################################################################
+    # ### PATCHED: SMTP FOR GMAIL
+    #echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
+    #echo "EMAIL_PORT = 587" >> $webservices_secrets_email
+    #echo "EMAIL_HOST_USER = 'XXXXXX@gmail.com'" >> $webservices_secrets_email
+    #echo "EMAIL_HOST_PASSWORD = 'XXXXXXXX'" >> $webservices_secrets_email
+    # ##########################################################################
+
+    echo "EMAIL_HOST = '$smtp_url'" >> $webservices_secrets_email
+    echo "EMAIL_PORT = $smtp_port" >> $webservices_secrets_email
+    echo "EMAIL_HOST_USER = '$smtp_email'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_PASSWORD = '$smtp_password'" >> $webservices_secrets_email
+
     echo "EMAIL_USE_TLS = True" >> $webservices_secrets_email
     echo "EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
 
@@ -351,6 +386,10 @@ create_travis_secrets()
 # all the pip packages and the directories.
 configure_root()
 {
+
+    [[ -d "$webservices_secrets_dir" ]] && rm -Rf $webservices_secrets_dir
+    create_secrets
+
     mkdir -p $webservices_logs_dir
     mkdir -p $webservices_public_html_dir
 
@@ -366,8 +405,6 @@ configure_root()
         echo 'Virtual environment activation failed... exiting!'
         exit -1
     }
-
-    [[ ! -d "$webservices_secrets_dir" ]] && create_secrets
 
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
@@ -427,6 +464,7 @@ install_bower()
     sudo wget -N http://nodejs.org/dist/node-latest.tar.gz
     sudo tar xzvf node-latest.tar.gz && cd node-v*
     sudo ./configure
+
     # ### IMPORTANT
     echo 'In the next menu that will be prompted, the <v> letter from the'
     echo 'version number must be erased. For doing that, select <Choice 3>'
@@ -439,18 +477,12 @@ install_bower()
     cd $ng_app_dir
     npm install
     bower install
+
 }
 
 last_instructions()
 {
-    echo 'Congratulations, installation is complete.'
-    echo 'However, the following manual password configuration tasks are left:'
-    echo '>>> $setup_folder/WebServices/website/secrets/database.py'
-    echo '    * Check that the password for the database is the one you gave.'
-    echo '>>> $setup_folder/WebServices/website/secrets/email.py'
-    echo '    * Please provide an external email account and the password.'
-    echo 'Press any key to exist the installation script.'
-    read
+    clear && echo 'Congratulations, installation is complete.'
 }
 
 venv_wrapper_config='/usr/local/bin/virtualenvwrapper.sh'
@@ -556,7 +588,7 @@ while getopts ":abcikprstovx" opt; do
             configure_postgresql
             clear && echo '>>>>>>> Configuring Crontab...'
             configure_crontab
-            clear && echo '>>>>>>> Configuring virtualenv...'
+            clear && echo '>>>>>>> Configuring Root...'
             configure_root
             clear && echo '>>>>>>> Configuring Apache...'
             configure_apache
@@ -617,7 +649,7 @@ while getopts ":abcikprstovx" opt; do
             exit 1
             ;;
         v)
-            clear && echo 'Configuring virtualenv...'
+            clear && echo 'Configuring Root...'
             configure_root
             echo 'DONE'
             exit 1;
