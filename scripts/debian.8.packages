@@ -11,6 +11,7 @@ libreadline-dev
 libbz2-dev
 libpq-dev
 libproj-dev
+libsnappy-dev
 libsqlite3-dev
 libncurses5-dev
 openssl
@@ -19,9 +20,10 @@ postgresql
 postgresql-contrib
 postgresql-server-dev-all
 python
-python-virtualenv
-python-pip
 python-dev
+python-pip
+python-snappy
+python-virtualenv
 python3-dev
 ruby
 rubygems-integration

@@ -411,6 +411,7 @@ configure_root()
     try source $webservices_venv_activate
 
     try pip install -r "$webservices_requirements_txt"
+    try pip install autobahn[asyncio,accelerate,compress,serialization]
     try python manage.py syncdb
     try python manage.py collectstatic
 
