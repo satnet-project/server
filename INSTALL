@@ -1,4 +1,4 @@
-For release 1, the software for the SATNet server will only be provided for the Debian stable relaase "Wheezy".
+For release 1, the software for the SATNet server will only be provided for the Debian stable release "Wheezy".
 This software should also work on Ubuntu and the Debian testing release with minor changes.
 Please report any changes on the installation script to the developers through the GitHub website.
 
