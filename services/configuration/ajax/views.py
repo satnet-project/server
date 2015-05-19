@@ -115,4 +115,4 @@ def user_geoip(request):
     :return: JSON object, { latitude: $lat, longitude: $lng }
     """
     lat, lng = gis.get_remote_user_location(ip=ipware_get_ip(request))
-    return { 'latitude': lat, 'longitude': lng }
+    return {'latitude': lat, 'longitude': lng}
