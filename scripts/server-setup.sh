@@ -339,7 +339,8 @@ create_secrets()
     echo "EMAIL_HOST_PASSWORD = '$smtp_password'" >> $webservices_secrets_email
 
     echo "EMAIL_USE_TLS = True" >> $webservices_secrets_email
-    echo "EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
+    echo "#EMAIL_FILE_PATH = 'tmp/email-messages/'" >>
+    $webservices_secrets_email
 
     echo ">>> Generating pusher.com configuration file..."
     echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
