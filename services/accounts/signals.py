@@ -46,12 +46,6 @@ def user_migrated(sender, instance, created, raw, **kwargs):
     if instance.pk != 1:
         return
 
-    if not created or raw:
-        return
-
-    if instance.pk != 1:
-        return
-
     account_models.UserProfile.objects.create(
         user_ptr=instance,
         organization='The SATNet Network',
