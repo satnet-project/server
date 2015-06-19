@@ -78,11 +78,9 @@ class PushService(object):
         """
         if not self._service:
             self._service = pusher.Pusher(
-                config=pusher.Config(
-                    app_id=satnet_cfg.PUSHER_APP_ID,
-                    key=satnet_cfg.PUSHER_APP_KEY,
-                    secret=satnet_cfg.PUSHER_APP_SECRET
-                )
+                app_id=satnet_cfg.PUSHER_APP_ID,
+                key=satnet_cfg.PUSHER_APP_KEY,
+                secret=satnet_cfg.PUSHER_APP_SECRET
             )
 
     def get_push_service(self):
