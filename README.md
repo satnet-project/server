@@ -1,5 +1,8 @@
-[![Build Status](https://travis-ci.org/satnet-project/server.svg?branch=development_3k)](https://travis-ci.org/satnet-project/server)
+<!--[![Build Status](https://travis-ci.org/satnet-project/server.svg?branch=development_3k)](https://travis-ci.org/satnet-project/server)-->
+
+[![Circle CI](https://circleci.com/gh/satnet-project/server.svg?style=shield)](https://circleci.com/gh/satnet-project/server)
 [![Coverage Status](https://coveralls.io/repos/satnet-project/server/badge.svg?branch=development_3k)](https://coveralls.io/r/satnet-project/server?branch=development_3k)
+[![Code Health](https://landscape.io/github/satnet-project/server/master/landscape.svg?style=flat)](https://landscape.io/github/satnet-project/server/master)
 
 satnet-server
 ================

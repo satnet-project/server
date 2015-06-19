@@ -88,8 +88,15 @@ class ServerManager(django_models.Manager):
 
         owner = account_models.UserProfile.objects.get(pk=1)
 
+        print('identifier = ' + str(identifier))
+        print('ip_address = ' + str(ip_address))
+        print('latitude = ' + str(latitude))
+        print('longitude = ' + str(longitude))
+        print('timestamp = ' + str(timestamp))
+
         return super(ServerManager, self).create(
-            identifier=identifier, ip_address=ip_address,
+            identifier=identifier,
+            ip_address=ip_address,
             latitude=latitude, longitude=longitude,
             timestamp=timestamp,
             owner=owner,
@@ -122,8 +129,8 @@ class Server(django_models.Model):
     )
 
     identifier = django_models.CharField(
-        'LEOP identifier',
-        max_length=30,
+        'Identifier of the server as an element of the network',
+        max_length=75,
         unique=True,
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',

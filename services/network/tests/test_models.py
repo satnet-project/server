@@ -30,5 +30,8 @@ class NetworkModels(test.TestCase):
             logging.getLogger('network').setLevel(level=logging.CRITICAL)
 
     def test_load_server(self):
-
+        """Test server detection.
+        Tests the correct creation of the server configuration within the
+        database.
+        """
         server_models.Server.objects.load_local_server()

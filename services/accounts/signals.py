@@ -46,7 +46,13 @@ def user_migrated(sender, instance, created, raw, **kwargs):
     if instance.pk != 1:
         return
 
-    account_models.create_admin_profile(None, None)
+    account_models.UserProfile.objects.create(
+        user_ptr=instance,
+        organization='The SATNet Network',
+        country='US'
+    )
+
+    instance.save()
 
 
 @django_dispatch.receiver(
