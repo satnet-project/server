@@ -82,7 +82,7 @@ class PassManager(django_models.Manager):
                 'Error while creating pass slots, context = '
                 + 'sc.id = ' + str(spacecraft.identifier) + '\n'
                 + 'tle.id = ' + str(spacecraft.tle.identifier) + '\n'
-                + 'ex = ' + str(ex.message)
+                + 'ex = ' + str(ex)
             )
 
         return all_slots

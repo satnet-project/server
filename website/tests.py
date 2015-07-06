@@ -23,6 +23,8 @@ import urllib.parse
 from django_nose import runner as nose_runner
 from services.common.testing import helpers as db_tools
 from services.configuration.models import tle
+from services.configuration.models.celestrak\
+    import CelestrakDatabase as Celestrak
 
 
 class SatnetTestRunner(nose_runner.NoseTestSuiteRunner):
@@ -50,6 +52,9 @@ class SatnetTestRunner(nose_runner.NoseTestSuiteRunner):
 
             # 2) later, we try to load the CELESTRAK TLE database
             tle.TwoLineElementsManager.load_tles(testing=True)
+            tle.TwoLineElementsManager.load_tles(
+                source=Celestrak.CELESTRAK_GOES, testing=True
+            )
             # tle.TwoLineElementsManager.load_celestrak()
             print(' done!')
 

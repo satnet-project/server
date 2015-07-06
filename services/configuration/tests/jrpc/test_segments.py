@@ -70,6 +70,10 @@ class JRPCSegmentsTest(test.TestCase):
         self.__sc_3_id = 'sc-somp'
         self.__sc_3_tle_id = str('SOMP')
 
+        self.__sc_4_id = 'sc-test'
+        self.__sc_4_callsign = 'GOXX5'
+        self.__sc_4_tle_id = 'GOES 4 [-]'
+
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
         self.__http_request = db_tools.create_request(
@@ -209,6 +213,30 @@ class JRPCSegmentsTest(test.TestCase):
         self.assertNotEqual(
             segments.Spacecraft.objects.get(identifier=self.__sc_3_id), None,
             'SC id = <' + str(self.__sc_3_id) + '>, should have been found'
+        )
+
+    def test_sc_create_2(self):
+        """
+        Test for validating the creation of a given spacecraft. Although the
+        creation of the spacecraft calls directly to the create helper method
+        from the Django framework, some problems have appeared depending on
+        the identifier of the associated TLE. Therefore, the main purpose of
+        this test is to validate the functioning of the system with TLE's whose
+        identifiers contain symbols, blanks and other types of non common
+        characters.
+        """
+        self.__verbose_testing = True
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_create_2):')
+
+        self.assertEquals(
+            jrpc_sc.create(
+                self.__sc_4_id, self.__sc_4_callsign, self.__sc_4_tle_id,
+                request=self.__http_request
+            ), {
+                'spacecraft_id': self.__sc_4_id
+            },
+            'Spacecraft should have been created'
         )
 
     def test_gs_list_channels(self):
