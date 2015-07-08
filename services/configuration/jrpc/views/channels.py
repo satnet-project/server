@@ -22,12 +22,27 @@ from services.configuration.jrpc.serializers import serialization
 
 
 @rpcmethod(
+    name='configuration.gs.channel.list',
+    signature=[],
+    login_required=True
+)
+def gs_channel_list(identifier):
+    """JRPC method
+
+    Simple method that returns the list of channels registered within this
+    Ground Station.
+    """
+    gs = segments.GroundStation.objects.get(identifier=identifier)
+    return [str(c.identifier) for c in gs.channels.all()]
+
+
+@rpcmethod(
     name='configuration.channels.getOptions',
     signature=[],
     login_required=True
 )
 def get_options():
-    """JRPC method.
+    """JRPC method
 
     Returns a dictionary containing all the possible configuration
     options for adding a new communications channel to a Ground Station.
@@ -183,6 +198,21 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
         polarizations_list=pol_l
     )
     return True
+
+
+@rpcmethod(
+    name='configuration.sc.channel.list',
+    signature=[],
+    login_required=True
+)
+def sc_channel_list(identifier):
+    """JRPC method
+
+    Simple method that returns the list of channels registered within this
+    Spacecraft.
+    """
+    sc = segments.Spacecraft.objects.get(identifier=identifier)
+    return [str(c.identifier) for c in sc.channels.all()]
 
 
 @rpcmethod(

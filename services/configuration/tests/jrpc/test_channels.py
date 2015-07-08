@@ -47,10 +47,14 @@ class JRPCChannelsTest(TestCase):
         self.__gs_1_ch_1_id = 'qpsk-gs-1'
         self.__gs_1_ch_2_id = 'qpsk-gs-2'
 
+        self.__gs_2_id = 'calpoly'
+
         self.__sc_1_id = 'humd'
         self.__sc_1_ch_1_id = 'gmsk-sc-1'
         self.__sc_1_ch_1_f = 437000000
         self.__sc_1_ch_2_id = 'gmsk-sc-2'
+
+        self.__sc_2_id = 'beesat'
 
         self.__band = db_tools.create_band()
         self.__test_user_profile = db_tools.create_user_profile()
@@ -62,9 +66,17 @@ class JRPCChannelsTest(TestCase):
             self.__gs_1, self.__band, self.__gs_1_ch_1_id
         )
 
+        self.__gs_2 = db_tools.create_gs(
+            user_profile=self.__test_user_profile, identifier=self.__gs_2_id,
+        )
+
         self.__sc_1 = db_tools.create_sc(
             user_profile=self.__test_user_profile,
             identifier=self.__sc_1_id
+        )
+        self.__sc_2 = db_tools.create_sc(
+            user_profile=self.__test_user_profile,
+            identifier=self.__sc_2_id
         )
         self.__sc_1_ch_1 = db_tools.sc_add_channel(
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
@@ -74,10 +86,59 @@ class JRPCChannelsTest(TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
+    def test_gs_get_channel_list(self):
+        """
+        JRPC method: configuration.gs.channels.list
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_gs_get_channel_list)')
+
+        try:
+            jrpc_channels_if.gs_channel_list('FAKE')
+            self.fail('An exception should have been thrown!')
+        except ObjectDoesNotExist:
+            pass
+
+        self.assertEquals(
+            jrpc_channels_if.gs_channel_list(self.__gs_2_id),
+            [],
+            'Should have returned an empty array'
+        )
+
+        self.assertEquals(
+            jrpc_channels_if.gs_channel_list(self.__gs_1_id),
+            [self.__gs_1_ch_1_id],
+            'Should have returned a non-empty array'
+        )
+
+    def test_sc_get_channel_list(self):
+        """
+        JRPC method: configuration.sc.channels.list
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_get_channel_list)')
+
+        try:
+            jrpc_channels_if.sc_channel_list('FAKE')
+            self.fail('An exception should have been thrown!')
+        except ObjectDoesNotExist:
+            pass
+
+        self.assertEquals(
+            jrpc_channels_if.sc_channel_list(self.__sc_2_id),
+            [],
+            'Should have returned an empty array'
+        )
+
+        self.assertEquals(
+            jrpc_channels_if.sc_channel_list(self.__sc_1_id),
+            [self.__sc_1_ch_1_id],
+            'Should have returned a non-empty array'
+        )
+
     def test_get_channel_options(self):
         """
-        This test validates the configuration of the options available for
-        the channels of either GroundStations or Spacecraft.
+        JRPC method: configuration.channels.getOptions
         """
         if self.__verbose_testing:
             print('>>> TEST (test_get_channel_options)')
@@ -101,8 +162,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_gs_channel_is_unique(self):
         """
-        This test validates the JRPC method that checks whether a given
-        channel already exists or not.
+        JRPC method: configuration.gs.channel.isUnique
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_is_unique)')
@@ -120,8 +180,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_is_unique(self):
         """
-        This test validates the JRPC method that checks whether a given
-        channel already exists or not.
+        JRPC method: configuration.sc.channel.isUnique
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_is_unique)')
@@ -139,7 +198,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_gs_channel_create(self):
         """
-        This test validates the JRPC method that creates a new channel.
+        JRPC method: configuration.gs.channel.create
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_create)')
@@ -183,7 +242,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_create(self):
         """
-        This test validates the JRPC method that creates a new channel.
+        JRPC method: configuration.sc.channel.create
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_create)')
@@ -223,7 +282,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_gs_channel_delete(self):
         """
-        This tests validates the JRPC method that deletes an existing channel.
+        JRPC method: configuration.gs.channel.delete
         """
         try:
             jrpc_channels_if.gs_channel_delete(
@@ -273,7 +332,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_delete(self):
         """
-        This tests validates the JRPC method that deletes an existing channel.
+        JRPC method: configuration.sc.channel.delete
         """
         try:
             jrpc_channels_if.sc_channel_delete(
@@ -321,7 +380,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_gs_channel_get_configuration(self):
         """
-        Tests the JRPC method for getting the configuration from a channel.
+        JRPC method: configuration.gs.channel.getConfiguration
         """
         try:
             jrpc_channels_if.gs_channel_get_configuration(
@@ -374,7 +433,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_get_configuration(self):
         """
-        Tests the JRPC method for getting the configuration from a channel.
+        JRPC method: configuration.sc.channel.getConfiguration
         """
         try:
             jrpc_channels_if.sc_channel_get_configuration(
@@ -425,8 +484,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_gs_channel_set_configuration(self):
         """
-        Test that validates the change of a configuration for a given channel
-        by using the correspondent JRPC method.
+        JRPC method: configuration.gs.channel.setConfiguration
         """
         self.__verbose_testing = False
         try:
@@ -528,8 +586,7 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_set_configuration(self):
         """
-        Test that validates the change of a configuration for a given channel
-        by using the correspondent JRPC method.
+        JRPC method: configuration.sc.channel.setConfiguration
         """
         try:
             jrpc_channels_if.sc_channel_set_configuration(
