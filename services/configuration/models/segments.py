@@ -184,7 +184,7 @@ class GroundStationsManager(models.Manager):
         :param kwargs: Additional parameters.
         :return: The just created GroundStation object.
         """
-        if not username is None:
+        if username is not None:
             user = account_models.UserProfile.objects.get(username=username)
             if user is None:
                 raise Exception('User <' + username + '> could not be found.')

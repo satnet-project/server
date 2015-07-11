@@ -19,6 +19,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import exceptions as django_exceptions
 from rpc4django import rpcmethod
 import logging
+from website import settings as satnet_settings
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization
 
@@ -29,7 +30,7 @@ logger = logging.getLogger('jrpc')
 @rpcmethod(
     name='configuration.gs.list',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_groundstations(**kwargs):
     """
@@ -51,7 +52,7 @@ def list_groundstations(**kwargs):
 @rpcmethod(
     name='configuration.gs.create',
     signature=['String', 'String', 'String', 'String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     """JRPC method
@@ -60,12 +61,15 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     request = kwargs.get('request', None)
 
     if request is None:
-        raise django_exceptions.PermissionDenied(
-            'User identity could not be verified ' +
-            'since no HTTP request was provided.'
-        )
-
-    username = request.user.username
+        if satnet_settings.JRPC_PERMISSIONS:
+            raise django_exceptions.PermissionDenied(
+                'No HTTP request: user identity could not be verified.'
+            )
+        else:
+            logger.warn('No HTTP request: user identity could not be verified.')
+            username = satnet_settings.TEST_USERNAME
+    else:
+        username = request.user.username
 
     gs = segments.GroundStation.objects.create(
         latitude=latitude,
@@ -84,7 +88,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
 @rpcmethod(
     name='configuration.gs.getConfiguration',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(ground_station_id):
     """JRPC method
@@ -98,7 +102,7 @@ def get_configuration(ground_station_id):
 @rpcmethod(
     name='configuration.gs.setConfiguration',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(ground_station_id, configuration):
     """JRPC method
@@ -117,7 +121,7 @@ def set_configuration(ground_station_id, configuration):
 @rpcmethod(
     name='configuration.gs.getChannels',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_channels(ground_station_id):
     """JRPC method
@@ -134,7 +138,7 @@ def list_channels(ground_station_id):
 @rpcmethod(
     name='configuration.gs.delete',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def delete(ground_station_id):
     """JRPC method

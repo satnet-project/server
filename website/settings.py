@@ -367,12 +367,12 @@ APPEND_SLASH = False
 # XMLRequest Header formatted in JSON
 RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 
-# Django south not running during UNIT tests:
-# SOUTH_TESTS_MIGRATE = False # To disable migrations and use syncdb instead
-# SKIP_SOUTH_TESTS = True # To disable South's own unit tests
-
 # ### SATNET specific settings
+JRPC_LOGIN_REQUIRED = False
 JRPC_PERMISSIONS = False
+
+# ### Username used during tests
+TEST_USERNAME = 'rtubio'
 
 # ### pusher.com configuration
 PUSHER_APP_ID = pusher.PUSHER_APP_ID

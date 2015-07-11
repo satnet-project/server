@@ -19,11 +19,15 @@ import datetime
 from django.contrib.sites import models as site_models
 import io
 import json
+import logging
 import pytz
 import sys
 import unicodedata
 import urllib.request
 import socket
+
+
+logger = logging.getLogger('common')
 
 
 def create_site(apps, schema_editor):

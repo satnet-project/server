@@ -20,10 +20,12 @@ import logging
 
 from django.db import models
 from django.contrib.auth import models as auth_models
+from django.core import exceptions as django_exceptions
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
 
 from services.accounts import utils as account_utils
+from website import settings as satnet_settings
 
 logger = logging.getLogger('accounts')
 
@@ -212,3 +214,33 @@ def remove_admin_profile(apps, schema_editor):
     for the administrator.
     """
     UserProfile.objects.get(pk=1).delete()
+
+
+PERMISSION_EX_MSG = 'No HTTP request: user identity could not be verified.'
+
+
+def get_user(
+    http_request=None,
+    permissions_flag=satnet_settings.JRPC_PERMISSIONS,
+    test_username=satnet_settings.TEST_USERNAME
+):
+    """
+    Returns the username of the user within a given HTTP request object. It
+    takes into account all the permission policies implemented by the server.
+
+    :param http_request: The HTTP request object
+    :return: (user, username) Tuple with the user object as per django_auth
+    contrib library and its username separate
+    """
+    if http_request is None:
+        if permissions_flag:
+            raise django_exceptions.PermissionDenied(PERMISSION_EX_MSG)
+        else:
+            logger.warn(PERMISSION_EX_MSG)
+            username = test_username
+            user = UserProfile.objects.get(username=username)
+    else:
+        user = http_request.user
+        username = user.username
+
+    return user, username

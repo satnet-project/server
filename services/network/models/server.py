@@ -158,4 +158,4 @@ class Server(django_models.Model):
     )
 
     def __unicode__(self):
-        return ">>> Network Server {" + '}'
+        return ">>> Network Server {" + str(self.identifier) + '}'
