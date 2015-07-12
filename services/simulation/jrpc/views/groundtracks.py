@@ -19,12 +19,13 @@ import rpc4django
 from services.configuration.models import segments as segment_models
 from services.simulation.models import groundtracks as simulation_models
 from services.simulation.jrpc.serializers import groundtracks
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='simulation.spacecraft.getGroundtrack',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_groundtrack(spacecraft_id):
     """JRPC method.

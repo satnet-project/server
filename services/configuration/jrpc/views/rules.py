@@ -19,12 +19,13 @@ import rpc4django
 
 from services.configuration.models import rules, segments
 from services.configuration.jrpc.serializers import serialization
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='configuration.gs.channel.addRule',
     signature=['String', 'String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def add_rule(groundstation_id, channel_id, rule_cfg):
     """
@@ -48,7 +49,7 @@ def add_rule(groundstation_id, channel_id, rule_cfg):
 @rpc4django.rpcmethod(
     name='configuration.gs.channel.removeRule',
     signature=['String', 'String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def remove_rule(groundstation_id, channel_id, rule_id):
     """
@@ -59,7 +60,7 @@ def remove_rule(groundstation_id, channel_id, rule_id):
     :param rule_id: Identifier of the rule to be removed.
     :return: 'True' in case the rule could be removed.
     """
-    ch = segments.GroundStation.objects.get(
+    segments.GroundStation.objects.get(
         identifier=groundstation_id
     ).channels.all().get(
         identifier=channel_id
@@ -72,7 +73,7 @@ def remove_rule(groundstation_id, channel_id, rule_id):
 @rpc4django.rpcmethod(
     name='configuration.gs.channel.getRules',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_rules(groundstation_id, channel_id):
     """

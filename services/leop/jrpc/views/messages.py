@@ -23,12 +23,13 @@ from services.common import misc
 from services.communications import models as comms_models
 from services.leop.models import launch as launch_models
 from services.leop.jrpc.serializers import messages as messages_serializers
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='leop.getMessages',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_messages(launch_id, start):
     """JRPC method

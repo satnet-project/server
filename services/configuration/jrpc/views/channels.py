@@ -19,12 +19,13 @@ from rpc4django import rpcmethod
 
 from services.configuration.models import segments, bands, channels
 from services.configuration.jrpc.serializers import serialization
+from website import settings as satnet_settings
 
 
 @rpcmethod(
     name='configuration.gs.channel.list',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_list(identifier):
     """JRPC method
@@ -39,7 +40,7 @@ def gs_channel_list(identifier):
 @rpcmethod(
     name='configuration.channels.getOptions',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_options():
     """JRPC method
@@ -74,7 +75,7 @@ def get_options():
 @rpcmethod(
     name='configuration.gs.channel.isUnique',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_is_unique(identifier):
     """JRPC method.
@@ -90,7 +91,7 @@ def gs_channel_is_unique(identifier):
 @rpcmethod(
     name='configuration.gs.channel.create',
     signature=['String', 'String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_create(ground_station_id, channel_id, configuration):
     """JRPC method.
@@ -130,7 +131,7 @@ def gs_channel_create(ground_station_id, channel_id, configuration):
 @rpcmethod(
     name='configuration.gs.channel.delete',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_delete(groundstation_id, channel_id):
     """JRPC method.
@@ -149,7 +150,7 @@ def gs_channel_delete(groundstation_id, channel_id):
 @rpcmethod(
     name='configuration.gs.channel.getConfiguration',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_get_configuration(groundstation_id, channel_id):
     """JRPC method.
@@ -169,7 +170,7 @@ def gs_channel_get_configuration(groundstation_id, channel_id):
 @rpcmethod(
     name='configuration.gs.channel.setConfiguration',
     signature=['String', 'String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     """JRPC method.
@@ -203,7 +204,7 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
 @rpcmethod(
     name='configuration.sc.channel.list',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_list(identifier):
     """JRPC method
@@ -218,7 +219,7 @@ def sc_channel_list(identifier):
 @rpcmethod(
     name='configuration.sc.channel.isUnique',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_is_unique(identifier):
     """JRPC method.
@@ -234,7 +235,7 @@ def sc_channel_is_unique(identifier):
 @rpcmethod(
     name='configuration.sc.channel.create',
     signature=['String', 'String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_create(spacecraft_id, channel_id, configuration):
     """JRPC method.
@@ -274,7 +275,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
 @rpcmethod(
     name='configuration.sc.channel.delete',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_delete(spacecraft_id, channel_id):
     """JRPC method.
@@ -293,7 +294,7 @@ def sc_channel_delete(spacecraft_id, channel_id):
 @rpcmethod(
     name='configuration.sc.channel.getConfiguration',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_get_configuration(spacecraft_id, channel_id):
     """JRPC method.
@@ -313,7 +314,7 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
 @rpcmethod(
     name='configuration.sc.channel.setConfiguration',
     signature=['String', 'String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
     """JRPC method.

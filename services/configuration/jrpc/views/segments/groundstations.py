@@ -13,16 +13,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
-
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import exceptions as django_exceptions
 from rpc4django import rpcmethod
 import logging
-from website import settings as satnet_settings
+from services.accounts import models as account_models
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization
-
+from website import settings as satnet_settings
 
 logger = logging.getLogger('jrpc')
 
@@ -33,19 +31,17 @@ logger = logging.getLogger('jrpc')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_groundstations(**kwargs):
-    """
-    JRPC method.
-
+    """JRPC method
     Creates a list with the identifiers of the available ground stations for
     the user that is logged in within this request.
     """
 
-    # 1) user must be obtained from the request, since this has already been
-    #       validated by the authentication backend
-    http_request = kwargs.get('request', None)
-    gs_objects = segments.GroundStation.objects.filter(
-        user=http_request.user
-    ).all()
+    # 1) user must be obtained from the request
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
+    # 2) only the ground stations that belong to the incoming user are returned
+    gs_objects = segments.GroundStation.objects.filter(user=user).all()
     return [str(g.identifier) for g in gs_objects]
 
 
@@ -58,18 +54,10 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     """JRPC method
     Creates a new ground station with the given configuration.
     """
-    request = kwargs.get('request', None)
 
-    if request is None:
-        if satnet_settings.JRPC_PERMISSIONS:
-            raise django_exceptions.PermissionDenied(
-                'No HTTP request: user identity could not be verified.'
-            )
-        else:
-            logger.warn('No HTTP request: user identity could not be verified.')
-            username = satnet_settings.TEST_USERNAME
-    else:
-        username = request.user.username
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
 
     gs = segments.GroundStation.objects.create(
         latitude=latitude,

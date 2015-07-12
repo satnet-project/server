@@ -31,7 +31,7 @@ from website import settings as satnet_settings
 @rpc4django.rpcmethod(
     name='leop.gs.list',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_groundstations(launch_id, **kwargs):
     """JRPC method (LEOP service).
@@ -66,7 +66,7 @@ def list_groundstations(launch_id, **kwargs):
 @rpc4django.rpcmethod(
     name='leop.sc.list',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_spacecraft(launch_id, **kwargs):
     """JRPC method (LEOP service).
@@ -107,7 +107,7 @@ def list_spacecraft(launch_id, **kwargs):
 @rpc4django.rpcmethod(
     name='leop.gs.add',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def add_groundstations(launch_id, groundstations, **kwargs):
     """JRPC method (LEOP service).
@@ -143,7 +143,7 @@ def add_groundstations(launch_id, groundstations, **kwargs):
 @rpc4django.rpcmethod(
     name='leop.gs.remove',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def remove_groundstations(launch_id, groundstations, **kwargs):
     """JRPC method (LEOP service).
@@ -176,7 +176,7 @@ def remove_groundstations(launch_id, groundstations, **kwargs):
 @rpc4django.rpcmethod(
     name='leop.launch.addUnknown',
     signature=['String', 'int'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def add_unknown(launch_id, object_id):
     """JRPC method
@@ -193,7 +193,7 @@ def add_unknown(launch_id, object_id):
 @rpc4django.rpcmethod(
     name='leop.launch.removeUnknown',
     signature=['String', 'int'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def remove_unknown(launch_id, object_id):
     """JRPC method
@@ -210,7 +210,7 @@ def remove_unknown(launch_id, object_id):
 @rpc4django.rpcmethod(
     name='leop.launch.identify',
     signature=['String', 'int', 'String', 'String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
     """JRPC method
@@ -239,7 +239,7 @@ def identify(launch_id, object_id, callsign, tle_l1, tle_l2):
 @rpc4django.rpcmethod(
     name='leop.launch.forget',
     signature=['String', 'int'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def forget(launch_id, object_id):
     """JRPC method
@@ -263,7 +263,7 @@ def forget(launch_id, object_id):
 @rpc4django.rpcmethod(
     name='leop.launch.update',
     signature=['String', 'int', 'String', 'String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def update(launch_id, object_id, callsign, tle_l1, tle_l2):
     """JRPC method
@@ -290,7 +290,7 @@ def update(launch_id, object_id, callsign, tle_l1, tle_l2):
 @rpc4django.rpcmethod(
     name='leop.getConfiguration',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(launch_id):
     """JRPC method
@@ -305,7 +305,7 @@ def get_configuration(launch_id):
 @rpc4django.rpcmethod(
     name='leop.setConfiguration',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(launch_id, configuration):
     """JRPC method
@@ -333,7 +333,7 @@ def set_configuration(launch_id, configuration):
 @rpc4django.rpcmethod(
     name='leop.getPasses',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_pass_slots(launch_id):
     """JRPC method

@@ -15,7 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.contrib.auth import decorators as auth_decorators
+from services.accounts import decorators as account_decorators
 from django.contrib.auth import models as auth_models
 from django.contrib.sites import models as site_models
 from django.forms import models as form_models
@@ -31,7 +31,7 @@ logger = logging.getLogger('accounts')
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def user_details(request):
     """jQuery GET method for retrieving user details.
     Parameters:
@@ -55,7 +55,7 @@ def user_details(request):
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def user_verification(request):
     """ jQuery POST method for updating the set of users to be verified.
     Parameters:

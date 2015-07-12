@@ -20,11 +20,13 @@ import rpc4django
 from services.configuration.models import segments
 from services.scheduling.models import operational
 from services.scheduling.jrpc.serializers import serialization
+from website import settings as satnet_settings
+
 
 @rpc4django.rpcmethod(
     name='scheduling.sc.getOperationalSlots',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_operational_slots(spacecraft_id):
     """
@@ -42,7 +44,7 @@ def get_operational_slots(spacecraft_id):
 @rpc4django.rpcmethod(
     name='scheduling.sc.getSlotChanges',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_changes(spacecraft_id):
     """
@@ -64,7 +66,7 @@ def get_changes(spacecraft_id):
 @rpc4django.rpcmethod(
     name='scheduling.sc.selectSlots',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def select_slots(spacecraft_id, slot_identifiers):
     """
@@ -103,7 +105,7 @@ def select_slots(spacecraft_id, slot_identifiers):
 @rpc4django.rpcmethod(
     name='scheduling.sc.cancelSelections',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def cancel_selections(spacecraft_id, slot_identifiers):
     """
@@ -139,7 +141,7 @@ def cancel_selections(spacecraft_id, slot_identifiers):
 @rpc4django.rpcmethod(
     name='scheduling.sc.cancelReservations',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def cancel_reservations(spacecraft_id, slot_identifiers):
     """

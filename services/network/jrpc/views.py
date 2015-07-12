@@ -16,12 +16,15 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
+import socket
+from services.common import gis
+from website import settings as satnet_settings
 
 
 @rpcmethod(
     name='network.keepAlive',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def keep_alive():
     """JRPC method
@@ -29,3 +32,24 @@ def keep_alive():
     :return: True
     """
     return True
+
+
+@rpcmethod(
+    name='network.geoip',
+    signature=['String'],
+    login_required=False
+)
+def hostname_geoip(hostname):
+    """JRPC method
+    Retrieves the location of the given hostname using the GEO IP services.
+    :param hostname: The name of the host
+    :return: JSON object, { latitude: $lat, longitude: $lng }
+    """
+
+    host_ip = socket.gethostbyname(hostname)
+    lat, lng = gis.get_remote_user_location(ip=host_ip)
+
+    print('>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +
+          ', @(' + str(lat) + ', ' + str(lng) + ')')
+
+    return {'latitude': lat, 'longitude': lng}

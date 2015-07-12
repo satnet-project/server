@@ -21,12 +21,13 @@ import rpc4django
 from services.common import misc
 from services.communications import models as comm_models
 from services.configuration.models import segments as segment_models
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='communications.gs.storePassiveMessage',
     signature=['String', 'int', 'float', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
     """Stores a passive message from a Ground Station.
@@ -74,7 +75,7 @@ def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
 @rpc4django.rpcmethod(
     name='communications.sc.getPassiveMessagesAvailable',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_available_passive_messages(groundstation_id):
     """Returns a list of the available passive messages.
@@ -92,7 +93,7 @@ def get_available_passive_messages(groundstation_id):
 @rpc4django.rpcmethod(
     name='communications.sc.getPassiveMessage',
     signature=['String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_passive_message(groundstation_id, passive_message_id):
     """Returns the selected passive message.

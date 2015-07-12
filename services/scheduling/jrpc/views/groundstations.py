@@ -20,12 +20,13 @@ import rpc4django
 from services.configuration.models import segments
 from services.scheduling.models import operational
 from services.scheduling.jrpc.serializers import serialization
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='scheduling.gs.getOperationalSlots',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_operational_slots(groundstation_id):
     """
@@ -43,7 +44,7 @@ def get_operational_slots(groundstation_id):
 @rpc4django.rpcmethod(
     name='scheduling.gs.getSlotChanges',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_changes(groundstation_id):
     """
@@ -64,7 +65,7 @@ def get_changes(groundstation_id):
 @rpc4django.rpcmethod(
     name='scheduling.gs.confirmSelections',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def confirm_selections(groundstation_id, slot_identifiers):
     """
@@ -102,7 +103,7 @@ def confirm_selections(groundstation_id, slot_identifiers):
 @rpc4django.rpcmethod(
     name='scheduling.gs.denySelections',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def deny_selections(groundstation_id, slot_identifiers):
     """
@@ -140,7 +141,7 @@ def deny_selections(groundstation_id, slot_identifiers):
 @rpc4django.rpcmethod(
     name='scheduling.gs.cancelReservations',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def cancel_reservations(groundstation_id, slot_identifiers):
 

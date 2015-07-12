@@ -15,16 +15,18 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import rpc4django
+
 from services.configuration.jrpc.serializers import tle as tle_serializers
 from services.configuration.models import segments, tle as tle_models
 from services.configuration.models.celestrak import CelestrakDatabase
-import rpc4django
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='configuration.tle.celestrak.getSections',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_celestrak_sections():
     """
@@ -37,7 +39,7 @@ def get_celestrak_sections():
 @rpc4django.rpcmethod(
     name='configuration.tle.celestrak.getResource',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_celestrak_resource(subsection):
     """
@@ -55,7 +57,7 @@ def get_celestrak_resource(subsection):
 @rpc4django.rpcmethod(
     name='configuration.tle.celestrak.getTle',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_spacecraft_tle(spacecraft_id):
     """

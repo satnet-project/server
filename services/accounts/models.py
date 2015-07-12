@@ -232,14 +232,17 @@ def get_user(
     :return: (user, username) Tuple with the user object as per django_auth
     contrib library and its username separate
     """
-    if http_request is None:
-        if permissions_flag:
-            raise django_exceptions.PermissionDenied(PERMISSION_EX_MSG)
-        else:
-            logger.warn(PERMISSION_EX_MSG)
-            username = test_username
-            user = UserProfile.objects.get(username=username)
+    if not permissions_flag:
+
+        logger.warn(PERMISSION_EX_MSG)
+        username = test_username
+        user = UserProfile.objects.get(username=username)
+
+        if user is None:
+            raise Exception('User <' + username + '> could not be found.')
+
     else:
+
         user = http_request.user
         username = user.username
 

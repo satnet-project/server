@@ -14,6 +14,7 @@ cryptography==0.8.2
 datadiff==1.1.6
 defusedxml==0.4.1
 django-allauth==0.19.1
+django-cors-headers==1.1.0
 django-countries==3.1.1
 django-datetime-widget==0.9.3
 django-extensions==1.5.0

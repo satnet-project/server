@@ -110,6 +110,8 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
+    # ### TESTING (enabling CORS)
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     # 'django.contrib.sessions.middleware.SessionMiddleware',
     'user_sessions.middleware.SessionMiddleware',
@@ -386,3 +388,8 @@ NOSE_ARGS = [
     'services.communications,services.configuration,services.leop,'
     'services.network,services.scheduling,services.simulation'
 ]
+
+# ### TESTING : CORS enabled
+if not JRPC_LOGIN_REQUIRED:
+    CORS_ORIGIN_ALLOW_ALL = True
+    INSTALLED_APPS += ('corsheaders',)

@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
-from django.contrib.auth import decorators as auth_decorators
+from services.accounts import decorators as account_decorators
 from ipware.ip import get_real_ip as ipware_get_ip
 import json
 from jsonview import decorators, exceptions
@@ -28,7 +28,7 @@ logger = logging.getLogger('configuration')
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def groundstation_valid_id(request):
     """
     AJAX method for checking whether a given identifier is in use or not within
@@ -51,7 +51,7 @@ def groundstation_valid_id(request):
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def spacecraft_valid_id(request):
     """
     AJAX method for checking whether a given identifier is in use or not within
@@ -74,7 +74,7 @@ def spacecraft_valid_id(request):
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def hostname_geoip(request):
     """AJAX method
     Retrieves the location of the given hostname using the GEO IP services.
@@ -106,7 +106,7 @@ def hostname_geoip(request):
 
 
 @decorators.json_view
-@auth_decorators.login_required
+@account_decorators.login_required
 def user_geoip(request):
     """AJAX method
     Retrieves the estimated location of a given user using the IP address of

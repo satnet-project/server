@@ -19,12 +19,13 @@ import rpc4django
 from services.configuration.models import segments as segment_models
 from services.simulation.models import passes as pass_models
 from services.simulation.jrpc.serializers import passes as pass_serializer
+from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
     name='simulation.spacecraft.getPasses',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_sc_passes(spacecraft_id, groundstations):
     """JRPC method
@@ -52,7 +53,7 @@ def get_sc_passes(spacecraft_id, groundstations):
 @rpc4django.rpcmethod(
     name='simulation.groundstation.getPasses',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_gs_passes(groundstation_id, spacecraft):
     """JRPC method

@@ -15,19 +15,20 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import exceptions as django_exceptions
 import logging
 from rpc4django import rpcmethod
 from services.accounts import models as account_models
 from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from website import settings as satnet_settings
+
 logger = logging.getLogger('configuration')
 
 
 @rpcmethod(
     name='configuration.sc.list',
     signature=[],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_spacecraft(**kwargs):
     """JRPC method.
@@ -36,17 +37,19 @@ def list_spacecraft(**kwargs):
     User name must be obtained from the request, since this has already been
     validated by the authentication backend
     """
-    http_request = kwargs.get('request', None)
-    spacecraft = segments.Spacecraft.objects.filter(
-        user=http_request.user
-    ).all()
+    # 1) user must be obtained from the request
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
+    # 2) only the ground stations that belong to the incoming user are returned
+    spacecraft = segments.Spacecraft.objects.filter(user=user).all()
     return [str(s.identifier) for s in spacecraft]
 
 
 @rpcmethod(
     name='configuration.sc.create',
     signature=['String', 'String', 'String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def create(identifier, callsign, tle_id, **kwargs):
     """JRPC method.
@@ -54,20 +57,10 @@ def create(identifier, callsign, tle_id, **kwargs):
     User name must be obtained from the request, since this has already been
     validated by the authentication backend
     """
-    request = kwargs.get('request', None)
-    if request is None:
-        raise django_exceptions.PermissionDenied(
-            'User identity could not be verified ' +
-            'since no HTTP request was provided.'
-        )
-    username = request.user.username
 
-    if username is None:
-        raise Exception('Could not find <username> within HTTP request.')
-
-    user = account_models.UserProfile.objects.get(username=username)
-    if user is None:
-        raise Exception('User <' + username + '> could not be found.')
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
 
     sc = segments.Spacecraft.objects.create(
         tle_id,
@@ -84,7 +77,7 @@ def create(identifier, callsign, tle_id, **kwargs):
 @rpcmethod(
     name='configuration.sc.getConfiguration',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(spacecraft_id):
     """JRPC method.
@@ -98,7 +91,7 @@ def get_configuration(spacecraft_id):
 @rpcmethod(
     name='configuration.sc.setConfiguration',
     signature=['String', 'Object'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(spacecraft_id, configuration):
     """JRPC method.
@@ -113,7 +106,7 @@ def set_configuration(spacecraft_id, configuration):
 @rpcmethod(
     name='configuration.sc.getChannels',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_channels(spacecraft_id):
     """JRPC method.
@@ -129,7 +122,7 @@ def list_channels(spacecraft_id):
 @rpcmethod(
     name='configuration.sc.delete',
     signature=['String'],
-    login_required=True
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def delete(spacecraft_id):
     """JRPC method.
