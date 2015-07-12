@@ -14,5 +14,5 @@ script:
   - 'python manage.py test'
   - 'coverage erase'
   - 'coverage run manage.py test'
-#after_script:
-#  - 'coveralls'
+after_script:
+  - 'coveralls'
