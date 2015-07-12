@@ -38,6 +38,7 @@ SC_TLE_ID_K = 'spacecraft_tle_id'
 CH_ID_K = 'channel_id'
 # ## Keys only for GroundStation channel parameters
 BAND_K = 'band'
+BANDS_K = 'bands'
 MODULATIONS_K = 'modulations'
 POLARIZATIONS_K = 'polarizations'
 BITRATES_K = 'bitrates'

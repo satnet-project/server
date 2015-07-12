@@ -59,7 +59,8 @@ class UtilsTest(TestCase):
             account_models.get_user(
                 http_request=http_request,
                 permissions_flag=False,
-                test_username=username
+                test_username=username,
+                testing_flag=False
             ),
             (user_profile, username),
             'Error extracing the user data from HTTP request'
@@ -67,7 +68,10 @@ class UtilsTest(TestCase):
 
         self.assertEqual(
             account_models.get_user(
-                None, permissions_flag=False, test_username=username_2
+                http_request=http_request,
+                permissions_flag=False,
+                test_username=username_2,
+                testing_flag=False
             ),
             (user_profile_2, username_2),
             'Error extracting the user data when no HTTP request is given'

@@ -49,7 +49,7 @@ def get_options():
     options for adding a new communications channel to a Ground Station.
     """
     return {
-        serialization.BAND_K: [
+        serialization.BANDS_K: [
             obj.get_band_name()
             for obj in bands.AvailableBands.objects.all()
         ],

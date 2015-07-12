@@ -145,7 +145,7 @@ class JRPCChannelsTest(TestCase):
 
         actual_o = jrpc_channels_if.get_options()
         expected_o = {
-            jrpc_serial.BAND_K: [
+            jrpc_serial.BANDS_K: [
                 'UHF / U / 435000000.000000 / 438000000.000000'
             ],
             jrpc_serial.MODULATIONS_K: ['FM', 'AFSK'],

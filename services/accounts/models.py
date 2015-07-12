@@ -222,7 +222,8 @@ PERMISSION_EX_MSG = 'No HTTP request: user identity could not be verified.'
 def get_user(
     http_request=None,
     permissions_flag=satnet_settings.JRPC_PERMISSIONS,
-    test_username=satnet_settings.TEST_USERNAME
+    test_username=satnet_settings.TEST_USERNAME,
+    testing_flag=satnet_settings.TESTING
 ):
     """
     Returns the username of the user within a given HTTP request object. It
@@ -232,7 +233,7 @@ def get_user(
     :return: (user, username) Tuple with the user object as per django_auth
     contrib library and its username separate
     """
-    if not permissions_flag:
+    if not permissions_flag and not testing_flag:
 
         logger.warn(PERMISSION_EX_MSG)
         username = test_username
