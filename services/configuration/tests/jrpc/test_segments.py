@@ -391,14 +391,11 @@ class JRPCSegmentsTest(test.TestCase):
         rule_id_1 = jrpc_rules.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
         )
-        rule_pk = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
 
         # 2) get the rule back through the JRPC interface
         rules_g1c1 = jrpc_rules.get_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
         expected_r = {
-            jrpc_serial.RULE_PK_K: rule_pk,
+            jrpc_serial.RULE_PK_K: rule_id_1,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
