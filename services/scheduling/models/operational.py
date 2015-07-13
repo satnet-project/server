@@ -375,12 +375,6 @@ class OperationalSlotsManager(models.Manager):
                 gs_ch.groundstation_set.all()[0]
             )
 
-            #t_slot = availability.AvailabilitySlotsManager.truncate(
-            #    instance, start=start, end=end
-            #)
-            #if t_slot is None:
-            #    continue
-
             operational_s = OperationalSlot.objects\
                 .get_simulator().calculate_passes([
                     (instance.start, instance.end, instance.identifier)
