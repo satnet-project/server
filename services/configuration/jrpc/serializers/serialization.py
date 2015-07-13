@@ -53,6 +53,7 @@ BANDWIDTH_K = 'bandwidth'
 
 
 # JRPC keys for data exchange with clients through key-indexed objects.
+RULE_PK_K = 'key'
 RULE_OP = 'rule_operation'
 RULE_OP_ADD = '+'
 RULE_OP_REMOVE = '-'
@@ -116,17 +117,17 @@ def check_gs_channel_configuration(configuration):
     keys that are required for a valid channel configuration. In case it
     doesn't, an exception is raised.
     """
-    if not BAND_K in configuration:
+    if BAND_K not in configuration:
         raise Exception("Parameter not provided, key = " + BAND_K)
-    if not MODULATIONS_K in configuration:
+    if MODULATIONS_K not in configuration:
         raise Exception("Parameter not provided, key = " + MODULATIONS_K)
-    if not POLARIZATIONS_K in configuration:
+    if POLARIZATIONS_K not in configuration:
         raise Exception("Parameter not provided, key = " + POLARIZATIONS_K)
-    if not BITRATES_K in configuration:
+    if BITRATES_K not in configuration:
         raise Exception("Parameter not provided, key = " + BITRATES_K)
-    if not BANDWIDTHS_K in configuration:
+    if BANDWIDTHS_K not in configuration:
         raise Exception("Parameter not provided, key = " + BANDWIDTHS_K)
-    if not AUTOMATED_K in configuration:
+    if AUTOMATED_K not in configuration:
         raise Exception("Parameter not provided, key = " + AUTOMATED_K)
 
 
@@ -136,15 +137,15 @@ def check_sc_channel_configuration(configuration):
     keys that are required for a valid channel configuration. In case it
     doesn't, an exception is raised.
     """
-    if not FREQUENCY_K in configuration:
+    if FREQUENCY_K not in configuration:
         raise Exception("Parameter not provided, key = " + FREQUENCY_K)
-    if not MODULATION_K in configuration:
+    if MODULATION_K not in configuration:
         raise Exception("Parameter not provided, key = " + MODULATION_K)
-    if not POLARIZATION_K in configuration:
+    if POLARIZATION_K not in configuration:
         raise Exception("Parameter not provided, key = " + POLARIZATION_K)
-    if not BITRATE_K in configuration:
+    if BITRATE_K not in configuration:
         raise Exception("Parameter not provided, key = " + BITRATE_K)
-    if not BANDWIDTH_K in configuration:
+    if BANDWIDTH_K not in configuration:
         raise Exception("Parameter not provided, key = " + BANDWIDTH_K)
 
 
@@ -340,6 +341,7 @@ def serialize_rules(channel_rules):
             continue
 
         jrules.append({
+            RULE_PK_K: r.id,
             RULE_OP: __db2net__[r.operation],
             RULE_PERIODICITY: __db2net__[r.periodicity],
             RULE_DATES: serializer(r, child_r),
@@ -404,9 +406,9 @@ def deserialize_weekly_dates(dates):
     if dates is None or len(dates) == 0:
         raise Exception('Weekly dates provided is empty.')
     for d in dates:
-        if not d in RULE_WEEKLY_WEEKDAYS:
+        if d not in RULE_WEEKLY_WEEKDAYS:
             raise Exception('Day <' + d + '> not supported.')
-        if not d in check_weekdays:
+        if d not in check_weekdays:
             raise Exception('Day <' + d + '> is duplicated.')
         else:
             check_weekdays.remove(d)
@@ -429,11 +431,11 @@ def deserialize_rule_cfg(rule_cfg):
     :return: All the parameteres returned as a N-tuple.
     """
     operation = rule_cfg[RULE_OP]
-    if not operation in __supported_operations__:
+    if operation not in __supported_operations__:
         raise Exception('Operation ' + operation + ' not supported.')
 
     periodicity = rule_cfg[RULE_PERIODICITY]
-    if not periodicity in __supported_periodicities__:
+    if periodicity not in __supported_periodicities__:
         raise Exception('Period ' + periodicity + ' not supported.')
 
     dates_reader = __dates_deserialization__[periodicity]

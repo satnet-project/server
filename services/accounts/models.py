@@ -20,7 +20,6 @@ import logging
 
 from django.db import models
 from django.contrib.auth import models as auth_models
-from django.core import exceptions as django_exceptions
 from django.shortcuts import get_object_or_404
 from django_countries.fields import CountryField
 

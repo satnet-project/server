@@ -375,6 +375,7 @@ class JRPCSegmentsTest(test.TestCase):
         This test validates that the system correctly adds a new rule to the
         set of rules for a given channel of a ground station.
         """
+        self.__verbose_testing = True
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_add_rule)')
 
@@ -390,11 +391,14 @@ class JRPCSegmentsTest(test.TestCase):
         rule_id_1 = jrpc_rules.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
         )
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg)
+        rule_pk = jrpc_rules.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
+        )
 
         # 2) get the rule back through the JRPC interface
         rules_g1c1 = jrpc_rules.get_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
         expected_r = {
+            jrpc_serial.RULE_PK_K: rule_pk,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
@@ -427,6 +431,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
         jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id_1)
+        self.__verbose_testing = False
 
     def test_add_daily_rule(self):
         """
@@ -444,11 +449,14 @@ class JRPCSegmentsTest(test.TestCase):
             starting_time=r_1_s_time,
             ending_time=r_1_e_time
         )
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg)
+        rule_pk = jrpc_rules.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
+        )
 
         # 2) get the rule back through the JRPC interface
         rules_g1c1 = jrpc_rules.get_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
         expected_r = {
+            jrpc_serial.RULE_PK_K: rule_pk,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
