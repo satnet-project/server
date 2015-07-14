@@ -21,7 +21,7 @@ import pytz
 from django.db import models
 
 from services.common import misc, simulation, slots
-from services.configuration.models import segments as segment_models
+from services.configuration.models import channels
 
 # Definition of the availability operation through rules over existing
 # operational slots.
@@ -31,8 +31,6 @@ REMOVE_SLOTS = '-'
 ONCE_PERIODICITY = 'O'
 DAILY_PERIODICITY = 'D'
 WEEKLY_PERIODICITY = 'W'
-
-DEFAULT_GS_KEY = 1
 
 
 class AvailabilityRuleManager(models.Manager):
@@ -46,10 +44,10 @@ class AvailabilityRuleManager(models.Manager):
         WEEKLY_PERIODICITY: 'AvailabilityRuleWeekly',
     }
 
-    def create(self, ground_station, operation, periodicity, dates):
+    def create(self, gs_channel, operation, periodicity, dates):
         """
         This method creates a new rule with the given parameters.
-        :param ground_station: The ground_station to which this rule belongs
+        :param gs_channel: The channel to which this rule is associated.
         :param operation: The type of operation for the rule to be added.
         :param periodicity: The periodicity for the rule.
         :param dates: The dates for the definition of the time intervales in
@@ -62,7 +60,7 @@ class AvailabilityRuleManager(models.Manager):
         db_obj_classname = self.__periodicity2class__[periodicity]
         db_obj_class = globals()[db_obj_classname]
         rule_child = db_obj_class.objects.create(
-            ground_station, operation, periodicity, dates
+            gs_channel, operation, periodicity, dates
         )
 
         # ### Generate availability slots and write them in the table.
@@ -122,11 +120,10 @@ class AvailabilityRuleManager(models.Manager):
         return add_slots, remove_slots
 
     @staticmethod
-    def get_applicable_rule_values(ground_station, interval=None):
+    def get_applicable_rule_values(gs_channel, interval=None):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
-        :param ground_station: Ground Station to which the rules belong
         :param interval: Duration of the interval for matching applicable
         rules. This is a tuple with the first value being the begin_date for
         the interval and the second (and last) object being the end_date for
@@ -144,7 +141,7 @@ class AvailabilityRuleManager(models.Manager):
         for c in AvailabilityRule.__subclasses__():
             r_list = list(
                 c.objects.filter(
-                    availabilityrule_ptr__ground_station=ground_station
+                    availabilityrule_ptr__gs_channel=gs_channel
                 ).filter(
                     availabilityrule_ptr__operation=ADD_SLOTS
                 ).filter(
@@ -157,7 +154,7 @@ class AvailabilityRuleManager(models.Manager):
                 add_slots += r_list
             r_list = list(
                 c.objects.filter(
-                    availabilityrule_ptr__ground_station=ground_station
+                    availabilityrule_ptr__gs_channel=gs_channel
                 ).filter(
                     availabilityrule_ptr__operation=REMOVE_SLOTS
                 ).filter(
@@ -317,19 +314,18 @@ class AvailabilityRuleManager(models.Manager):
                                                                'supported')
 
     @staticmethod
-    def get_availability_slots(ground_station, interval=None):
+    def get_availability_slots(gs_channel, interval=None):
         """
         This method generates the availability slots for this set of rules.
-        :param ground_station: Ground Station to which the rules belong
         :param interval: The interval of time during which the slots must be
-                        generated
+                        generated.
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(
-                ground_station, interval=interval
+                gs_channel, interval=interval
             )
 
         # 0) We obtain the applicable slots from the database
@@ -378,10 +374,9 @@ class AvailabilityRule(models.Model):
 
     objects = AvailabilityRuleManager()
 
-    ground_station = models.ForeignKey(
-        segment_models.GroundStation,
-        default=DEFAULT_GS_KEY,
-        verbose_name='Ground Station to which this rule belongs to'
+    gs_channel = models.ForeignKey(
+        channels.GroundStationChannel,
+        verbose_name='Channel that this rule belongs to.'
     )
 
     OPERATION_CHOICES = (
@@ -449,12 +444,12 @@ class AvailabilityRuleOnceManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, ground_station, operation, periodicity, dates):
+    def create(self, gs_channel, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
         return super(AvailabilityRuleOnceManager, self).create(
-            ground_station=ground_station,
+            gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
@@ -497,12 +492,12 @@ class AvailabilityRuleDailyManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, ground_station, operation, periodicity, dates):
+    def create(self, gs_channel, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
         return super(AvailabilityRuleDailyManager, self).create(
-            ground_station=ground_station,
+            gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
@@ -546,12 +541,12 @@ class AvailabilityRuleWeeklyManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, ground_station, operation, periodicity, dates):
+    def create(self, gs_channel, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
         rule_daily = super(AvailabilityRuleWeeklyManager, self).create(
-            ground_station=ground_station,
+            gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
