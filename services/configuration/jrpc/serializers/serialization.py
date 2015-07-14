@@ -322,27 +322,6 @@ __date_serializers__ = {
 }
 
 
-def serialize_rule(rule):
-    """
-    This method serializes in JSON format a given rule object.
-    :param rule: The rule object to be serialized
-    :return: JSON structure with the object
-    """
-    periodicity = __db2net__[rule.periodicity]
-    child_r = rules.AvailabilityRule.objects.get_specific_rule(rule.id)
-    serializer = __date_serializers__[periodicity]
-
-    if serializer is None:
-        raise Exception('No serializer found for rule = ' + str(rule))
-
-    return {
-        RULE_PK_K: rule.id,
-        RULE_OP: __db2net__[rule.operation],
-        RULE_PERIODICITY: __db2net__[rule.periodicity],
-        RULE_DATES: serializer(rule, child_r),
-    }
-
-
 def serialize_rules(channel_rules):
     """
     This method serializes in JSON format all the rule objects contained in
@@ -354,10 +333,19 @@ def serialize_rules(channel_rules):
     jrules = []
     for r in channel_rules:
 
-        try:
-            jrules.append(serialize_rule(r))
-        except Exception:
+        periodicity = __db2net__[r.periodicity]
+        child_r = rules.AvailabilityRule.objects.get_specific_rule(r.id)
+        serializer = __date_serializers__[periodicity]
+
+        if serializer is None:
             continue
+
+        jrules.append({
+            RULE_PK_K: r.id,
+            RULE_OP: __db2net__[r.operation],
+            RULE_PERIODICITY: __db2net__[r.periodicity],
+            RULE_DATES: serializer(r, child_r),
+        })
 
     return jrules
 
