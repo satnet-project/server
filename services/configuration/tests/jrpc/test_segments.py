@@ -15,16 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
 import logging
 import datadiff
 from django import test
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.common import serialization as common_serial
-from services.configuration.models import rules, segments
+from services.configuration.models import segments
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
-from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
 
@@ -369,145 +366,3 @@ class JRPCSegmentsTest(test.TestCase):
             + ', e = ' + str(cfg)
             + ', a = ' + str(actual_cfg)
         )
-
-    def test_add_once_rule(self):
-        """
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
-        """
-        self.__verbose_testing = True
-        if self.__verbose_testing:
-            print('>>> TEST (test_gs_channel_add_rule)')
-
-        # 1) add new rule to the database
-        now = misc.get_now_utc()
-        starting_time = now + datetime.timedelta(minutes=30)
-        ending_time = now + datetime.timedelta(minutes=45)
-
-        rule_cfg = db_tools.create_jrpc_once_rule(
-            starting_time=starting_time,
-            ending_time=ending_time
-        )
-        rule_id_1 = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
-
-        # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.get_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
-        expected_r = {
-            jrpc_serial.RULE_PK_K: rule_id_1,
-            jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
-            jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
-            jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_ONCE_DATE: common_serial
-                .serialize_iso8601_date(
-                    misc.get_today_utc() + datetime.timedelta(days=1)
-                ),
-                jrpc_serial.RULE_ONCE_S_TIME: common_serial
-                .serialize_iso8601_time(
-                    starting_time
-                ),
-                jrpc_serial.RULE_ONCE_E_TIME: common_serial
-                .serialize_iso8601_time(
-                    ending_time
-                )
-            }
-        }
-
-        if self.__verbose_testing:
-            print('>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:')
-            for r in rules_g1c1:
-                print(str(r))
-            print('>>> expected_r:')
-            print(str(expected_r))
-
-        self.assertEqual(
-            rules_g1c1[0], expected_r, 'Wrong ONCE rule!, diff = ' + str(
-                datadiff.diff(rules_g1c1[0], expected_r)
-            )
-        )
-
-        jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id_1)
-        self.__verbose_testing = False
-
-    def test_add_daily_rule(self):
-        """
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
-        """
-        if self.__verbose_testing:
-            print('>>> TEST (test_gs_channel_add_rule)')
-
-        now = misc.get_now_utc()
-        r_1_s_time = now + datetime.timedelta(minutes=30)
-        r_1_e_time = now + datetime.timedelta(minutes=45)
-        # 1) A daily rule is inserted in the database:
-        rule_cfg = db_tools.create_jrpc_daily_rule(
-            starting_time=r_1_s_time,
-            ending_time=r_1_e_time
-        )
-        rule_pk = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
-
-        # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.get_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
-        expected_r = {
-            jrpc_serial.RULE_PK_K: rule_pk,
-            jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,
-            jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
-            jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_DAILY_I_DATE: common_serial
-                .serialize_iso8601_date(
-                    misc.get_today_utc() + datetime.timedelta(days=1)
-                ),
-                jrpc_serial.RULE_DAILY_F_DATE: common_serial
-                .serialize_iso8601_date(
-                    misc.get_today_utc() + datetime.timedelta(days=366)
-                ),
-                jrpc_serial.RULE_S_TIME: common_serial
-                .serialize_iso8601_time(
-                    r_1_s_time
-                ),
-                jrpc_serial.RULE_E_TIME: common_serial
-                .serialize_iso8601_time(
-                    r_1_e_time
-                )
-            }
-        }
-
-        if self.__verbose_testing:
-            print('>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:')
-            for r in rules_g1c1:
-                misc.print_dictionary(r)
-            print('>>> expected_r:')
-            misc.print_dictionary(expected_r)
-
-        self.assertEqual(
-            rules_g1c1[0], expected_r, 'Wrong DAILY rule!, diff = ' + str(
-                datadiff.diff(rules_g1c1[0], expected_r)
-            )
-        )
-
-    def test_remove_rule(self):
-        """JRPC remove rule test.
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
-        """
-        if self.__verbose_testing:
-            print('>>> TEST (test_gs_channel_add_rule)')
-
-        rule_cfg = db_tools.create_jrpc_once_rule()
-        rule_id = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
-        jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id)
-
-        try:
-            rule = rules.AvailabilityRule.objects.get(id=rule_id)
-            self.fail(
-                'Object should not have been found, rule_id = ' + str(rule.pk)
-            )
-        except rules.AvailabilityRule.DoesNotExist as e:
-            if self.__verbose_testing:
-                print(e.message)
