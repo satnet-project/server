@@ -21,7 +21,7 @@ import pytz
 from django.db import models
 
 from services.common import misc, simulation, slots
-from services.configuration.models import channels
+from services.configuration.models import segments as segment_models, channels
 
 # Definition of the availability operation through rules over existing
 # operational slots.
@@ -31,6 +31,25 @@ REMOVE_SLOTS = '-'
 ONCE_PERIODICITY = 'O'
 DAILY_PERIODICITY = 'D'
 WEEKLY_PERIODICITY = 'W'
+
+
+class GroupedAvailabilityRules(models.Model):
+    """
+    Model that helps keep tracking of which rules belong to what ground
+    station and to its associated channels. It is mainly intended
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    groundstation = models.ForeignKey(
+        segment_models.GroundStation,
+        verbose_name='Reference to the Ground Station'
+    )
+
+    rules = models.ManyToManyField(
+        AvailabilityRule,
+        verbose_name='Rules belonging to the same group'
+    )
 
 
 class AvailabilityRuleManager(models.Manager):

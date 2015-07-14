@@ -27,7 +27,7 @@ from website import settings as satnet_settings
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def list_rules(groundstation_id):
+def gs_list_rules(groundstation_id):
     """JRPC method
     Returns the configuration for the rules from all the channels of a given
     Ground Station.
@@ -40,6 +40,53 @@ def list_rules(groundstation_id):
         ).channels.all()
     )
     return serialization.serialize_rules(ch_rules)
+
+
+@rpc4django.rpcmethod(
+    name='configuration.gs.channel.getRules',
+    signature=['String', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def list_rules(groundstation_id, channel_id):
+    """
+    JRPC method that returns the configuration for all the rules of the
+    requested channel from the requested ground station.
+    :param groundstation_id: The identifier of the Ground Station.
+    :param channel_id: The identifier of the channel.
+    :return: Array with JSON objects that contain the configuration for each
+    of the rules of this pair Ground Station, Channel.
+    """
+    ch = segments.GroundStation.objects.get(
+        identifier=groundstation_id
+    ).channels.all().get(
+        identifier=channel_id
+    )
+    ch_rules = rules.AvailabilityRule.objects.filter(gs_channel=ch)
+    return serialization.serialize_rules(ch_rules)
+
+
+@rpc4django.rpcmethod(
+    name='configuration.gs.addRule',
+    signature=['String', 'Object'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def gs_add_rule(groundstation_id, rule_cfg):
+    """JRPC method
+    Adds the given rule to all the channels of the Ground Station.
+    :param groundstation_id: The identifier of the Ground Station
+    :param rule_cfg: The configuration of the rule to be added
+    :return: List with the primary keys of the added rules.
+    """
+    rule_pks = []
+
+    for ch in segments.GroundStation.objects.get(
+        identifier=groundstation_id
+    ).channels.all():
+        rule_pks.append(
+            add_rule(groundstation_id, ch.identifier, rule_cfg)
+        )
+
+    return rule_pks
 
 
 @rpc4django.rpcmethod(
@@ -67,6 +114,26 @@ def add_rule(groundstation_id, channel_id, rule_cfg):
 
 
 @rpc4django.rpcmethod(
+    name='configuration.gs.removeRule',
+    signature=['String', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def gs_remove_rule(groundstation_id, rule_id):
+    """JRPC method
+    Adds the given rule to all the channels of the Ground Station.
+    :param groundstation_id: The identifier of the Ground Station
+    :param rule_id: Identifier of the rule to be removed.
+    :return: True in case the operation was succesful
+    """
+    for ch in segments.GroundStation.objects.get(
+        identifier=groundstation_id
+    ).channels.all():
+        remove_rule(groundstation_id, ch.identifier, rule_id)
+
+    return True
+
+
+@rpc4django.rpcmethod(
     name='configuration.gs.channel.removeRule',
     signature=['String', 'String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
@@ -88,26 +155,3 @@ def remove_rule(groundstation_id, channel_id, rule_id):
     rule = rules.AvailabilityRule.objects.get(pk=rule_id)
     rule.delete()
     return True
-
-
-@rpc4django.rpcmethod(
-    name='configuration.gs.channel.getRules',
-    signature=['String', 'String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def get_rules(groundstation_id, channel_id):
-    """
-    JRPC method that returns the configuration for all the rules of the
-    requested channel from the requested ground station.
-    :param groundstation_id: The identifier of the Ground Station.
-    :param channel_id: The identifier of the channel.
-    :return: Array with JSON objects that contain the configuration for each
-    of the rules of this pair Ground Station, Channel.
-    """
-    ch = segments.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all().get(
-        identifier=channel_id
-    )
-    ch_rules = rules.AvailabilityRule.objects.filter(gs_channel=ch)
-    return serialization.serialize_rules(ch_rules)
