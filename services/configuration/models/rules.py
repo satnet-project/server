@@ -371,6 +371,7 @@ class AvailabilityRule(models.Model):
     """
     class Meta:
         app_label = 'configuration'
+        ordering = ['id']
 
     objects = AvailabilityRuleManager()
 

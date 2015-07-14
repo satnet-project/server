@@ -23,6 +23,26 @@ from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
+    name='configuration.gs.listRules',
+    signature=['String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def list_rules(groundstation_id):
+    """JRPC method
+    Returns the configuration for the rules from all the channels of a given
+    Ground Station.
+    :param groundstation_id: The identifier of the Ground Station
+    :return: JSON objects with the configuration of the rules within an array
+    """
+    ch_rules = rules.AvailabilityRule.objects.filter(
+        gs_channel__in=segments.GroundStation.objects.get(
+            identifier=groundstation_id
+        ).channels.all()
+    )
+    return serialization.serialize_rules(ch_rules)
+
+
+@rpc4django.rpcmethod(
     name='configuration.gs.channel.addRule',
     signature=['String', 'String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED

@@ -24,15 +24,15 @@ from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
 from services.configuration.models import rules
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import serialization \
+    as jrpc_serial
 
 
 class JRPCRulesTest(test.TestCase):
 
     def setUp(self):
-        """Test setup.
-        This method populates the database with some information to be used
-        only for this test.
+        """Test setup
+        Initial database configuration for the tests.
         """
         self.__verbose_testing = False
 
@@ -73,12 +73,48 @@ class JRPCRulesTest(test.TestCase):
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
     def test_list_rules(self):
-        pass
+        """
+        Should list the keys of the rules for all the channels of a GS.
+        """
+        self.__verbose_testing = True
+        if self.__verbose_testing:
+            print('>>> TEST (test_gs_channel_add_rule)')
+
+        # 1) add two new rules to the database
+        now = misc.get_now_utc()
+        starting_time = now + datetime.timedelta(minutes=30)
+        ending_time = now + datetime.timedelta(minutes=45)
+        rule_cfg_1 = db_tools.create_jrpc_once_rule(
+            starting_time=starting_time,
+            ending_time=ending_time
+        )
+        rule_pk_1 = jrpc_rules.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg_1
+        )
+        starting_time = now + datetime.timedelta(minutes=50)
+        ending_time = now + datetime.timedelta(minutes=55)
+        rule_cfg_2 = db_tools.create_jrpc_once_rule(
+            starting_time=starting_time,
+            ending_time=ending_time
+        )
+        rule_pk_2 = jrpc_rules.add_rule(
+            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg_2
+        )
+
+        # 2) list_rules must return the list with the keys of the rules
+        rule_cfg_1[jrpc_serial.RULE_PK_K] = rule_pk_1
+        rule_cfg_2[jrpc_serial.RULE_PK_K] = rule_pk_2
+        x_list = [rule_cfg_1, rule_cfg_2]
+        a_list = jrpc_rules.list_rules(self.__gs_1_id)
+
+        self.assertListEqual(
+            a_list, x_list,
+            'Wrong list!, diff = ' + str(datadiff.diff(a_list, x_list))
+        )
 
     def test_add_once_rule(self):
         """
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
+        Should correctly add a ONCE rule to the system.
         """
         self.__verbose_testing = True
         if self.__verbose_testing:
@@ -137,8 +173,7 @@ class JRPCRulesTest(test.TestCase):
 
     def test_add_daily_rule(self):
         """
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
+        Should correctly add a DAILY rule to the system.
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_add_rule)')
@@ -146,6 +181,7 @@ class JRPCRulesTest(test.TestCase):
         now = misc.get_now_utc()
         r_1_s_time = now + datetime.timedelta(minutes=30)
         r_1_e_time = now + datetime.timedelta(minutes=45)
+
         # 1) A daily rule is inserted in the database:
         rule_cfg = db_tools.create_jrpc_daily_rule(
             starting_time=r_1_s_time,
@@ -195,9 +231,8 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_remove_rule(self):
-        """JRPC remove rule test.
-        This test validates that the system correctly adds a new rule to the
-        set of rules for a given channel of a ground station.
+        """
+        Should correctly remove any rule to the system.
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_add_rule)')
