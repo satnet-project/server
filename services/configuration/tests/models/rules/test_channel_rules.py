@@ -18,18 +18,25 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 from django import test
 import logging
-
-from services.common.testing import helpers as db_tools
 from services.common import misc, simulation
+from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import availability, rules
 
 
-class TestRules(test.TestCase):
+class TestChannelRules(test.TestCase):
+    """
+    This class includes all the tests for the critical points of how to manage
+    the rules that are referred only to certain channels and that are not part
+    of any group of rules.
+    """
 
     def setUp(self):
-
+        """
+        Populates the initial database with a set of objects required to run
+        the following tests.
+        """
         self.__verbose_testing = False
 
         if not self.__verbose_testing:
@@ -49,8 +56,6 @@ class TestRules(test.TestCase):
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs_1, self.__band, self.__gs_1_ch_1_id
         )
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
     def test_1_a_slots_daily(self):
         """

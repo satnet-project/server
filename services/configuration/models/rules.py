@@ -16,15 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import datetime, timedelta
-import pytz
-
 from django.db import models
-
+import pytz
 from services.common import misc, simulation, slots
 from services.configuration.models import segments as segment_models, channels
 
-# Definition of the availability operation through rules over existing
-# operational slots.
 ADD_SLOTS = '+'
 REMOVE_SLOTS = '-'
 # Definition of the types of periods supported
@@ -32,24 +28,7 @@ ONCE_PERIODICITY = 'O'
 DAILY_PERIODICITY = 'D'
 WEEKLY_PERIODICITY = 'W'
 
-
-class GroupedAvailabilityRules(models.Model):
-    """
-    Model that helps keep tracking of which rules belong to what ground
-    station and to its associated channels. It is mainly intended
-    """
-    class Meta:
-        app_label = 'configuration'
-
-    groundstation = models.ForeignKey(
-        segment_models.GroundStation,
-        verbose_name='Reference to the Ground Station'
-    )
-
-    rules = models.ManyToManyField(
-        AvailabilityRule,
-        verbose_name='Rules belonging to the same group'
-    )
+DEFAULT_GROUNDSTATION = 1
 
 
 class AvailabilityRuleManager(models.Manager):
@@ -629,3 +608,74 @@ class AvailabilityRuleWeekly(AvailabilityRule):
         Returns the string representation of this object.
         """
         return self.__unicode__()
+
+
+class GroupedAvailabilityRuleManager(models.Manager):
+    """
+    Manager for the model of the Grouped Avialability Rules.
+    """
+
+    def create(self, groundstation_id, op, periodicity, dates):
+        """
+        Creates the rules for all the channels of this Ground Station and
+        associates them to the same group.
+
+        :param groundstation_id: Ground Station identifier
+        :param op: Identifier of the type of operation
+        :param periodicity: Identifier of the type of periodicity
+        :param dates: Dates for the rule
+        """
+        rule_ids = []
+        groundstation = segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
+
+        group = super(GroupedAvailabilityRuleManager, self).create(
+            groundstation=groundstation
+        )
+
+        for ch in groundstation.channels.all():
+
+            rule = AvailabilityRule.objects.create(ch, op, periodicity, dates)
+            group.rules.add(rule)
+            rule_ids.append(rule.id)
+
+        return {
+            'group_id': group.id,
+            'rules': rule_ids
+        }
+
+
+class GroupedAvailabilityRules(models.Model):
+    """
+    Model that helps keep tracking of which rules belong to what Ground Station
+    and to its associated channels. It is mainly intended for grouping all the
+    rules associated with the channels of a given Ground Station. This way, the
+    system both enables adding rules to specific channels or to a Ground
+    Station, being the latter the ones that get grouped and can, therefore, be
+    managed all together.
+    """
+    class Meta:
+        app_label = 'configuration'
+
+    objects = GroupedAvailabilityRuleManager()
+
+    groundstation = models.ForeignKey(
+        segment_models.GroundStation,
+        default=DEFAULT_GROUNDSTATION,
+        verbose_name='Reference to the Ground Station'
+    )
+
+    rules = models.ManyToManyField(
+        AvailabilityRule,
+        verbose_name='Rules belonging to the same group'
+    )
+
+    def __str__(self):
+
+        return '' +\
+            '\t* pk = ' + str(self.id) + '\n'\
+            '\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
+            '\t* rules = ' + str([
+                r.id for r in self.rules.all()
+            ]) + '\n'

@@ -234,6 +234,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     database. In case the channel could be added correctly to the database, it
     returns 'true'; otherwise, it raises an exception that is also returned.
     """
+
     # 1) Get channel parameters from JSON representation into variables
     frequency, modulation, bitrate, bandwidth, polarization\
         = serialization.deserialize_sc_channel_parameters(configuration)
@@ -246,6 +247,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
             + str(serialization.CH_ID_K) + ': '
             + str(channel_id) + '}'
         )
+
     # 2) Save object in the database. This method first gets all the pk's for
     # the related objects (channel parameters). Therefore, in case one of the
     # given objects does not exist, an exception will be raised.
@@ -258,6 +260,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
         bandwidth=bandwidth,
         polarization=polarization
     )
+
     # 3) Returns true or throws exception
     return True
 

@@ -15,10 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
-import logging
 import datadiff
+import datetime
 from django import test
+import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
@@ -72,13 +72,13 @@ class JRPCRulesTest(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
-    def test_list_rules(self):
+    def test_add_list_remove_grouped_rules(self):
         """
         Should list the keys of the rules for all the channels of a GS.
         """
         self.__verbose_testing = True
         if self.__verbose_testing:
-            print('>>> TEST (test_list_rules)')
+            print('>>> TEST (test_add_list_remove_grouped_rules)')
 
         # 1) add two new rules to the database
         now = misc.get_now_utc()
@@ -88,8 +88,8 @@ class JRPCRulesTest(test.TestCase):
             starting_time=starting_time,
             ending_time=ending_time
         )
-        rule_pk_1 = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg_1
+        group_1 = jrpc_rules.add_grouped_rule(
+            self.__gs_1_id, rule_cfg_1
         )
         starting_time = now + datetime.timedelta(minutes=50)
         ending_time = now + datetime.timedelta(minutes=55)
@@ -97,74 +97,34 @@ class JRPCRulesTest(test.TestCase):
             starting_time=starting_time,
             ending_time=ending_time
         )
-        rule_pk_2 = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg_2
+        group_2 = jrpc_rules.add_grouped_rule(
+            self.__gs_1_id, rule_cfg_2
         )
 
         # 2) list_rules must return the list with the keys of the rules
-        rule_cfg_1[jrpc_serial.RULE_PK_K] = rule_pk_1
-        rule_cfg_2[jrpc_serial.RULE_PK_K] = rule_pk_2
+        rule_cfg_1[jrpc_serial.RULE_PK_K] = group_1['rules'][0]
+        rule_cfg_2[jrpc_serial.RULE_PK_K] = group_2['rules'][0]
         x_list = [rule_cfg_1, rule_cfg_2]
-        a_list = jrpc_rules.gs_list_rules(self.__gs_1_id)
+        a_list = jrpc_rules.list_grouped_rules(self.__gs_1_id)
 
         self.assertListEqual(
             a_list, x_list,
             'Wrong list!, diff = ' + str(datadiff.diff(a_list, x_list))
         )
 
-    def test_gs_add_remove_rule(self):
-        """
-        Should add and remove the rules of a Ground Station.
-        """
-        self.__verbose_testing = True
-        if self.__verbose_testing:
-            print('>>> TEST (test_gs_add_remove_rule)')
-
-        # 1) create the new rule configuration object
-        now = misc.get_now_utc()
-        starting_time = now + datetime.timedelta(minutes=30)
-        ending_time = now + datetime.timedelta(minutes=45)
-        rule_cfg = db_tools.create_jrpc_once_rule(
-            starting_time=starting_time,
-            ending_time=ending_time
+        # 3) remove the grouped lists
+        self.assertTrue(
+            jrpc_rules.remove_grouped_rule(
+                self.__gs_1_id, group_1['group_id']
+            ),
+            'Should have removed the group of rules'
         )
-
-        # 2) add the rule to the ground station
-        a_pks = jrpc_rules.gs_add_rule(self.__gs_1_id, rule_cfg)
-        x_pks = [3]
-        self.assertEquals(
-            a_pks, x_pks,
-            'Wrong pks return! , diff = ' + str(datadiff.diff(a_pks, x_pks))
+        self.assertTrue(
+            jrpc_rules.remove_grouped_rule(
+                self.__gs_1_id, group_2['group_id']
+            ),
+            'Should have removed the group of rules'
         )
-
-        # 3) add a new channel to the ground station
-        self.__gs_1_ch_2 = db_tools.gs_add_channel(
-            self.__gs_1, self.__band, self.__gs_1_ch_2_id,
-        )
-
-        # 4) create the new rule configuration object
-        starting_time = now + datetime.timedelta(minutes=50)
-        ending_time = now + datetime.timedelta(minutes=55)
-        rule_cfg = db_tools.create_jrpc_once_rule(
-            starting_time=starting_time, ending_time=ending_time
-        )
-
-        # 5) add the rule to the ground station
-        a_pks = jrpc_rules.gs_add_rule(self.__gs_1_id, rule_cfg)
-        x_pks = [4, 5]
-        self.assertEquals(
-            a_pks, x_pks, 'Wrong pks return! , diff = ' + str(
-                datadiff.diff(a_pks, x_pks)
-            )
-        )
-
-        # print('>>>>>>>>>>>>>>>>> RULES:')
-        # for r in rules.AvailabilityRule.objects.all():
-        #     print('# r = ' + str(r))
-
-        # 6) We remove all rules from the Ground Station
-        # self.assertTrue(jrpc_rules.gs_remove_rule(self.__gs_1_id, 4))
-        # self.assertTrue(jrpc_rules.gs_remove_rule(self.__gs_1_id, 5))
 
     def test_add_once_rule(self):
         """
@@ -188,7 +148,9 @@ class JRPCRulesTest(test.TestCase):
         )
 
         # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.list_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
+        rules_g1c1 = jrpc_rules.list_channel_rules(
+            self.__gs_1_id, self.__gs_1_ch_1_id
+        )
         expected_r = {
             jrpc_serial.RULE_PK_K: rule_id_1,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
@@ -246,7 +208,9 @@ class JRPCRulesTest(test.TestCase):
         )
 
         # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.list_rules(self.__gs_1_id, self.__gs_1_ch_1_id)
+        rules_g1c1 = jrpc_rules.list_channel_rules(
+            self.__gs_1_id, self.__gs_1_ch_1_id
+        )
         expected_r = {
             jrpc_serial.RULE_PK_K: rule_pk,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,

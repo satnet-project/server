@@ -17,7 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 
-from services.configuration.models import rules, segments
+from services.configuration.models import rules as rule_models,\
+    segments as segment_models
 from services.configuration.jrpc.serializers import serialization
 from website import settings as satnet_settings
 
@@ -27,27 +28,33 @@ from website import settings as satnet_settings
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def gs_list_rules(groundstation_id):
+def list_grouped_rules(groundstation_id):
     """JRPC method
-    Returns the configuration for the rules from all the channels of a given
-    Ground Station.
+    Returns the configuration for the grouped rules of the given Ground
+    Station.
     :param groundstation_id: The identifier of the Ground Station
     :return: JSON objects with the configuration of the rules within an array
     """
-    ch_rules = rules.AvailabilityRule.objects.filter(
-        gs_channel__in=segments.GroundStation.objects.get(
+    rules = []
+    groups = rule_models.GroupedAvailabilityRules.objects.filter(
+        groundstation=segment_models.GroundStation.objects.get(
             identifier=groundstation_id
-        ).channels.all()
+        )
     )
-    return serialization.serialize_rules(ch_rules)
+
+    # From each group, we only get the first rule since they are all equal
+    for g in groups:
+        rules.append(g.rules.all()[0])
+
+    return serialization.serialize_rules(rules)
 
 
 @rpc4django.rpcmethod(
-    name='configuration.gs.channel.getRules',
+    name='configuration.gs.channel.listRules',
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def list_rules(groundstation_id, channel_id):
+def list_channel_rules(groundstation_id, channel_id):
     """
     JRPC method that returns the configuration for all the rules of the
     requested channel from the requested ground station.
@@ -56,12 +63,12 @@ def list_rules(groundstation_id, channel_id):
     :return: Array with JSON objects that contain the configuration for each
     of the rules of this pair Ground Station, Channel.
     """
-    ch = segments.GroundStation.objects.get(
+    ch = segment_models.GroundStation.objects.get(
         identifier=groundstation_id
     ).channels.all().get(
         identifier=channel_id
     )
-    ch_rules = rules.AvailabilityRule.objects.filter(gs_channel=ch)
+    ch_rules = rule_models.AvailabilityRule.objects.filter(gs_channel=ch)
     return serialization.serialize_rules(ch_rules)
 
 
@@ -70,23 +77,17 @@ def list_rules(groundstation_id, channel_id):
     signature=['String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def gs_add_rule(groundstation_id, rule_cfg):
+def add_grouped_rule(groundstation_id, rule_cfg):
     """JRPC method
     Adds the given rule to all the channels of the Ground Station.
     :param groundstation_id: The identifier of the Ground Station
     :param rule_cfg: The configuration of the rule to be added
     :return: List with the primary keys of the added rules.
     """
-    rule_pks = []
-
-    for ch in segments.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all():
-        rule_pks.append(
-            add_rule(groundstation_id, ch.identifier, rule_cfg)
-        )
-
-    return rule_pks
+    op, periodicity, dates = serialization.deserialize_rule_cfg(rule_cfg)
+    return rule_models.GroupedAvailabilityRules.objects.create(
+        groundstation_id, op, periodicity, dates
+    )
 
 
 @rpc4django.rpcmethod(
@@ -103,13 +104,15 @@ def add_rule(groundstation_id, channel_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added.
     :return: Identifier of the rule that has just been added.
     """
-    ch = segments.GroundStation.objects.get(
+    ch = segment_models.GroundStation.objects.get(
         identifier=groundstation_id
     ).channels.all().get(
         identifier=channel_id
     )
     op, periodicity, dates = serialization.deserialize_rule_cfg(rule_cfg)
-    rule = rules.AvailabilityRule.objects.create(ch, op, periodicity, dates)
+    rule = rule_models.AvailabilityRule.objects.create(
+        ch, op, periodicity, dates
+    )
     return rule.pk
 
 
@@ -118,17 +121,32 @@ def add_rule(groundstation_id, channel_id, rule_cfg):
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def gs_remove_rule(groundstation_id, rule_id):
+def remove_grouped_rule(groundstation_id, group_id):
     """JRPC method
-    Adds the given rule to all the channels of the Ground Station.
+    Removes all the rules belonging to the indicated group.
     :param groundstation_id: The identifier of the Ground Station
-    :param rule_id: Identifier of the rule to be removed.
-    :return: True in case the operation was succesful
+    :param group_id: Identifier of the group
+    :return: 'True' in case the group of rules could be removed.
     """
-    for ch in segments.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all():
-        remove_rule(groundstation_id, ch.identifier, rule_id)
+    group = rule_models.GroupedAvailabilityRules.objects.get(id=group_id)
+
+    for g in rule_models.GroupedAvailabilityRules.objects.all():
+        print('>>> g = ' + str(g))
+
+    # 1) we have to check that the group_id belongs to the indicated gs
+    if group.groundstation.identifier != groundstation_id:
+        raise Exception(
+            'group_id <' + str(
+                group_id
+            ) + '>, does not belong to gs <' + str(
+                groundstation_id
+            ) + '>'
+        )
+
+    # 2) after these checks, we effectively delete the rules
+    rule_models.AvailabilityRule.objects.filter(
+        id__in=group.rules.all()
+    ).delete()
 
     return True
 
@@ -147,11 +165,11 @@ def remove_rule(groundstation_id, channel_id, rule_id):
     :param rule_id: Identifier of the rule to be removed.
     :return: 'True' in case the rule could be removed.
     """
-    segments.GroundStation.objects.get(
+    segment_models.GroundStation.objects.get(
         identifier=groundstation_id
     ).channels.all().get(
         identifier=channel_id
     )
-    rule = rules.AvailabilityRule.objects.get(pk=rule_id)
+    rule = rule_models.AvailabilityRule.objects.get(pk=rule_id)
     rule.delete()
     return True
