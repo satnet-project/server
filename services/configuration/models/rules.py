@@ -690,7 +690,7 @@ class GroupedAvailabilityRules(models.Model):
         verbose_name='Rules belonging to the same group'
     )
 
-    def __str__(self):
+    def __unicode__(self):
         """
         Returns a human readable string with the main information from a rule
         object.

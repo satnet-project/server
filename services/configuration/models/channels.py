@@ -203,6 +203,7 @@ class GroundStationChannel(models.Model):
     """
     class Meta:
         app_label = 'configuration'
+
     objects = GroundStationChannelManager()
 
     enabled = models.BooleanField(
