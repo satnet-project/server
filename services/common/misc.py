@@ -33,6 +33,8 @@ logger = logging.getLogger('common')
 def create_site(apps, schema_editor):
     """Data Migrations
     Creates the initial site for the server.
+    :type apps: Object with the information about the apps
+    :type schema_editor: Information about the schema
     :return: Reference to the site object just created
     """
     return site_models.Site.objects.create(
@@ -60,7 +62,7 @@ def get_fqdn_ip():
     hn = 'localhost'
     try:
         hn = socket.getfqdn()
-    except:
+    except Exception:
         pass
 
     return hn, socket.gethostbyname(hn)
@@ -113,8 +115,10 @@ def print_dictionary(d, nested_level=0, output=sys.stdout, spacing='   '):
                 print('%s%s:' % ((nested_level + 1) * spacing, k), file=output)
                 print_dictionary(v, nested_level + 1, output)
             else:
-                print('%s%s: %s' % ((nested_level + 1) * spacing,
-                                               k, v), file=output)
+                print(
+                    '%s%s: %s' % ((nested_level + 1) * spacing, k, v),
+                    file=output
+                )
         print('%s}' % (nested_level * spacing), file=output)
     elif type(d) == list:
         print('%s[' % (nested_level * spacing), file=output)
