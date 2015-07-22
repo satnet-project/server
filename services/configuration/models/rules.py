@@ -555,7 +555,7 @@ class AvailabilityRuleWeeklyManager(models.Manager):
         """
         This method creates a new object in the database.
         """
-        rule_daily = super(AvailabilityRuleWeeklyManager, self).create(
+        return super(AvailabilityRuleWeeklyManager, self).create(
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
@@ -576,7 +576,6 @@ class AvailabilityRuleWeeklyManager(models.Manager):
             sunday_starting_time=dates[14],
             sunday_ending_time=dates[15]
         )
-        return rule_daily
 
 
 class AvailabilityRuleWeekly(AvailabilityRule):
@@ -692,10 +691,14 @@ class GroupedAvailabilityRules(models.Model):
     )
 
     def __str__(self):
-
+        """
+        Returns a human readable string with the main information from a rule
+        object.
+        :return: Human readable string
+        """
         return '' +\
-            '\t* pk = ' + str(self.id) + '\n'#\
-            #'\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
-            #'\t* rules = ' + str([
-            #    r.id for r in self.rules.all()
-            #]) + '\n'
+            '\t* pk = ' + str(self.id) + '\n'\
+            '\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
+            '\t* rules = ' + str([
+                r.id for r in self.rules.all()
+            ]) + '\n'
