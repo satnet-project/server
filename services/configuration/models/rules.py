@@ -55,11 +55,18 @@ class AvailabilityRuleManager(models.Manager):
         if periodicity not in self.__periodicity2class__:
             raise Exception('Periodicity ' + periodicity + 'not supported.')
 
+        print('>>>> @arule.create, 1')
+
         db_obj_classname = self.__periodicity2class__[periodicity]
+        print('>>>> @arule.create, 2')
+
         db_obj_class = globals()[db_obj_classname]
+        print('>>>> @arule.create, 3')
+
         rule_child = db_obj_class.objects.create(
             gs_channel, operation, periodicity, dates
         )
+        print('>>>> @arule.create, 4')
 
         # ### Generate availability slots and write them in the table.
         return AvailabilityRule.objects.get(
@@ -447,6 +454,10 @@ class AvailabilityRuleOnceManager(models.Manager):
         """
         This method creates a new object in the database.
         """
+        print('>>>> @aruleONCE.create, XXX, gs_channel = ' + str(
+            gs_channel.identifier
+        ))
+
         return super(AvailabilityRuleOnceManager, self).create(
             gs_channel=gs_channel,
             operation=operation,
@@ -630,15 +641,24 @@ class GroupedAvailabilityRuleManager(models.Manager):
             identifier=groundstation_id
         )
 
+        print('@@@@ @create, groundstation = ' + str(groundstation))
+
         group = super(GroupedAvailabilityRuleManager, self).create(
             groundstation=groundstation
         )
 
+        print('@@@@ @create, group = ' + str(group))
+
         for ch in groundstation.channels.all():
 
+            print('@@@@ @create, a, ch = ' + str(ch.identifier))
             rule = AvailabilityRule.objects.create(ch, op, periodicity, dates)
+            print('@@@@ @create, rule = ' + str(rule))
             group.rules.add(rule)
+            group.save()
+            print('@@@@ @create, b')
             rule_ids.append(rule.id)
+            print('@@@@ @create, c')
 
         return {
             'group_id': group.id,
@@ -674,8 +694,8 @@ class GroupedAvailabilityRules(models.Model):
     def __str__(self):
 
         return '' +\
-            '\t* pk = ' + str(self.id) + '\n'\
-            '\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
-            '\t* rules = ' + str([
-                r.id for r in self.rules.all()
-            ]) + '\n'
+            '\t* pk = ' + str(self.id) + '\n'#\
+            #'\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
+            #'\t* rules = ' + str([
+            #    r.id for r in self.rules.all()
+            #]) + '\n'

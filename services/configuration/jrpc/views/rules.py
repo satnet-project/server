@@ -35,17 +35,29 @@ def list_grouped_rules(groundstation_id):
     :param groundstation_id: The identifier of the Ground Station
     :return: JSON objects with the configuration of the rules within an array
     """
+    print('@@@@ @list_grouped_rules 1')
     rules = []
+    groundstation=segment_models.GroundStation.objects.get(
+        identifier=groundstation_id
+    )
+    print('@@@@ @list_grouped_rules 2, gs = ' + str(groundstation.identifier))
     groups = rule_models.GroupedAvailabilityRules.objects.filter(
-        groundstation=segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
-        )
+        groundstation=groundstation
     )
 
+    print('@@@@ @list_grouped_rules 3, groups.length = ' + str(len(groups)))
     # From each group, we only get the first rule since they are all equal
     for g in groups:
+
+        print('@@@@@@@@@@@@')
+        print('@@@@ @g = ' + str(g))
+        print('@@@@ @g.rules.all().length = ' + str(len(g.rules.all())))
+        for r in g.rules.all():
+            print('@@@@ @r = ' + str(r))
+
         rules.append(g.rules.all()[0])
 
+    print('@@@@ @list_grouped_rules 4')
     return serialization.serialize_rules(rules)
 
 
@@ -84,7 +96,14 @@ def add_grouped_rule(groundstation_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added
     :return: List with the primary keys of the added rules.
     """
+    print('@add_grouped_rule')
     op, periodicity, dates = serialization.deserialize_rule_cfg(rule_cfg)
+    print(
+        '@add_grouped_rule:' +
+        'o = ' + str(op) + ',' +
+        'p = ' + str(periodicity) + ',' +
+        'd = ' + str(dates)
+    )
     return rule_models.GroupedAvailabilityRules.objects.create(
         groundstation_id, op, periodicity, dates
     )
