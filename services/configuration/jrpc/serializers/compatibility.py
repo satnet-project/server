@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.forms.models import model_to_dict
+from preserialize.serialize import serialize
 
 
 class CompatibilitySerializer(object):
@@ -23,8 +24,8 @@ class CompatibilitySerializer(object):
     Class that holds the serializing methods for the Compatibility objects.
     """
 
-    GS_OBJECT_K = 'groundstation'
-    GS_CHANNEL_OBJECT_K = 'gs_channel'
+    GS_OBJECT_K = 'GroundStation'
+    GS_CHANNEL_OBJECT_K = 'GsChannel'
 
     @staticmethod
     def serialize_gs_ch_compatibility_tuples(gs_ch_list):
@@ -37,12 +38,42 @@ class CompatibilitySerializer(object):
 
         for t in gs_ch_list:
 
-            gs_serial = model_to_dict(t[0])
-            gs_ch_serial = model_to_dict(t[1])
+            gs_serial = model_to_dict(t[0], fields=['identifier'])
+            gs_ch_serial = serialize(
+                t[1],
+                camelcase=True,
+                exclude=['id'],
+                related={
+                    'band': {
+                        'fields': [
+                            'IARU_allocation_minimum_frequency',
+                            'IARU_allocation_maximum_frequency',
+                            'uplink',
+                            'downlink'
+                        ],
+                        'aliases': {
+                            'min_freq': 'IARU_allocation_minimum_frequency',
+                            'max_freq': 'IARU_allocation_maximum_frequency'
+                        }
+                    },
+                    'modulations': {
+                        'fields': ['modulation']
+                    },
+                    'bandwidths': {
+                        'fields': ['bandwidth']
+                    },
+                    'bitrates': {
+                        'fields': ['bitrate']
+                    },
+                    'polarizations': {
+                        'fields': ['polarization']
+                    }
+                }
+            )
 
             result.append({
-                'groundstation': gs_serial,
-                'gs_channel': gs_ch_serial
+                CompatibilitySerializer.GS_OBJECT_K: gs_serial,
+                CompatibilitySerializer.GS_CHANNEL_OBJECT_K: gs_ch_serial
             })
 
         return result

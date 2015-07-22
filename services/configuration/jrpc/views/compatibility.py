@@ -46,15 +46,19 @@ def sc_channel_get_compatible(spacecraft_id, channel_id):
     )
 
     # 2) Retrieve compatible ground station channels
-    compatible_chs = compatibility_models.ChannelCompatibility.objects.filter(
-        spacraft_channel=spacecraft_ch
+    compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
+        spacecraft_channel=spacecraft_ch
     )
 
     # 3) Generate list with tuples (groundstation, gs_channel)
     compatible_tuples = []
-    for gs_ch in compatible_chs:
 
-        gs = segment_models.GroundStation.objects.get(channels__in=[gs_ch])
+    for gs_ch in compatible_chs.groundstation_channels.all():
+
+        gs = segment_models.GroundStation.objects.get(
+            channels__in=[gs_ch]
+        )
+
         compatible_tuples.append((gs, gs_ch))
 
     # 4) Serialization

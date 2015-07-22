@@ -18,13 +18,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django import test
 from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.serializers import compatibility as \
-    compatibility_serializers
+from services.configuration.jrpc.views import compatibility \
+    as compatibility_jrpc
 
 
-class TestCompatibilitySerializers(test.TestCase):
+class TestCompatibilityViews(test.TestCase):
     """
-    Tests for the compatibility serializers
+    Tests for the compatibility JRPC views
     """
 
     def setUp(self):
@@ -36,8 +36,6 @@ class TestCompatibilitySerializers(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('django.db.backends.schema')\
-                .setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -55,15 +53,27 @@ class TestCompatibilitySerializers(test.TestCase):
             self.__gs_1, self.__band, self.__gs_1_ch_2_id
         )
 
-    def test_compatibility_serializers(self):
-        """JRPC serializers: compatibility tuples
+        self.__sc_1_id = 'humd'
+        self.__sc_1_ch_1_id = 'gmsk-sc-1'
+        self.__sc_1_ch_1_f = 437000000
+        self.__sc_1_ch_2_id = 'gmsk-sc-2'
+
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user_profile,
+            identifier=self.__sc_1_id
+        )
+        self.__sc_1_ch_1 = db_tools.sc_add_channel(
+            self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
+        )
+
+    def test_sc_channel_get_compatible(self):
+        """JRPC method: configuration.sc.channel.getCompatible
         """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_channel_get_compatible)')
 
-        test_tuples = [
-            (self.__gs_1, self.__gs_1_ch_1)
-        ]
+        c = compatibility_jrpc.sc_channel_get_compatible(
+            self.__sc_1_id, self.__sc_1_ch_1_id
+        )
 
-        c = compatibility_serializers.CompatibilitySerializer\
-            .serialize_gs_ch_compatibility_tuples(test_tuples)
-
-        self.assertEquals(len(c), 1, "Wrong number of tuples generated!")
+        self.assertEquals(len(c), 2, "Wrong number of tuples generated!")

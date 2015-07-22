@@ -29,7 +29,7 @@ from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
 class JRPCSegmentsTest(test.TestCase):
 
     def setUp(self):
-        """Test setup.
+        """Test setup
         This method populates the database with some information to be used
         only for this test.
         """
@@ -113,7 +113,7 @@ class JRPCSegmentsTest(test.TestCase):
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
     def test_gs_create(self):
-        """JRPC method unit test.
+        """JRPC method unit test
         This test validates the creation of a new GroundStation through the
         JRPC interface.
         NOTE: test specifically created for issue #3 on GitHub server's
@@ -139,7 +139,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_gs_create_2(self):
-        """JRPC method unit test.
+        """JRPC method unit test
         This test validates the creation of a new GroundStation through the
         JRPC interface.
         NOTE: test specifically create for issue (bug-2) manually reported. The
