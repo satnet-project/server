@@ -73,8 +73,7 @@ class JRPCRulesTest(test.TestCase):
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
     def test_add_list_remove_grouped_rules(self):
-        """
-        Should list the keys of the rules for all the channels of a GS.
+        """JRPC method: cfg.gs.listRules, cfg.gs.addRule, cfg.gs.removeRule
         """
         self.__verbose_testing = True
         if self.__verbose_testing:
@@ -127,7 +126,7 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_add_once_rule(self):
-        """
+        """JRPC method: (O) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a ONCE rule to the system.
         """
         self.__verbose_testing = True
@@ -188,7 +187,7 @@ class JRPCRulesTest(test.TestCase):
         self.__verbose_testing = False
 
     def test_add_daily_rule(self):
-        """
+        """JRPC method: (D) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a DAILY rule to the system.
         """
         if self.__verbose_testing:
@@ -249,7 +248,7 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_remove_rule(self):
-        """
+        """JRPC method: cfg.gs.channel.removeRule
         Should correctly remove any rule to the system.
         """
         if self.__verbose_testing:

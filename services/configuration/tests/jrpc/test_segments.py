@@ -113,7 +113,7 @@ class JRPCSegmentsTest(test.TestCase):
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
 
     def test_gs_create(self):
-        """JRPC method unit test
+        """JRPC method: configuration.gs.create (1)
         This test validates the creation of a new GroundStation through the
         JRPC interface.
         NOTE: test specifically created for issue #3 on GitHub server's
@@ -139,7 +139,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_gs_create_2(self):
-        """JRPC method unit test
+        """JRPC method: configuration.gs.create (2)
         This test validates the creation of a new GroundStation through the
         JRPC interface.
         NOTE: test specifically create for issue (bug-2) manually reported. The
@@ -163,7 +163,7 @@ class JRPCSegmentsTest(test.TestCase):
             pass
 
     def test_gs_list(self):
-        """
+        """JRPC method: configuration.gs.list
         This test validates the list of configuration objects returned through
         the JRPC method.
         """
@@ -175,7 +175,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_list(self):
-        """
+        """JRPC method: configuration.sc.list
         This test validates the list of SpacecraftConfiguration objects
         returned through the JRPC method.
         """
@@ -187,7 +187,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_create(self):
-        """
+        """JRPC method: configuration.sc.create (1)
         This test validates the addition of a new Spacecraft through the
         correspondent JRPC method.
         """
@@ -213,7 +213,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_create_2(self):
-        """
+        """JRPC method: configuration.sc.create (2)
         Test for validating the creation of a given spacecraft. Although the
         creation of the spacecraft calls directly to the create helper method
         from the Django framework, some problems have appeared depending on
@@ -237,7 +237,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_gs_list_channels(self):
-        """
+        """JRPC method: configuration.gs.getChannels
         This test validates the list of channels returned throught the JRPC
         method.
         """
@@ -250,7 +250,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_list_channels(self):
-        """
+        """JRPC method: configuration.sc.getChannels
         This test validates the list of channels returned throught the JRPC
         method.
         """
@@ -263,7 +263,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_gs_get_configuration(self):
-        """
+        """JRPC method: configuration.gs.getConfiguration
         This test validates the returned configuration by the proper JRPC
         method.
         """
@@ -282,7 +282,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_gs_set_configuration(self):
-        """
+        """JRPC method: configuration.gs.setConfiguration
         This test validates how to set the configuration with the JRPC method,
         by comparing the one sent with the one obtained through the
         get_configuration JRPC method of the same interface.
@@ -314,7 +314,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_get_configuration(self):
-        """
+        """JRPC method: configuration.sc.getConfiguration
         This test validates the returned configuration by the proper JRPC
         method.
         """
@@ -328,7 +328,7 @@ class JRPCSegmentsTest(test.TestCase):
         )
 
     def test_sc_set_configuration(self):
-        """
+        """JRPC method: configuration.gs.setConfiguration
         This test validates how to set the configuration with the JRPC method,
         by comparing the one sent with the one obtained through the
         get_configuration JRPC method of the same interface.

@@ -31,7 +31,7 @@ logger = logging.getLogger('jrpc')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_groundstations(**kwargs):
-    """JRPC method
+    """JRPC method: configuration.gs.list
     Creates a list with the identifiers of the available ground stations for
     the user that is logged in within this request.
     """
@@ -51,7 +51,7 @@ def list_groundstations(**kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
-    """JRPC method
+    """JRPC method: configuration.gs.create
     Creates a new ground station with the given configuration.
     """
 
@@ -79,7 +79,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(ground_station_id):
-    """JRPC method
+    """JRPC method: configuration.gs.getConfiguration
     Returns the configuration for the given ground station.
     """
     return serialization.serialize_gs_configuration(
@@ -93,7 +93,7 @@ def get_configuration(ground_station_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(ground_station_id, configuration):
-    """JRPC method
+    """JRPC method: configuration.gs.setConfiguration
     Sets the configuration for the given ground station.
     """
     callsign, contact_elevation, latitude, longitude =\
@@ -112,7 +112,7 @@ def set_configuration(ground_station_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_channels(ground_station_id):
-    """JRPC method
+    """JRPC method: configuration.gs.getChannels
     Returns the channels for the given ground station.
     """
     ch_objects = segments.GroundStation.objects.get(
@@ -129,7 +129,7 @@ def list_channels(ground_station_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def delete(ground_station_id):
-    """JRPC method
+    """JRPC method: configuration.gs.delete
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
     """

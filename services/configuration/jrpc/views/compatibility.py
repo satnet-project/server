@@ -25,6 +25,12 @@ from website import settings as satnet_settings
 
 
 def get_compatiblility(spacecraft_ch):
+    """Common method
+    Returns the tuples (GS, GS_CH) with the compatible Ground Station
+    channels with the given spacecraft channel.
+    :param spacecraft_ch: The channel for which the tuples are compatible with
+    :return: List with the (GS, GS_CH) tuples
+    """
 
     # 1) Retrieve compatible ground station channels
     compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
@@ -43,8 +49,9 @@ def get_compatiblility(spacecraft_ch):
         compatible_tuples.append((gs, gs_ch))
 
     # 3) Serialization
-    return compatibility_serializers.CompatibilitySerializer\
-        .serialize_gs_ch_compatibility_tuples(compatible_tuples)
+    return compatibility_serializers.serialize_gs_ch_compatibility_tuples(
+        compatible_tuples
+    )
 
 
 @rpcmethod(
@@ -86,16 +93,18 @@ def sc_get_compatible(spacecraft_id):
     """
 
     results = []
-
-    for spacecraft_ch in segment_models.Spacecraft.objects.get(
+    spacecraft = segment_models.Spacecraft.objects.get(
         identifier=spacecraft_id
-    ).channels.all():
+    )
 
-        r = compatibility_serializers.CompatibilitySerializer\
-            .serialize_sc_ch_compatibility(
-                spacecraft_ch, get_compatiblility(spacecraft_ch)
-            )
+    for spacecraft_ch in spacecraft.channels.all():
+
+        r = compatibility_serializers.serialize_sc_ch_compatibility(
+            spacecraft_ch, get_compatiblility(spacecraft_ch)
+        )
 
         results.append(r)
 
-    return results
+    return compatibility_serializers.serialize_sc_compatibility(
+        spacecraft, results
+    )

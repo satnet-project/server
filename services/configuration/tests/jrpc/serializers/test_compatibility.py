@@ -76,8 +76,9 @@ class TestCompatibilitySerializers(test.TestCase):
             (self.__gs_1, self.__gs_1_ch_1)
         ]
 
-        c = compatibility_serializers.CompatibilitySerializer\
-            .serialize_gs_ch_compatibility_tuples(test_tuples)
+        c = compatibility_serializers.serialize_gs_ch_compatibility_tuples(
+            test_tuples
+        )
 
         self.assertEquals(len(c), 1, "Wrong number of tuples generated!")
 
@@ -89,11 +90,13 @@ class TestCompatibilitySerializers(test.TestCase):
             (self.__gs_1, self.__gs_1_ch_1)
         ]
 
-        c = compatibility_serializers.CompatibilitySerializer\
-            .serialize_gs_ch_compatibility_tuples(test_tuples)
+        c = compatibility_serializers.serialize_gs_ch_compatibility_tuples(
+            test_tuples
+        )
 
-        r = compatibility_serializers.CompatibilitySerializer\
-            .serialize_sc_ch_compatibility(self.__sc_1_ch_1, c)
+        r = compatibility_serializers.serialize_sc_ch_compatibility(
+            self.__sc_1_ch_1, c
+        )
 
         self.assertEquals(
             r['ScChannel']['identifier'], 'gmsk-sc-1', "Wrong structure!"

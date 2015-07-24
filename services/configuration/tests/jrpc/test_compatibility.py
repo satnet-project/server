@@ -76,7 +76,9 @@ class TestCompatibilityViews(test.TestCase):
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
-        self.assertEquals(len(c), 2, "Wrong number of tuples generated!")
+        self.assertEquals(
+            c[0]['GroundStation']['identifier'], self.__gs_1_id, 'Wrong GS id!'
+        )
 
     def test_sc_get_compatible(self):
         """JRPC method: configuration.sc.getCompatible
@@ -87,5 +89,10 @@ class TestCompatibilityViews(test.TestCase):
         r = compatibility_jrpc.sc_get_compatible(self.__sc_1_id)
 
         self.assertEquals(
-            r[0]['ScChannel']['identifier'], 'gmsk-sc-1', "Wrong structure!"
+            r['spacecraft_id'], self.__sc_1_id, 'Wrong SC id!'
+        )
+        self.assertEquals(
+            r['Compatibility'][0]['ScChannel']['identifier'],
+            'gmsk-sc-1',
+            "Wrong structure!"
         )

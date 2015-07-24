@@ -57,33 +57,56 @@ class JRPCTestTle(test.TestCase):
         )
 
     def test_get_celestrak_sections(self):
+        """JRPC method: configuration.tle.celestrak.getSections
+        """
 
         e_sections = [
-            {'section': 'Weather & Earth Resources', 'subsection': 'Weather'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'NOAA'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'GOES'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'Earth Resources'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'SARSAT'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'Disaster Monitoring'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'Tracking & Data Relay'},
-            {'section': 'Weather & Earth Resources', 'subsection': 'ARGOS'},
-            {'section': 'Communications', 'subsection': 'Geostationary'},
-            {'section': 'Communications', 'subsection': 'Intelsat'},
-            {'section': 'Communications', 'subsection': 'Gorizont'},
-            {'section': 'Communications', 'subsection': 'Raduga'},
-            {'section': 'Communications', 'subsection': 'Molniya'},
-            {'section': 'Communications', 'subsection': 'Iridium'},
-            {'section': 'Communications', 'subsection': 'Orbcomm'},
-            {'section': 'Communications', 'subsection': 'Globalstar'},
-            {'section': 'Communications', 'subsection': 'Amateur Radio'},
-            {'section': 'Communications', 'subsection': 'Experimental'},
-            {'section': 'Communications', 'subsection': 'Others'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'Weather'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'NOAA'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'GOES'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'Earth Resources'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'SARSAT'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'Disaster Monitoring'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'Tracking & Data Relay'},
+            {'section': 'Weather & Earth Resources',
+             'subsection': 'ARGOS'},
+            {'section': 'Communications',
+             'subsection': 'Geostationary'},
+            {'section': 'Communications',
+             'subsection': 'Intelsat'},
+            {'section': 'Communications',
+             'subsection': 'Gorizont'},
+            {'section': 'Communications',
+             'subsection': 'Raduga'},
+            {'section': 'Communications',
+             'subsection': 'Molniya'},
+            {'section': 'Communications',
+             'subsection': 'Iridium'},
+            {'section': 'Communications',
+             'subsection': 'Orbcomm'},
+            {'section': 'Communications',
+             'subsection': 'Globalstar'},
+            {'section': 'Communications',
+             'subsection': 'Amateur Radio'},
+            {'section': 'Communications',
+             'subsection': 'Experimental'},
+            {'section': 'Communications',
+             'subsection': 'Others'},
             {'section': 'Navigation', 'subsection': 'GPS Operational'},
             {'section': 'Navigation', 'subsection': 'Glonass Operational'},
             {'section': 'Navigation', 'subsection': 'Galileo'},
             {'section': 'Navigation', 'subsection': 'Beidou'},
-            {'section': 'Navigation', 'subsection': 'Satellite-based Augmentation System'},
-            {'section': 'Navigation', 'subsection': 'Navy Navigation Satellite System'},
+            {'section': 'Navigation', 'subsection':
+                'Satellite-based Augmentation System'},
+            {'section': 'Navigation', 'subsection':
+                'Navy Navigation Satellite System'},
             {'section': 'Navigation', 'subsection': 'Russian LEO Navigation'},
             {'section': 'Scientific', 'subsection': 'Space & Earth Science'},
             {'section': 'Scientific', 'subsection': 'Geodetic'},
@@ -104,7 +127,7 @@ class JRPCTestTle(test.TestCase):
         )
 
     def test_get_celestrak_resource(self):
-        """JRPC TLE test.
+        """JRPC method: configuration.tle.celestrak.getResource
         Tests the retrieval of the information contained in one of the celestrak
         resouces.
         """
@@ -128,6 +151,8 @@ class JRPCTestTle(test.TestCase):
                 )
 
     def test_get_spacecraft_tle(self):
+        """JRPC method: configuration.tle.celestrak.getTle
+        """
 
         try:
             tle_jrpc.get_spacecraft_tle('non existant sc')
