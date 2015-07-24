@@ -77,3 +77,15 @@ class TestCompatibilityViews(test.TestCase):
         )
 
         self.assertEquals(len(c), 2, "Wrong number of tuples generated!")
+
+    def test_sc_get_compatible(self):
+        """JRPC method: configuration.sc.getCompatible
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_get_compatible)')
+
+        r = compatibility_jrpc.sc_get_compatible(self.__sc_1_id)
+
+        self.assertEquals(
+            r[0]['ScChannel']['identifier'], 'gmsk-sc-1', "Wrong structure!"
+        )

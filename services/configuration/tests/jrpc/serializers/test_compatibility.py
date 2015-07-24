@@ -55,7 +55,20 @@ class TestCompatibilitySerializers(test.TestCase):
             self.__gs_1, self.__band, self.__gs_1_ch_2_id
         )
 
-    def test_compatibility_serializers(self):
+        self.__sc_1_id = 'humd'
+        self.__sc_1_ch_1_id = 'gmsk-sc-1'
+        self.__sc_1_ch_1_f = 437000000
+        self.__sc_1_ch_2_id = 'gmsk-sc-2'
+
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user_profile,
+            identifier=self.__sc_1_id
+        )
+        self.__sc_1_ch_1 = db_tools.sc_add_channel(
+            self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
+        )
+
+    def test_sc_ch_compatibility_serializers(self):
         """JRPC serializers: compatibility tuples
         """
 
@@ -67,3 +80,21 @@ class TestCompatibilitySerializers(test.TestCase):
             .serialize_gs_ch_compatibility_tuples(test_tuples)
 
         self.assertEquals(len(c), 1, "Wrong number of tuples generated!")
+
+    def test_sc_compatibility_serializers(self):
+        """JRPC serializers: compatibility for the spacecraft channels
+        """
+
+        test_tuples = [
+            (self.__gs_1, self.__gs_1_ch_1)
+        ]
+
+        c = compatibility_serializers.CompatibilitySerializer\
+            .serialize_gs_ch_compatibility_tuples(test_tuples)
+
+        r = compatibility_serializers.CompatibilitySerializer\
+            .serialize_sc_ch_compatibility(self.__sc_1_ch_1, c)
+
+        self.assertEquals(
+            r['ScChannel']['identifier'], 'gmsk-sc-1', "Wrong structure!"
+        )

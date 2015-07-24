@@ -26,12 +26,15 @@ class CompatibilitySerializer(object):
 
     GS_OBJECT_K = 'GroundStation'
     GS_CHANNEL_OBJECT_K = 'GsChannel'
+    SC_CHANNEL_OBJECT_K = 'ScChannel'
+    COMPATIBILITY_OBJECT_K = 'Compatibility'
 
     @staticmethod
     def serialize_gs_ch_compatibility_tuples(gs_ch_list):
         """JSON serializer
         Serializes a list with the tuples of Ground Station and Ground Station
         channels.
+        :param gs_ch_list: List with the tuples to be serialized
         :return: List with the tuples gs, gs_ch in JSON format
         """
         result = []
@@ -77,3 +80,37 @@ class CompatibilitySerializer(object):
             })
 
         return result
+
+    @staticmethod
+    def serialize_sc_ch_compatibility(spacecraft_ch, compatibility):
+        """JSON serializer
+        Serializes
+        :param spacecraft_ch: channel of the spacecraft to be serialized
+        :param compatibility: compatibility tuples (gs, gs_ch)
+        :return: object with the {sc_ch, [(gs, gs_ch)]}
+        """
+
+        sc_ch_serial = serialize(
+            spacecraft_ch,
+            camelcase=True,
+            exclude=['id'],
+            related={
+                'modulation': {
+                    'fields': ['modulation']
+                },
+                'bandwidth': {
+                    'fields': ['bandwidth']
+                },
+                'bitrate': {
+                    'fields': ['bitrate']
+                },
+                'polarization': {
+                    'fields': ['polarization']
+                }
+            }
+        )
+
+        return {
+            CompatibilitySerializer.SC_CHANNEL_OBJECT_K: sc_ch_serial,
+            CompatibilitySerializer.COMPATIBILITY_OBJECT_K: compatibility
+        }

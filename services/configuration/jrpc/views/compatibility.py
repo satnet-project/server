@@ -24,8 +24,31 @@ from services.configuration.jrpc.serializers import compatibility as \
 from website import settings as satnet_settings
 
 
+def get_compatiblility(spacecraft_ch):
+
+    # 1) Retrieve compatible ground station channels
+    compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
+        spacecraft_channel=spacecraft_ch
+    )
+
+    # 2) Generate list with tuples (groundstation, gs_channel)
+    compatible_tuples = []
+
+    for gs_ch in compatible_chs.groundstation_channels.all():
+
+        gs = segment_models.GroundStation.objects.get(
+            channels__in=[gs_ch]
+        )
+
+        compatible_tuples.append((gs, gs_ch))
+
+    # 3) Serialization
+    return compatibility_serializers.CompatibilitySerializer\
+        .serialize_gs_ch_compatibility_tuples(compatible_tuples)
+
+
 @rpcmethod(
-    name="configuration.sc.channel.getCompatible",
+    name="configuration.sc.channel.getCompatibility",
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -45,22 +68,34 @@ def sc_channel_get_compatible(spacecraft_id, channel_id):
         identifier=channel_id
     )
 
-    # 2) Retrieve compatible ground station channels
-    compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
-        spacecraft_channel=spacecraft_ch
-    )
+    return get_compatiblility(spacecraft_ch)
 
-    # 3) Generate list with tuples (groundstation, gs_channel)
-    compatible_tuples = []
 
-    for gs_ch in compatible_chs.groundstation_channels.all():
+@rpcmethod(
+    name="configuration.sc.getCompatibility",
+    signature=['String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def sc_get_compatible(spacecraft_id):
+    """JRPC method
+    It returns the list of available ground station channels that are
+    compatible in terms of communications with all the channels of the
+    segment.
+    :param spacecraft_id: Identifier of the spacecraft
+    :return: Dictionary with lists with tuples (groundstation, gs_channel)
+    """
 
-        gs = segment_models.GroundStation.objects.get(
-            channels__in=[gs_ch]
-        )
+    results = []
 
-        compatible_tuples.append((gs, gs_ch))
+    for spacecraft_ch in segment_models.Spacecraft.objects.get(
+        identifier=spacecraft_id
+    ).channels.all():
 
-    # 4) Serialization
-    return compatibility_serializers.CompatibilitySerializer\
-        .serialize_gs_ch_compatibility_tuples(compatible_tuples)
+        r = compatibility_serializers.CompatibilitySerializer\
+            .serialize_sc_ch_compatibility(
+                spacecraft_ch, get_compatiblility(spacecraft_ch)
+            )
+
+        results.append(r)
+
+    return results
