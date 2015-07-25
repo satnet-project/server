@@ -78,7 +78,7 @@ def serialize_gs_ch_compatibility_tuples(gs_ch_list):
             GS_CHANNEL_OBJECT_K: gs_ch_serial
         })
 
-        return result
+    return result
 
 
 def serialize_sc_ch_compatibility(spacecraft_ch, compatibility):
