@@ -27,6 +27,7 @@ from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import channels as jrpc_channels_if
 
 
+# noinspection PyBroadException
 class JRPCChannelsTest(TestCase):
     """
     Class with the UNIT tests for JRPC methods concerning the access to the

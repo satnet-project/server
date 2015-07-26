@@ -138,6 +138,7 @@ class JRPCSegmentsTest(test.TestCase):
             'GroundStation object has not been created'
         )
 
+    # noinspection PyBroadException
     def test_gs_create_2(self):
         """JRPC method: configuration.gs.create (2)
         This test validates the creation of a new GroundStation through the

@@ -68,25 +68,30 @@ class ChannelCompatibilityManager(models.Manager):
         if created or raw:
             return
 
+        print('>>> sc_channel_saved')
+
         try:
             ChannelCompatibility.objects\
                 .get(spacecraft_channel=instance)
         except exceptions.ObjectDoesNotExist:
+            print('>>> XXX 1')
             logger.warn(
                 'Compatibility not found for channel not found, sc = ' + str(
                     instance.__unicode__())
             )
-            return
 
         # 1) first, we get the list of compatible channels with the given one.
         compatible_chs = channels.GroundStationChannel.objects\
             .find_compatible_channels(instance)
+        print('>>> XXX 2')
+        misc.print_dictionary(compatible_chs)
         if not compatible_chs:
             logger.info(
                 'No compatible GS channels found for SC channel = ' + str(
                     instance.__unicode__()
                 )
             )
+            print('XXXX 2 RETURN NO COMPATIBLE')
             return
 
         # 2) secondly, we include this new "matching" group in the list of

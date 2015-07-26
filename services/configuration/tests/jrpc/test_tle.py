@@ -128,8 +128,8 @@ class JRPCTestTle(test.TestCase):
 
     def test_get_celestrak_resource(self):
         """JRPC method: configuration.tle.celestrak.getResource
-        Tests the retrieval of the information contained in one of the celestrak
-        resouces.
+        Tests the retrieval of the information contained in one of the
+        celestrak resouces.
         """
         if self.__verbose_testing:
             print('>>> get_celestrak_resource')
@@ -150,6 +150,7 @@ class JRPCTestTle(test.TestCase):
                     str(tle_id), str(t['tle_line_1']), str(t['tle_line_2'])
                 )
 
+    # noinspection PyBroadException
     def test_get_spacecraft_tle(self):
         """JRPC method: configuration.tle.celestrak.getTle
         """

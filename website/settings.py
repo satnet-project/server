@@ -219,11 +219,20 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'formatter': 'simple',
         },
+        'null': {
+            'level': 'DEBUG',
+            'class': 'django.utils.log.NullHandler',
+        },
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
             'propagate': True,
+            'level': 'DEBUG',
+        },
+        'django.db.backends': {
+            'handlers': ['null'],  # Quiet by default!
+            'propagate': False,
             'level': 'DEBUG',
         },
         'django.request': {
