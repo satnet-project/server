@@ -70,8 +70,7 @@ class ChannelCompatibilityManager(models.Manager):
 
         try:
             ChannelCompatibility.objects\
-                .get(spacecraft_channel=instance)\
-                .delete()
+                .get(spacecraft_channel=instance)
         except exceptions.ObjectDoesNotExist:
             logger.warn(
                 'Compatibility not found for channel not found, sc = ' + str(
