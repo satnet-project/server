@@ -35,8 +35,7 @@ numpy==1.9.1
 oauthlib==0.7.2
 psutil==2.2.1
 psycopg2==2.6
-pusher==1.2.2
-pusher-rest==0.1.0
+pusher==1.2.3
 pyOpenSSL==0.15
 pyasn1==0.1.7
 pyasn1-modules==0.0.5

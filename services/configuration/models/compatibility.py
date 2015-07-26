@@ -40,7 +40,7 @@ compatibility_delete_sc_ch_signal = dispatch.Signal(
 
 class ChannelCompatibilityManager(models.Manager):
     """
-    Manager for the SegmentCompatibility table.
+    Manager for the ChannelCompatibility table.
     """
 
     @staticmethod
@@ -62,22 +62,32 @@ class ChannelCompatibilityManager(models.Manager):
         required from the list of available bitrates
         ### filter objects taking into account the polarizations implemented by
         the GS (RHPC, LHPC or ANY) and the one required by the spacecraft. In
-        this case, the ANY polarization indicates that either the spacecraft
-        or the ground station implement/require any value.
+        this case, the ANY polarization indicates that either the spacecraft or
+        the ground station implement/require any value.
         """
         if created or raw:
             return
 
         try:
-            ChannelCompatibility.objects.get(spacecraft_channel=instance)
-            return
+            ChannelCompatibility.objects\
+                .get(spacecraft_channel=instance)\
+                .delete()
         except exceptions.ObjectDoesNotExist:
-            pass
+            logger.warn(
+                'Compatibility not found for channel not found, sc = ' + str(
+                    instance.__unicode__())
+            )
+            return
 
         # 1) first, we get the list of compatible channels with the given one.
         compatible_chs = channels.GroundStationChannel.objects\
             .find_compatible_channels(instance)
         if not compatible_chs:
+            logger.info(
+                'No compatible GS channels found for SC channel = ' + str(
+                    instance.__unicode__()
+                )
+            )
             return
 
         # 2) secondly, we include this new "matching" group in the list of

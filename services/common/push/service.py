@@ -80,7 +80,9 @@ class PushService(object):
             self._service = pusher.Pusher(
                 app_id=satnet_cfg.PUSHER_APP_ID,
                 key=satnet_cfg.PUSHER_APP_KEY,
-                secret=satnet_cfg.PUSHER_APP_SECRET
+                secret=satnet_cfg.PUSHER_APP_SECRET,
+                ssl=True,
+                port=443
             )
 
     def get_push_service(self):
