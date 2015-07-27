@@ -20,8 +20,6 @@ import logging
 from django import dispatch as django_dispatch
 from django.core import exceptions
 from django.db import models
-from django.db.models import signals as django_signals
-from django.forms import model_to_dict
 
 from services.common import misc
 from services.configuration.models import channels as channel_models
