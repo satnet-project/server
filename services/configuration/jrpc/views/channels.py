@@ -330,5 +330,4 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
         bandwidth=bandwidth,
         polarization=polarization
     )
-    print('XXXXXXX @sc_channel_set_configuration')
     return True

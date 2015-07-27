@@ -231,7 +231,7 @@ LOGGING = {
             'level': 'DEBUG',
         },
         'django.db.backends': {
-            'handlers': ['null'],  # Quiet by default!
+            'handlers': ['null'],
             'propagate': False,
             'level': 'DEBUG',
         },
@@ -381,6 +381,9 @@ RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 # ### SATNET specific settings
 JRPC_LOGIN_REQUIRED = False
 JRPC_PERMISSIONS = False
+
+# ### For Django NOSE to reuse the previous database
+# REUSE_DB = 1
 
 # ### Username used during tests
 TEST_USERNAME = 'rtubio'

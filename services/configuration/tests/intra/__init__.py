@@ -13,4 +13,11 @@
    See the License for the specific language governing permissions and
    limitations under the License.
 """
+
+"""
+    This package includes all the tests required to validate the integration of
+    the separate modules that implemente the features of the configuration
+    service.
+"""
+
 __author__ = 'rtubiopa@calpoly.edu'

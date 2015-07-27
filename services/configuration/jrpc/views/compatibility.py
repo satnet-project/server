@@ -15,6 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from django.core import exceptions as django_ex
+
 from rpc4django import rpcmethod
 
 from services.configuration.models import segments as segment_models
@@ -31,11 +33,15 @@ def get_compatiblility(spacecraft_ch):
     :param spacecraft_ch: The channel for which the tuples are compatible with
     :return: List with the (GS, GS_CH) tuples
     """
+    compatible_chs = None
 
     # 1) Retrieve compatible ground station channels
-    compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
-        spacecraft_channel=spacecraft_ch
-    )
+    try:
+        compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
+            spacecraft_channel=spacecraft_ch
+        )
+    except django_ex.ObjectDoesNotExist:
+        return []
 
     # 2) Generate list with tuples (groundstation, gs_channel)
     compatible_tuples = []

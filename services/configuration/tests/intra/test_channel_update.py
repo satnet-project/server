@@ -20,8 +20,9 @@ import logging
 
 from django.test import TestCase
 
-from services.common import misc
 from services.common.testing import helpers as db_tools
+from services.configuration.models import channels as channel_models
+from services.configuration.models import compatibility as compatibility_models
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views import channels as jrpc_channels_if
@@ -92,21 +93,27 @@ class JRPCChannelsTest(TestCase):
 
     def test_sc_channel_update_compatibility(self):
         """INTRA configuration: SC channel update provokes compatibility change
+        Initially, the just created spacecraft channel should be compatible
+        with the also created Ground Station channel. However, after the
+        update they become incompatible and, therefore, this fact should be
+        reflected in the compatibility table.
         """
 
-        self.assertEqual(
-            jrpc_compat_if.sc_channel_get_compatible(
-                self.__sc_1_id, self.__sc_1_ch_1_id
-            ),
-            {
+        # 0) initially, the channels are compatible
+        compatibility = jrpc_compat_if.sc_channel_get_compatible(
+            self.__sc_1_id, self.__sc_1_ch_1_id
+        )
 
-            },
+        self.assertEqual(
+            compatibility[0]['GroundStation']['identifier'],
+            'uvigo',
             'Wrong compat!!!'
         )
 
+        # 1) new configuration makes channels incompatible
         expected_c = {
             jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-            jrpc_serial.FREQUENCY_K: 438000000,
+            jrpc_serial.FREQUENCY_K: 2000000000,
             jrpc_serial.MODULATION_K: 'FM',
             jrpc_serial.POLARIZATION_K: 'RHCP',
             jrpc_serial.BITRATE_K: 600,
@@ -125,12 +132,92 @@ class JRPCChannelsTest(TestCase):
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
-        if self.__verbose_testing:
-            misc.print_dictionary(actual_c)
-            misc.print_dictionary(expected_c)
+        self.assertEqual(
+            actual_c, expected_c,
+            'Wrong configuration! diff = ' + str(
+                datadiff.diff(actual_c, expected_c)
+            )
+        )
+
+        compatibility = jrpc_compat_if.sc_channel_get_compatible(
+            self.__sc_1_id, self.__sc_1_ch_1_id
+        )
+
+        self.assertEquals(
+            compatibility, [],
+            'No compatible channels should have been found, diff = ' + str(
+                datadiff.diff(compatibility, [])
+            )
+        )
+
+        # 2) this new configuration should make the channels compatible again
+        expected_c = {
+            jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
+            jrpc_serial.FREQUENCY_K: 436365000,
+            jrpc_serial.MODULATION_K: 'FM',
+            jrpc_serial.POLARIZATION_K: 'RHCP',
+            jrpc_serial.BITRATE_K: 600,
+            jrpc_serial.BANDWIDTH_K: 25
+        }
+
+        self.assertEqual(
+            jrpc_channels_if.sc_channel_set_configuration(
+                self.__sc_1_id, self.__sc_1_ch_1_id, expected_c
+            ),
+            True,
+            'Configuration should have been set correctly!'
+        )
+
+        actual_c = jrpc_channels_if.sc_channel_get_configuration(
+            self.__sc_1_id, self.__sc_1_ch_1_id
+        )
 
         self.assertEqual(
             actual_c, expected_c,
-            'Configuration dictionaries do not match!, diff = \n'
-            + str(datadiff.diff(actual_c, expected_c))
+            'Wrong configuration! diff = ' + str(
+                datadiff.diff(actual_c, expected_c)
+            )
+        )
+
+        compatibility = jrpc_compat_if.sc_channel_get_compatible(
+            self.__sc_1_id, self.__sc_1_ch_1_id
+        )
+
+        self.assertEqual(
+            compatibility[0]['GroundStation']['identifier'],
+            'uvigo',
+            'Wrong compat!!!'
+        )
+
+        # 3) deleting the spacecraft channel should erase the compatibility
+        self.assertEquals(
+            jrpc_channels_if.sc_channel_delete(
+                self.__sc_1_id, self.__sc_1_ch_1_id
+            ),
+            True,
+            'Could not properly remove spacecraft channel!'
+        )
+
+        try:
+            channel_models.SpacecraftChannel.objects.get(
+                identifier=self.__sc_1_ch_1_id
+            )
+            self.fail('SC channel should have not been found!')
+        except Exception:
+            pass
+
+        try:
+            jrpc_compat_if.sc_channel_get_compatible(
+                self.__sc_1_id, self.__sc_1_ch_1_id
+            )
+            self.fail(
+                'Spacecraft Channel DoesNotExist exception should have been'
+                'thrown'
+            )
+        except Exception:
+            pass
+
+        self.assertEquals(
+            len(compatibility_models.ChannelCompatibility.objects.all()), 0,
+            'No compatibility objects should have been found '
         )
