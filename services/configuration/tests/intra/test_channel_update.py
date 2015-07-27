@@ -139,15 +139,30 @@ class JRPCChannelsTest(TestCase):
             )
         )
 
-        compatibility = jrpc_compat_if.sc_channel_get_compatible(
-            self.__sc_1_id, self.__sc_1_ch_1_id
-        )
-
         self.assertEquals(
-            compatibility, [],
+            jrpc_compat_if.sc_channel_get_compatible(
+                self.__sc_1_id, self.__sc_1_ch_1_id
+            ),
+            [],
             'No compatible channels should have been found, diff = ' + str(
                 datadiff.diff(compatibility, [])
             )
+        )
+
+        compatibility = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
+        self.assertEquals(
+            compatibility['spacecraft_id'], self.__sc_1_id,
+            'Wrong compatiblity!'
+        )
+        self.assertEquals(
+            compatibility['Compatibility'][0]['ScChannel']['identifier'],
+            self.__sc_1_ch_1_id,
+            'Wrong compatiblity!'
+        )
+        self.assertEquals(
+            compatibility['Compatibility'][0]['Compatibility'],
+            [],
+            'Wrong compatiblity!'
         )
 
         # 2) this new configuration should make the channels compatible again
@@ -211,7 +226,18 @@ class JRPCChannelsTest(TestCase):
                 self.__sc_1_id, self.__sc_1_ch_1_id
             )
             self.fail(
-                'Spacecraft Channel DoesNotExist exception should have been'
+                'Spacecraft Channel DoesNotExist, an exception should have been'
+                'thrown'
+            )
+        except Exception:
+            pass
+
+        try:
+            jrpc_compat_if.sc_get_compatible(
+                self.__sc_1_id, self.__sc_1_ch_1_id
+            )
+            self.fail(
+                'Spacecraft Channel DoesNotExist, an exception should have been'
                 'thrown'
             )
         except Exception:
