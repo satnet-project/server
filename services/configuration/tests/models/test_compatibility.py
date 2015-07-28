@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
+
 import logging
 
 from services.common.testing import helpers as db_tools
@@ -23,6 +24,7 @@ from services.configuration.signals import models as model_signals
 from services.configuration.models import bands as band_models
 from services.configuration.models import compatibility as compat_models
 from services.configuration.models import channels as channel_models
+from services.configuration.jrpc.views import compatibility as jrpc_compat_if
 
 
 class SegmentCompatibilityTest(test.TestCase):
@@ -32,8 +34,9 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__verbose_testing = False
 
         if not self.__verbose_testing:
-            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -55,9 +58,6 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__user_profile, identifier=self.__sc_1_id
         )
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         model_signals.connect_channels_2_compatibility()
 
@@ -600,6 +600,27 @@ class SegmentCompatibilityTest(test.TestCase):
             groundstation_ch=gs_ch, compatible_sc_chs=all_sc_chs
         )
 
+        self.assertEquals(diff, (set(), set()), 'Wrong diff!')
+
+        c1 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
         self.assertEquals(
-            diff, (set(), set()), 'Wrong diff!'
+            len(c1['Compatibility'][0]['Compatibility']),
+            2,
+            'Wrong compatibility'
+        )
+
+        # 2) changing the polarization should make the GS_CH incompatible
+        gs_ch.polarizations.clear()
+        gs_ch.polarizations.add(
+            band_models.AvailablePolarizations.objects.get(
+                polarization='LHCP'
+            )
+        )
+        gs_ch.save()
+
+        c2 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
+        self.assertEquals(
+            len(c2['Compatibility'][0]['Compatibility']),
+            1,
+            'Wrong compatibility'
         )

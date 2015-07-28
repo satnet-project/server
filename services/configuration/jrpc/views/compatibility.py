@@ -21,7 +21,7 @@ from rpc4django import rpcmethod
 
 from services.configuration.models import segments as segment_models
 from services.configuration.models import compatibility as compatibility_models
-from services.configuration.jrpc.serializers import compatibility as \
+from services.configuration.jrpc.serializers import compatibility as\
     compatibility_serializers
 from website import settings as satnet_settings
 

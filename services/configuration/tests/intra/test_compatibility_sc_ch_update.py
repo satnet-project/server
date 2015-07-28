@@ -30,10 +30,10 @@ from services.configuration.jrpc.views import compatibility as jrpc_compat_if
 
 
 # noinspection PyBroadException
-class JRPCChannelsTest(TestCase):
+class CompatibilityScChUpdate(TestCase):
     """
-    Class with the UNIT tests for JRPC methods concerning the access to the
-    channels.
+    Class with the UNIT tests for validating the INTRA modules within the
+    configuration service.
     """
 
     def setUp(self):
