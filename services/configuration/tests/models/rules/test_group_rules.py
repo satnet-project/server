@@ -64,7 +64,7 @@ class TestGroupedRules(test.TestCase):
         )
 
     def test_create_grouped_rules(self):
-        """
+        """services.configuration: grouped rule management
         Validates the creation of a simple grouped rule
         """
         now = misc.get_now_utc()

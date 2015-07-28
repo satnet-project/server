@@ -58,7 +58,7 @@ class TestChannelRules(test.TestCase):
         )
 
     def test_1_a_slots_daily(self):
-        """
+        """services.configuration: generate available slots (DAILY rule, 1)
         Validates the generation of slots by a daily rule.
         """
         if self.__verbose_testing:
@@ -107,7 +107,7 @@ class TestChannelRules(test.TestCase):
         jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
 
     def _2_a_slots_daily_first_cut(self):
-        """
+        """services.configuration: generate available slots (DAILY rule, 2)
         This test validates the generation of AvailabilitySlots by a daily
         rule when the slot has already started.
         """
@@ -165,7 +165,7 @@ class TestChannelRules(test.TestCase):
         self.__verbose_testing = False
 
     def _3_a_slots_daily_future(self):
-        """Unit test.
+        """services.configuration: generate available slots (DAILY rule, 3)
         Tests the generation of AvailabilitySlot's by a daily rule that
         starts in the future.
         """

@@ -88,8 +88,7 @@ class JRPCChannelsTest(TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_gs_get_channel_list(self):
-        """
-        JRPC method: configuration.gs.channels.list
+        """JRPC method: configuration.gs.channels.list
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_get_channel_list)')
@@ -113,8 +112,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_sc_get_channel_list(self):
-        """
-        JRPC method: configuration.sc.channels.list
+        """JRPC method: configuration.sc.channels.list
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_get_channel_list)')
@@ -138,8 +136,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_get_channel_options(self):
-        """
-        JRPC method: configuration.channels.getOptions
+        """JRPC method: configuration.channels.getOptions
         """
         if self.__verbose_testing:
             print('>>> TEST (test_get_channel_options)')
@@ -162,8 +159,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_gs_channel_is_unique(self):
-        """
-        JRPC method: configuration.gs.channel.isUnique
+        """JRPC method: configuration.gs.channel.isUnique
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_is_unique)')
@@ -180,8 +176,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_sc_channel_is_unique(self):
-        """
-        JRPC method: configuration.sc.channel.isUnique
+        """JRPC method: configuration.sc.channel.isUnique
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_is_unique)')
@@ -198,8 +193,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_gs_channel_create(self):
-        """
-        JRPC method: configuration.gs.channel.create
+        """JRPC method: configuration.gs.channel.create
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_create)')
@@ -242,8 +236,7 @@ class JRPCChannelsTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
 
     def test_sc_channel_create(self):
-        """
-        JRPC method: configuration.sc.channel.create
+        """JRPC method: configuration.sc.channel.create
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_create)')
@@ -282,8 +275,7 @@ class JRPCChannelsTest(TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_2_id)
 
     def test_gs_channel_delete(self):
-        """
-        JRPC method: configuration.gs.channel.delete
+        """JRPC method: configuration.gs.channel.delete
         """
         try:
             jrpc_channels_if.gs_channel_delete(
@@ -332,8 +324,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_sc_channel_delete(self):
-        """
-        JRPC method: configuration.sc.channel.delete
+        """JRPC method: configuration.sc.channel.delete
         """
         try:
             jrpc_channels_if.sc_channel_delete(
@@ -380,8 +371,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_gs_channel_get_configuration(self):
-        """
-        JRPC method: configuration.gs.channel.getConfiguration
+        """JRPC method: configuration.gs.channel.getConfiguration
         """
         try:
             jrpc_channels_if.gs_channel_get_configuration(
@@ -433,8 +423,7 @@ class JRPCChannelsTest(TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
 
     def test_sc_channel_get_configuration(self):
-        """
-        JRPC method: configuration.sc.channel.getConfiguration
+        """JRPC method: configuration.sc.channel.getConfiguration
         """
         try:
             jrpc_channels_if.sc_channel_get_configuration(
@@ -484,8 +473,7 @@ class JRPCChannelsTest(TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_2_id)
 
     def test_gs_channel_set_configuration(self):
-        """
-        JRPC method: configuration.gs.channel.setConfiguration
+        """JRPC method: configuration.gs.channel.setConfiguration
         """
         self.__verbose_testing = False
         try:
@@ -586,8 +574,7 @@ class JRPCChannelsTest(TestCase):
         )
 
     def test_sc_channel_set_configuration(self):
-        """
-        JRPC method: configuration.sc.channel.setConfiguration
+        """JRPC method: configuration.sc.channel.setConfiguration
         """
         try:
             jrpc_channels_if.sc_channel_set_configuration(

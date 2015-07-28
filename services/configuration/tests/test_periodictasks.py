@@ -73,7 +73,7 @@ class TestSlotPropagation(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_propagate_empty_db(self):
-        """Unit test.
+        """services.configuration: initial slot propagation
         This test validates the propagation of the slots throughout the
         database when no rules are available (empty database stability check).
         """

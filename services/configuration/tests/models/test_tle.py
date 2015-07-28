@@ -20,6 +20,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
 import logging
+# noinspection PyPackageRequirements
 import ephem
 from services.common.testing import helpers as db_tools
 
@@ -48,7 +49,7 @@ class TestTle(TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_load_tles(self):
-        """
+        """services.configuration: TLE initialization
         Test for validating that the TLE's are read correctly from the remote
         source. This test uses the PyEphem library so that all the read TLE's
         are transformed into an object with this library. In case the TLE is
@@ -81,7 +82,7 @@ class TestTle(TestCase):
             )
 
     def test_spacecraft_database(self):
-        """
+        """services.configuration: spacecraft database creation
         Tests the usage of the database by an external user.
         """
         if self.__verbose_testing:
@@ -99,11 +100,8 @@ class TestTle(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        tle_o = None
         try:
-            tle_o = tle.TwoLineElement.objects.get(
-                identifier=self.__sc_1_tle_id
-            )
+            tle.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id)
         except ObjectDoesNotExist:
             self.fail(
                 'Object should have been found!, tle_id = ' + str(

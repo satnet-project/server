@@ -33,6 +33,7 @@ def get_compatiblility(spacecraft_ch):
     :param spacecraft_ch: The channel for which the tuples are compatible with
     :return: List with the (GS, GS_CH) tuples
     """
+    # noinspection PyUnusedLocal
     compatible_chs = None
 
     # 1) Retrieve compatible ground station channels

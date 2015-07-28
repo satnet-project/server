@@ -19,6 +19,7 @@ import logging
 
 from django import test
 import datadiff
+# noinspection PyPackageRequirements
 import ephem
 
 from services.common import misc

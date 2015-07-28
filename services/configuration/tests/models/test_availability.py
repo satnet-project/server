@@ -57,7 +57,7 @@ class TestAvailability(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_0_add_slots_no_rules(self):
-        """
+        """services.configuration: add slots without rules
         This method tests the addition of new availability slots to the
         AvailabilitySlots table in the database, when no rule has still been
         defined. Therefore, no slot should be generated or added.
@@ -77,7 +77,7 @@ class TestAvailability(test.TestCase):
         )
 
     def test_1_add_slots_once_rule(self):
-        """
+        """services.configuration: add slots with a single ONCE rule
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
@@ -102,7 +102,7 @@ class TestAvailability(test.TestCase):
         )
 
     def test_2_generate_slots_daily_rule(self):
-        """
+        """services.configuration: add slots with a DAILY rule
         Tests the generation of slots for a given daily rule.
         """
         if self.__verbose_testing:
@@ -137,11 +137,10 @@ class TestAvailability(test.TestCase):
         )
 
     def test_3_generate_slots_several_rules_1(self):
-        """
+        """services.configuration: add slots with several rules
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
         """
-        #self.__verbose_testing = True
         if self.__verbose_testing:
             print('##### test_add_slots: several rules (1)')
 
@@ -392,7 +391,7 @@ class TestAvailability(test.TestCase):
         self.__verbose_testing = False
 
     def test_4_get_availability_slots(self):
-        """
+        """services.configuration: availability slot generation
         Validates the method that gathers the AvailabilitySlots that are
         applicable within a defined interval.
         """

@@ -601,5 +601,5 @@ class SegmentCompatibilityTest(test.TestCase):
         )
 
         self.assertEquals(
-            diff, (set([]), set([])), 'Wrong diff!'
+            diff, (set(), set()), 'Wrong diff!'
         )

@@ -68,7 +68,7 @@ class TestModels(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_1_get_availability_slots(self):
-        """
+        """services.configuration: get availability slots
         This test validates the generation of slots by the different rules
         supported by the configuration service.
         """
