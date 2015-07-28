@@ -37,7 +37,7 @@ class SpacecraftChannelManager(models.Manager):
     Manager for the objects within the SpacecraftChannel table in the database.
     """
 
-    def find_compatible_channels(self, gs_channel):
+    def find_compatible(self, gs_channel):
         """
         Static method that finds all the compatible Spacecraft channels with
         the given GroundStation channel.
