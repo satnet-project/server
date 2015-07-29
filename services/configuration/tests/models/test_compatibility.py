@@ -28,6 +28,9 @@ from services.configuration.jrpc.views import compatibility as jrpc_compat_if
 
 
 class SegmentCompatibilityTest(test.TestCase):
+    """
+    Class with the UNIT tests for validating the compatibility models.
+    """
 
     def setUp(self):
 

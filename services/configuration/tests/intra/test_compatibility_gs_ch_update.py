@@ -118,10 +118,23 @@ class CompatibilityGsChUpdate(TestCase):
             )
         )
         gs_ch.save()
-
         c2 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
         self.assertEquals(
             len(c2['Compatibility'][0]['Compatibility']),
             1,
+            'Wrong compatibility'
+        )
+
+        # 3) changing it to the original configuration
+        gs_ch.polarizations.add(
+            band_models.AvailablePolarizations.objects.get(
+                polarization='RHCP'
+            )
+        )
+        gs_ch.save()
+        c3 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
+        self.assertEquals(
+            len(c3['Compatibility'][0]['Compatibility']),
+            2,
             'Wrong compatibility'
         )
