@@ -15,8 +15,30 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from services.common import serialization as common_serializers
 from services.configuration.models import segments, channels
 from services.scheduling.models import operational
+
+
+def serialize_slot_information(slot):
+    """
+    Serializes the information about a given operational slot.
+    :param slot: Operational slot object
+    :return: JSON-like structure with the information of the operational slot
+    """
+    return {
+        'state': slot.state,
+        'gs_username': slot[0].groundstation_channel
+            .groundstation_set.all()[0].user.username,
+        'sc_username': slot[0].spacecraft_channel
+            .spacecraft_set.all()[0].user.username,
+        'starting_time': common_serializers.serialize_iso8601_date(
+            slot.availability_slot.start
+        ),
+        'ending_time': common_serializers.serialize_iso8601_date(
+            slot.availability_slot.end
+        ),
+    }
 
 
 def serialize_sc_operational_slots(spacecraft_id):
