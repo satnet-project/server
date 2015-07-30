@@ -21,7 +21,45 @@ import rpc4django
 from services.common import misc
 from services.communications import models as comm_models
 from services.configuration.models import segments as segment_models
+from services.scheduling.models import operational as operational_models
 from website import settings as satnet_settings
+
+
+@rpc4django.rpcmethod(
+    name='communications.storeMessage',
+    signature=['String', 'boolean', 'boolean', 'int', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def store_message(slot_id, upwards, forwarded, timestamp, message):
+    """JRPC method
+    Stores a message that has just been received by the protocol.
+    :param slot_id: Identifier of the ongoing slot
+    :param upwards: Flag that indicates the direction of the message
+    :param forwarded: Flag that indicates whether this message has already
+                        been successfully forwarded to the other end of the
+                        communication or not
+    :param timestamp: Timestamp to log the time at which the message was
+                        received
+    :param message: Message received as a BASE64 string
+    :return: The identifier of the message within the system
+    """
+    if message is None:
+        raise Exception('No message included')
+
+    operational_slot=operational_models.OperationalSlot.objects.get(
+        identifier=slot_id
+    )
+
+    # Tries to decode the message in BASE64, if wrong, an exception is thrown.
+    # Otherwise, this is just a check for the message, the message will be
+    # stored in BASE64 in the database anyway.
+    base64.b64decode(message)
+
+    message_o = comm_models.Message.objects.create(
+        operational_slot, upwards, forwarded, timestamp, message
+    )
+
+    return message_o.pk
 
 
 @rpc4django.rpcmethod(
@@ -35,11 +73,11 @@ def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
     requiring from any remote operation to be scheduled) by a given Ground
     Station in the database.
 
-    :param groundstation_id: Identifier of the GroundStation.
+    :param groundstation_id: Identifier of the GroundStation
     :param timestamp: Moment of the reception of the message at the remote
-                        Ground Station (seconds since
-    :param doppler_shift: Doppler shift during the reception of the message.
-    :param message: The message to be stored.
+                        Ground Station
+    :param doppler_shift: Doppler shift during the reception of the message
+    :param message: The message to be stored
     :return: 'true' is returned whenever the message was correctly stored,
                 otherwise, an exception is thrown.
     """

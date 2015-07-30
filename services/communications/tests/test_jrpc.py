@@ -39,13 +39,13 @@ class TestPassiveCommunications(TestCase):
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
 
-    def test_store_message_null(self):
-        """Unit test method
+    def test_store_passive_message_null(self):
+        """JRPC method: services.communiations.storePassiveMessage (1)
         Basic unit testing method for checking the behavior of the passive
         communications service under null or empty parameters.
         """
         if self.__verbose_testing:
-            print('>>> test_store_message_null')
+            print('>>> test_store_passive_message_null')
 
         # 1) GS does not exist
         self.assertRaises(
@@ -67,12 +67,12 @@ class TestPassiveCommunications(TestCase):
             message=None
         )
 
-    def test_store_message(self):
-        """UNIT test method
+    def test_store_passive_message(self):
+        """JRPC method: services.communiations.storePassiveMessage (2)
         Simple test for validating the storage of passive messages.
         """
         if self.__verbose_testing:
-            print('>>> test_store_message')
+            print('>>> test_store_passive_message')
 
         self.assertEqual(
             comms_jrpc.store_passive_message(
@@ -117,3 +117,32 @@ class TestPassiveCommunications(TestCase):
         if self.__verbose_testing:
             print('>>> message_2 (RAW) = ' + str(message))
             print('>>> message_2 (STR) = ' + str(base64.b64decode(message)))
+
+    def test_store_message_null(self):
+        """JRPC method: services.communiations.storeMessage (1)
+        Basic unit testing method for checking the behavior of the
+        communications service under null or empty parameters.
+        """
+        if self.__verbose_testing:
+            print('>>> test_store_message_null')
+
+        # 1) slot does not exist
+        self.assertRaises(
+            exceptions.ObjectDoesNotExist,
+            comms_jrpc.store_message,
+            slot_id=100,
+            upwards=True,
+            forwarded=True,
+            timestamp=0,
+            message='000'
+        )
+
+        # 2) Empty message
+        self.assertRaises(
+            Exception,
+            comms_jrpc.store_passive_message,
+            groundstation_id=self.__gs_1_id,
+            timestamp=0,
+            doppler_shift=0,
+            message=None
+        )

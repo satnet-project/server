@@ -77,22 +77,19 @@ class MessageManager(models.Manager):
     """
 
     def create(
-        self,
-        operational_slot,
-        gs_channel, sc_channel,
-        upwards, forwarded,
-        tx_timestamp, message
+        self, operational_slot, upwards, forwarded, tx_timestamp, message
     ):
         """Creates the object in the database.
         Creates the object in the database with the data provided and including
         the current UTC timestamp as the timestamp of the moment at which this
         message was received in the server.
-        :param gs_channel: Identifier of the channel of the GroundStation that
-                            retrieved this message.
         :param tx_timestamp: Timestamp of the moment at which this message was
                                 received at the GroundStation.
         :param message: Binary message to be stored in the database.
         """
+        gs_channel = operational_slot.groundstation_channel,
+        sc_channel = operational_slot.spacecraft_channel
+
         return super(MessageManager, self).create(
             operational_slot=operational_slot,
             groundstation_channel=gs_channel,
@@ -103,13 +100,6 @@ class MessageManager(models.Manager):
             transmission_timestamp=tx_timestamp,
             message=message
         )
-
-    def mark_forwarded(self):
-        """
-
-        :return:
-        """
-        pass
 
 
 class Message(models.Model):
