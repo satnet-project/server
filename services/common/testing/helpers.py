@@ -33,7 +33,7 @@ from services.network.models import server as server_models
 
 
 def create_user(
-        username='testuser', password='testuser.', email='test@test.test'
+    username='testuser', password='testuser.', email='test@test.test'
 ):
     """
     This method creates a new user in the database.
@@ -167,10 +167,10 @@ def create_launch(
     username='admin-cluster-1',
     admin=None,
     identifier='cluster-1',
-    tle_l1=
-        '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108',
-    tle_l2=
-        '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601',
+    tle_l1='1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0'
+           '  1108',
+    tle_l2='2 27844  98.6976  18.3001 0010316  50.6742 104.9393'
+           ' 14.21678727597601',
     date=None
 ):
 
@@ -302,8 +302,8 @@ def remove_sc_channel(sc_ch_id):
 
 
 def gs_add_channel(
-        gs, band, gs_ch_id,
-        modulations=None, bitrates=None, bandwidths=None, polarizations=None
+    gs, band, gs_ch_id,
+    modulations=None, bitrates=None, bandwidths=None, polarizations=None
 ):
 
     if modulations is None:
@@ -367,9 +367,9 @@ def create_jrpc_once_rule(
 
 
 def create_jrpc_daily_rule(
-        operation=serialization.RULE_OP_ADD,
-        date_i=None, date_f=None,
-        starting_time=None, ending_time=None
+    operation=serialization.RULE_OP_ADD,
+    date_i=None, date_f=None,
+    starting_time=None, ending_time=None
 ):
 
     if date_i is None:

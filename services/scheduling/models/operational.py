@@ -278,6 +278,7 @@ class OperationalSlotsManager(models.Manager):
 
         return result
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def compatibility_sc_channel_added(
         sender, instance, compatible_channels, **kwargs
@@ -293,6 +294,7 @@ class OperationalSlotsManager(models.Manager):
             instance, compatible_channels
         )
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def compatibility_gs_channel_added(
         sender, instance, compatible_channels, **kwargs
@@ -331,6 +333,7 @@ class OperationalSlotsManager(models.Manager):
                 instance, sc_ch_i, operational_s
             )
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def compatibility_sc_channel_deleted(sender, instance, **kwargs):
         """
@@ -342,6 +345,7 @@ class OperationalSlotsManager(models.Manager):
             state=STATE_REMOVED
         )
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def compatibility_gs_channel_deleted(sender, instance, **kwargs):
         """
@@ -353,6 +357,7 @@ class OperationalSlotsManager(models.Manager):
             state=STATE_REMOVED
         )
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def availability_slot_added(sender, instance, **kwargs):
         """
@@ -362,7 +367,7 @@ class OperationalSlotsManager(models.Manager):
         :param instance The instance of the object itself.
         """
         gs_ch = instance.groundstation_channel
-        #start, end = simulation.OrbitalSimulator.get_simulation_window()
+        # start, end = simulation.OrbitalSimulator.get_simulation_window()
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
                 groundstation_channels=gs_ch
@@ -375,11 +380,11 @@ class OperationalSlotsManager(models.Manager):
                 gs_ch.groundstation_set.all()[0]
             )
 
-            #t_slot = availability.AvailabilitySlotsManager.truncate(
-            #    instance, start=start, end=end
-            #)
-            #if t_slot is None:
-            #    continue
+            # t_slot = availability.AvailabilitySlotsManager.truncate(
+            #     instance, start=start, end=end
+            # )
+            # if t_slot is None:
+            #     continue
 
             operational_s = OperationalSlot.objects\
                 .get_simulator().calculate_passes([
@@ -390,6 +395,7 @@ class OperationalSlotsManager(models.Manager):
                 gs_ch, comp_i.spacecraft_channel, operational_s
             )
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def availability_slot_removed(sender, instance, **kwargs):
         """

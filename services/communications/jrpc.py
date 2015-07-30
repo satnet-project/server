@@ -27,7 +27,7 @@ from website import settings as satnet_settings
 
 @rpc4django.rpcmethod(
     name='communications.storeMessage',
-    signature=['int', 'boolean', 'boolean', 'int', 'String'],
+    signature=['String', 'boolean', 'boolean', 'int', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def store_message(slot_id, upwards, forwarded, timestamp, message):
@@ -46,7 +46,7 @@ def store_message(slot_id, upwards, forwarded, timestamp, message):
     if message is None:
         raise Exception('No message included')
 
-    operational_slot=operational_models.OperationalSlot.objects.get(
+    operational_slot = operational_models.OperationalSlot.objects.get(
         identifier=slot_id
     )
 
