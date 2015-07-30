@@ -27,7 +27,7 @@ from website import settings as satnet_settings
 
 @rpc4django.rpcmethod(
     name='communications.storeMessage',
-    signature=['String', 'boolean', 'boolean', 'int', 'String'],
+    signature=['int', 'boolean', 'boolean', 'int', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def store_message(slot_id, upwards, forwarded, timestamp, message):

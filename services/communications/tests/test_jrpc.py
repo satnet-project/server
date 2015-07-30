@@ -140,9 +140,9 @@ class TestPassiveCommunications(TestCase):
         # 2) Empty message
         self.assertRaises(
             Exception,
-            comms_jrpc.store_passive_message,
-            groundstation_id=self.__gs_1_id,
+            slot_id=100,
+            upwards=True,
+            forwarded=True,
             timestamp=0,
-            doppler_shift=0,
             message=None
         )
