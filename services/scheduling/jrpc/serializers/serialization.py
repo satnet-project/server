@@ -28,10 +28,10 @@ def serialize_slot_information(slot):
     """
     return {
         'state': slot.state,
-        'gs_username': slot[0].groundstation_channel
-            .groundstation_set.all()[0].user.username,
-        'sc_username': slot[0].spacecraft_channel
-            .spacecraft_set.all()[0].user.username,
+        'gs_username':
+            slot[0].groundstation_channel.groundstation_set.all()[0].user.username,
+        'sc_username':
+            slot[0].spacecraft_channel.spacecraft_set.all()[0].user.username,
         'starting_time': common_serializers.serialize_iso8601_date(
             slot.availability_slot.start
         ),
@@ -50,8 +50,8 @@ def serialize_sc_operational_slots(spacecraft_id):
     s_slots = []
 
     for sc_ch_i in channels.SpacecraftChannel.objects.filter(
-        enabled=True,
-        spacecraft=segments.Spacecraft.objects.get(identifier=spacecraft_id)
+            enabled=True,
+            spacecraft=segments.Spacecraft.objects.get(identifier=spacecraft_id)
     ):
 
         o_slots_i = operational.OperationalSlot.objects.filter(
@@ -79,10 +79,10 @@ def serialize_gs_operational_slots(groundstation_id):
     s_slots = []
 
     for gs_ch_i in channels.GroundStationChannel.objects.filter(
-        enabled=True,
-        groundstation=segments.GroundStation.objects.get(
-            identifier=groundstation_id
-        )
+            enabled=True,
+            groundstation=segments.GroundStation.objects.get(
+                identifier=groundstation_id
+            )
     ):
 
         o_slots_i = operational.OperationalSlot.objects.filter(
