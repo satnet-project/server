@@ -19,7 +19,8 @@ import rpc4django
 
 from services.configuration.models import segments
 from services.scheduling.models import operational
-from services.scheduling.jrpc.serializers import serialization
+from services.scheduling.jrpc.serializers import serialization as \
+    scheduling_serialization
 from website import settings as satnet_settings
 
 
@@ -36,8 +37,12 @@ def get_operational_slots(groundstation_id):
     :return: JSON-like structure with the data serialized.
     """
     return sorted(
-        serialization.serialize_gs_operational_slots(groundstation_id),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        scheduling_serialization.serialize_gs_operational_slots(
+            groundstation_id
+        ),
+        key=lambda s: s[
+            scheduling_serialization.SLOT_IDENTIFIER_K
+        ]
     )
 
 
@@ -58,10 +63,13 @@ def get_changes(groundstation_id):
         .get_groundstation_changes(gs)
     return sorted(
         operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        key=lambda s: s[
+            scheduling_serialization.SLOT_IDENTIFIER_K
+        ]
     )
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.gs.confirmSelections',
     signature=['String', 'Object'],
@@ -96,10 +104,13 @@ def confirm_selections(groundstation_id, slot_identifiers):
     )
     return sorted(
         operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        key=lambda s: s[
+            scheduling_serialization.SLOT_IDENTIFIER_K
+        ]
     )
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.gs.denySelections',
     signature=['String', 'Object'],
@@ -134,10 +145,13 @@ def deny_selections(groundstation_id, slot_identifiers):
     )
     return sorted(
         operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        key=lambda s: s[
+            scheduling_serialization.SLOT_IDENTIFIER_K
+        ]
     )
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.gs.cancelReservations',
     signature=['String', 'Object'],
@@ -173,5 +187,7 @@ def cancel_reservations(groundstation_id, slot_identifiers):
     )
     return sorted(
         operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        key=lambda s: s[
+            scheduling_serialization.SLOT_IDENTIFIER_K
+        ]
     )

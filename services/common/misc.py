@@ -30,6 +30,7 @@ import socket
 logger = logging.getLogger('common')
 
 
+# noinspection PyUnusedLocal
 def create_site(apps, schema_editor):
     """Data Migrations
     Creates the initial site for the server.
@@ -53,6 +54,7 @@ def get_fqdn(ip_address):
     return socket.gethostbyaddr(ip_address)
 
 
+# noinspection PyBroadException
 def get_fqdn_ip():
     """
     Function that returns the hostname as read from the socket library and

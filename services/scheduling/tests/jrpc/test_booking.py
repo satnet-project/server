@@ -21,7 +21,8 @@ import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers import serialization as jrp_cfg_serial
+from services.configuration.jrpc.serializers import serialization as \
+    jrp_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational
@@ -159,7 +160,7 @@ class JRPCBookingProcessTest(test.TestCase):
         sc_s_slots = jrpc_sc_scheduling.select_slots(
             self.__sc_1_id, [1, 2, 3]
         )
-        sc_s_slot_ids = db_tools.create_identifier_list(sc_s_slots)
+        db_tools.create_identifier_list(sc_s_slots)
 
         # 1) selection has to be notified only once to the GS
         gs_s_slots = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
@@ -200,7 +201,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         # 5) GroundStation operators cancel the selected slots...
-        gs_c_slots = jrpc_gs_scheduling.cancel_reservations(
+        jrpc_gs_scheduling.cancel_reservations(
             self.__gs_1_id, [1, 2, 3]
         )
         self.assertRaises(

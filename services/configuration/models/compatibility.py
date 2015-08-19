@@ -169,8 +169,9 @@ class ChannelCompatibilityManager(models.Manager):
 
         except IndexError:
             logger.info(
-                'Deleted SpacecraftChannel <' + str(instance.identifier)
-                + '> does not exist in the Compatibility table.'
+                'Deleted SpacecraftChannel <' + str(
+                    instance.identifier
+                ) + '> does not exist in the Compatibility table.'
             )
             return
 
@@ -312,7 +313,7 @@ class ChannelCompatibilityManager(models.Manager):
 
 class ChannelCompatibility(models.Model):
     """
-    This model permits handle a table where the information about the
+    This model permits handling a table where the information about the
     compatibility in between SpacecraftConfiguration, SpacecraftChannel,
     GroundStationChannel and GroundStationConfiguration objects is stored.
     """

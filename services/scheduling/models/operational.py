@@ -26,14 +26,6 @@ from services.configuration.models import tle
 
 logger = logging.getLogger('scheduling')
 
-# Serialization constants.
-SLOT_IDENTIFIER = 'identifier'
-GROUNDSTATION_CHANNEL = 'groundstation_channel'
-SPACECRAFT_CHANNEL = 'spacecraft_channel'
-DATE_START = 'date_start'
-DATE_END = 'date_end'
-STATE = 'slot_state'
-
 # Possible states for the slots.
 STATE_FREE = str('FREE')
 STATE_SELECTED = str('SELECTED')
@@ -617,20 +609,6 @@ class OperationalSlot(models.Model):
             raise ValueError('Change from <' + str(self.state) + '> to <' +
                              str(new) + ' is forbidden.')
 
-    def serialize(self):
-        """
-        Serializes a single OperationalSlot into a JSON-RPC data structure.
-        :return: JSON-like structure with the data serialized.
-        """
-        return {
-            SLOT_IDENTIFIER: self.identifier,
-            GROUNDSTATION_CHANNEL: self.groundstation_channel.identifier,
-            SPACECRAFT_CHANNEL: self.spacecraft_channel.identifier,
-            DATE_START: self.start.isoformat(),
-            DATE_END: self.end.isoformat(),
-            STATE: self.state
-        }
-
     def __unicode__(self):
         """
         Unicode string representation of the contents of this object.
@@ -642,18 +620,3 @@ class OperationalSlot(models.Model):
                + ', state = ' + str(self.state)\
                + ', sc_notified = ' + str(self.sc_notified)\
                + ', gs_notified = ' + str(self.gs_notified)
-
-    @staticmethod
-    def serialize_slots(slots):
-        """
-        Serializes a complete list of OperationalSlots into a JSON-like
-        structure.
-        :param slots: The list to be serialized.
-        :return: JSON-like structure with the data serialized.
-        """
-        result = []
-
-        for o_i in slots:
-            result.append(o_i.serialize())
-
-        return result

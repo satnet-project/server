@@ -15,9 +15,22 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
+
 from services.common import serialization as common_serializers
+from services.configuration.jrpc.serializers import serialization as \
+    cfg_serialization
 from services.configuration.models import segments, channels
-from services.scheduling.models import operational
+from services.scheduling.models import operational as operational_models
+
+logger = logging.getLogger('scheduling')
+
+
+SLOTS_K = 'slots'
+SLOT_IDENTIFIER_K = 'identifier'
+DATE_START_K = 'date_start'
+DATE_END_K = 'date_end'
+STATE_K = 'state'
 
 
 def serialize_slot_information(slot):
@@ -29,15 +42,32 @@ def serialize_slot_information(slot):
     return {
         'state': slot.state,
         'gs_username':
-            slot[0].groundstation_channel.groundstation_set.all()[0].user.username,
+            slot.groundstation_channel.groundstation_set.all()[0].user
+            .username,
         'sc_username':
-            slot[0].spacecraft_channel.spacecraft_set.all()[0].user.username,
-        'starting_time': common_serializers.serialize_iso8601_date(
-            slot.availability_slot.start
-        ),
-        'ending_time': common_serializers.serialize_iso8601_date(
-            slot.availability_slot.end
-        ),
+            slot.spacecraft_channel.spacecraft_set.all()[0].user.username,
+        'starting_time':
+            common_serializers.serialize_iso8601_date(
+                slot.availability_slot.start
+            ),
+        'ending_time':
+            common_serializers.serialize_iso8601_date(
+                slot.availability_slot.end
+            ),
+    }
+
+
+def serialize_operational_slot(slot):
+    """
+    Serializes a single OperationalSlot into a JSON-RPC data structure.
+    :return: JSON-like structure with the data serialized.
+    """
+    return {
+        SLOT_IDENTIFIER_K: slot.identifier,
+        STATE_K: slot.state,
+        cfg_serialization.CH_ID_K: slot.spacecraft_channel.identifier,
+        DATE_START_K: slot.start.isoformat(),
+        DATE_END_K: slot.end.isoformat()
     }
 
 
@@ -47,27 +77,21 @@ def serialize_sc_operational_slots(spacecraft_id):
     :param spacecraft_id: The identifier of the Spacecraft.
     :return: The list with all the serialized slots.
     """
-    s_slots = []
+    slots = []
 
     for sc_ch_i in channels.SpacecraftChannel.objects.filter(
             enabled=True,
             spacecraft=segments.Spacecraft.objects.get(identifier=spacecraft_id)
     ):
 
-        o_slots_i = operational.OperationalSlot.objects.filter(
+        o_slots_i = operational_models.OperationalSlot.objects.filter(
             spacecraft_channel=sc_ch_i
         )
 
-        for o in operational.OperationalSlot.serialize_slots(o_slots_i):
-            s_slots.append(o)
+        for o in operational_models.OperationalSlot.serialize_slots(o_slots_i):
+            slots.append(o)
 
-    if len(s_slots) == 0:
-        raise Exception(
-            'No OperationalSlots available for Spacecraft <'
-            + str(spacecraft_id) + '>'
-        )
-
-    return s_slots
+    return slots
 
 
 def serialize_gs_operational_slots(groundstation_id):
@@ -76,26 +100,24 @@ def serialize_gs_operational_slots(groundstation_id):
     :param groundstation_id: The identifier of the GroundStation.
     :return: The list with all the serialized slots.
     """
-    s_slots = []
+    slots = []
 
     for gs_ch_i in channels.GroundStationChannel.objects.filter(
-            enabled=True,
-            groundstation=segments.GroundStation.objects.get(
-                identifier=groundstation_id
-            )
+        enabled=True,
+        groundstation=segments.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
     ):
 
-        o_slots_i = operational.OperationalSlot.objects.filter(
+        for slot in operational_models.OperationalSlot.objects.filter(
             groundstation_channel=gs_ch_i
-        )
+        ):
+            o_slots_i = serialize_operational_slot(slot)
 
-        for o in operational.OperationalSlot.serialize_slots(o_slots_i):
-            s_slots.append(o)
+        slots.append({
+            cfg_serialization.CH_ID_K: gs_ch_i, {
+                cfg_serialization
+            }
+        })
 
-    if len(s_slots) == 0:
-        raise Exception(
-            'No OperationalSlots available for GroundStation <'
-            + str(groundstation_id) + '>'
-        )
-
-    return s_slots
+    return slots
