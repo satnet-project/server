@@ -18,9 +18,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 
 from services.common import serialization as common_serializers
-from services.configuration.jrpc.serializers import serialization as \
-    cfg_serialization
-from services.configuration.models import segments, channels
+from services.configuration.models import segments, channels, compatibility \
+    as compatiblity_models
 from services.scheduling.models import operational as operational_models
 
 logger = logging.getLogger('scheduling')
@@ -57,18 +56,24 @@ def serialize_slot_information(slot):
     }
 
 
-def serialize_operational_slot(slot):
+def serialize_slots(slots):
     """
-    Serializes a single OperationalSlot into a JSON-RPC data structure.
-    :return: JSON-like structure with the data serialized.
+    Serializes a list of OperationalSlot objects into a JSON-RPC data structure.
+    :param slots: List with the slots to be serialized
+    :return: JSON-like structure with the data serialized
     """
-    return {
-        SLOT_IDENTIFIER_K: slot.identifier,
-        STATE_K: slot.state,
-        cfg_serialization.CH_ID_K: slot.spacecraft_channel.identifier,
-        DATE_START_K: slot.start.isoformat(),
-        DATE_END_K: slot.end.isoformat()
-    }
+    s_slots = []
+
+    for s in slots:
+
+        s_slots.append({
+            SLOT_IDENTIFIER_K: s.identifier,
+            STATE_K: s.state,
+            DATE_START_K: s.start.isoformat(),
+            DATE_END_K: s.end.isoformat()
+        })
+
+    return s_slots
 
 
 def serialize_sc_operational_slots(spacecraft_id):
@@ -102,22 +107,22 @@ def serialize_gs_operational_slots(groundstation_id):
     """
     slots = []
 
-    for gs_ch_i in channels.GroundStationChannel.objects.filter(
+    gs_channels = channels.SpacecraftChannel.objects.filter(
         enabled=True,
         groundstation=segments.GroundStation.objects.get(
             identifier=groundstation_id
         )
+    )
+
+    for pair in compatiblity_models.ChannelCompatibility.objects.filter(
+        grounstation_channels__in=gs_channels
     ):
 
-        for slot in operational_models.OperationalSlot.objects.filter(
-            groundstation_channel=gs_ch_i
-        ):
-            o_slots_i = serialize_operational_slot(slot)
+        o_slots_i = operational_models.OperationalSlot.objects.filter(
+            groundstation_channel=pair.
+        )
 
-        slots.append({
-            cfg_serialization.CH_ID_K: gs_ch_i, {
-                cfg_serialization
-            }
-        })
+        for o in serialize_slots(o_slots_i):
+            slots.append(o)
 
     return slots

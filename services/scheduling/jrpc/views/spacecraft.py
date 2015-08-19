@@ -18,8 +18,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 import rpc4django
 
 from services.configuration.models import segments
-from services.scheduling.models import operational
-from services.scheduling.jrpc.serializers import serialization
+from services.scheduling.models import operational as operational_models
+from services.scheduling.jrpc.serializers import serialization as \
+    operational_serializers
 from website import settings as satnet_settings
 
 
@@ -36,8 +37,8 @@ def get_operational_slots(spacecraft_id):
     :return: JSON-like structure with the data serialized.
     """
     return sorted(
-        serialization.serialize_sc_operational_slots(spacecraft_id),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        operational_serializers.serialize_sc_operational_slots(spacecraft_id),
+        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
     )
 
 
@@ -53,13 +54,14 @@ def get_changes(spacecraft_id):
     :param spacecraft_id: The identifier of the Spacecraft.
     :return: JSON-like structure with the data serialized.
     """
-    sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
-    changed_slots = operational.OperationalSlot.objects\
-        .get_spacecraft_changes(sc)
+    changed_slots = operational_models.OperationalSlot.objects\
+        .get_spacecraft_changes(
+            segments.Spacecraft.objects.get(identifier=spacecraft_id)
+        )
 
     return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        operational_models.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
     )
 
 
@@ -86,19 +88,19 @@ def select_slots(spacecraft_id, slot_identifiers):
     if slot_identifiers is None or len(slot_identifiers) == 0:
         raise Exception('No <slot_identifiers> provided.')
 
-    slots = operational.OperationalSlot.objects.filter(
+    slots = operational_models.OperationalSlot.objects.filter(
         identifier__in=slot_identifiers
     )
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects.update_state(
-        state=operational.STATE_SELECTED, slots=slots,
+    changed_slots = operational_models.OperationalSlot.objects.update_state(
+        state=operational_models.STATE_SELECTED, slots=slots,
         notify_sc=False, notify_gs=True
     )
     return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        operational_models.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
     )
 
 
@@ -123,18 +125,18 @@ def cancel_selections(spacecraft_id, slot_identifiers):
     if slot_identifiers is None or len(slot_identifiers) == 0:
         raise Exception('No <slot_identifiers> provided.')
 
-    slots = operational.OperationalSlot.objects\
+    slots = operational_models.OperationalSlot.objects\
         .filter(identifier__in=slot_identifiers)
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects.update_state(
-        state=operational.STATE_FREE, slots=slots,
+    changed_slots = operational_models.OperationalSlot.objects.update_state(
+        state=operational_models.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
     return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        operational_models.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
     )
 
 
@@ -159,17 +161,17 @@ def cancel_reservations(spacecraft_id, slot_identifiers):
     if slot_identifiers is None or len(slot_identifiers) == 0:
         raise Exception('No <slot_identifiers> provided.')
 
-    slots = operational.OperationalSlot.objects.filter(
+    slots = operational_models.OperationalSlot.objects.filter(
         identifier__in=slot_identifiers
     )
     if slots is None or len(slots) == 0:
         raise Exception('No valid <slot_identifiers> provided.')
 
-    changed_slots = operational.OperationalSlot.objects.update_state(
-        state=operational.STATE_FREE, slots=slots,
+    changed_slots = operational_models.OperationalSlot.objects.update_state(
+        state=operational_models.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
     return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational.SLOT_IDENTIFIER]
+        operational_models.OperationalSlot.serialize_slots(changed_slots),
+        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
     )
