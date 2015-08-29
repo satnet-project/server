@@ -25,11 +25,13 @@ import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers\
-    import serialization as jrpc_cfg_serial
+from services.configuration.jrpc.serializers import serialization as \
+    jrpc_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.scheduling.models import operational
+from services.scheduling.models import operational as operational_models
+from services.scheduling.jrpc.serializers import serialization as \
+    jrpc_sch_serial
 from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
 
 
@@ -93,8 +95,8 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        operational.OperationalSlot.objects.get_simulator().set_debug()
-        operational.OperationalSlot.objects.set_debug()
+        operational_models.OperationalSlot.objects.get_simulator().set_debug()
+        operational_models.OperationalSlot.objects.set_debug()
 
     def test_gs_get_operational_slots(self):
         """
@@ -102,7 +104,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_gs_get_operational_slots')
-        operational.OperationalSlot.objects.reset_ids_counter()
+        operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant GroundStation
         self.assertRaises(
@@ -153,32 +155,33 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         actual = jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)
-        expected = [
-            {
-                operational.SLOT_IDENTIFIER: '1',
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=1)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=1)
-                ).isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: '2',
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=2)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=2)
-                ).isoformat()
-            },
-        ]
+        expected = {
+            self.__gs_1_ch_1_id: {
+                self.__sc_1_ch_1_id: {
+                    jrpc_cfg_serial.SC_ID_K: self.__sc_1_id,
+                    jrpc_sch_serial.SLOTS_K: [{
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=1)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=1)
+                        ).isoformat()
+                    }, {
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=2)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=2)
+                        ).isoformat()
+                    }]
+                }
+            }
+        }
+
         self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(

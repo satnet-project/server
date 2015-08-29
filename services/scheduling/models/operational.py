@@ -471,6 +471,7 @@ class OperationalSlot(models.Model):
     """
     class Meta:
         app_label = 'scheduling'
+        ordering = ['identifier']
 
     ID_FIELDS_SEPARATOR = '-'
 

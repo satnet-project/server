@@ -36,13 +36,8 @@ def get_operational_slots(groundstation_id):
     :param groundstation_id: Identifier of the spacecraft.
     :return: JSON-like structure with the data serialized.
     """
-    return sorted(
-        scheduling_serialization.serialize_gs_operational_slots(
-            groundstation_id
-        ),
-        key=lambda s: s[
-            scheduling_serialization.SLOT_IDENTIFIER_K
-        ]
+    return scheduling_serialization.serialize_gs_operational_slots(
+        groundstation_id
     )
 
 

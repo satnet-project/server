@@ -98,7 +98,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         operational.OperationalSlot.objects.get_simulator().set_debug()
         operational.OperationalSlot.objects.set_debug()
 
-    def test_sc_get_operational_slots(self):
+    def _sc_get_operational_slots(self):
         """
         Validates the JRPC method <sc_get_operational_slots>
         """
