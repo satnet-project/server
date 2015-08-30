@@ -315,7 +315,7 @@ class GroundStation(models.Model):
             self.callsign = callsign
             update_fields.append('callsign')
             changes = True
-        if not contact_elevation is None and\
+        if contact_elevation is not None and\
                 self.contact_elevation != contact_elevation:
             self.contact_elevation = contact_elevation
             update_fields.append('contact_elevation')
@@ -355,9 +355,7 @@ class GroundStation(models.Model):
         :return: 'True' if the channel is associated with this GroundStation.
         """
         return self.channels\
-            .filter(enabled=True)\
-            .filter(identifier=gs_channel_id)\
-            .exists()
+            .filter(enabled=True).filter(identifier=gs_channel_id).exists()
 
     def __unicode__(self):
         """

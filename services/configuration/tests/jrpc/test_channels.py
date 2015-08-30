@@ -293,7 +293,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEqual(
+        self.assertTrue(
             jrpc_channels_if.gs_channel_create(
                 ground_station_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
@@ -307,19 +307,16 @@ class JRPCChannelsTest(TestCase):
                     jrpc_serial.BANDWIDTHS_K: [12.500000000]
                 }
             ),
-            True,
             'Channel should have been created!'
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_channels_if.gs_channel_delete(
                 self.__gs_1_id, self.__gs_1_ch_2_id
             ),
-            True,
             'Channel should have been removed!'
         )
-        self.assertEqual(
+        self.assertFalse(
             jrpc_channels_if.gs_channel_is_unique(self.__gs_1_ch_2_id),
-            False,
             'Channel should not exist yet!'
         )
 
@@ -342,7 +339,7 @@ class JRPCChannelsTest(TestCase):
         except ObjectDoesNotExist:
             pass
 
-        self.assertEqual(
+        self.assertTrue(
             jrpc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
@@ -354,19 +351,16 @@ class JRPCChannelsTest(TestCase):
                     jrpc_serial.BANDWIDTH_K: '12.500000000'
                 }
             ),
-            True,
             'Channel should have been created!'
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_channels_if.sc_channel_delete(
                 self.__sc_1_id, self.__sc_1_ch_2_id
             ),
-            True,
             'Channel should have been removed!'
         )
-        self.assertEqual(
+        self.assertFalse(
             jrpc_channels_if.sc_channel_is_unique(self.__sc_1_ch_2_id),
-            False,
             'Channel should not exist yet!'
         )
 

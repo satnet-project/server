@@ -15,12 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-# It is necessary to import this module here for rpc4django to detect the RPC
-# methods.
+# RPC4django RPC methods automatic detection
 from services.configuration.jrpc.views import channels, rules, tle
 from services.configuration.jrpc.views import compatibility
 from services.configuration.jrpc.views.segments import groundstations
 from services.configuration.jrpc.views.segments import spacecraft
 
-# It is also necessary to import the signals.
-from services.configuration.signals import models, push
+# It is also necessary to import the signals
+from services.configuration.signals import models, push, rules

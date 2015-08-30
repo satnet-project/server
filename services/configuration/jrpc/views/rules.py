@@ -45,8 +45,8 @@ def list_grouped_rules(groundstation_id):
 
     # From each group, we only get the first rule since they are all equal
     for g in groups:
-
-        rules.append(g.rules.all()[0])
+        if len(g.rules.all()):
+            rules.append(g.rules.all()[0])
 
     return serialization.serialize_rules(rules)
 
@@ -67,9 +67,7 @@ def list_channel_rules(groundstation_id, channel_id):
     """
     ch = segment_models.GroundStation.objects.get(
         identifier=groundstation_id
-    ).channels.all().get(
-        identifier=channel_id
-    )
+    ).channels.all().get(identifier=channel_id)
     ch_rules = rule_models.AvailabilityRule.objects.filter(gs_channel=ch)
     return serialization.serialize_rules(ch_rules)
 
@@ -130,27 +128,37 @@ def remove_grouped_rule(groundstation_id, group_id):
     :param group_id: Identifier of the group
     :return: 'True' in case the group of rules could be removed.
     """
-    group = rule_models.GroupedAvailabilityRules.objects.get(id=group_id)
+    try:
 
-    # 1) we have to check that the group_id belongs to the indicated gs
-    if group.groundstation.identifier != groundstation_id:
-        raise Exception(
-            'group_id <' + str(
-                group_id
-            ) + '>, does not belong to gs <' + str(
-                groundstation_id
-            ) + '>'
-        )
+        print('@remove_grouped_rule, 1')
+        group = rule_models.GroupedAvailabilityRules.objects.get(id=group_id)
 
-    # 2) after these checks, we effectively delete the rules
-    rule_models.AvailabilityRule.objects.filter(
-        id__in=group.rules.all()
-    ).delete()
+        print('@remove_grouped_rule, 2')
+        # 1) we have to check that the group_id belongs to the indicated gs
+        if group.groundstation.identifier != groundstation_id:
+            raise Exception(
+                'group_id <' + str(group_id) +
+                '>, does not belong to gs <' + str(groundstation_id) + '>'
+            )
 
-    # 3) once the rules have been deleted, we delete the group
-    group.delete()
+        print('@remove_grouped_rule, 3')
+        # 2) after these checks, we effectively delete the rules
+        rule_models.AvailabilityRule.objects.filter(
+            id__in=group.rules.all()
+        ).delete()
 
-    return True
+        print('@remove_grouped_rule, 4')
+        # 3) once the rules have been deleted, we delete the group
+        group.delete()
+
+        print('@remove_grouped_rule, 5')
+        return True
+
+    except Exception as ex:
+
+        print('Exception caught!, ex = ' + str(ex))
+        import traceback
+        traceback.print_tb(ex)
 
 
 @rpc4django.rpcmethod(

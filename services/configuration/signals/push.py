@@ -21,6 +21,7 @@ from services.common.push import service as satnet_push
 from services.configuration.models import segments as segment_models
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_save,
     sender=segment_models.GroundStation
@@ -51,6 +52,7 @@ def gs_added_or_updated_handler(sender, instance, created, raw, **kwargs):
         )
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.pre_delete,
     sender=segment_models.GroundStation

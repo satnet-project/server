@@ -358,16 +358,28 @@ class OperationalSlotsManager(models.Manager):
         :param sender The object that sent the signal.
         :param instance The instance of the object itself.
         """
+
+        print('@availability_slot_added, instance = ' + str(instance))
+        print('@availability_slot_added, 1')
+
         gs_ch = instance.groundstation_channel
         # start, end = simulation.OrbitalSimulator.get_simulation_window()
+        print('@availability_slot_added, 2, gs_ch = ' + str(gs_ch.identifier))
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
-                groundstation_channels=gs_ch
+            groundstation_channels=gs_ch
         ):
+
+            print('@availability_slot_added, 3, comp_sc_ch = ' + str(
+                comp_i.spacecraft_channel.identifier
+            ))
+
+            misc.print_list(comp_i.spacecraft_channel.spacecraft_set.all())
 
             OperationalSlot.objects.set_spacecraft(
                 comp_i.spacecraft_channel.spacecraft_set.all()[0]
             )
+            print('@availability_slot_added, 4')
             OperationalSlot.objects.get_simulator().set_groundstation(
                 gs_ch.groundstation_set.all()[0]
             )
@@ -382,6 +394,10 @@ class OperationalSlotsManager(models.Manager):
                 .get_simulator().calculate_passes([
                     (instance.start, instance.end, instance.identifier)
                 ])
+
+            print('@availability_slot_added, operational_s = ' + str(
+                operational_s
+            ))
 
             OperationalSlot.objects.create_list(
                 gs_ch, comp_i.spacecraft_channel, operational_s

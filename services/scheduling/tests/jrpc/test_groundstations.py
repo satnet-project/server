@@ -104,6 +104,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_gs_get_operational_slots')
+
         operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant GroundStation

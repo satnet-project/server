@@ -163,6 +163,7 @@ class AvailabilitySlotsManager(models.Manager):
             )
             self.add_slots(gs_ch_i, slots_i)
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def availability_rule_updated(sender, instance, **kwargs):
         """
@@ -171,10 +172,14 @@ class AvailabilitySlotsManager(models.Manager):
         :param sender The object that sent the signal.
         :param instance The instance of the object itself.
         """
+        print('@ availability_rule_updated, 1')
         new_slots = rules.AvailabilityRule.objects.get_availability_slots(
             instance.gs_channel
         )
+        print('@ availability_rule_updated, 2, new_slots?')
+        misc.print_list(new_slots)
         AvailabilitySlot.objects.update_slots(instance.gs_channel, new_slots)
+        print('@ availability_rule_updated, 3')
 
     @staticmethod
     def truncate(slot, start, end):
@@ -190,7 +195,7 @@ class AvailabilitySlotsManager(models.Manager):
             start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
-                '<start=' + str(start) + '> should occurr sooner than <end='
+                '<start=' + str(start) + '> should occur sooner than <end='
                 + str(end) + '>'
             )
 

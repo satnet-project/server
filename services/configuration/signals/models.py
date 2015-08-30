@@ -16,9 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import dispatch as django_dispatch
-from django.db.models import signals
+from django.db.models import signals as django_signals
 from services.common import simulation
-from services.configuration.models import availability, compatibility, channels
+
+from services.configuration.models import availability, compatibility
+from services.configuration.models import channels as channel_models
 from services.configuration.models import rules, tle as tle_models
 from services.scheduling.models import operational
 
@@ -28,28 +30,29 @@ def connect_rules_2_availability():
     This function connects all the signals triggered during the creation/save
     of a rule with the callbacks for updating the AvailabilitySlots table.
     """
-    signals.post_save.connect(
+
+    django_signals.post_save.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleOnce
     )
-    signals.post_save.connect(
+    django_signals.post_save.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleDaily
     )
-    signals.post_save.connect(
+    django_signals.post_save.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleWeekly
     )
 
-    signals.post_delete.connect(
+    django_signals.post_delete.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleOnce
     )
-    signals.post_delete.connect(
+    django_signals.post_delete.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleDaily
     )
-    signals.post_delete.connect(
+    django_signals.post_delete.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleWeekly
     )
@@ -62,21 +65,21 @@ def connect_channels_2_compatibility():
     Spacecraft), with some callback functions at the SegmentCompatibility
     table that are responsible for updating the contents of the latter.
     """
-    signals.post_save.connect(
+    django_signals.post_save.connect(
         compatibility.ChannelCompatibilityManager.gs_channel_saved,
-        sender=channels.GroundStationChannel
+        sender=channel_models.GroundStationChannel
     )
-    signals.post_save.connect(
+    django_signals.post_save.connect(
         compatibility.ChannelCompatibilityManager.sc_channel_saved,
-        sender=channels.SpacecraftChannel
+        sender=channel_models.SpacecraftChannel
     )
-    signals.pre_delete.connect(
+    django_signals.pre_delete.connect(
         compatibility.ChannelCompatibilityManager.gs_channel_deleted,
-        sender=channels.GroundStationChannel
+        sender=channel_models.GroundStationChannel
     )
-    signals.pre_delete.connect(
+    django_signals.pre_delete.connect(
         compatibility.ChannelCompatibilityManager.sc_channel_deleted,
-        sender=channels.SpacecraftChannel
+        sender=channel_models.SpacecraftChannel
     )
 
 
@@ -86,11 +89,11 @@ def connect_availability_2_operational():
     creation/save/removla of an AvailabilitySlots to the OperationalSlots
     table.
     """
-    signals.post_save.connect(
+    django_signals.post_save.connect(
         operational.OperationalSlotsManager.availability_slot_added,
         sender=availability.AvailabilitySlot
     )
-    signals.pre_delete.connect(
+    django_signals.pre_delete.connect(
         operational.OperationalSlotsManager.availability_slot_removed,
         sender=availability.AvailabilitySlot
     )
@@ -129,6 +132,7 @@ update_tle_signal = django_dispatch.Signal(
 )
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(update_tle_signal)
 def update_tle_handler(sender, identifier, tle_l1, tle_l2, **kwargs):
     """

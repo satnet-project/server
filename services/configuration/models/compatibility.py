@@ -267,8 +267,6 @@ class ChannelCompatibilityManager(models.Manager):
 
         diff = ChannelCompatibilityManager.diff(instance, compatible_chs)
 
-        print('>>> @ gs_channel_saved: ' + str(diff))
-
         ChannelCompatibilityManager.patch(instance, *diff)
 
         compatibility_add_gs_ch_signal.send(

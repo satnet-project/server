@@ -58,15 +58,17 @@ class AvailabilityRuleManager(models.Manager):
         print('>>>> @arule.create, 1')
 
         db_obj_classname = self.__periodicity2class__[periodicity]
-        print('>>>> @arule.create, 2')
+        print('>>>> @arule.create, 2, db_obj_classname = ' + str(
+            db_obj_classname
+        ))
 
         db_obj_class = globals()[db_obj_classname]
-        print('>>>> @arule.create, 3')
+        print('>>>> @arule.create, 3, db_obj_class = ' + str(db_obj_class))
 
         rule_child = db_obj_class.objects.create(
             gs_channel, operation, periodicity, dates
         )
-        print('>>>> @arule.create, 4')
+        print('>>>> @arule.create, 4, rule_child = ' + str(rule_child))
 
         # ### Generate availability slots and write them in the table.
         return AvailabilityRule.objects.get(
@@ -506,7 +508,10 @@ class AvailabilityRuleDailyManager(models.Manager):
         """
         This method creates a new object in the database.
         """
-        return super(AvailabilityRuleDailyManager, self).create(
+        print('@@@ daily.create()')
+        misc.print_list(dates)
+
+        r = super(AvailabilityRuleDailyManager, self).create(
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
@@ -515,6 +520,10 @@ class AvailabilityRuleDailyManager(models.Manager):
             starting_time=dates[2],
             ending_time=dates[3]
         )
+
+        print('@@@ XXXX daily.create(), rule = ' + str(r))
+
+        return r
 
 
 class AvailabilityRuleDaily(AvailabilityRule):
