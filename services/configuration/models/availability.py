@@ -177,7 +177,7 @@ class AvailabilitySlotsManager(models.Manager):
             instance.gs_channel
         )
         print('@ availability_rule_updated, 2, new_slots?')
-        misc.print_list(new_slots)
+        # misc.print_list(new_slots)
         AvailabilitySlot.objects.update_slots(instance.gs_channel, new_slots)
         print('@ availability_rule_updated, 3')
 

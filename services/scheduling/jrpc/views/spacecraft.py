@@ -20,7 +20,7 @@ import rpc4django
 from services.configuration.models import segments
 from services.scheduling.models import operational as operational_models
 from services.scheduling.jrpc.serializers import serialization as \
-    operational_serializers
+    scheduling_serializers
 from website import settings as satnet_settings
 
 
@@ -36,9 +36,8 @@ def get_operational_slots(spacecraft_id):
     :param spacecraft_id: Identifier of the spacecraft.
     :return: JSON-like structure with the data serialized.
     """
-    return sorted(
-        operational_serializers.serialize_sc_operational_slots(spacecraft_id),
-        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
+    return scheduling_serializers.serialize_sc_operational_slots(
+        spacecraft_id
     )
 
 
@@ -59,12 +58,10 @@ def get_changes(spacecraft_id):
             segments.Spacecraft.objects.get(identifier=spacecraft_id)
         )
 
-    return sorted(
-        operational_models.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
-    )
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.sc.selectSlots',
     signature=['String', 'Object'],
@@ -98,12 +95,11 @@ def select_slots(spacecraft_id, slot_identifiers):
         state=operational_models.STATE_SELECTED, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return sorted(
-        operational_models.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.sc.cancelSelections',
     signature=['String', 'Object'],
@@ -134,12 +130,11 @@ def cancel_selections(spacecraft_id, slot_identifiers):
         state=operational_models.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return sorted(
-        operational_models.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='scheduling.sc.cancelReservations',
     signature=['String', 'Object'],
@@ -171,7 +166,5 @@ def cancel_reservations(spacecraft_id, slot_identifiers):
         state=operational_models.STATE_FREE, slots=slots,
         notify_sc=False, notify_gs=True
     )
-    return sorted(
-        operational_models.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[operational_serializers.SLOT_IDENTIFIER_K]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)

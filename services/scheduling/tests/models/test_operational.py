@@ -112,7 +112,7 @@ class OperationalModels(test.TestCase):
 
         self.assertEqual(
             jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
             ), True, 'Channel should have been created!'
@@ -271,7 +271,7 @@ class OperationalModels(test.TestCase):
         )
         self.assertEqual(
             jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
             ), True, 'Channel should have been created!'
@@ -413,7 +413,7 @@ class OperationalModels(test.TestCase):
         )
         self.assertEqual(
             jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
             ), True, 'Channel should have been created!'
@@ -473,7 +473,7 @@ class OperationalModels(test.TestCase):
 
         self.assertEqual(
             jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration=self.__gs_1_ch_2_cfg
             ), True, 'Channel should have been created!'

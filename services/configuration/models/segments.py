@@ -17,12 +17,11 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.core import validators
 from django.db import models
-from django.db.models import signals
 from django_countries import fields
 import logging
 from services.accounts import models as account_models
 from services.common import gis
-from services.configuration.models import channels, tle as tle_models
+from services.configuration.models import tle as tle_models
 
 logger = logging.getLogger('models.segments')
 
@@ -51,34 +50,6 @@ class SpacecraftManager(models.Manager):
         return super(SpacecraftManager, self).create(
             tle=tle, **kwargs
         )
-
-    def add_channel(self, sc_identifier=None, **kwargs):
-        """
-        This method creates a new communications channel and associates it to
-        the Spacecraft whose identifier is given as a parameter.
-        """
-        sc = self.get(identifier=sc_identifier)
-        sc_ch = channels.SpacecraftChannel.objects.create(
-            enabled=True, **kwargs
-        )
-        sc.channels.add(sc_ch)
-        sc.save()
-
-        # ### IMPORTANT ###
-        # The signal 'post_save' is sent again since the first 'post_save' (as
-        # a result of the invokation of the .create() method) has to be
-        # filtered out by all those methods that require to access to the
-        # related Spacecraft object through: spacecraft_set.all()[0]
-        signals.post_save.send(
-            sender=channels.SpacecraftChannel,
-            instance=sc_ch,
-            raw=False,
-            created=False,
-            using=channels.SpacecraftChannel.get_app_label(),
-            update_fields=None
-        )
-
-        return sc_ch
 
 
 class Spacecraft(models.Model):
@@ -119,10 +90,6 @@ class Spacecraft(models.Model):
         )]
     )
 
-    channels = models.ManyToManyField(
-        channels.SpacecraftChannel,
-        verbose_name='Available spacecraft communications channels'
-    )
     tle = models.ForeignKey(
         tle_models.TwoLineElement,
         verbose_name='TLE object for this Spacecraft'
@@ -205,32 +172,6 @@ class GroundStationsManager(models.Manager):
             **kwargs
         )
 
-    def add_channel(self, gs_identifier=None, **kwargs):
-        """
-        This method creates a new communications channel and associates it to
-        the GroundStation whose identifier is given as a parameter.
-        """
-        gs = self.get(identifier=gs_identifier)
-        gs_ch = channels.GroundStationChannel.objects.create(**kwargs)
-        gs.channels.add(gs_ch)
-        gs.save()
-
-        # ### IMPORTANT ###
-        # The signal 'post_save' is sent again since the first 'post_save' (as
-        # a result of the invokation of the .create() method) has to be
-        # filtered out by all those methods that require to access to the
-        # related Spacecraft object through: spacecraft_set.all()[0]
-        signals.post_save.send(
-            sender=channels.GroundStationChannel,
-            instance=gs_ch,
-            raw=False,
-            created=False,
-            using=channels.GroundStationChannel.get_app_label(),
-            update_fields=None
-        )
-
-        return gs_ch
-
 
 class GroundStation(models.Model):
     """
@@ -282,11 +223,6 @@ class GroundStation(models.Model):
     # regulations.
     country = fields.CountryField('Country where the GroundStation is located')
     IARU_region = models.SmallIntegerField('IARU region identifier')
-
-    channels = models.ManyToManyField(
-        channels.GroundStationChannel,
-        verbose_name='Communication channels that belong to this GroundStation'
-    )
 
     is_automatic = models.BooleanField(
         'Flag that defines this GroundStation as a fully automated one,'
@@ -343,19 +279,6 @@ class GroundStation(models.Model):
 
         if changes:
             self.save(update_fields=update_fields)
-
-    def has_channel(self, gs_channel_id):
-        """Checker method.
-
-        This method checks whether this GroundStation has the given Channel
-        or not associated with it.
-        :param gs_channel_id: identifier of the Channel of the GroundStation
-                                whose ownership to this segment is to be
-                                checked.
-        :return: 'True' if the channel is associated with this GroundStation.
-        """
-        return self.channels\
-            .filter(enabled=True).filter(identifier=gs_channel_id).exists()
 
     def __unicode__(self):
         """

@@ -237,32 +237,6 @@ class JRPCSegmentsTest(test.TestCase):
             'Spacecraft should have been created'
         )
 
-    def test_gs_list_channels(self):
-        """JRPC method: configuration.gs.getChannels
-        This test validates the list of channels returned throught the JRPC
-        method.
-        """
-        if self.__verbose_testing:
-            print('>>> TEST (test_gs_channels)')
-        ch_list = jrpc_gs.list_channels(self.__gs_1_id)
-        self.assertCountEqual(
-            ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__gs_1_ch_1_id],
-            'Wrong channel identifiers, actual = ' + str(ch_list)
-        )
-
-    def test_sc_list_channels(self):
-        """JRPC method: configuration.sc.getChannels
-        This test validates the list of channels returned throught the JRPC
-        method.
-        """
-        if self.__verbose_testing:
-            print('>>> TEST (test_sc_channels)')
-        ch_list = jrpc_sc.list_channels(self.__sc_1_id)
-        self.assertCountEqual(
-            ch_list[jrpc_serial.CHANNEL_LIST_K], [self.__sc_1_ch_1_id],
-            'Wrong channel identifiers, actual = ' + str(ch_list)
-        )
-
     def test_gs_get_configuration(self):
         """JRPC method: configuration.gs.getConfiguration
         This test validates the returned configuration by the proper JRPC

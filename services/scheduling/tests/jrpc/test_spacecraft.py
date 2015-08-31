@@ -25,13 +25,15 @@ import logging
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers\
-    import serialization as jrpc_cfg_serial
+from services.configuration.jrpc.serializers import serialization as \
+    jrpc_cfg_serial
 from services.configuration.jrpc.views import channels as jrpc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.scheduling.models import operational
+from services.scheduling.models import operational as operational_models
 from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
 from services.scheduling.jrpc.views import spacecraft as jrpc_sc_scheduling
+from services.scheduling.jrpc.serializers import serialization as \
+    jrpc_sch_serial
 
 
 class JRPCSpacecraftSchedulingTest(test.TestCase):
@@ -95,8 +97,8 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        operational.OperationalSlot.objects.get_simulator().set_debug()
-        operational.OperationalSlot.objects.set_debug()
+        operational_models.OperationalSlot.objects.get_simulator().set_debug()
+        operational_models.OperationalSlot.objects.set_debug()
 
     def _sc_get_operational_slots(self):
         """
@@ -104,7 +106,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_sc_get_operational_slots')
-        operational.OperationalSlot.objects.reset_ids_counter()
+        operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant Spacecraft
         self.assertRaises(
@@ -131,7 +133,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         # 3) basic test, should generate 2 FREE slots
         self.assertEqual(
             jrpc_chs.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
             ), True, 'Channel should have been created!'
@@ -155,32 +157,32 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         actual = jrpc_sc_scheduling.get_operational_slots(self.__sc_1_id)
-        expected = [
-            {
-                operational.SLOT_IDENTIFIER: str('1'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=1)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=1)
-                ).isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: str('2'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=2)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=2)
-                ).isoformat()
-            },
-        ]
+        expected = {
+            self.__sc_1_ch_1_id: {
+                self.__gs_1_ch_1_id: {
+                    jrpc_cfg_serial.GS_ID_K: self.__sc_1_id,
+                    jrpc_sch_serial.SLOTS_K: [{
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=1)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=1)
+                        ).isoformat()
+                    }, {
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=2)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=2)
+                        ).isoformat()
+                    }]
+                }
+            }
+        }
         self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
@@ -189,20 +191,18 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )
 
@@ -212,7 +212,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_sc_get_changes')
-        operational.OperationalSlot.objects.reset_ids_counter()
+        operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # 1) non-existant Spacecraft
         self.assertRaises(
@@ -224,19 +224,21 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### channels required for the tests
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
 
         # 3) we add some slots and they should be retrieved as 'changed' only
@@ -259,32 +261,32 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        expected = [
-            {
-                operational.SLOT_IDENTIFIER: str('1'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=1)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=1)
-                ).isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: str('2'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=2)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=2)
-                ).isoformat()
-            },
-        ]
+        expected = {
+            self.__sc_1_ch_1_id: {
+                self.__gs_1_ch_1_id: {
+                    jrpc_cfg_serial.GS_ID_K: self.__sc_1_id,
+                    jrpc_sch_serial.SLOTS_K: [{
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=1)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=1)
+                        ).isoformat()
+                    }, {
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=2)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=2)
+                        ).isoformat()
+                    }]
+                }
+            }
+        }
         self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
@@ -319,32 +321,32 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        expected = [
-            {
-                operational.SLOT_IDENTIFIER: str('3'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=1)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=1)
-                ).isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: str('4'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_FREE,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=2)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=2)
-                ).isoformat()
-            },
-        ]
+        expected = {
+            self.__sc_1_ch_1_id: {
+                self.__gs_1_ch_1_id: {
+                    jrpc_cfg_serial.GS_ID_K: self.__sc_1_id,
+                    jrpc_sch_serial.SLOTS_K: [{
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=1)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=1)
+                        ).isoformat()
+                    }, {
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=2)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=2)
+                        ).isoformat()
+                    }]
+                }
+            }
+        }
         self.assertEqual(
             actual, expected,
             'Expected different slots!, diff = ' + str(datadiff.diff(
@@ -353,20 +355,18 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )
 
@@ -376,7 +376,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_sc_get_changes')
-        operational.OperationalSlot.objects.reset_ids_counter()
+        operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # ### channels required for the tests
         self.assertEqual(
@@ -388,7 +388,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
         self.assertEqual(
             jrpc_chs.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
             ), True, 'Channel should have been created!'
@@ -415,32 +415,32 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         id_list = db_tools.create_identifier_list(actual)
         actual = jrpc_sc_scheduling.select_slots(self.__sc_1_id, id_list)
 
-        expected = [
-            {
-                operational.SLOT_IDENTIFIER: str('1'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_SELECTED,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=1)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=1)
-                ).isoformat()
-            },
-            {
-                operational.SLOT_IDENTIFIER: str('2'),
-                operational.GROUNDSTATION_CHANNEL: self.__gs_1_ch_1_id,
-                operational.SPACECRAFT_CHANNEL: self.__sc_1_ch_1_id,
-                operational.STATE: operational.STATE_SELECTED,
-                operational.DATE_START: (
-                    s_time + datetime.timedelta(days=2)
-                ).isoformat(),
-                operational.DATE_END: (
-                    e_time + datetime.timedelta(days=2)
-                ).isoformat()
-            },
-        ]
+        expected = {
+            self.__sc_1_ch_1_id: {
+                self.__gs_1_ch_1_id: {
+                    jrpc_cfg_serial.GS_ID_K: self.__sc_1_id,
+                    jrpc_sch_serial.SLOTS_K: [{
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=1)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=1)
+                        ).isoformat()
+                    }, {
+                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
+                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
+                        jrpc_sch_serial.DATE_START_K: (
+                            s_time + datetime.timedelta(days=2)
+                        ).isoformat(),
+                        jrpc_sch_serial.DATE_END_K: (
+                            e_time + datetime.timedelta(days=2)
+                        ).isoformat()
+                    }]
+                }
+            }
+        }
 
         self.assertEqual(
             actual, expected,
@@ -469,19 +469,17 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )

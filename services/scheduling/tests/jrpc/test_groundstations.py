@@ -116,12 +116,13 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
 
         # 2) basic test, should not generate slots until the GS is added,
         # raising an exception to confirm it
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
         self.assertRaises(
             Exception,
@@ -130,12 +131,13 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         # 3) basic test, should generate 2 FREE slots
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
 
         date_i = misc.get_today_utc() + datetime.timedelta(days=1)
@@ -191,19 +193,17 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )

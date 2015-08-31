@@ -508,10 +508,8 @@ class AvailabilityRuleDailyManager(models.Manager):
         """
         This method creates a new object in the database.
         """
-        print('@@@ daily.create()')
-        misc.print_list(dates)
 
-        r = super(AvailabilityRuleDailyManager, self).create(
+        return super(AvailabilityRuleDailyManager, self).create(
             gs_channel=gs_channel,
             operation=operation,
             periodicity=periodicity,
@@ -520,10 +518,6 @@ class AvailabilityRuleDailyManager(models.Manager):
             starting_time=dates[2],
             ending_time=dates[3]
         )
-
-        print('@@@ XXXX daily.create(), rule = ' + str(r))
-
-        return r
 
 
 class AvailabilityRuleDaily(AvailabilityRule):

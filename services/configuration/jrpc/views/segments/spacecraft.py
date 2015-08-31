@@ -104,22 +104,6 @@ def set_configuration(spacecraft_id, configuration):
 
 
 @rpcmethod(
-    name='configuration.sc.getChannels',
-    signature=['String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def list_channels(spacecraft_id):
-    """JRPC method: configuration.sc.getChannels
-    Returns the channels for the given Spacecraft.
-    """
-    return jrpc_serial.serialize_channels(
-        segments.Spacecraft.objects.get(
-            identifier=spacecraft_id
-        ).channels.all()
-    )
-
-
-@rpcmethod(
     name='configuration.sc.delete',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED

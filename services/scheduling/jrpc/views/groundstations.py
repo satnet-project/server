@@ -20,7 +20,7 @@ import rpc4django
 from services.configuration.models import segments
 from services.scheduling.models import operational
 from services.scheduling.jrpc.serializers import serialization as \
-    scheduling_serialization
+    scheduling_serializers
 from website import settings as satnet_settings
 
 
@@ -36,7 +36,7 @@ def get_operational_slots(groundstation_id):
     :param groundstation_id: Identifier of the spacecraft.
     :return: JSON-like structure with the data serialized.
     """
-    return scheduling_serialization.serialize_gs_operational_slots(
+    return scheduling_serializers.serialize_gs_operational_slots(
         groundstation_id
     )
 
@@ -56,12 +56,8 @@ def get_changes(groundstation_id):
     gs = segments.GroundStation.objects.get(identifier=groundstation_id)
     changed_slots = operational.OperationalSlot.objects\
         .get_groundstation_changes(gs)
-    return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[
-            scheduling_serialization.SLOT_IDENTIFIER_K
-        ]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
 # noinspection PyUnusedLocal
@@ -97,12 +93,8 @@ def confirm_selections(groundstation_id, slot_identifiers):
         state=operational.STATE_RESERVED, slots=slots,
         notify_sc=True, notify_gs=False
     )
-    return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[
-            scheduling_serialization.SLOT_IDENTIFIER_K
-        ]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
 # noinspection PyUnusedLocal
@@ -138,12 +130,8 @@ def deny_selections(groundstation_id, slot_identifiers):
         state=operational.STATE_DENIED, slots=slots,
         notify_sc=True, notify_gs=False
     )
-    return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[
-            scheduling_serialization.SLOT_IDENTIFIER_K
-        ]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)
 
 
 # noinspection PyUnusedLocal
@@ -180,9 +168,5 @@ def cancel_reservations(groundstation_id, slot_identifiers):
         state=operational.STATE_CANCELED, slots=slots,
         notify_sc=True, notify_gs=False
     )
-    return sorted(
-        operational.OperationalSlot.serialize_slots(changed_slots),
-        key=lambda s: s[
-            scheduling_serialization.SLOT_IDENTIFIER_K
-        ]
-    )
+
+    return scheduling_serializers.serialize_slots(changed_slots)

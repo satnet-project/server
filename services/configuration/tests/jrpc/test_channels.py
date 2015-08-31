@@ -24,7 +24,10 @@ from django.test import TestCase
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
-from services.configuration.jrpc.views import channels as jrpc_channels_if
+from services.configuration.jrpc.views.channels import groundstations as \
+    jrpc_gs_channels_if
+from services.configuration.jrpc.views.channels import spacecraft as \
+    jrpc_sc_channels_if
 
 
 # noinspection PyBroadException
@@ -88,49 +91,49 @@ class JRPCChannelsTest(TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_gs_get_channel_list(self):
-        """JRPC method: configuration.gs.channels.list
+        """JRPC method: configuration.gs.channel.list
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_get_channel_list)')
 
         try:
-            jrpc_channels_if.gs_channel_list('FAKE')
+            jrpc_gs_channels_if.gs_channel_list('FAKE')
             self.fail('An exception should have been thrown!')
         except ObjectDoesNotExist:
             pass
 
         self.assertEquals(
-            jrpc_channels_if.gs_channel_list(self.__gs_2_id),
+            jrpc_gs_channels_if.gs_channel_list(self.__gs_2_id),
             [],
             'Should have returned an empty array'
         )
 
         self.assertEquals(
-            jrpc_channels_if.gs_channel_list(self.__gs_1_id),
+            jrpc_gs_channels_if.gs_channel_list(self.__gs_1_id),
             [self.__gs_1_ch_1_id],
             'Should have returned a non-empty array'
         )
 
     def test_sc_get_channel_list(self):
-        """JRPC method: configuration.sc.channels.list
+        """JRPC method: configuration.sc.channel.list
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_get_channel_list)')
 
         try:
-            jrpc_channels_if.sc_channel_list('FAKE')
+            jrpc_sc_channels_if.sc_channel_list('FAKE')
             self.fail('An exception should have been thrown!')
         except ObjectDoesNotExist:
             pass
 
         self.assertEquals(
-            jrpc_channels_if.sc_channel_list(self.__sc_2_id),
+            jrpc_sc_channels_if.sc_channel_list(self.__sc_2_id),
             [],
             'Should have returned an empty array'
         )
 
         self.assertEquals(
-            jrpc_channels_if.sc_channel_list(self.__sc_1_id),
+            jrpc_sc_channels_if.sc_channel_list(self.__sc_1_id),
             [self.__sc_1_ch_1_id],
             'Should have returned a non-empty array'
         )
@@ -141,7 +144,7 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_get_channel_options)')
 
-        actual_o = jrpc_channels_if.get_options()
+        actual_o = jrpc_gs_channels_if.get_options()
         expected_o = {
             jrpc_serial.BANDS_K: [
                 'UHF / U / 435000000.000000 / 438000000.000000'
@@ -164,14 +167,12 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_is_unique)')
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_is_unique(self.__gs_1_ch_1_id),
-            True,
+        self.assertTrue(
+            jrpc_gs_channels_if.gs_channel_is_unique(self.__gs_1_ch_1_id),
             'Channel should exist already!'
         )
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_is_unique('CH-FAKE'),
-            False,
+        self.assertFalse(
+            jrpc_gs_channels_if.gs_channel_is_unique('CH-FAKE'),
             'Channel should not exist yet!'
         )
 
@@ -181,14 +182,12 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_is_unique)')
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_is_unique(self.__sc_1_ch_1_id),
-            True,
+        self.assertTrue(
+            jrpc_sc_channels_if.sc_channel_is_unique(self.__sc_1_ch_1_id),
             'Channel should exist already!'
         )
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_is_unique('CH-FAKE'),
-            False,
+        self.assertFalse(
+            jrpc_sc_channels_if.sc_channel_is_unique('CH-FAKE'),
             'Channel should not exist yet!'
         )
 
@@ -199,8 +198,8 @@ class JRPCChannelsTest(TestCase):
             print('>>> TEST (test_gs_channel_create)')
 
         try:
-            jrpc_channels_if.gs_channel_create(
-                ground_station_id='FAKE-GS',
+            jrpc_gs_channels_if.gs_channel_create(
+                groundstation_id='FAKE-GS',
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
@@ -213,12 +212,12 @@ class JRPCChannelsTest(TestCase):
                 }
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+        self.assertTrue(
+            jrpc_gs_channels_if.gs_channel_create(
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
@@ -230,7 +229,6 @@ class JRPCChannelsTest(TestCase):
                     jrpc_serial.BANDWIDTHS_K: [12.500000000]
                 }
             ),
-            True,
             'Channel should have been created!'
         )
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
@@ -242,7 +240,7 @@ class JRPCChannelsTest(TestCase):
             print('>>> TEST (test_sc_channel_create)')
 
         try:
-            jrpc_channels_if.sc_channel_create(
+            jrpc_sc_channels_if.sc_channel_create(
                 spacecraft_id='FAKE-SC',
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
@@ -254,11 +252,11 @@ class JRPCChannelsTest(TestCase):
                 }
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_create(
+        self.assertTrue(
+            jrpc_sc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
@@ -269,7 +267,6 @@ class JRPCChannelsTest(TestCase):
                     jrpc_serial.BANDWIDTH_K: '12.500000000'
                 }
             ),
-            True,
             'Channel should have been created!'
         )
         db_tools.remove_sc_channel(self.__sc_1_ch_2_id)
@@ -278,24 +275,24 @@ class JRPCChannelsTest(TestCase):
         """JRPC method: configuration.gs.channel.delete
         """
         try:
-            jrpc_channels_if.gs_channel_delete(
+            jrpc_gs_channels_if.gs_channel_delete(
                 'FAKE-GS', 'FAKE-GS-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         try:
-            jrpc_channels_if.gs_channel_delete(
+            jrpc_gs_channels_if.gs_channel_delete(
                 self.__gs_1_id, 'FAKE-GS-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         self.assertTrue(
-            jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+            jrpc_gs_channels_if.gs_channel_create(
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
                     jrpc_serial.BAND_K:
@@ -310,13 +307,13 @@ class JRPCChannelsTest(TestCase):
             'Channel should have been created!'
         )
         self.assertTrue(
-            jrpc_channels_if.gs_channel_delete(
+            jrpc_gs_channels_if.gs_channel_delete(
                 self.__gs_1_id, self.__gs_1_ch_2_id
             ),
             'Channel should have been removed!'
         )
         self.assertFalse(
-            jrpc_channels_if.gs_channel_is_unique(self.__gs_1_ch_2_id),
+            jrpc_gs_channels_if.gs_channel_is_unique(self.__gs_1_ch_2_id),
             'Channel should not exist yet!'
         )
 
@@ -324,23 +321,23 @@ class JRPCChannelsTest(TestCase):
         """JRPC method: configuration.sc.channel.delete
         """
         try:
-            jrpc_channels_if.sc_channel_delete(
+            jrpc_sc_channels_if.sc_channel_delete(
                 'FAKE-SC', 'FAKE-SC-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         try:
-            jrpc_channels_if.sc_channel_delete(
+            jrpc_sc_channels_if.sc_channel_delete(
                 self.__sc_1_id, 'FAKE-SC-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         self.assertTrue(
-            jrpc_channels_if.sc_channel_create(
+            jrpc_sc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
@@ -354,13 +351,13 @@ class JRPCChannelsTest(TestCase):
             'Channel should have been created!'
         )
         self.assertTrue(
-            jrpc_channels_if.sc_channel_delete(
+            jrpc_sc_channels_if.sc_channel_delete(
                 self.__sc_1_id, self.__sc_1_ch_2_id
             ),
             'Channel should have been removed!'
         )
         self.assertFalse(
-            jrpc_channels_if.sc_channel_is_unique(self.__sc_1_ch_2_id),
+            jrpc_sc_channels_if.sc_channel_is_unique(self.__sc_1_ch_2_id),
             'Channel should not exist yet!'
         )
 
@@ -368,18 +365,18 @@ class JRPCChannelsTest(TestCase):
         """JRPC method: configuration.gs.channel.getConfiguration
         """
         try:
-            jrpc_channels_if.gs_channel_get_configuration(
+            jrpc_gs_channels_if.gs_channel_get_configuration(
                 'FAKE-GS', 'FAKE-GS-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.gs_channel_get_configuration(
+            jrpc_gs_channels_if.gs_channel_get_configuration(
                 self.__gs_1_id, 'FAKE-GS-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         expected_c = {
@@ -391,15 +388,16 @@ class JRPCChannelsTest(TestCase):
             jrpc_serial.BITRATES_K: [300, 600, 900],
             jrpc_serial.BANDWIDTHS_K: [12.500000000]
         }
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
-                ground_station_id=self.__gs_1_id,
+        self.assertTrue(
+            jrpc_gs_channels_if.gs_channel_create(
+                groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration=expected_c
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
 
-        actual_c = jrpc_channels_if.gs_channel_get_configuration(
+        actual_c = jrpc_gs_channels_if.gs_channel_get_configuration(
             self.__gs_1_id, self.__gs_1_ch_2_id
         )
 
@@ -420,18 +418,18 @@ class JRPCChannelsTest(TestCase):
         """JRPC method: configuration.sc.channel.getConfiguration
         """
         try:
-            jrpc_channels_if.sc_channel_get_configuration(
+            jrpc_sc_channels_if.sc_channel_get_configuration(
                 'FAKE-SC', 'FAKE-SC-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.sc_channel_get_configuration(
+            jrpc_sc_channels_if.sc_channel_get_configuration(
                 self.__sc_1_id, 'FAKE-SC-CHANNEL'
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
 
         expected_c = {
@@ -444,14 +442,14 @@ class JRPCChannelsTest(TestCase):
         }
 
         self.assertEqual(
-            jrpc_channels_if.sc_channel_create(
+            jrpc_sc_channels_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
                 configuration=expected_c
             ), True, 'Channel should have been created!'
         )
 
-        actual_c = jrpc_channels_if.sc_channel_get_configuration(
+        actual_c = jrpc_sc_channels_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_2_id
         )
 
@@ -471,40 +469,40 @@ class JRPCChannelsTest(TestCase):
         """
         self.__verbose_testing = False
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 'FAKE-GS', 'FAKE-GS-CHANNEL', None
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, 'FAKE-GS-CHANNEL', None
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, None
             )
             self.fail('An exception should have been thrown!')
         except Exception:
             pass
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {}
             )
             self.fail('An exception should have been thrown!')
         except Exception:
             pass
 
-        jrpc_channels_if.gs_channel_get_configuration(
+        jrpc_gs_channels_if.gs_channel_get_configuration(
             self.__gs_1_id, self.__gs_1_ch_1_id
         )
 
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
                     jrpc_serial.BAND_K:
                         'UHF / U / 435000000.000000 / 438000000.000000',
@@ -520,7 +518,7 @@ class JRPCChannelsTest(TestCase):
             pass
 
         try:
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
                     jrpc_serial.BAND_K:
                     'UHF / U / 435000000.000000 / 438000000.000000',
@@ -546,14 +544,14 @@ class JRPCChannelsTest(TestCase):
         }
 
         self.assertEqual(
-            jrpc_channels_if.gs_channel_set_configuration(
+            jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, expected_c
             ),
             True,
             'Configuration should have been set correctly!'
         )
 
-        actual_c = jrpc_channels_if.gs_channel_get_configuration(
+        actual_c = jrpc_gs_channels_if.gs_channel_get_configuration(
             self.__gs_1_id, self.__gs_1_ch_1_id
         )
 
@@ -571,40 +569,40 @@ class JRPCChannelsTest(TestCase):
         """JRPC method: configuration.sc.channel.setConfiguration
         """
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 'FAKE-SC', 'FAKE-SC-CHANNEL', None
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, 'FAKE-SC-CHANNEL', None
             )
             self.fail('An exception should have been thrown!')
-        except ObjectDoesNotExist:
+        except Exception:
             pass
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, None
             )
             self.fail('An exception should have been thrown!')
         except Exception:
             pass
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, {}
             )
             self.fail('An exception should have been thrown!')
         except Exception:
             pass
 
-        jrpc_channels_if.sc_channel_get_configuration(
+        jrpc_sc_channels_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, {
                     jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
                     jrpc_serial.FREQUENCY_K: 438000000,
@@ -619,7 +617,7 @@ class JRPCChannelsTest(TestCase):
             pass
 
         try:
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, {
                     jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
                     jrpc_serial.FREQUENCY_K: 438000000,
@@ -643,14 +641,14 @@ class JRPCChannelsTest(TestCase):
         }
 
         self.assertEqual(
-            jrpc_channels_if.sc_channel_set_configuration(
+            jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, expected_c
             ),
             True,
             'Configuration should have been set correctly!'
         )
 
-        actual_c = jrpc_channels_if.sc_channel_get_configuration(
+        actual_c = jrpc_sc_channels_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 

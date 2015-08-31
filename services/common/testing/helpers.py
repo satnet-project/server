@@ -278,14 +278,14 @@ def sc_add_channel(
             polarization='RHCP'
         )
 
-    return segments.Spacecraft.objects.add_channel(
-        sc_identifier=sc.identifier,
+    return channels.SpacecraftChannel.objects.create(
+        spacecraft=sc,
         identifier=channel_id,
         frequency=frequency,
         modulation=modulation,
         bitrate=bitrate,
         bandwidth=bandwidth,
-        polarization=polarization,
+        polarization=polarization
     )
 
 
@@ -296,9 +296,7 @@ def remove_sc(spacecraft_id):
 
 def remove_sc_channel(sc_ch_id):
 
-    sc_ch = channels.SpacecraftChannel.objects.get(identifier=sc_ch_id)
-    sc_ch.spacecraft_set.all()[0].channels.remove(sc_ch)
-    sc_ch.delete()
+    channels.SpacecraftChannel.objects.get(identifier=sc_ch_id).delete()
 
 
 def gs_add_channel(
@@ -315,8 +313,8 @@ def gs_add_channel(
     if polarizations is None:
         polarizations = bands.AvailablePolarizations.objects.all()
 
-    gs_ch = segments.GroundStation.objects.add_channel(
-        gs_identifier=gs.identifier,
+    return channels.GroundStationChannel.objects.create(
+        groundstation=gs,
         identifier=gs_ch_id,
         band=band,
         modulations=modulations,
@@ -325,14 +323,10 @@ def gs_add_channel(
         polarizations=polarizations
     )
 
-    return gs_ch
-
 
 def remove_gs_channel(gs_id, gs_ch_id):
 
-    segments.GroundStation.objects.get(identifier=gs_id).channels.all().get(
-        identifier=gs_ch_id
-    ).delete()
+    channels.GroundStationChannel.objects.get(identifier=gs_ch_id).delete()
 
 
 def create_jrpc_once_rule(

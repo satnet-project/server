@@ -298,11 +298,8 @@ class OperationalSlotsManager(models.Manager):
         :param compatible_channels: List with the channels compatible with
         the Channel affected by the event.
         """
-        if len(instance.groundstation_set.all()) == 0:
-            return
-
         OperationalSlot.objects.get_simulator().set_groundstation(
-            instance.groundstation_set.all()[0]
+            instance.groundstation
         )
 
         start = misc.get_today_utc()
@@ -315,7 +312,7 @@ class OperationalSlotsManager(models.Manager):
         for sc_ch_i in compatible_channels:
 
             OperationalSlot.objects.set_spacecraft(
-                sc_ch_i.spacecraft_set.all()[0]
+                sc_ch_i.spacecraft
             )
 
             operational_s = OperationalSlot.objects.get_simulator()\
@@ -333,7 +330,9 @@ class OperationalSlotsManager(models.Manager):
         :param sender: The database object that sent the signal.
         :param instance: The Channel affected by the event.
         """
-        OperationalSlot.objects.filter(spacecraft_channel=instance).update(
+        OperationalSlot.objects.filter(
+            spacecraft_channel=instance
+        ).update(
             state=STATE_REMOVED
         )
 
@@ -345,7 +344,9 @@ class OperationalSlotsManager(models.Manager):
         :param sender: The database object that sent the signal.
         :param instance: The Channel affected by the event.
         """
-        OperationalSlot.objects.filter(groundstation_channel=instance).update(
+        OperationalSlot.objects.filter(
+            groundstation_channel=instance
+        ).update(
             state=STATE_REMOVED
         )
 
@@ -374,14 +375,12 @@ class OperationalSlotsManager(models.Manager):
                 comp_i.spacecraft_channel.identifier
             ))
 
-            misc.print_list(comp_i.spacecraft_channel.spacecraft_set.all())
-
             OperationalSlot.objects.set_spacecraft(
-                comp_i.spacecraft_channel.spacecraft_set.all()[0]
+                comp_i.spacecraft_channel.spacecraft
             )
             print('@availability_slot_added, 4')
             OperationalSlot.objects.get_simulator().set_groundstation(
-                gs_ch.groundstation_set.all()[0]
+                gs_ch.groundstation
             )
 
             # t_slot = availability.AvailabilitySlotsManager.truncate(
@@ -437,14 +436,12 @@ class OperationalSlotsManager(models.Manager):
                 + 'should occurr sooner than <end=' + str(end) + '>'
             )
 
-        OperationalSlot.objects.set_spacecraft(
-            spacecraft_channel.spacecraft_set.all()[0]
-        )
+        OperationalSlot.objects.set_spacecraft(spacecraft_channel.spacecraft)
 
         for gs_ch_i in groundstation_channels:
 
             OperationalSlot.objects.get_simulator().set_groundstation(
-                gs_ch_i.groundstation_set.all()[0]
+                gs_ch_i.groundstation
             )
 
             a_slots = availability.AvailabilitySlot.objects.get_applicable(

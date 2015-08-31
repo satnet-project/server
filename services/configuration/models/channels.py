@@ -29,7 +29,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.core import validators
 from django.db import models
 
-from services.configuration.models import bands
+from services.configuration.models import bands as band_models
+from services.configuration.models import segments as segment_models
 
 
 class SpacecraftChannelManager(models.Manager):
@@ -45,17 +46,22 @@ class SpacecraftChannelManager(models.Manager):
         :return: A query list with the results of the search throughout the
         database.
         """
-        return self.filter(enabled=True)\
-            .filter(
-                frequency__gt=gs_channel.band.IARU_allocation_minimum_frequency
-            )\
-            .filter(
-                frequency__lt=gs_channel.band.IARU_allocation_maximum_frequency
-            )\
-            .filter(modulation__in=gs_channel.modulations.all())\
-            .filter(bitrate__in=gs_channel.bitrates.all())\
-            .filter(bandwidth__in=gs_channel.bandwidths.all())\
-            .filter(polarization__in=gs_channel.polarizations.all())
+
+        return self.filter(
+            enabled=True
+        ).filter(
+            frequency__gt=gs_channel.band.IARU_allocation_minimum_frequency
+        ).filter(
+            frequency__lt=gs_channel.band.IARU_allocation_maximum_frequency
+        ).filter(
+            modulation__in=gs_channel.modulations.all()
+        ).filter(
+            bitrate__in=gs_channel.bitrates.all()
+        ).filter(
+            bandwidth__in=gs_channel.bandwidths.all()
+        ).filter(
+            polarization__in=gs_channel.polarizations.all()
+        )
 
 
 class SpacecraftChannel(models.Model):
@@ -86,10 +92,16 @@ class SpacecraftChannel(models.Model):
         ]
     )
 
-    modulation = models.ForeignKey(bands.AvailableModulations)
-    bitrate = models.ForeignKey(bands.AvailableBitrates)
-    bandwidth = models.ForeignKey(bands.AvailableBandwidths)
-    polarization = models.ForeignKey(bands.AvailablePolarizations)
+    spacecraft = models.ForeignKey(
+        segment_models.Spacecraft,
+        verbose_name='Spacecraft that this channel belongs to',
+        default=1
+    )
+
+    modulation = models.ForeignKey(band_models.AvailableModulations)
+    bitrate = models.ForeignKey(band_models.AvailableBitrates)
+    bandwidth = models.ForeignKey(band_models.AvailableBandwidths)
+    polarization = models.ForeignKey(band_models.AvailablePolarizations)
 
     frequency = models.DecimalField(
         'Central frequency (Hz)', max_digits=15, decimal_places=3
@@ -100,11 +112,17 @@ class SpacecraftChannel(models.Model):
         This method returns a string containing all the parameters that define
         this communication channel.
         """
-        return str(self.frequency) + ', ' +\
-            str(self.modulation) + ', ' +\
-            str(self.bitrate) + ', ' +\
-            str(self.bandwidth) + ', ' +\
-            str(self.polarization)
+        return str(
+            self.frequency
+        ) + ', ' + str(
+            self.modulation
+        ) + ', ' + str(
+            self.bitrate
+        ) + ', ' + str(
+            self.bandwidth
+        ) + ', ' + str(
+            self.polarization
+        )
 
     def update(
         self, frequency=None,
@@ -116,13 +134,16 @@ class SpacecraftChannel(models.Model):
         provide all the parameters for this function, since only those that
         are not null will be updated.
         """
+
         if frequency and self.frequency != frequency:
             self.frequency = frequency
+
         self.modulation = modulation
         self.bitrate = bitrate
         self.bandwidth = bandwidth
         self.polarization = polarization
         self.save()
+
         return self
 
     def __unicode__(self):
@@ -130,10 +151,15 @@ class SpacecraftChannel(models.Model):
         Unicode representation of the object.
         :returns Unicode string.
         """
-        return str(self.__class__.__name__)\
-            + ', identifier = ' + str(self.identifier)\
-            + ', frequency = ' + str(self.frequency)
+        return str(
+            self.__class__.__name__
+        ) + ', identifier = ' + str(
+            self.identifier
+        ) + ', frequency = ' + str(
+            self.frequency
+        )
 
+    # noinspection PyProtectedMember
     @staticmethod
     def get_app_label():
         """
@@ -183,17 +209,22 @@ class GroundStationChannelManager(models.Manager):
         :return: A query list with the results of the search throughout the
         database.
         """
-        return self.filter(enabled=True)\
-            .filter(
-                band__IARU_allocation_minimum_frequency__lt=sc_channel.frequency
-            )\
-            .filter(
-                band__IARU_allocation_maximum_frequency__gt=sc_channel.frequency
-            )\
-            .filter(modulations=sc_channel.modulation)\
-            .filter(bitrates=sc_channel.bitrate)\
-            .filter(bandwidths=sc_channel.bandwidth)\
-            .filter(polarizations=sc_channel.polarization)
+
+        return self.filter(
+            enabled=True
+        ).filter(
+            band__IARU_allocation_minimum_frequency__lt=sc_channel.frequency
+        ).filter(
+            band__IARU_allocation_maximum_frequency__gt=sc_channel.frequency
+        ).filter(
+            modulations=sc_channel.modulation
+        ).filter(
+            bitrates=sc_channel.bitrate
+        ).filter(
+            bandwidths=sc_channel.bandwidth
+        ).filter(
+            polarizations=sc_channel.polarization
+        )
 
 
 class GroundStationChannel(models.Model):
@@ -224,28 +255,41 @@ class GroundStationChannel(models.Model):
         ]
     )
 
+    groundstation = models.ForeignKey(
+        segment_models.GroundStation,
+        verbose_name='Ground Station that this channel belongs to',
+        default=1
+    )
+
     automated = models.BooleanField(
         'Defines this channel as fully automated',
         default=False
     )
 
-    band = models.ForeignKey(bands.AvailableBands)
+    band = models.ForeignKey(
+        band_models.AvailableBands,
+        verbose_name='Band for the channel of the Ground Station'
+    )
 
-    modulations = models.ManyToManyField(bands.AvailableModulations)
-    bitrates = models.ManyToManyField(bands.AvailableBitrates)
-    bandwidths = models.ManyToManyField(bands.AvailableBandwidths)
-    polarizations = models.ManyToManyField(bands.AvailablePolarizations)
+    modulations = models.ManyToManyField(band_models.AvailableModulations)
+    bitrates = models.ManyToManyField(band_models.AvailableBitrates)
+    bandwidths = models.ManyToManyField(band_models.AvailableBandwidths)
+    polarizations = models.ManyToManyField(band_models.AvailablePolarizations)
 
     def get_string_definition(self):
         """
         This method returns a string containing all the parameters that define
         this communication channel.
         """
-        return self.band.get_band_name() + ', '\
-            + str(self.modulations) + ', '\
-            + str(self.bitrates) + ', '\
-            + str(self.bandwidths) + ', '\
-            + str(self.polarizations)
+        return self.band.get_band_name() + ', ' + str(
+            self.modulations
+        ) + ', ' + str(
+            self.bitrates
+        ) + ', ' + str(
+            self.bandwidths
+        ) + ', ' + str(
+            self.polarizations
+        )
 
     def update(
         self,
@@ -296,10 +340,15 @@ class GroundStationChannel(models.Model):
         Unicode representation of the object.
         :returns Unicode string.
         """
-        return str(self.__class__.__name__)\
-            + ', identifier = ' + str(self.identifier)\
-            + ', band.pk = ' + str(self.band.pk)
+        return str(
+            self.__class__.__name__
+        ) + ', identifier = ' + str(
+            self.identifier
+        ) + ', band.pk = ' + str(
+            self.band.pk
+        )
 
+    # noinspection PyProtectedMember
     @staticmethod
     def get_app_label():
         """

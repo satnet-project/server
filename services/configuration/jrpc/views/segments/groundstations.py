@@ -18,7 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from rpc4django import rpcmethod
 import logging
 from services.accounts import models as account_models
-from services.configuration.models import segments
+from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import serialization
 from website import settings as satnet_settings
 
@@ -41,7 +41,7 @@ def list_groundstations(**kwargs):
         http_request=kwargs.get('request', None)
     )
     # 2) only the ground stations that belong to the incoming user are returned
-    gs_objects = segments.GroundStation.objects.filter(user=user).all()
+    gs_objects = segment_models.GroundStation.objects.filter(user=user).all()
     return [str(g.identifier) for g in gs_objects]
 
 
@@ -59,7 +59,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
         http_request=kwargs.get('request', None)
     )
 
-    gs = segments.GroundStation.objects.create(
+    gs = segment_models.GroundStation.objects.create(
         latitude=latitude,
         longitude=longitude,
         identifier=identifier,
@@ -83,7 +83,7 @@ def get_configuration(ground_station_id):
     Returns the configuration for the given ground station.
     """
     return serialization.serialize_gs_configuration(
-        segments.GroundStation.objects.get(identifier=ground_station_id)
+        segment_models.GroundStation.objects.get(identifier=ground_station_id)
     )
 
 
@@ -98,29 +98,12 @@ def set_configuration(ground_station_id, configuration):
     """
     callsign, contact_elevation, latitude, longitude =\
         serialization.deserialize_gs_configuration(configuration)
-    gs = segments.GroundStation.objects.get(identifier=ground_station_id)
+    gs = segment_models.GroundStation.objects.get(identifier=ground_station_id)
     gs.update(
         callsign=callsign, contact_elevation=contact_elevation,
         latitude=latitude, longitude=longitude
     )
     return ground_station_id
-
-
-@rpcmethod(
-    name='configuration.gs.getChannels',
-    signature=['String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def list_channels(ground_station_id):
-    """JRPC method: configuration.gs.getChannels
-    Returns the channels for the given ground station.
-    """
-    ch_objects = segments.GroundStation.objects.get(
-        identifier=ground_station_id
-    ).channels.all()
-    return {
-        serialization.CHANNEL_LIST_K: [str(c.identifier) for c in ch_objects]
-    }
 
 
 @rpcmethod(
@@ -133,5 +116,7 @@ def delete(ground_station_id):
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
     """
-    segments.GroundStation.objects.get(identifier=ground_station_id).delete()
+    segment_models.GroundStation.objects.get(
+        identifier=ground_station_id
+    ).delete()
     return ground_station_id

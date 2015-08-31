@@ -16,8 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 # RPC4django RPC methods automatic detection
-from services.configuration.jrpc.views import channels, rules, tle
+from services.configuration.jrpc.views import rules, tle
 from services.configuration.jrpc.views import compatibility
+from services.configuration.jrpc.views.channels import groundstations
+from services.configuration.jrpc.views.channels import spacecraft
 from services.configuration.jrpc.views.segments import groundstations
 from services.configuration.jrpc.views.segments import spacecraft
 
