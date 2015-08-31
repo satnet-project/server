@@ -244,7 +244,7 @@ class AvailabilitySlot(models.Model):
     @staticmethod
     def create_identifier(groundstation_channel, start):
 
-        gs = groundstation_channel.groundstation_set.all()[0]
+        gs = groundstation_channel.groundstation
 
         return gs.identifier + AvailabilitySlot.ID_FIELDS_SEPARATOR\
             + groundstation_channel.identifier\

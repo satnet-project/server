@@ -19,6 +19,7 @@ from django.core import exceptions as django_ex
 
 from rpc4django import rpcmethod
 
+from services.configuration.models import channels as channel_models
 from services.configuration.models import segments as segment_models
 from services.configuration.models import compatibility as compatibility_models
 from services.configuration.jrpc.serializers import compatibility as\
@@ -33,6 +34,7 @@ def get_compatiblility(spacecraft_ch):
     :param spacecraft_ch: The channel for which the tuples are compatible with
     :return: List with the (GS, GS_CH) tuples
     """
+
     # noinspection PyUnusedLocal
     compatible_chs = None
 
@@ -49,11 +51,7 @@ def get_compatiblility(spacecraft_ch):
 
     for gs_ch in compatible_chs.groundstation_channels.all():
 
-        gs = segment_models.GroundStation.objects.get(
-            channels__in=[gs_ch]
-        )
-
-        compatible_tuples.append((gs, gs_ch))
+        compatible_tuples.append((gs_ch.groundstation, gs_ch))
 
     # 3) Serialization
     return compatibility_serializers.serialize_gs_ch_compatibility_tuples(
@@ -74,15 +72,14 @@ def sc_channel_get_compatible(spacecraft_id, channel_id):
     :param channel_id: Identifier of the channel
     :return: List with tuples (groundstation, gs_channel)
     """
-
-    # 1) Retrieve objects from database
-    spacecraft_ch = segment_models.Spacecraft.objects.get(
-        identifier=spacecraft_id
-    ).channels.all().get(
-        identifier=channel_id
+    return get_compatiblility(
+        channel_models.SpacecraftChannel.objects.get(
+            identifier=channel_id,
+            spacecraft=segment_models.Spacecraft.objects.get(
+                identifier=spacecraft_id
+            )
+        )
     )
-
-    return get_compatiblility(spacecraft_ch)
 
 
 @rpcmethod(
@@ -104,7 +101,9 @@ def sc_get_compatible(spacecraft_id):
         identifier=spacecraft_id
     )
 
-    for spacecraft_ch in spacecraft.channels.all():
+    for spacecraft_ch in channel_models.SpacecraftChannel.objects.filter(
+        spacecraft=spacecraft
+    ):
 
         r = compatibility_serializers.serialize_sc_ch_compatibility(
             spacecraft_ch, get_compatiblility(spacecraft_ch)

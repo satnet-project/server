@@ -244,16 +244,20 @@ class JRPCSegmentsTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_get_configuration):')
+
         cfg = jrpc_serial.deserialize_gs_configuration(
             jrpc_gs.get_configuration(self.__gs_1_id)
         )
+
         if self.__verbose_testing:
             misc.print_dictionary(cfg)
             misc.print_dictionary(self.__gs_1_configuration)
+
         self.assertEqual(
             cfg, self.__gs_1_configuration,
-            'Wrong configuration returned, diff = \n'
-            + str(datadiff.diff(cfg, self.__gs_1_configuration))
+            'Wrong configuration returned, diff = \n' + str(
+                datadiff.diff(cfg, self.__gs_1_configuration)
+            )
         )
 
     def test_gs_set_configuration(self):

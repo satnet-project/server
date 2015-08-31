@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
-from django.db import models
+from django.db import models as django_models
 from django.db.models import Q
 from services.common import misc, simulation
 from services.configuration.models import availability, channels, compatibility
@@ -35,7 +35,7 @@ STATE_CANCELED = str('CANCELED')
 STATE_REMOVED = str('REMOVED')
 
 
-class OperationalSlotsManager(models.Manager):
+class OperationalSlotsManager(django_models.Manager):
     """
     Manager for handling all the operations associated with the objects from
     the OperationalSlots table.
@@ -477,7 +477,7 @@ class OperationalSlotsManager(models.Manager):
             )
 
 
-class OperationalSlot(models.Model):
+class OperationalSlot(django_models.Model):
     """
     Database table to store all the information related to the slots and its
     operational state.
@@ -490,25 +490,25 @@ class OperationalSlot(models.Model):
 
     objects = OperationalSlotsManager()
 
-    identifier = models.CharField(
+    identifier = django_models.CharField(
         'Unique identifier for this slot',
         max_length=150,
         unique=True
     )
 
-    groundstation_channel = models.ForeignKey(
+    groundstation_channel = django_models.ForeignKey(
         channels.GroundStationChannel,
         verbose_name='GroundStationChannel that this slot belongs to',
-        blank=True, null=True, on_delete=models.SET_NULL
+        blank=True, null=True, on_delete=django_models.SET_NULL
     )
-    spacecraft_channel = models.ForeignKey(
+    spacecraft_channel = django_models.ForeignKey(
         channels.SpacecraftChannel,
         verbose_name='SpacecraftChannel that this slot belongs to',
-        blank=True, null=True, on_delete=models.SET_NULL
+        blank=True, null=True, on_delete=django_models.SET_NULL
     )
 
-    start = models.DateTimeField('Slot start')
-    end = models.DateTimeField('Slot end')
+    start = django_models.DateTimeField('Slot start')
+    end = django_models.DateTimeField('Slot end')
 
     STATE_CHOICES = (
         (STATE_FREE, 'Slot not assigned for operation'),
@@ -570,19 +570,19 @@ class OperationalSlot(models.Model):
         },
     }
 
-    state = models.CharField(
+    state = django_models.CharField(
         'String that indicates the current state of the slot',
         max_length=10,
         choices=STATE_CHOICES,
         default=STATE_FREE
     )
 
-    gs_notified = models.BooleanField(
+    gs_notified = django_models.BooleanField(
         'Flag that indicates whether the changes in the status of the slot '
         'need already to be notified to the compatible GroundStation.',
         default=False
     )
-    sc_notified = models.BooleanField(
+    sc_notified = django_models.BooleanField(
         'Flag that indicates whether the changes in the status of the slot '
         'need already to be notified to the compatible Spacecraft.',
         default=False
@@ -590,12 +590,12 @@ class OperationalSlot(models.Model):
 
     # Deleting the related AvailabilitySlot will not provoke the removal of
     # the related rows in this table.
-    availability_slot = models.ForeignKey(
+    availability_slot = django_models.ForeignKey(
         availability.AvailabilitySlot,
         verbose_name='Availability slot that generates this OperationalSlot',
         blank=True,
         null=True,
-        on_delete=models.SET_NULL
+        on_delete=django_models.SET_NULL
     )
 
     def change_state(self, new, notify_sc=True, notify_gs=True):

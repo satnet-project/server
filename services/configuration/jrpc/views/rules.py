@@ -17,8 +17,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 
-from services.configuration.models import rules as rule_models,\
-    segments as segment_models
+from services.configuration.models import channels as channel_models
+from services.configuration.models import rules as rule_models
+from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import serialization
 from website import settings as satnet_settings
 
@@ -65,9 +66,12 @@ def list_channel_rules(groundstation_id, channel_id):
     :return: Array with JSON objects that contain the configuration for each
     of the rules of this pair Ground Station, Channel.
     """
-    ch = segment_models.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all().get(identifier=channel_id)
+    ch = channel_models.GroundStationChannel.objects.get(
+        identifier=channel_id,
+        groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
+    )
     ch_rules = rule_models.AvailabilityRule.objects.filter(gs_channel=ch)
     return serialization.serialize_rules(ch_rules)
 
@@ -104,11 +108,13 @@ def add_rule(groundstation_id, channel_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added.
     :return: Identifier of the rule that has just been added.
     """
-    ch = segment_models.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all().get(
-        identifier=channel_id
+    ch = channel_models.GroundStationChannel.objects.get(
+        identifier=channel_id,
+        groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
     )
+
     op, periodicity, dates = serialization.deserialize_rule_cfg(rule_cfg)
     rule = rule_models.AvailabilityRule.objects.create(
         ch, op, periodicity, dates
@@ -175,11 +181,18 @@ def remove_rule(groundstation_id, channel_id, rule_id):
     :param rule_id: Identifier of the rule to be removed.
     :return: 'True' in case the rule could be removed.
     """
-    segment_models.GroundStation.objects.get(
-        identifier=groundstation_id
-    ).channels.all().get(
-        identifier=channel_id
+
+    # 1) by retrieving the channel this way, we check both if the channel
+    #       exists and if it belongs to that segment
+    channel_models.GroundStationChannel.objects.get(
+        identifier=channel_id,
+        groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
     )
-    rule = rule_models.AvailabilityRule.objects.get(pk=rule_id)
-    rule.delete()
+
+    # 2) rule deletion attempt
+    rule_models.AvailabilityRule.objects.get(pk=rule_id).delete()
+
+    # 3) if succesful, return True
     return True

@@ -25,7 +25,8 @@ from services.configuration.models import channels as channel_models
 from services.configuration.models import compatibility as compatibility_models
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
-from services.configuration.jrpc.views import channels as jrpc_channels_if
+from services.configuration.jrpc.views.channels import spacecraft\
+    as jrpc_sc_ch_if
 from services.configuration.jrpc.views import compatibility as jrpc_compat_if
 
 
@@ -104,6 +105,13 @@ class CompatibilityScChUpdate(TestCase):
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
+        import services.common.misc as misc
+        misc.print_dictionary(compatibility)
+
+        misc.print_list(
+            compatibility_models.ChannelCompatibility.objects.all()
+        )
+
         self.assertEqual(
             compatibility[0]['GroundStation']['identifier'],
             'uvigo',
@@ -120,15 +128,14 @@ class CompatibilityScChUpdate(TestCase):
             jrpc_serial.BANDWIDTH_K: 25
         }
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_set_configuration(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, expected_c
             ),
-            True,
             'Configuration should have been set correctly!'
         )
 
-        actual_c = jrpc_channels_if.sc_channel_get_configuration(
+        actual_c = jrpc_sc_ch_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
@@ -175,15 +182,14 @@ class CompatibilityScChUpdate(TestCase):
             jrpc_serial.BANDWIDTH_K: 25
         }
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_set_configuration(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, expected_c
             ),
-            True,
             'Configuration should have been set correctly!'
         )
 
-        actual_c = jrpc_channels_if.sc_channel_get_configuration(
+        actual_c = jrpc_sc_ch_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
@@ -205,11 +211,10 @@ class CompatibilityScChUpdate(TestCase):
         )
 
         # 3) deleting the spacecraft channel should erase the compatibility
-        self.assertEquals(
-            jrpc_channels_if.sc_channel_delete(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_delete(
                 self.__sc_1_id, self.__sc_1_ch_1_id
             ),
-            True,
             'Could not properly remove spacecraft channel!'
         )
 

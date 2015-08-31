@@ -19,7 +19,8 @@ from datetime import datetime, timedelta
 from django.db import models
 import pytz
 from services.common import misc, simulation, slots
-from services.configuration.models import segments as segment_models, channels
+from services.configuration.models import segments as segment_models
+from services.configuration.models import channels as channel_models
 
 ADD_SLOTS = '+'
 REMOVE_SLOTS = '-'
@@ -383,7 +384,7 @@ class AvailabilityRule(models.Model):
     objects = AvailabilityRuleManager()
 
     gs_channel = models.ForeignKey(
-        channels.GroundStationChannel,
+        channel_models.GroundStationChannel,
         verbose_name='Channel that this rule belongs to.'
     )
 
@@ -651,7 +652,11 @@ class GroupedAvailabilityRuleManager(models.Manager):
 
         print('@@@@ @create, group = ' + str(group))
 
-        for ch in groundstation.channels.all():
+        for ch in channel_models.GroundStationChannel.objects.filter(
+            groundstation=segment_models.GroundStation.objects.get(
+                identifier=groundstation_id
+            )
+        ):
 
             print('@@@@ @create, a, ch = ' + str(ch.identifier))
             rule = AvailabilityRule.objects.create(ch, op, periodicity, dates)
@@ -699,9 +704,10 @@ class GroupedAvailabilityRules(models.Model):
         object.
         :return: Human readable string
         """
-        return '' +\
-            '\t* pk = ' + str(self.id) + '\n'\
-            '\t* gs_id = ' + str(self.groundstation.identifier) + '\n'\
-            '\t* rules = ' + str([
-                r.id for r in self.rules.all()
-            ]) + '\n'
+        return '\t* pk = ' + str(
+            self.id
+        ) + '\n\t* gs_id = ' + str(
+            self.groundstation.identifier
+        ) + '\n\t* rules = ' + str([
+            r.id for r in self.rules.all()
+        ]) + '\n'

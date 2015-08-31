@@ -68,8 +68,12 @@ class ChannelCompatibilityManager(models.Manager):
         this case, the ANY polarization indicates that either the spacecraft or
         the ground station implement/require any value.
         """
-        if created or raw:
+        print('@sc_channel_saved, 0')
+
+        if raw:
             return
+
+        print('@sc_channel_saved, 1')
 
         compatibility = None
         was_compatible = False
@@ -80,15 +84,19 @@ class ChannelCompatibilityManager(models.Manager):
                 spacecraft_channel=instance
             )
             was_compatible = True
+            print('@sc_channel_saved, 2a')
         except django_ex.ObjectDoesNotExist:
             logger.warn(
                 'Compatibility not found for channel not found, sc = ' + str(
                     instance.__unicode__())
             )
+            print('@sc_channel_saved, 2b')
 
         # 1) first, we get the list of compatible channels with the given one.
         compatible_chs = channel_models.GroundStationChannel.objects\
             .find_compatible_channels(instance)
+
+        misc.print_list(compatible_chs)
 
         if not compatible_chs:
             logger.info(
