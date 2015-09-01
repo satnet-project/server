@@ -213,7 +213,7 @@ class SegmentCompatibilityTest(test.TestCase):
         # Unchecked change, just for cleaning the database.
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
-    def _compatibility_case_5(self):
+    def test_compatibility_case_5(self):
         """ services.configuration: complex MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)
