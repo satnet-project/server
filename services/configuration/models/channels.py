@@ -201,7 +201,7 @@ class GroundStationChannelManager(models.Manager):
         gs_ch.save()
         return gs_ch
 
-    def find_compatible_channels(self, sc_channel):
+    def find_compatible(self, sc_channel):
         """
         Static method that finds all the compatible GroundStation channels
         with the given Spacecraft channel.

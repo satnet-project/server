@@ -25,6 +25,31 @@ from services.configuration.models import rules, tle as tle_models
 from services.scheduling.models import operational
 
 
+def connect_channels_2_compatibility():
+    """
+    This function connects all the signals triggered during the
+    creation/save/removal of a segment (either a GroundStaiton or a
+    Spacecraft), with some callback functions at the SegmentCompatibility
+    table that are responsible for updating the contents of the latter.
+    """
+    django_signals.post_save.connect(
+        compatibility.ChannelCompatibilityManager.gs_channel_saved,
+        sender=channel_models.GroundStationChannel
+    )
+    django_signals.post_save.connect(
+        compatibility.ChannelCompatibilityManager.sc_channel_saved,
+        sender=channel_models.SpacecraftChannel
+    )
+    django_signals.pre_delete.connect(
+        compatibility.ChannelCompatibilityManager.gs_channel_deleted,
+        sender=channel_models.GroundStationChannel
+    )
+    django_signals.pre_delete.connect(
+        compatibility.ChannelCompatibilityManager.sc_channel_deleted,
+        sender=channel_models.SpacecraftChannel
+    )
+
+
 def connect_rules_2_availability():
     """
     This function connects all the signals triggered during the creation/save
@@ -55,31 +80,6 @@ def connect_rules_2_availability():
     django_signals.post_delete.connect(
         availability.AvailabilitySlotsManager.availability_rule_updated,
         sender=rules.AvailabilityRuleWeekly
-    )
-
-
-def connect_channels_2_compatibility():
-    """
-    This function connects all the signals triggered during the
-    creation/save/removal of a segment (either a GroundStaiton or a
-    Spacecraft), with some callback functions at the SegmentCompatibility
-    table that are responsible for updating the contents of the latter.
-    """
-    django_signals.post_save.connect(
-        compatibility.ChannelCompatibilityManager.gs_channel_saved,
-        sender=channel_models.GroundStationChannel
-    )
-    django_signals.post_save.connect(
-        compatibility.ChannelCompatibilityManager.sc_channel_saved,
-        sender=channel_models.SpacecraftChannel
-    )
-    django_signals.pre_delete.connect(
-        compatibility.ChannelCompatibilityManager.gs_channel_deleted,
-        sender=channel_models.GroundStationChannel
-    )
-    django_signals.pre_delete.connect(
-        compatibility.ChannelCompatibilityManager.sc_channel_deleted,
-        sender=channel_models.SpacecraftChannel
     )
 
 
