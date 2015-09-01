@@ -682,6 +682,7 @@ class GroupedAvailabilityRules(models.Model):
     Station, being the latter the ones that get grouped and can, therefore, be
     managed all together.
     """
+
     class Meta:
         app_label = 'configuration'
 

@@ -19,7 +19,7 @@ import logging
 
 from django import dispatch as django_dispatch
 from django.core import exceptions as django_ex
-from django.db import models
+from django.db import models as django_models
 
 from services.common import misc
 from services.configuration.models import channels as channel_models
@@ -40,7 +40,7 @@ compatibility_delete_sc_ch_signal = django_dispatch.Signal(
 )
 
 
-class ChannelCompatibilityManager(models.Manager):
+class ChannelCompatibilityManager(django_models.Manager):
     """
     Manager for the ChannelCompatibility table.
     """
@@ -95,8 +95,6 @@ class ChannelCompatibilityManager(models.Manager):
         # 1) first, we get the list of compatible channels with the given one.
         compatible_chs = channel_models.GroundStationChannel.objects\
             .find_compatible_channels(instance)
-
-        misc.print_list(compatible_chs)
 
         if not compatible_chs:
             logger.info(
@@ -317,7 +315,7 @@ class ChannelCompatibilityManager(models.Manager):
         )
 
 
-class ChannelCompatibility(models.Model):
+class ChannelCompatibility(django_models.Model):
     """
     This model permits handling a table where the information about the
     compatibility in between SpacecraftConfiguration, SpacecraftChannel,
@@ -328,11 +326,20 @@ class ChannelCompatibility(models.Model):
 
     objects = ChannelCompatibilityManager()
 
-    spacecraft_channel = models.ForeignKey(
+    spacecraft_channel = django_models.ForeignKey(
         channel_models.SpacecraftChannel,
-        verbose_name='Reference to the compatible Spacecraft channel.'
+        verbose_name='Reference to the compatible Spacecraft channel.',
+        default=1
     )
-    groundstation_channels = models.ManyToManyField(
+
+    # Next step: simplify compatibility table and, therefore, associated logic
+    # groundstation_channel = django_models.ForeignKey(
+    #     channel_models.GroundStationChannel,
+    #     verbose_name='Reference to the compatible Ground Station channel.',
+    #     default=1
+    # )
+
+    groundstation_channels = django_models.ManyToManyField(
         channel_models.GroundStationChannel,
         verbose_name='Reference to all the compatible GroundStation channels.'
     )

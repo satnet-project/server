@@ -128,7 +128,9 @@ class Spacecraft(models.Model):
         Prints in a unicode string the most remarkable data for this
         spacecraft object.
         """
-        return ' >>> SC, id = ' + str(self.identifier)
+        return u' >>> SC, id = ' + str(
+            self.identifier
+        )
 
 
 class GroundStationsManager(models.Manager):
@@ -215,6 +217,7 @@ class GroundStation(models.Model):
     contact_elevation = models.FloatField(
         'Minimum elevation for contact(degrees)'
     )
+
     latitude = models.FloatField('Latitude of the Ground Station')
     longitude = models.FloatField('Longitude of the Ground Station')
     altitude = models.FloatField('Altitude of the Ground Station')
@@ -232,7 +235,8 @@ class GroundStation(models.Model):
     )
 
     def update(
-        self, callsign=None,
+        self,
+        callsign=None,
         contact_elevation=None,
         latitude=None,
         longitude=None,
@@ -285,6 +289,8 @@ class GroundStation(models.Model):
         Prints in a unicode string the most remarkable data for this
         spacecraft object.
         """
-        return ' >>> GS, id = ' + str(self.identifier) + ', callsign = ' + str(
+        return u' >>> GS, id = ' + str(
+            self.identifier
+        ) + u', callsign = ' + str(
             self.callsign
         )

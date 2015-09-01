@@ -159,21 +159,12 @@ def gs_channel_delete(groundstation_id, channel_id):
     Method that removes the given channel from the database and from the list
     of available channels of the Ground Station that owns it.
     """
-    try:
-        channel_models.GroundStationChannel.objects.get(
-            identifier=channel_id,
-            groundstation=segment_models.GroundStation.objects.get(
-                identifier=groundstation_id
-            )
-        ).delete()
-
-    except segment_models.GroundStation.DoesNotExist as ex:
-        logger.warn(str(ex))
-        raise Exception(
-            'Ground Station identifier does not exist, id = <' + str(
-                groundstation_id
-            ) + '>'
+    channel_models.GroundStationChannel.objects.get(
+        identifier=channel_id,
+        groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
         )
+    ).delete()
 
     return True
 
