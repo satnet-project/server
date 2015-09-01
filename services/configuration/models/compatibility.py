@@ -20,7 +20,6 @@ import logging
 from django import dispatch as django_dispatch
 from django.db import models as django_models
 
-from services.common import misc
 from services.configuration.models import channels as channel_models
 
 logger = logging.getLogger(__name__)
@@ -45,65 +44,7 @@ class ChannelCompatibilityManager(django_models.Manager):
     """
 
     @staticmethod
-    def groundstation_ch_created(groundstation_ch):
-        """
-        Creates a new entry in the compatibility table for the new Ground
-        Station channel.
-        :param groundstation_ch: The just created channel
-        """
-        for c in channel_models.GroundStationChannel.objects.find_compatible(
-            groundstation_ch
-        ):
-            ChannelCompatibility.objects.create(
-                groundstation_channel=groundstation_ch,
-                spacecraft_channel=c
-            )
-
-    @staticmethod
-    def groundstation_ch_updated(groundstation_ch):
-        """
-        Updates all the table entries that have changed for the new channel
-        configuration.
-        :param groundstation_ch: The just updated channel
-        """
-        add, remove = ChannelCompatibilityManager.diff_gs_updated(
-            groundstation_ch
-        )
-        ChannelCompatibilityManager.patch_gs_updated(
-            groundstation_ch, add, remove
-        )
-
-    @staticmethod
-    def spacecraft_ch_created(spacecraft_ch):
-        """
-        Creates a new entry in the compatibility table for the new Spacecraft
-        channel.
-        :param spacecraft_ch: The just created channel
-        """
-        for c in channel_models.SpacecraftChannel.objects.find_compatible(
-            spacecraft_ch
-        ):
-            ChannelCompatibility.objects.create(
-                groundstation_channel=c,
-                spacecraft_channel=spacecraft_ch
-            )
-
-    @staticmethod
-    def spacecraft_ch_updated(spacecraft_ch):
-        """
-        Updates all the table entries that have changed for the new channel
-        configuration.
-        :param spacecraft_ch: The just updated channel
-        """
-        add, remove = ChannelCompatibilityManager.diff_sc_updated(
-            spacecraft_ch
-        )
-        ChannelCompatibilityManager.patch_sc_updated(
-            spacecraft_ch, add, remove
-        )
-
-    @staticmethod
-    def diff_gs_updated(groundstation_ch):
+    def diff_gs(groundstation_ch):
         """
         Calculates the differences between the current existing compatibility
         models in the database and the given Spacecraft channels for the
@@ -125,9 +66,8 @@ class ChannelCompatibilityManager(django_models.Manager):
         return compatible_sc_chs_s - old_c_sc_chs,\
             old_c_sc_chs - compatible_sc_chs_s
 
-    # noinspection PyUnusedLocal
     @staticmethod
-    def patch_gs_updated(groundstation_ch, to_be_added, to_be_removed):
+    def patch_gs(groundstation_ch, to_be_added, to_be_removed):
         """
         This method "patches" the differences in between the existing already
         saved in the database models and the new compatibility groups.
@@ -144,14 +84,13 @@ class ChannelCompatibilityManager(django_models.Manager):
             )
 
         # 2) we also have to removed the no-longer existing ones
-        for sc_ch in to_be_removed:
-            ChannelCompatibility.objects.filter(
-                groundstation_channel=groundstation_ch,
-                spacecraft_channel__in=to_be_removed
-            ).delete()
+        ChannelCompatibility.objects.filter(
+            groundstation_channel=groundstation_ch,
+            spacecraft_channel__in=to_be_removed
+        ).delete()
 
     @staticmethod
-    def diff_sc_updated(spacecraft_ch):
+    def diff_sc(spacecraft_ch):
         """
         Calculates the differences between the current existing compatibility
         models in the database and the given Ground Station channels for the
@@ -173,9 +112,8 @@ class ChannelCompatibilityManager(django_models.Manager):
         return compatible_sc_chs_s - old_c_sc_chs,\
             old_c_sc_chs - compatible_sc_chs_s
 
-    # noinspection PyUnusedLocal
     @staticmethod
-    def patch_sc_updated(spacecraft_ch, to_be_added, to_be_removed):
+    def patch_sc(spacecraft_ch, to_be_added, to_be_removed):
         """
         This method "patches" the differences in between the existing already
         saved in the database models and the new compatibility groups.
@@ -192,11 +130,10 @@ class ChannelCompatibilityManager(django_models.Manager):
             )
 
         # 2) we also have to removed the no-longer existing ones
-        for sc_ch in to_be_removed:
-            ChannelCompatibility.objects.filter(
-                spacecraft_channel=spacecraft_ch,
-                groundstation_channel__in=to_be_removed
-            ).delete()
+        ChannelCompatibility.objects.filter(
+            spacecraft_channel=spacecraft_ch,
+            groundstation_channel__in=to_be_removed
+        ).delete()
 
 
 class ChannelCompatibility(django_models.Model):

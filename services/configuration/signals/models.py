@@ -20,34 +20,8 @@ from django.db.models import signals as django_signals
 from services.common import simulation
 
 from services.configuration.models import availability, compatibility
-from services.configuration.models import channels as channel_models
 from services.configuration.models import rules, tle as tle_models
 from services.scheduling.models import operational
-
-
-def connect_channels_2_compatibility():
-    """
-    This function connects all the signals triggered during the
-    creation/save/removal of a segment (either a GroundStaiton or a
-    Spacecraft), with some callback functions at the SegmentCompatibility
-    table that are responsible for updating the contents of the latter.
-    """
-    django_signals.post_save.connect(
-        compatibility.ChannelCompatibilityManager.gs_channel_saved,
-        sender=channel_models.GroundStationChannel
-    )
-    django_signals.post_save.connect(
-        compatibility.ChannelCompatibilityManager.sc_channel_saved,
-        sender=channel_models.SpacecraftChannel
-    )
-    django_signals.pre_delete.connect(
-        compatibility.ChannelCompatibilityManager.gs_channel_deleted,
-        sender=channel_models.GroundStationChannel
-    )
-    django_signals.pre_delete.connect(
-        compatibility.ChannelCompatibilityManager.sc_channel_deleted,
-        sender=channel_models.SpacecraftChannel
-    )
 
 
 def connect_rules_2_availability():
@@ -122,7 +96,6 @@ def connect_compatibility_2_operational():
     )
 
 connect_availability_2_operational()
-connect_channels_2_compatibility()
 connect_compatibility_2_operational()
 connect_rules_2_availability()
 
