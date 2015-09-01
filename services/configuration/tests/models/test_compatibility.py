@@ -87,7 +87,7 @@ class SegmentCompatibilityTest(test.TestCase):
             'Table must be empty!'
         )
 
-    def test_compatibility_case_2(self):
+    def _compatibility_case_2(self):
         """ services.configuration: basic GS_CH compatibility test (2)
         (CHANGE-1) +GS_CH
         (CHECK-1) len(SegmentCompatibility) = 0
@@ -106,7 +106,7 @@ class SegmentCompatibilityTest(test.TestCase):
         )
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
 
-    def test_compatibility_case_3(self):
+    def _compatibility_case_3(self):
         """ services.configuration: basic MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Non compatible)
@@ -159,7 +159,7 @@ class SegmentCompatibilityTest(test.TestCase):
         # Unchecked change, just for cleaning the database.
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
-    def test_compatibility_case_4(self):
+    def _compatibility_case_4(self):
         """ services.configuration: basic MIXED compatibility test (2)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)
@@ -213,7 +213,7 @@ class SegmentCompatibilityTest(test.TestCase):
         # Unchecked change, just for cleaning the database.
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
-    def test_compatibility_case_5(self):
+    def _compatibility_case_5(self):
         """ services.configuration: complex MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)
@@ -423,7 +423,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_3_id)
 
-    def test_compatibility_case_6(self):
+    def _compatibility_case_6(self):
         """ services.configuration: complex MIXED compatibility test (2)
         (CHANGE-1) +SC-1
         (CHANGE-2) +SC-2
@@ -570,7 +570,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_3_id)
         db_tools.remove_sc_channel(self.__sc_1_ch_4_id)
 
-    def test_diff_compatibility(self):
+    def _diff_compatibility(self):
         """ services.configuration: diff compatibility
         """
         if self.__verbose_testing:
