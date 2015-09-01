@@ -42,7 +42,7 @@ def groundstation_channel_saved(sender, instance, created, raw, **kwargs):
     add, remove = compatibility_models.ChannelCompatibility.objects.diff_gs(
         instance
     )
-    compatibility_models.ChannelCompatibility.objects.patch_gs_updated(
+    compatibility_models.ChannelCompatibility.objects.patch_gs(
         instance, add, remove
     )
 

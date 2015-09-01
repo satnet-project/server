@@ -52,7 +52,7 @@ class ChannelCompatibilityManager(django_models.Manager):
         :param groundstation_ch: The just updated channel
         :return: (to_be_added, to_be_removed) tuple with the differences
         """
-        sc_chs = channel_models.GroundStationChannel.objects.find_compatible(
+        sc_chs = channel_models.SpacecraftChannel.objects.find_compatible(
             groundstation_ch
         )
         old_compatibility = ChannelCompatibility.objects.filter(
@@ -98,7 +98,7 @@ class ChannelCompatibilityManager(django_models.Manager):
         :param spacecraft_ch: The just updated channel
         :return: (to_be_added, to_be_removed) tuple with the differences
         """
-        sc_chs = channel_models.SpacecraftChannel.objects.find_compatible(
+        sc_chs = channel_models.GroundStationChannel.objects.find_compatible(
             spacecraft_ch
         )
         old_compatibility = ChannelCompatibility.objects.filter(

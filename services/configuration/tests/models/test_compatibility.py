@@ -41,6 +41,8 @@ class SegmentCompatibilityTest(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
+        import services.configuration.signals.compatibility
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
         self.__gs_1_ch_2_id = 'chan-cas-2'
@@ -61,8 +63,6 @@ class SegmentCompatibilityTest(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__user_profile, identifier=self.__sc_1_id
         )
-
-        model_signals.connect_channels_2_compatibility()
 
     def test_compatibility_case_1(self):
         """ services.configuration: basic SC_CH compatibility test (1)
@@ -87,7 +87,7 @@ class SegmentCompatibilityTest(test.TestCase):
             'Table must be empty!'
         )
 
-    def _compatibility_case_2(self):
+    def test_compatibility_case_2(self):
         """ services.configuration: basic GS_CH compatibility test (2)
         (CHANGE-1) +GS_CH
         (CHECK-1) len(SegmentCompatibility) = 0
@@ -106,7 +106,7 @@ class SegmentCompatibilityTest(test.TestCase):
         )
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
 
-    def _compatibility_case_3(self):
+    def test_compatibility_case_3(self):
         """ services.configuration: basic MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Non compatible)
@@ -159,7 +159,7 @@ class SegmentCompatibilityTest(test.TestCase):
         # Unchecked change, just for cleaning the database.
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
-    def _compatibility_case_4(self):
+    def test_compatibility_case_4(self):
         """ services.configuration: basic MIXED compatibility test (2)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)

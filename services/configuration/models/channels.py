@@ -38,11 +38,11 @@ class SpacecraftChannelManager(models.Manager):
     Manager for the objects within the SpacecraftChannel table in the database.
     """
 
-    def find_compatible(self, gs_channel):
+    def find_compatible(self, channel):
         """
-        Static method that finds all the compatible Spacecraft channels with
-        the given GroundStation channel.
-        :param gs_channel: A GroundStation channel object.
+        Finds all the compatible Spacecraft channels with the given
+        GroundStation channel.
+        :param channel: A GroundStation channel object.
         :return: A query list with the results of the search throughout the
         database.
         """
@@ -50,17 +50,17 @@ class SpacecraftChannelManager(models.Manager):
         return self.filter(
             enabled=True
         ).filter(
-            frequency__gt=gs_channel.band.IARU_allocation_minimum_frequency
+            frequency__gt=channel.band.IARU_allocation_minimum_frequency
         ).filter(
-            frequency__lt=gs_channel.band.IARU_allocation_maximum_frequency
+            frequency__lt=channel.band.IARU_allocation_maximum_frequency
         ).filter(
-            modulation__in=gs_channel.modulations.all()
+            modulation__in=channel.modulations.all()
         ).filter(
-            bitrate__in=gs_channel.bitrates.all()
+            bitrate__in=channel.bitrates.all()
         ).filter(
-            bandwidth__in=gs_channel.bandwidths.all()
+            bandwidth__in=channel.bandwidths.all()
         ).filter(
-            polarization__in=gs_channel.polarizations.all()
+            polarization__in=channel.polarizations.all()
         )
 
 
