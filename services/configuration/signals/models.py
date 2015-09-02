@@ -15,13 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
-from services.common import simulation
 
-from services.configuration.models import availability, compatibility
-from services.configuration.models import rules, tle as tle_models
-from services.scheduling.models import operational
+from services.configuration.models import availability
+from services.configuration.models import rules
 
 
 def connect_rules_2_availability():
@@ -56,71 +53,4 @@ def connect_rules_2_availability():
         sender=rules.AvailabilityRuleWeekly
     )
 
-
-def connect_availability_2_operational():
-    """
-    This function connects all the signals triggered during the
-    creation/save/removla of an AvailabilitySlots to the OperationalSlots
-    table.
-    """
-    django_signals.post_save.connect(
-        operational.OperationalSlotsManager.availability_slot_added,
-        sender=availability.AvailabilitySlot
-    )
-    django_signals.pre_delete.connect(
-        operational.OperationalSlotsManager.availability_slot_removed,
-        sender=availability.AvailabilitySlot
-    )
-
-
-def connect_compatibility_2_operational():
-    """
-    Connects the events (gs_ch add/remove and sc_ch add/remove) that occur at
-    the Compatibility table with the OperationalSlots table.
-    """
-    compatibility.compatibility_add_gs_ch_signal.connect(
-        operational.OperationalSlotsManager.compatibility_gs_channel_added,
-        sender=compatibility.ChannelCompatibility
-    )
-    compatibility.compatibility_add_sc_ch_signal.connect(
-        operational.OperationalSlotsManager.compatibility_sc_channel_added,
-        sender=compatibility.ChannelCompatibility
-    )
-    compatibility.compatibility_delete_gs_ch_signal.connect(
-        operational.OperationalSlotsManager.compatibility_gs_channel_deleted,
-        sender=compatibility.ChannelCompatibility
-    )
-    compatibility.compatibility_delete_sc_ch_signal.connect(
-        operational.OperationalSlotsManager.compatibility_sc_channel_deleted,
-        sender=compatibility.ChannelCompatibility
-    )
-
-connect_availability_2_operational()
-connect_compatibility_2_operational()
 connect_rules_2_availability()
-
-
-update_tle_signal = django_dispatch.Signal(
-    providing_args=['identifier', 'tle_l1', 'tle_l2']
-)
-
-
-# noinspection PyUnusedLocal
-@django_dispatch.receiver(update_tle_signal)
-def update_tle_handler(sender, identifier, tle_l1, tle_l2, **kwargs):
-    """
-    Signal receiver that updates the given TLE with the new first and second
-    lines.
-    :param sender: Any sender is accepted
-    :param identifier: Identifier of the TLE to be updated
-    :param tle_l1: New first line for the TLE
-    :param tle_l2: New second line for the TLE
-    :param kwargs: Additional parameters
-    """
-    simulation.OrbitalSimulator.check_tle_format(identifier, tle_l1, tle_l2)
-
-    # 1) we directly update the TLE
-    tle = tle_models.TwoLineElement.objects.get(identifier=identifier)
-    tle.first_line = tle_l1
-    tle.second_line = tle_l2
-    tle.save(update_fields=['first_line', 'second_line'])

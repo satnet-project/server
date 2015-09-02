@@ -186,4 +186,4 @@ class PassSlots(django_models.Model):
         """Unicode string
         :return: Unicode string
         """
-        return '>>> pass: ' + str(self.start) + ', ' + str(self.end)
+        return u'>>> pass: ' + str(self.start) + u', ' + str(self.end)

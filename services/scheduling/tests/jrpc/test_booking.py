@@ -15,19 +15,26 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
 import datetime
 import logging
+
+from django import test
+
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as \
     jrp_cfg_serial
-from services.configuration.jrpc.views import channels as jrpc_chs
+from services.configuration.jrpc.views.channels import \
+    groundstations as jrpc_gs_chs
+from services.configuration.jrpc.views.channels import \
+    spacecraft as jrpc_sc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational
-from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
-from services.scheduling.jrpc.views import spacecraft as jrpc_sc_scheduling
+from services.scheduling.jrpc.views.operational import \
+    groundstations as jrpc_gs_scheduling
+from services.scheduling.jrpc.views.operational import \
+    spacecraft as jrpc_sc_scheduling
 
 
 class JRPCBookingProcessTest(test.TestCase):
@@ -85,9 +92,6 @@ class JRPCBookingProcessTest(test.TestCase):
             jrp_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        model_signals.connect_availability_2_operational()
-        model_signals.connect_channels_2_compatibility()
-        model_signals.connect_compatibility_2_operational()
         model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
@@ -102,7 +106,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         self.assertEqual(
-            jrpc_chs.gs_channel_create(
+            jrpc_gs_chs.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
@@ -116,7 +120,7 @@ class JRPCBookingProcessTest(test.TestCase):
 
         # 3) basic test, should generate 2 FREE slots
         self.assertEqual(
-            jrpc_chs.sc_channel_create(
+            jrpc_sc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
@@ -278,7 +282,7 @@ class JRPCBookingProcessTest(test.TestCase):
 
         # ### clean up sc/gs
         self.assertEqual(
-            jrpc_chs.gs_channel_delete(
+            jrpc_gs_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
             True,
@@ -287,7 +291,7 @@ class JRPCBookingProcessTest(test.TestCase):
             )
         )
         self.assertEqual(
-            jrpc_chs.sc_channel_delete(
+            jrpc_sc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
             True,

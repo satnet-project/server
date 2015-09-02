@@ -25,7 +25,10 @@ from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as jrpc_keys
-from services.configuration.jrpc.views import channels as jrpc_channels_if
+from services.configuration.jrpc.views.channels import \
+    groundstations as jrpc_gs_ch_if
+from services.configuration.jrpc.views.channels import \
+    spacecraft as jrpc_sc_ch_if
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import rules, availability, channels
 from services.scheduling.models import operational
@@ -76,9 +79,6 @@ class OperationalModels(test.TestCase):
             jrpc_keys.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        model_signals.connect_availability_2_operational()
-        model_signals.connect_channels_2_compatibility()
-        model_signals.connect_compatibility_2_operational()
         model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
@@ -110,12 +110,12 @@ class OperationalModels(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots: no rules')
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
 
         r_1_id = jrpc_rules_if.add_rule(
@@ -131,12 +131,12 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_create(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
@@ -159,12 +159,11 @@ class OperationalModels(test.TestCase):
             'actual = ' + str(actual) + ', expected = ' + str(expected)
         )
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_delete(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )
 
@@ -195,11 +194,10 @@ class OperationalModels(test.TestCase):
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
+        self.assertTrue(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
-            True,
             'Rule should have been removed!'
         )
         expected = [
@@ -218,11 +216,10 @@ class OperationalModels(test.TestCase):
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_delete(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
@@ -262,19 +259,19 @@ class OperationalModels(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots: no rules')
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_create(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
         r_1_id = jrpc_rules_if.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id,
@@ -306,11 +303,10 @@ class OperationalModels(test.TestCase):
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
+        self.assertTrue(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
-            True,
             'Rule should have been removed!'
         )
         expected = [
@@ -357,11 +353,10 @@ class OperationalModels(test.TestCase):
             'Wrong slots..., diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_delete(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
@@ -404,19 +399,19 @@ class OperationalModels(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots: no rules')
 
-        self.assertEqual(
-            jrpc_channels_if.sc_channel_create(
+        self.assertTrue(
+            jrpc_sc_ch_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
         r_1_id = jrpc_rules_if.add_rule(
             self.__gs_1_id, self.__gs_1_ch_1_id,
@@ -448,11 +443,10 @@ class OperationalModels(test.TestCase):
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
+        self.assertTrue(
             jrpc_rules_if.remove_rule(
                 self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
             ),
-            True,
             'Rule should have been removed!'
         )
         expected = [
@@ -471,12 +465,12 @@ class OperationalModels(test.TestCase):
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_create(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration=self.__gs_1_ch_2_cfg
-            ), True, 'Channel should have been created!'
+            ), 'Channel should have been created!'
         )
         expected = [
             (str(operational.STATE_REMOVED),),
@@ -551,11 +545,10 @@ class OperationalModels(test.TestCase):
             'Wrong slots..., diff = ' + str(datadiff.diff(actual, expected))
         )
 
-        self.assertEqual(
-            jrpc_channels_if.gs_channel_delete(
+        self.assertTrue(
+            jrpc_gs_ch_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )

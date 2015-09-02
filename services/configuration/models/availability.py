@@ -234,10 +234,12 @@ class AvailabilitySlot(models.Model):
         max_length=100,
         unique=True
     )
+
     groundstation_channel = models.ForeignKey(
         channels.GroundStationChannel,
         verbose_name='GroundStationChannel that this slot belongs to'
     )
+
     start = models.DateTimeField('Slot start')
     end = models.DateTimeField('Slot end')
 

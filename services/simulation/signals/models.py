@@ -15,10 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db.models.signals import post_save, pre_delete
-from django import dispatch as django_dispatch
 import logging
-from services.configuration.models import segments
+from django import dispatch as django_dispatch
+from django.db.models import signals as django_signals
+
+from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
 from services.simulation import push as simulation_push
 from services.simulation.models import groundtracks as gt_models
@@ -27,7 +28,11 @@ from services.simulation.models import passes as pass_models
 logger = logging.getLogger('simulation')
 
 
-@django_dispatch.receiver(post_save, sender=segments.GroundStation)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=segment_models.GroundStation
+)
 def groundstation_created(sender, instance, created, raw, **kwargs):
     """Signal handler (post_save)
     Generates the pass slots associated with this groundstation.
@@ -45,7 +50,11 @@ def groundstation_created(sender, instance, created, raw, **kwargs):
     pass_models.PassSlots.objects.create_pass_slots_gs(instance)
 
 
-@django_dispatch.receiver(post_save, sender=segments.GroundStation)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=segment_models.GroundStation
+)
 def groundstation_updated(
     sender, instance, created, raw, update_fields, **kwargs
 ):
@@ -70,7 +79,11 @@ def groundstation_updated(
         pass_models.PassSlots.objects.create_pass_slots_gs(instance)
 
 
-@django_dispatch.receiver(pre_delete, sender=segments.Spacecraft)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.pre_delete,
+    sender=segment_models.Spacecraft
+)
 def groundstation_deleted(sender, instance, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the removal of the related simulation
@@ -83,7 +96,11 @@ def groundstation_deleted(sender, instance, **kwargs):
     pass_models.PassSlots.objects.remove_pass_slots_gs(instance)
 
 
-@django_dispatch.receiver(post_save, sender=segments.Spacecraft)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=segment_models.Spacecraft
+)
 def spacecraft_created(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the creation or update of the related
@@ -102,7 +119,11 @@ def spacecraft_created(sender, instance, created, raw, **kwargs):
     gt_models.GroundTrack.objects.create(instance)
 
 
-@django_dispatch.receiver(post_save, sender=segments.Spacecraft)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=segment_models.Spacecraft
+)
 def spacecraft_updated(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the creation or update of the related
@@ -138,7 +159,11 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
         pass_models.PassSlots.objects.create_pass_slots_sc(instance)
 
 
-@django_dispatch.receiver(pre_delete, sender=segments.Spacecraft)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.pre_delete,
+    sender=segment_models.Spacecraft
+)
 def spacecraft_deleted(sender, instance, **kwargs):
     """Signal Handler (post_save).
     Signal handler that triggers the removal of the related simulation
@@ -161,7 +186,11 @@ def spacecraft_deleted(sender, instance, **kwargs):
     pass_models.PassSlots.objects.filter(spacecraft=instance).delete()
 
 
-@django_dispatch.receiver(post_save, sender=tle_models.TwoLineElement)
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=tle_models.TwoLineElement
+)
 def tle_updated(sender, instance, created, raw, **kwargs):
     """Signal handler (post_save)
     Handles the update of the groundtracks and other simulation resources that

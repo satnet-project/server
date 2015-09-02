@@ -16,10 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from django import test
+
 from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.serializers import compatibility as \
-    compatibility_serializers
+from services.scheduling.jrpc.serializers import \
+    compatibility as compatibility_serializers
 
 
 class TestCompatibilitySerializers(test.TestCase):

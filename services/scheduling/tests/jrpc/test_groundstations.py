@@ -15,24 +15,28 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
-from django.db import models
-
-import datadiff
 import datetime
 import logging
+
+from django import test
+from django.db import models
+import datadiff
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as \
     jrpc_cfg_serial
-from services.configuration.jrpc.views import channels as jrpc_chs
+from services.configuration.jrpc.views.channels import \
+    groundstations as jrpc_gs_ch_if
+from services.configuration.jrpc.views.channels import \
+    spacecraft as jrpc_sc_ch_if
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational as operational_models
-from services.scheduling.jrpc.serializers import serialization as \
+from services.scheduling.jrpc.serializers import operational as \
     jrpc_sch_serial
-from services.scheduling.jrpc.views import groundstations as jrpc_gs_scheduling
+from services.scheduling.jrpc.views.operational import \
+    groundstations as jrpc_gs_scheduling
 
 
 class JRPCGroundStationsSchedulingTest(test.TestCase):
@@ -80,9 +84,6 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        model_signals.connect_availability_2_operational()
-        model_signals.connect_channels_2_compatibility()
-        model_signals.connect_compatibility_2_operational()
         model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
@@ -117,7 +118,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         # 2) basic test, should not generate slots until the GS is added,
         # raising an exception to confirm it
         self.assertTrue(
-            jrpc_chs.gs_channel_create(
+            jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
@@ -132,7 +133,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
 
         # 3) basic test, should generate 2 FREE slots
         self.assertTrue(
-            jrpc_chs.sc_channel_create(
+            jrpc_sc_ch_if.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
@@ -194,7 +195,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
 
         # ### clean up sc/gs
         self.assertTrue(
-            jrpc_chs.gs_channel_delete(
+            jrpc_gs_ch_if.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
             'Could not delete GroundStationChannel = ' + str(
@@ -202,7 +203,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             )
         )
         self.assertTrue(
-            jrpc_chs.sc_channel_delete(
+            jrpc_sc_ch_if.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)

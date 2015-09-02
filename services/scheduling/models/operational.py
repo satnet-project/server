@@ -17,12 +17,15 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
+
 from django.db import models as django_models
 from django.db.models import Q
-from services.common import misc, simulation
-from services.configuration.models import availability, channels, compatibility
-from services.configuration.models import tle
 
+from services.common import misc, simulation
+from services.configuration.models import availability as availability_models
+from services.configuration.models import channels as channel_models
+from services.configuration.models import tle as tle_models
+from services.scheduling.models import compatibility as compatibility_models
 
 logger = logging.getLogger('scheduling')
 
@@ -94,7 +97,7 @@ class OperationalSlotsManager(django_models.Manager):
         if self._simulator is None:
 
             self._simulator = simulation.OrbitalSimulator()
-            tle.TwoLineElementsManager.load_tles()
+            tle_models.TwoLineElementsManager.load_tles()
 
         return self._simulator
 
@@ -149,7 +152,7 @@ class OperationalSlotsManager(django_models.Manager):
 
         for info_i in simulations:
 
-            a_slot = availability.AvailabilitySlot.objects.get(
+            a_slot = availability_models.AvailabilitySlot.objects.get(
                 identifier=info_i[1]
             )
 
@@ -176,13 +179,15 @@ class OperationalSlotsManager(django_models.Manager):
         """
         result = []
 
-        for sc_ch_i in channels.SpacecraftChannel.objects.filter(
+        for sc_ch_i in channel_models.SpacecraftChannel.objects.filter(
             enabled=True, spacecraft=spacecraft
         ):
 
-            o_slots_i = self\
-                .filter(spacecraft_channel=sc_ch_i)\
-                .filter(sc_notified=False)
+            o_slots_i = self.filter(
+                compatible_channels__spacecraft_channel=sc_ch_i
+            ).filter(
+                sc_notified=False
+            )
             result += o_slots_i
             o_slots_i.update(sc_notified=True)
 
@@ -216,7 +221,7 @@ class OperationalSlotsManager(django_models.Manager):
         """
         result = []
 
-        for gs_ch_i in channels.GroundStationChannel.objects.filter(
+        for gs_ch_i in channel_models.GroundStationChannel.objects.filter(
             enabled=True, groundstation=groundstation
         ):
 
@@ -305,7 +310,7 @@ class OperationalSlotsManager(django_models.Manager):
         start = misc.get_today_utc()
         end = start + datetime.timedelta(days=2)
 
-        a_slots = availability.AvailabilitySlot.objects.get_applicable(
+        a_slots = availability_models.AvailabilitySlot.objects.get_applicable(
             groundstation_channel=instance, start=start, end=end
         )
 
@@ -324,34 +329,6 @@ class OperationalSlotsManager(django_models.Manager):
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def compatibility_sc_channel_deleted(sender, instance, **kwargs):
-        """
-        Handles the removal of a new SpacecraftChannel.
-        :param sender: The database object that sent the signal.
-        :param instance: The Channel affected by the event.
-        """
-        OperationalSlot.objects.filter(
-            spacecraft_channel=instance
-        ).update(
-            state=STATE_REMOVED
-        )
-
-    # noinspection PyUnusedLocal
-    @staticmethod
-    def compatibility_gs_channel_deleted(sender, instance, **kwargs):
-        """
-        Handles the removal of a new GroundStationChannel.
-        :param sender: The database object that sent the signal.
-        :param instance: The Channel affected by the event.
-        """
-        OperationalSlot.objects.filter(
-            groundstation_channel=instance
-        ).update(
-            state=STATE_REMOVED
-        )
-
-    # noinspection PyUnusedLocal
-    @staticmethod
     def availability_slot_added(sender, instance, **kwargs):
         """
         Callback for updating the OperationalSlots table when an
@@ -367,7 +344,7 @@ class OperationalSlotsManager(django_models.Manager):
         # start, end = simulation.OrbitalSimulator.get_simulation_window()
         print('@availability_slot_added, 2, gs_ch = ' + str(gs_ch.identifier))
 
-        for comp_i in compatibility.ChannelCompatibility.objects.filter(
+        for comp_i in compatibility_models.ChannelCompatibility.objects.filter(
             groundstation_channel=gs_ch
         ):
 
@@ -402,19 +379,6 @@ class OperationalSlotsManager(django_models.Manager):
                 gs_ch, comp_i.spacecraft_channel, operational_s
             )
 
-    # noinspection PyUnusedLocal
-    @staticmethod
-    def availability_slot_removed(sender, instance, **kwargs):
-        """
-        Callback for updating the OperationalSlots table when an
-        AvailabilitySlot has just been removed.
-        :param sender The object that sent the signal.
-        :param instance The instance of the object itself.
-        """
-        OperationalSlot.objects.filter(availability_slot=instance).update(
-            state=STATE_REMOVED
-        )
-
     @staticmethod
     def populate_spacecraft_channel_slots(
         spacecraft_channel, groundstation_channels, start=None, end=None
@@ -444,13 +408,14 @@ class OperationalSlotsManager(django_models.Manager):
                 gs_ch_i.groundstation
             )
 
-            a_slots = availability.AvailabilitySlot.objects.get_applicable(
-                groundstation_channel=gs_ch_i,
-                start=start, end=end
-            )
+            a_slots = availability_models.AvailabilitySlot.objects\
+                .get_applicable(
+                    groundstation_channel=gs_ch_i,
+                    start=start, end=end
+                )
 
-            operational_s = OperationalSlot.objects.get_simulator()\
-                .calculate_passes(a_slots)
+            operational_s = OperationalSlot.objects\
+                .get_simulator().calculate_passes(a_slots)
 
             OperationalSlot.objects.create_list(
                 gs_ch_i, spacecraft_channel, operational_s
@@ -468,11 +433,11 @@ class OperationalSlotsManager(django_models.Manager):
         start = s_end
         end = start + duration
 
-        for compatible_i in compatibility.ChannelCompatibility.objects.all():
+        for c in compatibility_models.ChannelCompatibility.objects.all():
 
             OperationalSlotsManager.populate_spacecraft_channel_slots(
-                compatible_i.spacecraft_channel,
-                compatible_i.groundstation_channels,
+                c.spacecraft_channel,
+                c.groundstation_channels,
                 start, end
             )
 
@@ -496,15 +461,16 @@ class OperationalSlot(django_models.Model):
         unique=True
     )
 
-    groundstation_channel = django_models.ForeignKey(
-        channels.GroundStationChannel,
-        verbose_name='GroundStationChannel that this slot belongs to',
-        blank=True, null=True, on_delete=django_models.SET_NULL
+    compatible_channels = django_models.ForeignKey(
+        compatibility_models.ChannelCompatibility,
+        verbose_name='Reference to the compatible pair of channels',
+        default=1
     )
-    spacecraft_channel = django_models.ForeignKey(
-        channels.SpacecraftChannel,
-        verbose_name='SpacecraftChannel that this slot belongs to',
-        blank=True, null=True, on_delete=django_models.SET_NULL
+
+    availability_slot = django_models.ForeignKey(
+        availability_models.AvailabilitySlot,
+        verbose_name='Availability slot that generates this OperationalSlot',
+        default=1
     )
 
     start = django_models.DateTimeField('Slot start')
@@ -588,16 +554,6 @@ class OperationalSlot(django_models.Model):
         default=False
     )
 
-    # Deleting the related AvailabilitySlot will not provoke the removal of
-    # the related rows in this table.
-    availability_slot = django_models.ForeignKey(
-        availability.AvailabilitySlot,
-        verbose_name='Availability slot that generates this OperationalSlot',
-        blank=True,
-        null=True,
-        on_delete=django_models.SET_NULL
-    )
-
     def change_state(self, new, notify_sc=True, notify_gs=True):
         """
         Static method that returns 'True' in case the state change from
@@ -620,17 +576,27 @@ class OperationalSlot(django_models.Model):
 
         else:
 
-            raise ValueError('Change from <' + str(self.state) + '> to <' +
-                             str(new) + ' is forbidden.')
+            raise ValueError(
+                'Change from <' + str(
+                    self.state
+                ) + '> to <' + str(new) + ' is forbidden.'
+            )
 
     def __unicode__(self):
         """
         Unicode string representation of the contents of this object.
         :return: Unicode string.
         """
-        return 'id = ' + str(self.identifier)\
-               + ', start = ' + str(self.start)\
-               + ', end = ' + str(self.end)\
-               + ', state = ' + str(self.state)\
-               + ', sc_notified = ' + str(self.sc_notified)\
-               + ', gs_notified = ' + str(self.gs_notified)
+        return u'id = ' + str(
+            self.identifier
+        ) + u', start = ' + str(
+            self.start
+        ) + u', end = ' + str(
+            self.end
+        ) + u', state = ' + str(
+            self.state
+        ) + u', sc_notified = ' + str(
+            self.sc_notified
+        ) + u', gs_notified = ' + str(
+            self.gs_notified
+        )

@@ -15,10 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
-import datadiff
 import datetime
 import logging
+
+from django import test
+import datadiff
+
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration import periodictasks
@@ -49,7 +51,7 @@ class TestSlotPropagation(test.TestCase):
         self.__sc_1_ch_1_f = 437000000
 
         # noinspection PyUnresolvedReferences
-        from services.configuration.signals import compatibility
+        from services.scheduling.signals import compatibility
 
         model_signals.connect_availability_2_operational()
         model_signals.connect_compatibility_2_operational()
