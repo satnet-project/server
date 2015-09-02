@@ -66,7 +66,7 @@ class TestAvailability(test.TestCase):
             print('##### test_add_slots: no rules')
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         self.assertEqual(
             len(a_slots), 0, 'No new available slots should\'ve been generated.'
@@ -86,12 +86,12 @@ class TestAvailability(test.TestCase):
             print('##### test_add_slots: single once rule')
 
         jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_once_rule()
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         self.assertEqual(
             len(a_slots), 1, '1 slot expected, got = ' + str(len(a_slots))
@@ -115,7 +115,7 @@ class TestAvailability(test.TestCase):
         utc_e_time = utc_dt + datetime.timedelta(minutes=15)
 
         jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 date_i=utc_i_date,
                 date_f=utc_e_date,
@@ -125,14 +125,17 @@ class TestAvailability(test.TestCase):
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
 
         self.assertEqual(
-            len(a_slots), 3, '3 slots expected, got = ' + str(len(a_slots))
+            len(a_slots),
+            3,
+            '3 slots expected, got = ' + str(len(a_slots))
         )
         self.assertEqual(
-            len(availability.AvailabilitySlot.objects.all()), 3,
+            len(availability.AvailabilitySlot.objects.all()),
+            3,
             '3 AvailabilitySlots were expected.'
         )
 
@@ -146,11 +149,11 @@ class TestAvailability(test.TestCase):
 
         # R1) ADD+ONCE (+1 slot)
         rule_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_once_rule()
         )
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         self.assertEqual(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
@@ -168,12 +171,12 @@ class TestAvailability(test.TestCase):
 
         # R2) ADD+DAILY (+2 slots)
         rule_2_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule()
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
 
@@ -202,14 +205,14 @@ class TestAvailability(test.TestCase):
 
         # R3) ADD-ONCE (-1 slot)
         rule_3_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
                 operation=jrpc_serial.RULE_OP_REMOVE
             )
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
 
@@ -238,14 +241,14 @@ class TestAvailability(test.TestCase):
 
         # R4) ADD-DAILY (-7 slots)
         rule_4_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 operation=jrpc_serial.RULE_OP_REMOVE
             )
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
 
@@ -275,12 +278,11 @@ class TestAvailability(test.TestCase):
         # REMOVE R#4 (+6 slots)
         jrpc_rules_if.remove_rule(
             groundstation_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id,
             rule_id=rule_4_id
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
 
@@ -310,12 +312,11 @@ class TestAvailability(test.TestCase):
         # REMOVE R#3 (+1 slot)
         jrpc_rules_if.remove_rule(
             groundstation_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id,
             rule_id=rule_3_id
         )
 
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
 
@@ -345,11 +346,10 @@ class TestAvailability(test.TestCase):
         # REMOVE R#2 (-7 slots)
         jrpc_rules_if.remove_rule(
             groundstation_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id,
             rule_id=rule_2_id
         )
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         self.assertEqual(
             len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
@@ -368,11 +368,10 @@ class TestAvailability(test.TestCase):
         # REMOVE R#1 (-1 slot)
         jrpc_rules_if.remove_rule(
             groundstation_id=self.__gs_1_id,
-            channel_id=self.__gs_1_ch_1_id,
             rule_id=rule_1_id
         )
         a_slots = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         self.assertEqual(
             len(a_slots), 0, 'None slots expected, got = ' + str(len(a_slots))
@@ -406,7 +405,7 @@ class TestAvailability(test.TestCase):
         # 1) Stability with []...
         self.assertEqual(
             availability.AvailabilitySlot.objects.get_applicable(
-                groundstation_channel=self.__gs_1_ch_1,
+                groundstation=self.__gs,
             ), [],
             '[] should be the result!'
         )
@@ -416,7 +415,7 @@ class TestAvailability(test.TestCase):
         ending_time = now + datetime.timedelta(minutes=45)
         # 2) Single daily rule, adds availability slots...
         jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 starting_time=starting_time,
                 ending_time=ending_time
@@ -451,7 +450,9 @@ class TestAvailability(test.TestCase):
             misc.print_list(a_slots, name='AVAILABLE@1')
 
         self.assertEqual(
-            a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
+            a_slots,
+            x_slots,
+            'Wrong slots! diff = ' + str(datadiff.diff(
                 a_slots, x_slots
             ))
         )
@@ -462,7 +463,7 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=35)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1,
+            groundstation=self.__gs,
             start=start,
             end=end
         )
@@ -498,7 +499,9 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=50)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1, start=start, end=end
+            groundstation=self.__gs,
+            start=start,
+            end=end
         )
         x_slots = [(
             (
@@ -508,7 +511,8 @@ class TestAvailability(test.TestCase):
             )
         )]
         self.assertEqual(
-            a_slots, x_slots,
+            a_slots,
+            x_slots,
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, x_slots))
         )
 
@@ -518,7 +522,9 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=55)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1, start=start, end=end
+            groundstation=self.__gs,
+            start=start,
+            end=end
         )
         self.assertEqual(
             a_slots, [],
@@ -531,7 +537,9 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=55)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1, start=start, end=end
+            groundstation=self.__gs,
+            start=start,
+            end=end
         )
         self.assertEqual(
             a_slots, [],
@@ -544,10 +552,13 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=15)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1, start=start, end=end
+            groundstation=self.__gs,
+            start=start,
+            end=end
         )
         self.assertEqual(
-            a_slots, [],
+            a_slots,
+            [],
             'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
         )
 
@@ -557,7 +568,9 @@ class TestAvailability(test.TestCase):
         end = now + datetime.timedelta(days=1, minutes=30)
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=self.__gs_1_ch_1, start=start, end=end
+            groundstation=self.__gs,
+            start=start,
+            end=end
         )
         self.assertEqual(
             a_slots, [],

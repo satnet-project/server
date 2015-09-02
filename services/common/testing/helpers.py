@@ -326,14 +326,17 @@ def gs_add_channel(
 
 def remove_gs_channel(gs_id, gs_ch_id):
 
-    channels.GroundStationChannel.objects.get(identifier=gs_ch_id).delete()
+    channels.GroundStationChannel.objects.get(
+        identifier=gs_ch_id,
+        groundstation__identifier=gs_id
+    ).delete()
 
 
 def create_jrpc_once_rule(
-        operation=serialization.RULE_OP_ADD,
-        date=None,
-        starting_time=None,
-        ending_time=None,
+    operation=serialization.RULE_OP_ADD,
+    date=None,
+    starting_time=None,
+    ending_time=None,
 ):
 
     if date is None:

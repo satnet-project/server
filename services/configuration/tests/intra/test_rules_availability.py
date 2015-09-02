@@ -32,6 +32,7 @@ class TestRulesAvailability(test.TestCase):
     required testing database.
     """
 
+    # noinspection PyUnresolvedReferences
     def setUp(self):
         """
         Populates the initial database with a set of objects required to run
@@ -41,6 +42,9 @@ class TestRulesAvailability(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
+
+        from services.configuration.signals import models
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -59,9 +63,6 @@ class TestRulesAvailability(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_1_get_availability_slots(self):
         """services.configuration: get availability slots
@@ -80,7 +81,7 @@ class TestRulesAvailability(test.TestCase):
             operation=jrpc_keys.RULE_OP_REMOVE,
             date=misc.get_today_utc() + datetime.timedelta(days=2)
         )
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_1)
+        jrpc_rules.add_rule(self.__gs_1_id, rule_1)
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
@@ -89,7 +90,7 @@ class TestRulesAvailability(test.TestCase):
             )))
 
         rule_2 = db_tools.create_jrpc_daily_rule()
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_2)
+        jrpc_rules.add_rule(self.__gs_1_id, rule_2)
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
@@ -101,7 +102,7 @@ class TestRulesAvailability(test.TestCase):
             operation=jrpc_keys.RULE_OP_REMOVE,
             date=misc.get_today_utc() + datetime.timedelta(days=3)
         )
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_3)
+        jrpc_rules.add_rule(self.__gs_1_id, rule_3)
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
@@ -113,7 +114,7 @@ class TestRulesAvailability(test.TestCase):
             operation=jrpc_keys.RULE_OP_REMOVE,
             date=misc.get_today_utc() + datetime.timedelta(days=3)
         )
-        jrpc_rules.add_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_4)
+        jrpc_rules.add_rule(self.__gs_1_id, rule_4)
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(

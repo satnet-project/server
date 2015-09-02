@@ -22,7 +22,7 @@ from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.views import rules as jrpc_rules_if
-from services.configuration.models import availability, rules
+from services.configuration.models import rules as rule_models
 
 
 class TestChannelRules(test.TestCase):
@@ -72,11 +72,9 @@ class TestChannelRules(test.TestCase):
             starting_time=r_1_s_time,
             ending_time=r_1_e_time
         )
-        r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, r_cfg
-        )
+        r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, r_cfg)
 
-        rs = rules.AvailabilityRuleManager.get_applicable_rule_values(
+        rs = rule_models.AvailabilityRuleManager.get_applicable_rule_values(
             self.__gs_1_ch_1
         )
         if self.__verbose_testing:
@@ -92,9 +90,8 @@ class TestChannelRules(test.TestCase):
                 r_1_e_time + datetime.timedelta(days=2),
             ),
         ]
-        actual = rules.AvailabilityRuleManager.generate_available_slots_daily(
-            rs[0][0],
-        )
+        actual = rule_models.AvailabilityRuleManager\
+            .generate_available_slots_daily(rs[0][0],)
 
         if self.__verbose_testing:
             print('>>> window = ' + str(
@@ -104,103 +101,4 @@ class TestChannelRules(test.TestCase):
 
         self.assertEqual(actual, expected, 'Wrong slots')
 
-        jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
-
-    def _2_a_slots_daily_first_cut(self):
-        """services.configuration: generate available slots (DAILY rule, 2)
-        This test validates the generation of AvailabilitySlots by a daily
-        rule when the slot has already started.
-        """
-        if self.__verbose_testing:
-            print('>>> test_2_a_slots_daily_first_cut:')
-
-        today = misc.get_today_utc()
-        now = misc.get_now_utc()
-        r_1_s_time = now - datetime.timedelta(minutes=30)
-        r_1_e_time = now + datetime.timedelta(minutes=30)
-
-        r_cfg = db_tools.create_jrpc_daily_rule(
-            date_i=today,
-            date_f=today + datetime.timedelta(days=365),
-            starting_time=r_1_s_time,
-            ending_time=r_1_e_time
-        )
-        r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, r_cfg
-        )
-
-        if self.__verbose_testing:
-            print('UTC now = ' + str(now))
-            print('UTC today = ' + str(misc.get_today_utc()))
-            print('$ window = ' + str(
-                simulation.OrbitalSimulator.get_simulation_window()
-            ))
-            misc.print_list(rules.AvailabilityRule.objects.all())
-            misc.print_list(availability.AvailabilitySlot.objects.all())
-
-        expected = [
-            (now, r_1_e_time),
-            (
-                r_1_s_time + datetime.timedelta(days=1),
-                r_1_e_time + datetime.timedelta(days=1),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=2),
-                r_1_e_time + datetime.timedelta(days=2),
-            ),
-        ]
-        actual = list(
-            availability.AvailabilitySlot.objects.values_list(
-                'start', 'end'
-            )
-        )
-
-        if self.__verbose_testing:
-            misc.print_list(actual, name='ACTUAL_VALUES')
-            misc.print_list(expected, name='EXPECTED_LIST')
-
-        self.assertEqual(actual, expected, 'Wrong slots')
-
-        jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
-        self.__verbose_testing = False
-
-    def _3_a_slots_daily_future(self):
-        """services.configuration: generate available slots (DAILY rule, 3)
-        Tests the generation of AvailabilitySlot's by a daily rule that
-        starts in the future.
-        """
-        if self.__verbose_testing:
-            print('>>> test_3_a_slots_daily_future:')
-
-        now = misc.get_now_utc()
-        r_1_s_time = now + datetime.timedelta(minutes=10)
-        r_1_e_time = now + datetime.timedelta(hours=5)
-
-        r_cfg = db_tools.create_jrpc_daily_rule(
-            starting_time=r_1_s_time,
-            ending_time=r_1_e_time
-        )
-        r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, r_cfg
-        )
-
-        expected = [
-            (
-                r_1_s_time + datetime.timedelta(days=1),
-                r_1_e_time + datetime.timedelta(days=1),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=2),
-                r_1_e_time + datetime.timedelta(days=2),
-            ),
-        ]
-        actual = list(
-            availability.AvailabilitySlot.objects.values_list(
-                'start', 'end'
-            )
-        )
-
-        self.assertEqual(actual, expected, 'Wrong slots')
-
-        jrpc_rules_if.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id)
-        self.__verbose_testing = False
+        jrpc_rules_if.remove_rule(self.__gs_1_id, r_1_id)

@@ -18,9 +18,9 @@ __author__ = 'rtubiopa@calpoly.edu'
 from datetime import datetime, timedelta
 from django.db import models
 import pytz
+
 from services.common import misc, simulation, slots
 from services.configuration.models import segments as segment_models
-from services.configuration.models import channels as channel_models
 
 ADD_SLOTS = '+'
 REMOVE_SLOTS = '-'
@@ -43,10 +43,10 @@ class AvailabilityRuleManager(models.Manager):
         WEEKLY_PERIODICITY: 'AvailabilityRuleWeekly',
     }
 
-    def create(self, gs_channel, operation, periodicity, dates):
+    def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new rule with the given parameters.
-        :param gs_channel: The channel to which this rule is associated.
+        :param groundstation: The groundstation that owns this rule
         :param operation: The type of operation for the rule to be added.
         :param periodicity: The periodicity for the rule.
         :param dates: The dates for the definition of the time intervales in
@@ -67,7 +67,7 @@ class AvailabilityRuleManager(models.Manager):
         print('>>>> @arule.create, 3, db_obj_class = ' + str(db_obj_class))
 
         rule_child = db_obj_class.objects.create(
-            gs_channel, operation, periodicity, dates
+            groundstation, operation, periodicity, dates
         )
         print('>>>> @arule.create, 4, rule_child = ' + str(rule_child))
 
@@ -128,7 +128,7 @@ class AvailabilityRuleManager(models.Manager):
         return add_slots, remove_slots
 
     @staticmethod
-    def get_applicable_rule_values(gs_channel, interval=None):
+    def get_applicable_rule_values(groundstation, interval=None):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
@@ -149,7 +149,7 @@ class AvailabilityRuleManager(models.Manager):
         for c in AvailabilityRule.__subclasses__():
             r_list = list(
                 c.objects.filter(
-                    availabilityrule_ptr__gs_channel=gs_channel
+                    availabilityrule_ptr__groundstation=groundstation
                 ).filter(
                     availabilityrule_ptr__operation=ADD_SLOTS
                 ).filter(
@@ -162,7 +162,7 @@ class AvailabilityRuleManager(models.Manager):
                 add_slots += r_list
             r_list = list(
                 c.objects.filter(
-                    availabilityrule_ptr__gs_channel=gs_channel
+                    availabilityrule_ptr__groundstation=groundstation
                 ).filter(
                     availabilityrule_ptr__operation=REMOVE_SLOTS
                 ).filter(
@@ -308,21 +308,23 @@ class AvailabilityRuleManager(models.Manager):
         periodicity = rule_values['periodicity']
 
         if periodicity == ONCE_PERIODICITY:
-            return AvailabilityRuleManager\
-                .generate_available_slots_once(rule_values, interval)
+            return AvailabilityRuleManager.generate_available_slots_once(
+                rule_values, interval
+            )
         if periodicity == DAILY_PERIODICITY:
-            return AvailabilityRuleManager\
-                .generate_available_slots_daily(rule_values, interval)
+            return AvailabilityRuleManager.generate_available_slots_daily(
+                rule_values, interval
+            )
         if periodicity == WEEKLY_PERIODICITY:
-            return AvailabilityRuleManager\
-                .generate_available_slots_weekly(i_date, f_date, rule_values,
-                                                 interval)
+            return AvailabilityRuleManager.generate_available_slots_weekly(
+                i_date, f_date, rule_values, interval
+            )
 
         raise Exception('Rule periodicity = <' + periodicity + '> is not '
                                                                'supported')
 
     @staticmethod
-    def get_availability_slots(gs_channel, interval=None):
+    def get_availability_slots(groundstation, interval=None):
         """
         This method generates the availability slots for this set of rules.
         :param interval: The interval of time during which the slots must be
@@ -333,7 +335,7 @@ class AvailabilityRuleManager(models.Manager):
 
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(
-                gs_channel, interval=interval
+                groundstation, interval=interval
             )
 
         # 0) We obtain the applicable slots from the database
@@ -383,9 +385,10 @@ class AvailabilityRule(models.Model):
 
     objects = AvailabilityRuleManager()
 
-    gs_channel = models.ForeignKey(
-        channel_models.GroundStationChannel,
-        verbose_name='Channel that this rule belongs to.'
+    groundstation = models.ForeignKey(
+        segment_models.GroundStation,
+        verbose_name='Reference to the Ground Station that owns this rule',
+        default=1
     )
 
     OPERATION_CHOICES = (
@@ -453,16 +456,16 @@ class AvailabilityRuleOnceManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, gs_channel, operation, periodicity, dates):
+    def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
-        print('>>>> @aruleONCE.create, XXX, gs_channel = ' + str(
-            gs_channel.identifier
+        print('>>>> @aruleONCE.create, XXX, groundstation = ' + str(
+            groundstation
         ))
 
         return super(AvailabilityRuleOnceManager, self).create(
-            gs_channel=gs_channel,
+            groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
@@ -505,13 +508,13 @@ class AvailabilityRuleDailyManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, gs_channel, operation, periodicity, dates):
+    def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
 
         return super(AvailabilityRuleDailyManager, self).create(
-            gs_channel=gs_channel,
+            groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
@@ -555,12 +558,12 @@ class AvailabilityRuleWeeklyManager(models.Manager):
     objects in the database.
     """
 
-    def create(self, gs_channel, operation, periodicity, dates):
+    def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
         """
         return super(AvailabilityRuleWeeklyManager, self).create(
-            gs_channel=gs_channel,
+            groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
@@ -622,93 +625,3 @@ class AvailabilityRuleWeekly(AvailabilityRule):
         Returns the string representation of this object.
         """
         return self.__unicode__()
-
-
-class GroupedAvailabilityRuleManager(models.Manager):
-    """
-    Manager for the model of the Grouped Avialability Rules.
-    """
-
-    def create(self, groundstation_id, op, periodicity, dates):
-        """
-        Creates the rules for all the channels of this Ground Station and
-        associates them to the same group.
-
-        :param groundstation_id: Ground Station identifier
-        :param op: Identifier of the type of operation
-        :param periodicity: Identifier of the type of periodicity
-        :param dates: Dates for the rule
-        """
-        rule_ids = []
-        groundstation = segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
-        )
-
-        print('@@@@ @create, groundstation = ' + str(groundstation))
-
-        group = super(GroupedAvailabilityRuleManager, self).create(
-            groundstation=groundstation
-        )
-
-        print('@@@@ @create, group = ' + str(group))
-
-        for ch in channel_models.GroundStationChannel.objects.filter(
-            groundstation=segment_models.GroundStation.objects.get(
-                identifier=groundstation_id
-            )
-        ):
-
-            print('@@@@ @create, a, ch = ' + str(ch.identifier))
-            rule = AvailabilityRule.objects.create(ch, op, periodicity, dates)
-            print('@@@@ @create, rule = ' + str(rule))
-            group.rules.add(rule)
-            group.save()
-            print('@@@@ @create, b')
-            rule_ids.append(rule.id)
-            print('@@@@ @create, c')
-
-        return {
-            'group_id': group.id,
-            'rules': rule_ids
-        }
-
-
-class GroupedAvailabilityRules(models.Model):
-    """
-    Model that helps keep tracking of which rules belong to what Ground Station
-    and to its associated channels. It is mainly intended for grouping all the
-    rules associated with the channels of a given Ground Station. This way, the
-    system both enables adding rules to specific channels or to a Ground
-    Station, being the latter the ones that get grouped and can, therefore, be
-    managed all together.
-    """
-
-    class Meta:
-        app_label = 'configuration'
-
-    objects = GroupedAvailabilityRuleManager()
-
-    groundstation = models.ForeignKey(
-        segment_models.GroundStation,
-        default=DEFAULT_GROUNDSTATION,
-        verbose_name='Reference to the Ground Station'
-    )
-
-    rules = models.ManyToManyField(
-        AvailabilityRule,
-        verbose_name='Rules belonging to the same group'
-    )
-
-    def __unicode__(self):
-        """
-        Returns a human readable string with the main information from a rule
-        object.
-        :return: Human readable string
-        """
-        return '\t* pk = ' + str(
-            self.id
-        ) + '\n\t* gs_id = ' + str(
-            self.groundstation.identifier
-        ) + '\n\t* rules = ' + str([
-            r.id for r in self.rules.all()
-        ]) + '\n'

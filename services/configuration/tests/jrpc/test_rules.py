@@ -36,6 +36,10 @@ class JRPCRulesTest(test.TestCase):
         """
         self.__verbose_testing = False
 
+        if not self.__verbose_testing:
+            logging.getLogger('common').setLevel(level=logging.CRITICAL)
+            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_callsign = 'GS1GSGS'
         self.__gs_1_contact_elevation = 10.30
@@ -67,64 +71,6 @@ class JRPCRulesTest(test.TestCase):
             self.__gs_1, self.__band, self.__gs_1_ch_1_id,
         )
 
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
-            logging.getLogger('common').setLevel(level=logging.CRITICAL)
-
-    def test_add_list_remove_grouped_rules(self):
-        """JRPC method: cfg.gs.listRules, cfg.gs.addRule, cfg.gs.removeRule
-        """
-        self.__verbose_testing = True
-        if self.__verbose_testing:
-            print('>>> TEST (test_add_list_remove_grouped_rules)')
-
-        # 1) add two new rules to the database
-        now = misc.get_now_utc()
-        starting_time = now + datetime.timedelta(minutes=30)
-        ending_time = now + datetime.timedelta(minutes=45)
-        rule_cfg_1 = db_tools.create_jrpc_once_rule(
-            starting_time=starting_time,
-            ending_time=ending_time
-        )
-        group_1 = jrpc_rules.add_grouped_rule(
-            self.__gs_1_id, rule_cfg_1
-        )
-        starting_time = now + datetime.timedelta(minutes=50)
-        ending_time = now + datetime.timedelta(minutes=55)
-        rule_cfg_2 = db_tools.create_jrpc_once_rule(
-            starting_time=starting_time,
-            ending_time=ending_time
-        )
-        group_2 = jrpc_rules.add_grouped_rule(
-            self.__gs_1_id, rule_cfg_2
-        )
-
-        # 2) list_rules must return the list with the keys of the rules
-        rule_cfg_1[jrpc_serial.RULE_PK_K] = group_1['rules'][0]
-        rule_cfg_2[jrpc_serial.RULE_PK_K] = group_2['rules'][0]
-        x_list = [rule_cfg_1, rule_cfg_2]
-        a_list = jrpc_rules.list_grouped_rules(self.__gs_1_id)
-
-        self.assertListEqual(
-            a_list, x_list,
-            'Wrong list!, diff = ' + str(datadiff.diff(a_list, x_list))
-        )
-
-        # 3) remove the grouped lists
-        self.assertTrue(
-            jrpc_rules.remove_grouped_rule(
-                self.__gs_1_id, group_1['group_id']
-            ),
-            'Should have removed the group of rules'
-        )
-        self.assertTrue(
-            jrpc_rules.remove_grouped_rule(
-                self.__gs_1_id, group_2['group_id']
-            ),
-            'Should have removed the group of rules'
-        )
-
     def test_add_once_rule(self):
         """JRPC method: (O) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a ONCE rule to the system.
@@ -142,14 +88,10 @@ class JRPCRulesTest(test.TestCase):
             starting_time=starting_time,
             ending_time=ending_time
         )
-        rule_id_1 = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
+        rule_id_1 = jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
 
         # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.list_channel_rules(
-            self.__gs_1_id, self.__gs_1_ch_1_id
-        )
+        rules_g1c1 = jrpc_rules.list_channel_rules(self.__gs_1_id)
         expected_r = {
             jrpc_serial.RULE_PK_K: rule_id_1,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
@@ -183,7 +125,7 @@ class JRPCRulesTest(test.TestCase):
             )
         )
 
-        jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id_1)
+        jrpc_rules.remove_rule(self.__gs_1_id, rule_id_1)
         self.__verbose_testing = False
 
     def test_add_daily_rule(self):
@@ -202,14 +144,10 @@ class JRPCRulesTest(test.TestCase):
             starting_time=r_1_s_time,
             ending_time=r_1_e_time
         )
-        rule_pk = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
+        rule_pk = jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
 
         # 2) get the rule back through the JRPC interface
-        rules_g1c1 = jrpc_rules.list_channel_rules(
-            self.__gs_1_id, self.__gs_1_ch_1_id
-        )
+        rules_g1c1 = jrpc_rules.list_channel_rules(self.__gs_1_id)
         expected_r = {
             jrpc_serial.RULE_PK_K: rule_pk,
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_DAILY,
@@ -255,10 +193,8 @@ class JRPCRulesTest(test.TestCase):
             print('>>> TEST (test_gs_channel_add_rule)')
 
         rule_cfg = db_tools.create_jrpc_once_rule()
-        rule_id = jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, rule_cfg
-        )
-        jrpc_rules.remove_rule(self.__gs_1_id, self.__gs_1_ch_1_id, rule_id)
+        rule_id = jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
+        jrpc_rules.remove_rule(self.__gs_1_id, rule_id)
 
         try:
             rule = rules.AvailabilityRule.objects.get(id=rule_id)

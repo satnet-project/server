@@ -36,6 +36,7 @@ class TestSlotPropagation(test.TestCase):
     following future passes.
     """
 
+    # noinspection PyUnresolvedReferences
     def setUp(self):
 
         self.__verbose_testing = False
@@ -50,11 +51,9 @@ class TestSlotPropagation(test.TestCase):
         self.__sc_1_ch_1_id = 'xatco-fm-1'
         self.__sc_1_ch_1_f = 437000000
 
-        # noinspection PyUnresolvedReferences
+        from services.configuration.signals import models
+        from services.configuration.signals import tle
         from services.scheduling.signals import compatibility
-
-        model_signals.connect_availability_2_operational()
-        model_signals.connect_compatibility_2_operational()
         model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()

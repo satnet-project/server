@@ -23,4 +23,4 @@ from services.configuration.jrpc.views.segments import groundstations
 from services.configuration.jrpc.views.segments import spacecraft
 
 # It is also necessary to import the signals
-from services.configuration.signals import models, push, rules, tle
+from services.configuration.signals import models, push, tle
