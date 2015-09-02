@@ -15,8 +15,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import exceptions as django_ex
-
 from rpc4django import rpcmethod
 
 from services.configuration.models import channels as channel_models
@@ -31,29 +29,21 @@ def get_compatiblility(spacecraft_ch):
     """Common method
     Returns the tuples (GS, GS_CH) with the compatible Ground Station
     channels with the given spacecraft channel.
+
     :param spacecraft_ch: The channel for which the tuples are compatible with
     :return: List with the (GS, GS_CH) tuples
     """
 
-    # noinspection PyUnusedLocal
-    compatible_chs = None
+    gs_chs = compatibility_models.ChannelCompatibility.objects.filter(
+        spacecraft_channel=spacecraft_ch
+    )
 
-    # 1) Retrieve compatible ground station channels
-    try:
-        compatible_chs = compatibility_models.ChannelCompatibility.objects.get(
-            spacecraft_channel=spacecraft_ch
-        )
-    except django_ex.ObjectDoesNotExist:
-        return []
+    compatible_tuples = [
+        (
+            c.groundstation_channel.groundstation, c.groundstation_channel
+        ) for c in gs_chs
+    ]
 
-    # 2) Generate list with tuples (groundstation, gs_channel)
-    compatible_tuples = []
-
-    for gs_ch in compatible_chs.groundstation_channels.all():
-
-        compatible_tuples.append((gs_ch.groundstation, gs_ch))
-
-    # 3) Serialization
     return compatibility_serializers.serialize_gs_ch_compatibility_tuples(
         compatible_tuples
     )

@@ -40,6 +40,7 @@ class TestSlotPropagation(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -47,8 +48,10 @@ class TestSlotPropagation(test.TestCase):
         self.__sc_1_ch_1_id = 'xatco-fm-1'
         self.__sc_1_ch_1_f = 437000000
 
+        # noinspection PyUnresolvedReferences
+        from services.configuration.signals import compatibility
+
         model_signals.connect_availability_2_operational()
-        model_signals.connect_channels_2_compatibility()
         model_signals.connect_compatibility_2_operational()
         model_signals.connect_rules_2_availability()
 
@@ -67,10 +70,6 @@ class TestSlotPropagation(test.TestCase):
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
         operational.OperationalSlot.objects.get_simulator().set_debug()
-
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_propagate_empty_db(self):
         """services.configuration: initial slot propagation

@@ -77,18 +77,15 @@ class TestGroupedRules(test.TestCase):
         op, periodicity, dates = jrpc_serial.deserialize_rule_cfg(r_cfg)
 
         x_group_pks = {
-            'group_id': 3,
-            'rules': [9, 10]
+            'group_id': 1,
+            'rules': [2, 3]
         }
         a_group_pks = rule_models.GroupedAvailabilityRules.objects.create(
             self.__gs_1_id, op, periodicity, dates
         )
         # It should have created two identifiers
         self.assertEqual(
-            a_group_pks, x_group_pks,
-            'Wrong result! diff = ' + str(
-                datadiff.diff(a_group_pks, x_group_pks)
-            )
+            a_group_pks, x_group_pks, 'Wrong result!'
         )
 
         # Two different rules should have been created, each of them for a

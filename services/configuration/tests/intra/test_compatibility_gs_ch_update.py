@@ -20,10 +20,8 @@ import logging
 from django.test import TestCase
 
 from services.common.testing import helpers as db_tools
-from services.configuration.signals import models as model_signals
 from services.configuration.models import bands as band_models
 from services.configuration.models import channels as channel_models
-from services.configuration.models import compatibility as compat_models
 from services.configuration.jrpc.views import compatibility as jrpc_compat_if
 
 
@@ -44,6 +42,9 @@ class CompatibilityGsChUpdate(TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
+
+        # noinspection PyUnresolvedReferences
+        from services.configuration.signals import compatibility
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -66,9 +67,7 @@ class CompatibilityGsChUpdate(TestCase):
             user_profile=self.__user_profile, identifier=self.__sc_1_id
         )
 
-        model_signals.connect_channels_2_compatibility()
-
-    def test_diff_compatibility(self):
+    def test_gs_channel_update_compatibility(self):
         """ services.configuration: diff compatibility
         """
         if self.__verbose_testing:
@@ -95,13 +94,6 @@ class CompatibilityGsChUpdate(TestCase):
         gs_ch = channel_models.GroundStationChannel.objects.get(
             identifier=self.__gs_1_ch_1_id
         )
-        all_sc_chs = channel_models.SpacecraftChannel.objects.all()
-
-        diff = compat_models.ChannelCompatibilityManager.diff(
-            groundstation_ch=gs_ch, compatible_sc_chs=all_sc_chs
-        )
-
-        self.assertEquals(diff, (set(), set()), 'Wrong diff!')
 
         c1 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
         self.assertEquals(

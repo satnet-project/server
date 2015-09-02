@@ -23,7 +23,6 @@ from django.test import TestCase
 from services.common.testing import helpers as db_tools
 from services.configuration.models import channels as channel_models
 from services.configuration.models import compatibility as compatibility_models
-from services.configuration.signals import models as model_signals
 from services.configuration.jrpc.serializers import serialization as jrpc_serial
 from services.configuration.jrpc.views.channels import spacecraft\
     as jrpc_sc_ch_if
@@ -46,8 +45,11 @@ class CompatibilityScChUpdate(TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
+            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        model_signals.connect_channels_2_compatibility()
+        # noinspection PyUnresolvedReferences
+        from services.configuration.signals import compatibility
 
         self.__gs_1_id = 'uvigo'
         self.__gs_1_ch_1_id = 'qpsk-gs-1'
@@ -88,10 +90,6 @@ class CompatibilityScChUpdate(TestCase):
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
 
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
-
     def test_sc_channel_update_compatibility(self):
         """INTRA configuration: SC channel update provokes compatibility change
         Initially, the just created spacecraft channel should be compatible
@@ -103,13 +101,6 @@ class CompatibilityScChUpdate(TestCase):
         # 0) initially, the channels are compatible
         compatibility = jrpc_compat_if.sc_channel_get_compatible(
             self.__sc_1_id, self.__sc_1_ch_1_id
-        )
-
-        import services.common.misc as misc
-        misc.print_dictionary(compatibility)
-
-        misc.print_list(
-            compatibility_models.ChannelCompatibility.objects.all()
         )
 
         self.assertEqual(

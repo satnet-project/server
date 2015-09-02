@@ -37,6 +37,9 @@ class TestCompatibilityViews(test.TestCase):
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
 
+        # noinspection PyUnresolvedReferences
+        from services.configuration.signals import compatibility
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
         self.__gs_1_ch_2_id = 'chan-cas-2'
@@ -77,7 +80,9 @@ class TestCompatibilityViews(test.TestCase):
         )
 
         self.assertEquals(
-            c[0]['GroundStation']['identifier'], self.__gs_1_id, 'Wrong GS id!'
+            c[0]['GroundStation']['identifier'],
+            self.__gs_1_id,
+            'Wrong GS id!'
         )
 
     def test_sc_get_compatible(self):

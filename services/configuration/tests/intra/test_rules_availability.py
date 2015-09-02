@@ -68,6 +68,7 @@ class TestRulesAvailability(test.TestCase):
         This test validates the generation of slots by the different rules
         supported by the configuration service.
         """
+        self.__verbose_testing = True
         if self.__verbose_testing:
             print('>>>>> get_availability_slots')
 
@@ -141,7 +142,7 @@ class TestRulesAvailability(test.TestCase):
 
         self.assertEqual(
             len(actual_s), 1,
-            'Wrong number of available slots, e = 2, actual = ' + str(len(
+            'Wrong number of available slots, e = 1, actual = ' + str(len(
                 actual_s
             ))
         )

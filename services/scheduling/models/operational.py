@@ -368,7 +368,7 @@ class OperationalSlotsManager(django_models.Manager):
         print('@availability_slot_added, 2, gs_ch = ' + str(gs_ch.identifier))
 
         for comp_i in compatibility.ChannelCompatibility.objects.filter(
-            groundstation_channels=gs_ch
+            groundstation_channel=gs_ch
         ):
 
             print('@availability_slot_added, 3, comp_sc_ch = ' + str(
