@@ -15,7 +15,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
 import logging
 from django import test
