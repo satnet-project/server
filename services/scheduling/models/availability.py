@@ -210,7 +210,7 @@ class AvailabilitySlot(models.Model):
     them will be stored in this table in the database.
     """
     class Meta:
-        app_label = 'configuration'
+        app_label = 'scheduling'
 
     ID_FIELDS_SEPARATOR = '-'
 

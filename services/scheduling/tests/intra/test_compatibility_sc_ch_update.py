@@ -24,7 +24,8 @@ from django.test import TestCase
 from services.common.testing import helpers as db_tools
 from services.configuration.models import channels as channel_models
 from services.scheduling.models import compatibility as compatibility_models
-from services.configuration.jrpc.serializers import rules as jrpc_serial
+from services.configuration.jrpc.serializers import \
+    channels as channel_serializers
 from services.configuration.jrpc.views.channels import spacecraft\
     as jrpc_sc_ch_if
 from services.scheduling.jrpc.views import compatibility as jrpc_compat_if
@@ -112,12 +113,12 @@ class CompatibilityScChUpdate(TestCase):
 
         # 1) new configuration makes channels incompatible
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-            jrpc_serial.FREQUENCY_K: 2000000000,
-            jrpc_serial.MODULATION_K: 'FM',
-            jrpc_serial.POLARIZATION_K: 'RHCP',
-            jrpc_serial.BITRATE_K: 600,
-            jrpc_serial.BANDWIDTH_K: 25
+            channel_serializers.CH_ID_K: self.__sc_1_ch_1_id,
+            channel_serializers.FREQUENCY_K: 2000000000,
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'RHCP',
+            channel_serializers.BITRATE_K: 600,
+            channel_serializers.BANDWIDTH_K: 25
         }
 
         self.assertTrue(
@@ -166,12 +167,12 @@ class CompatibilityScChUpdate(TestCase):
 
         # 2) this new configuration should make the channels compatible again
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-            jrpc_serial.FREQUENCY_K: 436365000,
-            jrpc_serial.MODULATION_K: 'FM',
-            jrpc_serial.POLARIZATION_K: 'RHCP',
-            jrpc_serial.BITRATE_K: 600,
-            jrpc_serial.BANDWIDTH_K: 25
+            channel_serializers.CH_ID_K: self.__sc_1_ch_1_id,
+            channel_serializers.FREQUENCY_K: 436365000,
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'RHCP',
+            channel_serializers.BITRATE_K: 600,
+            channel_serializers.BANDWIDTH_K: 25
         }
 
         self.assertTrue(

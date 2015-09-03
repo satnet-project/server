@@ -22,19 +22,18 @@ from django import test
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers import rules as \
-    jrp_cfg_serial
+from services.configuration.jrpc.serializers import channels as \
+    channel_serializers
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_chs
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.scheduling.models import operational
 from services.scheduling.jrpc.views.operational import \
     groundstations as jrpc_gs_scheduling
 from services.scheduling.jrpc.views.operational import \
     spacecraft as jrpc_sc_scheduling
+from services.scheduling.models import operational
 
 
 class JRPCBookingProcessTest(test.TestCase):
@@ -60,39 +59,40 @@ class JRPCBookingProcessTest(test.TestCase):
         operational.OperationalSlot.objects.get_simulator().set_debug()
         operational.OperationalSlot.objects.set_debug()
 
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import availability
+
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
-            jrp_cfg_serial.FREQUENCY_K: '437000000',
-            jrp_cfg_serial.MODULATION_K: 'FM',
-            jrp_cfg_serial.POLARIZATION_K: 'LHCP',
-            jrp_cfg_serial.BITRATE_K: '300',
-            jrp_cfg_serial.BANDWIDTH_K: '12.500000000'
+            channel_serializers.FREQUENCY_K: '437000000',
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'LHCP',
+            channel_serializers.BITRATE_K: '300',
+            channel_serializers.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
         self.__gs_1_ch_1_id = 'gs-la-fm'
         self.__gs_1_ch_1_cfg = {
-            jrp_cfg_serial.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrp_cfg_serial.AUTOMATED_K: False,
-            jrp_cfg_serial.MODULATIONS_K: ['FM'],
-            jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrp_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrp_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
         self.__gs_1_ch_2_id = 'gs-la-fm-2'
         self.__gs_1_ch_2_cfg = {
-            jrp_cfg_serial.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrp_cfg_serial.AUTOMATED_K: False,
-            jrp_cfg_serial.MODULATIONS_K: ['FM'],
-            jrp_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrp_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrp_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
-
-        model_signals.connect_rules_2_availability()
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -135,7 +135,7 @@ class JRPCBookingProcessTest(test.TestCase):
         self.__date_e_time = self.__date_now + datetime.timedelta(minutes=45)
 
         jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 date_i=self.__date_i,
                 date_f=self.__date_f,

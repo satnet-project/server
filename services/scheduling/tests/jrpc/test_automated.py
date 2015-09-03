@@ -19,7 +19,7 @@ import logging
 from django import test
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers\
-    import rules as jrpc_cfg_serial
+    import channels as channel_serializers
 from services.scheduling.models import operational
 
 
@@ -48,22 +48,22 @@ class JRPCAutomatedBookingTest(test.TestCase):
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
-            jrpc_cfg_serial.FREQUENCY_K: '437000000',
-            jrpc_cfg_serial.MODULATION_K: 'FM',
-            jrpc_cfg_serial.POLARIZATION_K: 'LHCP',
-            jrpc_cfg_serial.BITRATE_K: '300',
-            jrpc_cfg_serial.BANDWIDTH_K: '12.500000000'
+            channel_serializers.FREQUENCY_K: '437000000',
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'LHCP',
+            channel_serializers.BITRATE_K: '300',
+            channel_serializers.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
         self.__gs_1_ch_1_id = 'gs-la-fm'
         self.__gs_1_ch_1_cfg = {
-            jrpc_cfg_serial.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_cfg_serial.AUTOMATED_K: True,
-            jrpc_cfg_serial.MODULATIONS_K: ['FM'],
-            jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: True,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
         self.__band = db_tools.create_band()
@@ -77,7 +77,7 @@ class JRPCAutomatedBookingTest(test.TestCase):
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
 
-    def test_book_automated(self):
+    def _book_automated(self):
         """Basic automated booking test.
         Basic JUNIT test that validates the automatic acceptance of the booking
         requests made by an external operator over the available operational

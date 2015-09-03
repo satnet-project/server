@@ -23,14 +23,15 @@ import datadiff
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
-from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers import rules as jrpc_keys
+from services.configuration.jrpc.serializers import \
+    channels as channel_serializers
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_ch_if
 from services.configuration.jrpc.views import rules as jrpc_rules_if
-from services.configuration.models import rules, channels
+from services.configuration.models import channels as channel_models
+from services.configuration.models import rules
 from services.scheduling.models import operational, availability
 
 
@@ -51,35 +52,36 @@ class OperationalModels(test.TestCase):
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
-            jrpc_keys.FREQUENCY_K: '437000000',
-            jrpc_keys.MODULATION_K: 'FM',
-            jrpc_keys.POLARIZATION_K: 'LHCP',
-            jrpc_keys.BITRATE_K: '300',
-            jrpc_keys.BANDWIDTH_K: '12.500000000'
+            channel_serializers.FREQUENCY_K: '437000000',
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'LHCP',
+            channel_serializers.BITRATE_K: '300',
+            channel_serializers.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
         self.__gs_1_ch_1_id = 'gs-la-fm'
         self.__gs_1_ch_1_cfg = {
-            jrpc_keys.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_keys.AUTOMATED_K: False,
-            jrpc_keys.MODULATIONS_K: ['FM'],
-            jrpc_keys.POLARIZATIONS_K: ['LHCP'],
-            jrpc_keys.BITRATES_K: [300, 600, 900],
-            jrpc_keys.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
         self.__gs_1_ch_2_id = 'gs-la-fm-2'
         self.__gs_1_ch_2_cfg = {
-            jrpc_keys.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_keys.AUTOMATED_K: False,
-            jrpc_keys.MODULATIONS_K: ['FM'],
-            jrpc_keys.POLARIZATIONS_K: ['LHCP'],
-            jrpc_keys.BITRATES_K: [300, 600, 900],
-            jrpc_keys.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        model_signals.connect_rules_2_availability()
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import availability
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -119,7 +121,7 @@ class OperationalModels(test.TestCase):
         )
 
         r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 starting_time=misc.localize_time_utc(datetime.time(
                     hour=8, minute=0, second=0
@@ -140,9 +142,7 @@ class OperationalModels(test.TestCase):
         )
 
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=channels.GroundStationChannel.objects.get(
-                identifier=self.__gs_1_ch_1_id
-            )
+            groundstation=self.__gs_1
         )
         actual = len(operational.OperationalSlot.objects.all())
         expected = len(a_slots)
@@ -536,8 +536,8 @@ class OperationalModels(test.TestCase):
         ]
         actual = list(
             operational.OperationalSlot.objects.filter(
-                groundstation_channel=channels.GroundStationChannel.objects
-                .get(identifier=self.__gs_1_ch_2_id)
+                groundstation_channel=channel_models.GroundStationChannel
+                .objects.get(identifier=self.__gs_1_ch_2_id)
             ).values_list('state')
         )
         self.assertEqual(

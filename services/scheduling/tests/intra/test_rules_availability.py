@@ -116,7 +116,6 @@ class TestRulesAvailability(test.TestCase):
         This test validates the generation of slots by the different rules
         supported by the configuration service.
         """
-        self.__verbose_testing = True
         if self.__verbose_testing:
             print('>>>>> get_availability_slots')
 
@@ -132,7 +131,7 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
-                    self.__gs_1_ch_1
+                    self.__gs
                 )
             )))
 
@@ -141,7 +140,7 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
-                    self.__gs_1_ch_1
+                    self.__gs
                 )
             )))
 
@@ -153,7 +152,7 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
-                    self.__gs_1_ch_1
+                    self.__gs
                 )
             )))
 
@@ -165,7 +164,7 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('slots = ' + str(len(
                 rules.AvailabilityRule.objects.get_availability_slots(
-                    self.__gs_1_ch_1
+                    self.__gs
                 )
             )))
 
@@ -176,7 +175,7 @@ class TestRulesAvailability(test.TestCase):
         )
 
         actual_s = rules.AvailabilityRule.objects.get_availability_slots(
-            self.__gs_1_ch_1
+            self.__gs
         )
         if self.__verbose_testing:
             print('>>> today_utc = ' + str(misc.get_today_utc()))

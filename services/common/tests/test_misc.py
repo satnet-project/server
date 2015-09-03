@@ -103,7 +103,7 @@ class TestMisc(test.TestCase):
         utc_e_time = utc_dt + datetime.timedelta(minutes=15)
 
         jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 date_i=utc_i_date,
                 date_f=utc_e_date,
@@ -135,7 +135,7 @@ class TestMisc(test.TestCase):
         local_e_time = local_dt + datetime.timedelta(minutes=30)
 
         jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 date_i=local_i_date,
                 date_f=local_e_date,

@@ -24,9 +24,10 @@ import datadiff
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers import rules as \
-    jrpc_cfg_serial
+from services.configuration.jrpc.serializers import \
+    channels as channel_serializers
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if
 from services.configuration.jrpc.views.channels import \
@@ -56,35 +57,36 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
         self.__sc_1_ch_1_cfg = {
-            jrpc_cfg_serial.FREQUENCY_K: '437000000',
-            jrpc_cfg_serial.MODULATION_K: 'FM',
-            jrpc_cfg_serial.POLARIZATION_K: 'LHCP',
-            jrpc_cfg_serial.BITRATE_K: '300',
-            jrpc_cfg_serial.BANDWIDTH_K: '12.500000000'
+            channel_serializers.FREQUENCY_K: '437000000',
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'LHCP',
+            channel_serializers.BITRATE_K: '300',
+            channel_serializers.BANDWIDTH_K: '12.500000000'
         }
         self.__gs_1_id = 'gs-la'
         self.__gs_1_ch_1_id = 'gs-la-fm'
         self.__gs_1_ch_1_cfg = {
-            jrpc_cfg_serial.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_cfg_serial.AUTOMATED_K: False,
-            jrpc_cfg_serial.MODULATIONS_K: ['FM'],
-            jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
         self.__gs_1_ch_2_id = 'gs-la-fm-2'
         self.__gs_1_ch_2_cfg = {
-            jrpc_cfg_serial.BAND_K:
+            channel_serializers.BAND_K:
             'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_cfg_serial.AUTOMATED_K: False,
-            jrpc_cfg_serial.MODULATIONS_K: ['FM'],
-            jrpc_cfg_serial.POLARIZATIONS_K: ['LHCP'],
-            jrpc_cfg_serial.BITRATES_K: [300, 600, 900],
-            jrpc_cfg_serial.BANDWIDTHS_K: [12.500000000, 25.000000000]
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        model_signals.connect_rules_2_availability()
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import availability
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -149,7 +151,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         e_time = now + datetime.timedelta(minutes=45)
 
         jrpc_rules.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id,
+            self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
                 date_i=date_i,
                 date_f=date_f,
@@ -162,7 +164,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         expected = {
             self.__gs_1_ch_1_id: {
                 self.__sc_1_ch_1_id: {
-                    jrpc_cfg_serial.SC_ID_K: self.__sc_1_id,
+                    segment_serializers.SC_ID_K: self.__sc_1_id,
                     jrpc_sch_serial.SLOTS_K: [{
                         jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
                         jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
