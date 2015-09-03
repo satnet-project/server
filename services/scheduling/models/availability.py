@@ -168,22 +168,6 @@ class AvailabilitySlotsManager(models.Manager):
             )
             self.add_slots(gs_ch_i, slots_i)
 
-    # noinspection PyUnusedLocal
-    @staticmethod
-    def availability_rule_updated(sender, instance, **kwargs):
-        """
-        Callback for updating the AvailabilitySlots table whenenver a new
-        rule is added to the database.
-        :param sender The object that sent the signal.
-        :param instance The instance of the object itself.
-        """
-        AvailabilitySlot.objects.update_slots(
-            instance.groundstation,
-            rules.AvailabilityRule.objects.get_availability_slots(
-                instance.groundstation
-            )
-        )
-
     @staticmethod
     def truncate(slot, start, end):
         """

@@ -15,16 +15,17 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
-from django import test
 import logging
+
+import datadiff
+from django import test
 import pytz
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
 from services.configuration.models import rules
-from services.configuration.models import availability
+from services.scheduling.models import availability
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 
 

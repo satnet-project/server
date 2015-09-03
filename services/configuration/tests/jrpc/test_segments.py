@@ -18,10 +18,12 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 import datadiff
 from django import test
+
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.models import segments
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializaers
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
 
@@ -245,7 +247,7 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_gs_get_configuration):')
 
-        cfg = jrpc_serial.deserialize_gs_configuration(
+        cfg = segment_serializaers.deserialize_gs_configuration(
             jrpc_gs.get_configuration(self.__gs_1_id)
         )
 
@@ -269,16 +271,16 @@ class JRPCSegmentsTest(test.TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_gs_get_configuration):')
 
-        cfg = jrpc_serial.serialize_gs_configuration(
+        cfg = segment_serializaers.serialize_gs_configuration(
             segments.GroundStation.objects.get(identifier=self.__gs_1_id)
         )
 
-        cfg[jrpc_serial.GS_CALLSIGN_K] = 'CHANGED'
-        cfg[jrpc_serial.GS_ELEVATION_K] = 0.00
-        cfg[jrpc_serial.GS_LATLON_K] = [
+        cfg[segment_serializaers.GS_CALLSIGN_K] = 'CHANGED'
+        cfg[segment_serializaers.GS_ELEVATION_K] = 0.00
+        cfg[segment_serializaers.GS_LATLON_K] = [
             39.73915360, -104.98470340
         ]
-        cfg[jrpc_serial.GS_ALTITUDE_K] = 1608.63793945312
+        cfg[segment_serializaers.GS_ALTITUDE_K] = 1608.63793945312
 
         self.assertEqual(
             jrpc_gs.set_configuration(self.__gs_1_id, cfg),
@@ -299,7 +301,7 @@ class JRPCSegmentsTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_get_configuration):')
-        cfg = jrpc_serial.deserialize_sc_configuration(
+        cfg = segment_serializaers.deserialize_sc_configuration(
             jrpc_sc.get_configuration(self.__sc_1_id)
         )
         self.assertEqual(
@@ -314,13 +316,13 @@ class JRPCSegmentsTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_get_configuration):')
-        cfg = jrpc_serial.serialize_sc_configuration(
+        cfg = segment_serializaers.serialize_sc_configuration(
             segments.Spacecraft.objects.get(identifier=self.__sc_1_id)
         )
-        old_callsign = cfg[jrpc_serial.SC_CALLSIGN_K]
-        old_tle_id = cfg[jrpc_serial.SC_TLE_ID_K]
-        cfg[jrpc_serial.SC_CALLSIGN_K] = 'CHANGED'
-        cfg[jrpc_serial.SC_TLE_ID_K] = 'HUMSAT-D'
+        old_callsign = cfg[segment_serializaers.SC_CALLSIGN_K]
+        old_tle_id = cfg[segment_serializaers.SC_TLE_ID_K]
+        cfg[segment_serializaers.SC_CALLSIGN_K] = 'CHANGED'
+        cfg[segment_serializaers.SC_TLE_ID_K] = 'HUMSAT-D'
         self.assertEqual(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             self.__sc_1_id,
@@ -332,8 +334,8 @@ class JRPCSegmentsTest(test.TestCase):
             + ', e = ' + str(cfg)
             + ', a = ' + str(actual_cfg)
         )
-        cfg[jrpc_serial.SC_CALLSIGN_K] = old_callsign
-        cfg[jrpc_serial.SC_TLE_ID_K] = old_tle_id
+        cfg[segment_serializaers.SC_CALLSIGN_K] = old_callsign
+        cfg[segment_serializaers.SC_TLE_ID_K] = old_tle_id
         self.assertEqual(
             jrpc_sc.set_configuration(self.__sc_1_id, cfg),
             self.__sc_1_id,

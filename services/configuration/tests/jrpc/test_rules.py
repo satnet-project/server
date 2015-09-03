@@ -24,7 +24,7 @@ from services.common.testing import helpers as db_tools
 from services.common import serialization as common_serial
 from services.configuration.models import rules
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.configuration.jrpc.serializers import serialization \
+from services.configuration.jrpc.serializers import rules \
     as jrpc_serial
 
 

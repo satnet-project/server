@@ -25,7 +25,7 @@ import ephem
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.models import celestrak
-from services.configuration.jrpc.serializers import serialization as \
+from services.configuration.jrpc.serializers import segments as \
     segment_serializer, tle as tle_serializer
 from services.configuration.jrpc.views import tle as tle_jrpc
 

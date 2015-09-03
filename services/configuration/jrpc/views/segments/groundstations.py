@@ -19,7 +19,8 @@ from rpc4django import rpcmethod
 import logging
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
-from services.configuration.jrpc.serializers import serialization
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
 from website import settings as satnet_settings
 
 logger = logging.getLogger('jrpc')
@@ -69,7 +70,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     )
 
     return {
-        serialization.GS_ID_K: str(gs.identifier)
+        segment_serializers.GS_ID_K: str(gs.identifier)
     }
 
 
@@ -82,7 +83,7 @@ def get_configuration(ground_station_id):
     """JRPC method: configuration.gs.getConfiguration
     Returns the configuration for the given ground station.
     """
-    return serialization.serialize_gs_configuration(
+    return segment_serializers.serialize_gs_configuration(
         segment_models.GroundStation.objects.get(identifier=ground_station_id)
     )
 
@@ -97,7 +98,7 @@ def set_configuration(ground_station_id, configuration):
     Sets the configuration for the given ground station.
     """
     callsign, contact_elevation, latitude, longitude =\
-        serialization.deserialize_gs_configuration(configuration)
+        segment_serializers.deserialize_gs_configuration(configuration)
     gs = segment_models.GroundStation.objects.get(identifier=ground_station_id)
     gs.update(
         callsign=callsign, contact_elevation=contact_elevation,

@@ -22,8 +22,8 @@ from rpc4django import rpcmethod
 from services.configuration.models import channels as channel_models
 from services.configuration.models import bands as band_models
 from services.configuration.models import segments as segment_models
-from services.configuration.jrpc.serializers import serialization as \
-    jrpc_cfg_serial
+from services.configuration.jrpc.serializers import channels as \
+    jrpc_channels_serial
 from website import settings as satnet_settings
 
 
@@ -59,23 +59,23 @@ def get_options():
     options for adding a new communications channel to a Ground Station.
     """
     return {
-        jrpc_cfg_serial.BANDS_K: [
+        jrpc_channels_serial.BANDS_K: [
             obj.get_band_name()
             for obj in band_models.AvailableBands.objects.all()
         ],
-        jrpc_cfg_serial.MODULATIONS_K: [
+        jrpc_channels_serial.MODULATIONS_K: [
             obj.modulation
             for obj in band_models.AvailableModulations.objects.all()
         ],
-        jrpc_cfg_serial.POLARIZATIONS_K: [
+        jrpc_channels_serial.POLARIZATIONS_K: [
             obj.polarization
             for obj in band_models.AvailablePolarizations.objects.all()
         ],
-        jrpc_cfg_serial.BITRATES_K: [
+        jrpc_channels_serial.BITRATES_K: [
             str(obj.bitrate)
             for obj in band_models.AvailableBitrates.objects.all()
         ],
-        jrpc_cfg_serial.BANDWIDTHS_K: [
+        jrpc_channels_serial.BANDWIDTHS_K: [
             str(obj.bandwidth)
             for obj in band_models.AvailableBandwidths.objects.all()
         ]
@@ -110,7 +110,7 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
     """
     # 1) Get channel parameters from JSON representation into variables
     band_name, automated, mod_l, bps_l, bws_l, pol_l =\
-        jrpc_cfg_serial.deserialize_gs_channel_parameters(configuration)
+        jrpc_channels_serial.deserialize_gs_channel_parameters(configuration)
 
     try:
 
@@ -141,7 +141,7 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
         logger.warn(str(ex))
         raise Exception(
             "Channel identifier already exists, { "
-            + str(jrpc_cfg_serial.CH_ID_K) + ": "
+            + str(jrpc_channels_serial.CH_ID_K) + ": "
             + str(channel_id) + "}"
         )
 
@@ -179,7 +179,7 @@ def gs_channel_get_configuration(groundstation_id, channel_id):
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
-    return jrpc_cfg_serial.serialize_gs_channel_configuration(
+    return jrpc_channels_serial.serialize_gs_channel_configuration(
         channel_models.GroundStationChannel.objects.get(
             identifier=channel_id,
             groundstation=segment_models.GroundStation.objects.get(
@@ -209,7 +209,7 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     )
     # 2) Parameters sent through JRPC as a list as decoded first.
     band_name, automated, mod_l, bps_l, bws_l, pol_l =\
-        jrpc_cfg_serial.deserialize_gs_channel_parameters(configuration)
+        jrpc_channels_serial.deserialize_gs_channel_parameters(configuration)
     band = band_models.AvailableBands.objects.get(band_name=band_name)
     # 3) Update channel configuration
     ch.update(

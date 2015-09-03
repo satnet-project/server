@@ -18,8 +18,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.forms.models import model_to_dict
 from preserialize.serialize import serialize
 
-from services.configuration.jrpc.serializers import serialization as \
-    configuration_serializers
+from services.configuration.jrpc.serializers import segments as \
+    segment_serializers
 
 
 GS_OBJECT_K = 'GroundStation'
@@ -125,6 +125,6 @@ def serialize_sc_compatibility(spacecraft, compatibility):
     """
 
     return {
-        configuration_serializers.SC_ID_K: spacecraft.identifier,
+        segment_serializers.SC_ID_K: spacecraft.identifier,
         COMPATIBILITY_OBJECT_K: compatibility
     }

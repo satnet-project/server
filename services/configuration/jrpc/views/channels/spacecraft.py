@@ -21,8 +21,8 @@ from rpc4django import rpcmethod
 
 from services.configuration.models import channels as channel_models
 from services.configuration.models import segments as segment_models
-from services.configuration.jrpc.serializers import serialization as \
-    jrpc_cfg_serial
+from services.configuration.jrpc.serializers import channels as \
+    jrpc_channels_serial
 from website import settings as satnet_settings
 
 
@@ -76,7 +76,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
 
     # 1) Get channel parameters from JSON representation into variables
     frequency, modulation, bitrate, bandwidth, polarization\
-        = jrpc_cfg_serial.deserialize_sc_channel_parameters(configuration)
+        = jrpc_channels_serial.deserialize_sc_channel_parameters(configuration)
 
     try:
         channel_models.SpacecraftChannel.objects.create(
@@ -103,7 +103,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
         logger.warn(str(ex))
         raise Exception(
             "Channel identifier already exists, { "
-            + str(jrpc_cfg_serial.CH_ID_K) + ": "
+            + str(jrpc_channels_serial.CH_ID_K) + ": "
             + str(channel_id) + "}"
         )
 
@@ -150,7 +150,7 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
-    return jrpc_cfg_serial.serialize_sc_channel_configuration(
+    return jrpc_channels_serial.serialize_sc_channel_configuration(
         channel_models.SpacecraftChannel.objects.get(
             identifier=channel_id,
             spacecraft=segment_models.Spacecraft.objects.get(
@@ -180,7 +180,7 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
     )
     # 2) Parameters sent through JRPC as a list as decoded first.
     frequency, modulation, bitrate, bandwidth, polarization =\
-        jrpc_cfg_serial.deserialize_sc_channel_parameters(configuration)
+        jrpc_channels_serial.deserialize_sc_channel_parameters(configuration)
     # 3) Update channel configuration
     ch.update(
         frequency=frequency,

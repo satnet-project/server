@@ -17,9 +17,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 
-from services.configuration.jrpc.serializers import tle as tle_serializers
-from services.configuration.models import segments, tle as tle_models
+from services.configuration.models import segments as segment_models
+from services.configuration.models import tle as tle_models
 from services.configuration.models.celestrak import CelestrakDatabase
+from services.configuration.jrpc.serializers import tle as tle_serializers
 from website import settings as satnet_settings
 
 
@@ -66,5 +67,5 @@ def get_spacecraft_tle(spacecraft_id):
     :param spacecraft_id: Identififer of the spacecraft.
     :return: Object containing: { spacecraft_id, tle_id, line_1, line_2 }
     """
-    sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
+    sc = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)
     return tle_serializers.TleSerializer.serialize_tle(sc)

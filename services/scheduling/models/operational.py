@@ -22,9 +22,9 @@ from django.db import models as django_models
 from django.db.models import Q
 
 from services.common import misc, simulation
-from services.configuration.models import availability as availability_models
 from services.configuration.models import channels as channel_models
 from services.configuration.models import tle as tle_models
+from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 
 logger = logging.getLogger('scheduling')

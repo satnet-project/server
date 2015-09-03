@@ -23,7 +23,8 @@ from django.test import TestCase
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import \
+    channels as channel_serializers
 from services.configuration.jrpc.views.channels import groundstations as \
     jrpc_gs_channels_if
 from services.configuration.jrpc.views.channels import spacecraft as \
@@ -146,13 +147,13 @@ class JRPCChannelsTest(TestCase):
 
         actual_o = jrpc_gs_channels_if.get_options()
         expected_o = {
-            jrpc_serial.BANDS_K: [
+            channel_serializers.BANDS_K: [
                 'UHF / U / 435000000.000000 / 438000000.000000'
             ],
-            jrpc_serial.MODULATIONS_K: ['FM', 'AFSK'],
-            jrpc_serial.POLARIZATIONS_K: ['LHCP', 'RHCP'],
-            jrpc_serial.BITRATES_K: ['300', '600', '900'],
-            jrpc_serial.BANDWIDTHS_K: ['12.500000000', '25.000000000']
+            channel_serializers.MODULATIONS_K: ['FM', 'AFSK'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP', 'RHCP'],
+            channel_serializers.BITRATES_K: ['300', '600', '900'],
+            channel_serializers.BANDWIDTHS_K: ['12.500000000', '25.000000000']
         }
         self.assertEqual(
             actual_o, expected_o,
@@ -202,13 +203,13 @@ class JRPCChannelsTest(TestCase):
                 groundstation_id='FAKE-GS',
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
-                    jrpc_serial.BAND_K:
+                    channel_serializers.BAND_K:
                         'UHF / U / 435000000.000000 / 438000000.000000',
-                    jrpc_serial.AUTOMATED_K: False,
-                    jrpc_serial.MODULATIONS_K: ['FM'],
-                    jrpc_serial.POLARIZATIONS_K: ['LHCP'],
-                    jrpc_serial.BITRATES_K: [300, 600, 900],
-                    jrpc_serial.BANDWIDTHS_K: [12.500000000]
+                    channel_serializers.AUTOMATED_K: False,
+                    channel_serializers.MODULATIONS_K: ['FM'],
+                    channel_serializers.POLARIZATIONS_K: ['LHCP'],
+                    channel_serializers.BITRATES_K: [300, 600, 900],
+                    channel_serializers.BANDWIDTHS_K: [12.500000000]
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -220,13 +221,13 @@ class JRPCChannelsTest(TestCase):
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
-                    jrpc_serial.BAND_K:
+                    channel_serializers.BAND_K:
                         'UHF / U / 435000000.000000 / 438000000.000000',
-                    jrpc_serial.AUTOMATED_K: False,
-                    jrpc_serial.MODULATIONS_K: ['FM'],
-                    jrpc_serial.POLARIZATIONS_K: ['LHCP'],
-                    jrpc_serial.BITRATES_K: [300, 600, 900],
-                    jrpc_serial.BANDWIDTHS_K: [12.500000000]
+                    channel_serializers.AUTOMATED_K: False,
+                    channel_serializers.MODULATIONS_K: ['FM'],
+                    channel_serializers.POLARIZATIONS_K: ['LHCP'],
+                    channel_serializers.BITRATES_K: [300, 600, 900],
+                    channel_serializers.BANDWIDTHS_K: [12.500000000]
                 }
             ),
             'Channel should have been created!'
@@ -244,11 +245,11 @@ class JRPCChannelsTest(TestCase):
                 spacecraft_id='FAKE-SC',
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
-                    jrpc_serial.FREQUENCY_K: '437000000',
-                    jrpc_serial.MODULATION_K: 'FM',
-                    jrpc_serial.POLARIZATION_K: 'LHCP',
-                    jrpc_serial.BITRATE_K: '300',
-                    jrpc_serial.BANDWIDTH_K: '12.500000000'
+                    channel_serializers.FREQUENCY_K: '437000000',
+                    channel_serializers.MODULATION_K: 'FM',
+                    channel_serializers.POLARIZATION_K: 'LHCP',
+                    channel_serializers.BITRATE_K: '300',
+                    channel_serializers.BANDWIDTH_K: '12.500000000'
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -260,11 +261,11 @@ class JRPCChannelsTest(TestCase):
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
-                    jrpc_serial.FREQUENCY_K: '437000000',
-                    jrpc_serial.MODULATION_K: 'FM',
-                    jrpc_serial.POLARIZATION_K: 'LHCP',
-                    jrpc_serial.BITRATE_K: '300',
-                    jrpc_serial.BANDWIDTH_K: '12.500000000'
+                    channel_serializers.FREQUENCY_K: '437000000',
+                    channel_serializers.MODULATION_K: 'FM',
+                    channel_serializers.POLARIZATION_K: 'LHCP',
+                    channel_serializers.BITRATE_K: '300',
+                    channel_serializers.BANDWIDTH_K: '12.500000000'
                 }
             ),
             'Channel should have been created!'
@@ -295,13 +296,13 @@ class JRPCChannelsTest(TestCase):
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_2_id,
                 configuration={
-                    jrpc_serial.BAND_K:
+                    channel_serializers.BAND_K:
                         'UHF / U / 435000000.000000 / 438000000.000000',
-                    jrpc_serial.AUTOMATED_K: False,
-                    jrpc_serial.MODULATIONS_K: ['FM'],
-                    jrpc_serial.POLARIZATIONS_K: ['LHCP'],
-                    jrpc_serial.BITRATES_K: [300, 600, 900],
-                    jrpc_serial.BANDWIDTHS_K: [12.500000000]
+                    channel_serializers.AUTOMATED_K: False,
+                    channel_serializers.MODULATIONS_K: ['FM'],
+                    channel_serializers.POLARIZATIONS_K: ['LHCP'],
+                    channel_serializers.BITRATES_K: [300, 600, 900],
+                    channel_serializers.BANDWIDTHS_K: [12.500000000]
                 }
             ),
             'Channel should have been created!'
@@ -341,11 +342,11 @@ class JRPCChannelsTest(TestCase):
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_2_id,
                 configuration={
-                    jrpc_serial.FREQUENCY_K: '437000000',
-                    jrpc_serial.MODULATION_K: 'FM',
-                    jrpc_serial.POLARIZATION_K: 'LHCP',
-                    jrpc_serial.BITRATE_K: '300',
-                    jrpc_serial.BANDWIDTH_K: '12.500000000'
+                    channel_serializers.FREQUENCY_K: '437000000',
+                    channel_serializers.MODULATION_K: 'FM',
+                    channel_serializers.POLARIZATION_K: 'LHCP',
+                    channel_serializers.BITRATE_K: '300',
+                    channel_serializers.BANDWIDTH_K: '12.500000000'
                 }
             ),
             'Channel should have been created!'
@@ -380,13 +381,14 @@ class JRPCChannelsTest(TestCase):
             pass
 
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__gs_1_ch_2_id,
-            jrpc_serial.BAND_K: 'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_serial.AUTOMATED_K: False,
-            jrpc_serial.MODULATIONS_K: ['FM'],
-            jrpc_serial.POLARIZATIONS_K: ['LHCP'],
-            jrpc_serial.BITRATES_K: [300, 600, 900],
-            jrpc_serial.BANDWIDTHS_K: [12.500000000]
+            channel_serializers.CH_ID_K: self.__gs_1_ch_2_id,
+            channel_serializers.BAND_K:
+                'UHF / U / 435000000.000000 / 438000000.000000',
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: ['FM'],
+            channel_serializers.POLARIZATIONS_K: ['LHCP'],
+            channel_serializers.BITRATES_K: [300, 600, 900],
+            channel_serializers.BANDWIDTHS_K: [12.500000000]
         }
         self.assertTrue(
             jrpc_gs_channels_if.gs_channel_create(
@@ -433,12 +435,12 @@ class JRPCChannelsTest(TestCase):
             pass
 
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__sc_1_ch_2_id,
-            jrpc_serial.FREQUENCY_K: 437000000,
-            jrpc_serial.MODULATION_K: 'FM',
-            jrpc_serial.POLARIZATION_K: 'LHCP',
-            jrpc_serial.BITRATE_K: 300,
-            jrpc_serial.BANDWIDTH_K: 12.500000000
+            channel_serializers.CH_ID_K: self.__sc_1_ch_2_id,
+            channel_serializers.FREQUENCY_K: 437000000,
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'LHCP',
+            channel_serializers.BITRATE_K: 300,
+            channel_serializers.BANDWIDTH_K: 12.500000000
         }
 
         self.assertEqual(
@@ -504,13 +506,13 @@ class JRPCChannelsTest(TestCase):
         try:
             jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
-                    jrpc_serial.BAND_K:
+                    channel_serializers.BAND_K:
                         'UHF / U / 435000000.000000 / 438000000.000000',
-                    jrpc_serial.AUTOMATED_K: False,
-                    jrpc_serial.MODULATIONS_K: ['HM'],
-                    jrpc_serial.POLARIZATIONS_K: ['LHCP'],
-                    jrpc_serial.BITRATES_K: [600],
-                    jrpc_serial.BANDWIDTHS_K: [25]
+                    channel_serializers.AUTOMATED_K: False,
+                    channel_serializers.MODULATIONS_K: ['HM'],
+                    channel_serializers.POLARIZATIONS_K: ['LHCP'],
+                    channel_serializers.BITRATES_K: [600],
+                    channel_serializers.BANDWIDTHS_K: [25]
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -520,13 +522,13 @@ class JRPCChannelsTest(TestCase):
         try:
             jrpc_gs_channels_if.gs_channel_set_configuration(
                 self.__gs_1_id, self.__gs_1_ch_1_id, {
-                    jrpc_serial.BAND_K:
+                    channel_serializers.BAND_K:
                     'UHF / U / 435000000.000000 / 438000000.000000',
-                    jrpc_serial.AUTOMATED_K: False,
-                    jrpc_serial.MODULATIONS_K: ['FM'],
-                    jrpc_serial.POLARIZATIONS_K: ['XHHMP'],
-                    jrpc_serial.BITRATES_K: [600],
-                    jrpc_serial.BANDWIDTHS_K: [25]
+                    channel_serializers.AUTOMATED_K: False,
+                    channel_serializers.MODULATIONS_K: ['FM'],
+                    channel_serializers.POLARIZATIONS_K: ['XHHMP'],
+                    channel_serializers.BITRATES_K: [600],
+                    channel_serializers.BANDWIDTHS_K: [25]
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -534,13 +536,14 @@ class JRPCChannelsTest(TestCase):
             pass
 
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__gs_1_ch_1_id,
-            jrpc_serial.BAND_K: 'UHF / U / 435000000.000000 / 438000000.000000',
-            jrpc_serial.AUTOMATED_K: False,
-            jrpc_serial.MODULATIONS_K: [str('AFSK'), str('FM')],
-            jrpc_serial.POLARIZATIONS_K: [str('LHCP'), str('RHCP')],
-            jrpc_serial.BITRATES_K: [300, 600],
-            jrpc_serial.BANDWIDTHS_K: [25]
+            channel_serializers.CH_ID_K: self.__gs_1_ch_1_id,
+            channel_serializers.BAND_K:
+                'UHF / U / 435000000.000000 / 438000000.000000',
+            channel_serializers.AUTOMATED_K: False,
+            channel_serializers.MODULATIONS_K: [str('AFSK'), str('FM')],
+            channel_serializers.POLARIZATIONS_K: [str('LHCP'), str('RHCP')],
+            channel_serializers.BITRATES_K: [300, 600],
+            channel_serializers.BANDWIDTHS_K: [25]
         }
 
         self.assertEqual(
@@ -604,12 +607,12 @@ class JRPCChannelsTest(TestCase):
         try:
             jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, {
-                    jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-                    jrpc_serial.FREQUENCY_K: 438000000,
-                    jrpc_serial.MODULATION_K: 'XM',
-                    jrpc_serial.POLARIZATION_K: 'RHCP',
-                    jrpc_serial.BITRATE_K: 600,
-                    jrpc_serial.BANDWIDTH_K: 25
+                    channel_serializers.CH_ID_K: self.__sc_1_ch_1_id,
+                    channel_serializers.FREQUENCY_K: 438000000,
+                    channel_serializers.MODULATION_K: 'XM',
+                    channel_serializers.POLARIZATION_K: 'RHCP',
+                    channel_serializers.BITRATE_K: 600,
+                    channel_serializers.BANDWIDTH_K: 25
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -619,12 +622,12 @@ class JRPCChannelsTest(TestCase):
         try:
             jrpc_sc_channels_if.sc_channel_set_configuration(
                 self.__sc_1_id, self.__sc_1_ch_1_id, {
-                    jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-                    jrpc_serial.FREQUENCY_K: 438000000,
-                    jrpc_serial.MODULATION_K: 'FM',
-                    jrpc_serial.POLARIZATION_K: 'XHHMP',
-                    jrpc_serial.BITRATE_K: 600,
-                    jrpc_serial.BANDWIDTH_K: 25
+                    channel_serializers.CH_ID_K: self.__sc_1_ch_1_id,
+                    channel_serializers.FREQUENCY_K: 438000000,
+                    channel_serializers.MODULATION_K: 'FM',
+                    channel_serializers.POLARIZATION_K: 'XHHMP',
+                    channel_serializers.BITRATE_K: 600,
+                    channel_serializers.BANDWIDTH_K: 25
                 }
             )
             self.fail('An exception should have been thrown!')
@@ -632,12 +635,12 @@ class JRPCChannelsTest(TestCase):
             pass
 
         expected_c = {
-            jrpc_serial.CH_ID_K: self.__sc_1_ch_1_id,
-            jrpc_serial.FREQUENCY_K: 438000000,
-            jrpc_serial.MODULATION_K: 'FM',
-            jrpc_serial.POLARIZATION_K: 'RHCP',
-            jrpc_serial.BITRATE_K: 600,
-            jrpc_serial.BANDWIDTH_K: 25
+            channel_serializers.CH_ID_K: self.__sc_1_ch_1_id,
+            channel_serializers.FREQUENCY_K: 438000000,
+            channel_serializers.MODULATION_K: 'FM',
+            channel_serializers.POLARIZATION_K: 'RHCP',
+            channel_serializers.BITRATE_K: 600,
+            channel_serializers.BANDWIDTH_K: 25
         }
 
         self.assertEqual(

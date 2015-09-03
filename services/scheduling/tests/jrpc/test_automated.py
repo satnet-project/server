@@ -19,7 +19,7 @@ import logging
 from django import test
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers\
-    import serialization as jrpc_cfg_serial
+    import rules as jrpc_cfg_serial
 from services.scheduling.models import operational
 
 

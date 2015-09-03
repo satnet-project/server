@@ -20,7 +20,7 @@ import logging
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
 from services.configuration.jrpc.views.segments import groundstations as gs_jrpc
-from services.configuration.jrpc.serializers import serialization as \
+from services.configuration.jrpc.serializers import rules as \
     segment_serializers
 from services.configuration.models import segments as segment_models
 from services.simulation.jrpc.views import passes as pass_views

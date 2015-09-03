@@ -20,7 +20,7 @@ import logging
 from services.common import serialization as common_serializers
 from services.configuration.models import segments as segment_models
 from services.configuration.models import channels as channel_models
-from services.configuration.jrpc.serializers import serialization as \
+from services.configuration.jrpc.serializers import rules as \
     cfg_serializers
 from services.scheduling.models import operational as operational_models
 

@@ -16,9 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from periodically import decorators
+
 from services.common import misc
-from services.configuration.models import availability, tle
+from services.configuration.models import tle
+from services.scheduling.models import availability
 
 logger = logging.getLogger('configuration')
 

@@ -25,7 +25,7 @@ import datadiff
 from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.signals import models as model_signals
-from services.configuration.jrpc.serializers import serialization as \
+from services.configuration.jrpc.serializers import rules as \
     jrpc_cfg_serial
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if

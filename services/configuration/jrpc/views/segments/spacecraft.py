@@ -19,7 +19,8 @@ import logging
 from rpc4django import rpcmethod
 from services.accounts import models as account_models
 from services.configuration.models import segments
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
 from website import settings as satnet_settings
 
 logger = logging.getLogger('configuration')
@@ -70,7 +71,7 @@ def create(identifier, callsign, tle_id, **kwargs):
     )
 
     return {
-        jrpc_serial.SC_ID_K: str(sc.identifier)
+        segment_serializers.SC_ID_K: str(sc.identifier)
     }
 
 
@@ -83,7 +84,7 @@ def get_configuration(spacecraft_id):
     """JRPC method: configuration.sc.getConfiguration
     Returns the configuration for the given Spacecraft.
     """
-    return jrpc_serial.serialize_sc_configuration(
+    return segment_serializers.serialize_sc_configuration(
         segments.Spacecraft.objects.get(identifier=spacecraft_id)
     )
 
@@ -97,7 +98,9 @@ def set_configuration(spacecraft_id, configuration):
     """JRPC method: configuration.sc.setConfiguration
     Returns the configuration for the given Spacecraft.
     """
-    callsign, tle_id = jrpc_serial.deserialize_sc_configuration(configuration)
+    callsign, tle_id = segment_serializers.deserialize_sc_configuration(
+        configuration
+    )
     sc = segments.Spacecraft.objects.get(identifier=spacecraft_id)
     sc.update(callsign=callsign, tle_id=tle_id)
     return spacecraft_id

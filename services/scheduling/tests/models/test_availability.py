@@ -18,18 +18,19 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
 import logging
-import pytz
 
+import datadiff
+import pytz
 from django import test
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import rules as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules_if
-from services.configuration.models import rules, availability
+from services.configuration.models import rules
+from services.scheduling.models import availability
 
 
 class TestAvailability(test.TestCase):

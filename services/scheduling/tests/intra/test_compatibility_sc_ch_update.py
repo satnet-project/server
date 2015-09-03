@@ -24,7 +24,7 @@ from django.test import TestCase
 from services.common.testing import helpers as db_tools
 from services.configuration.models import channels as channel_models
 from services.scheduling.models import compatibility as compatibility_models
-from services.configuration.jrpc.serializers import serialization as jrpc_serial
+from services.configuration.jrpc.serializers import rules as jrpc_serial
 from services.configuration.jrpc.views.channels import spacecraft\
     as jrpc_sc_ch_if
 from services.scheduling.jrpc.views import compatibility as jrpc_compat_if

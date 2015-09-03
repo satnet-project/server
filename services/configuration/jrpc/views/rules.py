@@ -19,7 +19,7 @@ import rpc4django
 
 from services.configuration.models import rules as rule_models
 from services.configuration.models import segments as segment_models
-from services.configuration.jrpc.serializers import serialization
+from services.configuration.jrpc.serializers import rules as rule_serializers
 from website import settings as satnet_settings
 
 
@@ -36,7 +36,7 @@ def list_channel_rules(groundstation_id):
     :return: Array with JSON objects that contain the configuration for each
     of the rules of this pair Ground Station, Channel.
     """
-    return serialization.serialize_rules(
+    return rule_serializers.serialize_rules(
         rule_models.AvailabilityRule.objects.filter(
             groundstation=segment_models.GroundStation.objects.get(
                 identifier=groundstation_id
@@ -58,7 +58,7 @@ def add_rule(groundstation_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added.
     :return: Identifier of the rule that has just been added.
     """
-    op, periodicity, dates = serialization.deserialize_rule_cfg(rule_cfg)
+    op, periodicity, dates = rule_serializers.deserialize_rule_cfg(rule_cfg)
     rule = rule_models.AvailabilityRule.objects.create(
         segment_models.GroundStation.objects.get(
             identifier=groundstation_id

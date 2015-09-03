@@ -21,7 +21,8 @@ import logging
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.serializers import serialization as jrpc_keys
+from services.configuration.models import rules as rule_models
+from services.configuration.jrpc.serializers import rules as jrpc_keys
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.models import rules
 
@@ -32,7 +33,6 @@ class TestRulesAvailability(test.TestCase):
     required testing database.
     """
 
-    # noinspection PyUnresolvedReferences
     def setUp(self):
         """
         Populates the initial database with a set of objects required to run
@@ -44,7 +44,8 @@ class TestRulesAvailability(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        from services.configuration.signals import models
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import availability
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -63,6 +64,52 @@ class TestRulesAvailability(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
+
+    def test_1_a_slots_daily(self):
+        """services.configuration: generate available slots (DAILY rule, 1)
+        Validates the generation of slots by a daily rule.
+        """
+        if self.__verbose_testing:
+            print('>>> test_1_generate_available_slots_daily:')
+
+        now = misc.get_now_utc()
+        r_1_s_time = now + datetime.timedelta(minutes=30)
+        r_1_e_time = now + datetime.timedelta(minutes=45)
+
+        r_cfg = db_tools.create_jrpc_daily_rule(
+            starting_time=r_1_s_time,
+            ending_time=r_1_e_time
+        )
+        r_1_id = jrpc_rules.add_rule(self.__gs_1_id, r_cfg)
+
+        rs = rule_models.AvailabilityRuleManager.get_applicable_rule_values(
+            self.__gs
+        )
+        if self.__verbose_testing:
+            misc.print_list(rs, name='Rules')
+
+        expected = [
+            (
+                r_1_s_time + datetime.timedelta(days=1),
+                r_1_e_time + datetime.timedelta(days=1),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=2),
+                r_1_e_time + datetime.timedelta(days=2),
+            ),
+        ]
+        actual = rule_models.AvailabilityRuleManager\
+            .generate_available_slots_daily(rs[0][0],)
+
+        if self.__verbose_testing:
+            print('>>> window = ' + str(
+                simulation.OrbitalSimulator.get_simulation_window()
+            ))
+            misc.print_list(actual, name='Generated Slots')
+
+        self.assertEqual(actual, expected, 'Wrong slots')
+
+        jrpc_rules.remove_rule(self.__gs_1_id, r_1_id)
 
     def test_1_get_availability_slots(self):
         """services.configuration: get availability slots

@@ -15,8 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.configuration.jrpc.serializers import serialization as \
-    segment_serializers
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
 
 
 class TleSerializer(object):

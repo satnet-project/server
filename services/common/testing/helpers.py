@@ -27,7 +27,7 @@ from services.common import misc, gis
 from services.common import serialization as common_serial
 from services.communications import models as comms_models
 from services.configuration.models import bands, channels, segments, tle
-from services.configuration.jrpc.serializers import serialization
+from services.configuration.jrpc.serializers import rules
 from services.leop.models import launch as leop_models
 from services.network.models import server as server_models
 
@@ -333,7 +333,7 @@ def remove_gs_channel(gs_id, gs_ch_id):
 
 
 def create_jrpc_once_rule(
-    operation=serialization.RULE_OP_ADD,
+    operation=rules.RULE_OP_ADD,
     date=None,
     starting_time=None,
     ending_time=None,
@@ -349,22 +349,22 @@ def create_jrpc_once_rule(
         ending_time = now + datetime.timedelta(minutes=45)
 
     return {
-        serialization.RULE_OP: operation,
-        serialization.RULE_PERIODICITY: serialization.RULE_PERIODICITY_ONCE,
-        serialization.RULE_DATES: {
-            serialization.RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
+        rules.RULE_OP: operation,
+        rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_ONCE,
+        rules.RULE_DATES: {
+            rules.RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
                 date
             ),
-            serialization.RULE_ONCE_S_TIME:
+            rules.RULE_ONCE_S_TIME:
             common_serial.serialize_iso8601_time(starting_time),
-            serialization.RULE_ONCE_E_TIME:
+            rules.RULE_ONCE_E_TIME:
             common_serial.serialize_iso8601_time(ending_time)
         },
     }
 
 
 def create_jrpc_daily_rule(
-    operation=serialization.RULE_OP_ADD,
+    operation=rules.RULE_OP_ADD,
     date_i=None, date_f=None,
     starting_time=None, ending_time=None
 ):
@@ -381,16 +381,16 @@ def create_jrpc_daily_rule(
         ending_time = now + datetime.timedelta(minutes=45)
 
     return {
-        serialization.RULE_OP: operation,
-        serialization.RULE_PERIODICITY: serialization.RULE_PERIODICITY_DAILY,
-        serialization.RULE_DATES: {
-            serialization.RULE_DAILY_I_DATE:
+        rules.RULE_OP: operation,
+        rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_DAILY,
+        rules.RULE_DATES: {
+            rules.RULE_DAILY_I_DATE:
             common_serial.serialize_iso8601_date(date_i),
-            serialization.RULE_DAILY_F_DATE:
+            rules.RULE_DAILY_F_DATE:
             common_serial.serialize_iso8601_date(date_f),
-            serialization.RULE_S_TIME:
+            rules.RULE_S_TIME:
             common_serial.serialize_iso8601_time(starting_time),
-            serialization.RULE_E_TIME:
+            rules.RULE_E_TIME:
             common_serial.serialize_iso8601_time(ending_time),
         },
     }
