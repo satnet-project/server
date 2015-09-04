@@ -24,7 +24,6 @@ from services.common.testing import helpers as db_tools
 from services.configuration.models import rules as rule_models
 from services.configuration.jrpc.serializers import rules as jrpc_keys
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.configuration.models import rules
 
 
 class TestRulesAvailability(test.TestCase):
@@ -130,7 +129,7 @@ class TestRulesAvailability(test.TestCase):
         jrpc_rules.add_rule(self.__gs_1_id, rule_1)
         if self.__verbose_testing:
             print('slots = ' + str(len(
-                rules.AvailabilityRule.objects.get_availability_slots(
+                rule_models.AvailabilityRule.objects.get_availability_slots(
                     self.__gs
                 )
             )))
@@ -139,7 +138,7 @@ class TestRulesAvailability(test.TestCase):
         jrpc_rules.add_rule(self.__gs_1_id, rule_2)
         if self.__verbose_testing:
             print('slots = ' + str(len(
-                rules.AvailabilityRule.objects.get_availability_slots(
+                rule_models.AvailabilityRule.objects.get_availability_slots(
                     self.__gs
                 )
             )))
@@ -149,9 +148,10 @@ class TestRulesAvailability(test.TestCase):
             date=misc.get_today_utc() + datetime.timedelta(days=3)
         )
         jrpc_rules.add_rule(self.__gs_1_id, rule_3)
+
         if self.__verbose_testing:
             print('slots = ' + str(len(
-                rules.AvailabilityRule.objects.get_availability_slots(
+                rule_models.AvailabilityRule.objects.get_availability_slots(
                     self.__gs
                 )
             )))
@@ -161,29 +161,31 @@ class TestRulesAvailability(test.TestCase):
             date=misc.get_today_utc() + datetime.timedelta(days=3)
         )
         jrpc_rules.add_rule(self.__gs_1_id, rule_4)
+
         if self.__verbose_testing:
             print('slots = ' + str(len(
-                rules.AvailabilityRule.objects.get_availability_slots(
+                rule_models.AvailabilityRule.objects.get_availability_slots(
                     self.__gs
                 )
             )))
 
-        rules_n = len(rules.AvailabilityRule.objects.all())
+        rules_n = len(rule_models.AvailabilityRule.objects.all())
         self.assertEqual(
             rules_n, 4,
             'Incorrect number of rules, expected = 4, actual = ' + str(rules_n)
         )
 
-        actual_s = rules.AvailabilityRule.objects.get_availability_slots(
+        actual_s = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
+
         if self.__verbose_testing:
             print('>>> today_utc = ' + str(misc.get_today_utc()))
             print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(), name='RULES'
+                rule_models.AvailabilityRule.objects.all(), name='RULES'
             )
             misc.print_list(actual_s, name='AVAILABLE')
 
