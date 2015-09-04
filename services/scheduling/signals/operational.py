@@ -15,14 +15,16 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
 from django import dispatch as django_dispatch
-from django.db.models import Q
 from django.db.models import signals as django_signals
 
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
 from services.simulation.models import passes as pass_models
+
+logger = logging.getLogger('scheduling')
 
 
 # noinspection PyUnusedLocal
@@ -34,6 +36,7 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
     """
     Updates the available Operational Slots after a new compatibility entry
     has been added to the Compatibility table.
+
     :param sender: any sender is accepted
     :param instance: Reference to the just created object
     :param created: Flag that indicates that this object has just been created
@@ -42,6 +45,26 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
     """
     if not created or raw:
         return
+
+    if compatibility_models.ChannelCompatibility.objects.exclude(
+        pk=instance.pk
+    ).filter(
+        groundstation=instance.groundstation,
+        spacecraft=instance.spacecraft
+    ).count() != 0:
+
+        logger.info(
+            'Compatibility object created but it is a duplicate'
+        )
+        return
+
+    for a_slot in availability_models.AvailabilitySlot.objects.filter(
+        groundstation=instance.groundstation
+    ):
+
+        operational_models.OperationalSlot.objects.availability_generates_slots(
+            a_slot
+        )
 
 
 # noinspection PyUnusedLocal
@@ -52,14 +75,33 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
 def compatibility_deleted(sender, instance, **kwargs):
     """
     Updates the available Operational Slots after an existing compatibility
-    entry has been deleted from the Compatibility table.
+    entry has been deleted from the Compatibility table. Once a Compatibility
+    object has been deleted, all the Operational slots that belonged to the
+    pair GroundStation, Spacecraft should be erased in case no compatible
+    channels are still registered.
+
+    NOTE: Since we are using the "pre_delete" signal (to preserve the
+            references of the object to Ground Stations and Spacecraft), we
+            first have to filter out the object that is about to be deleted.
+
     :param sender: any sender is accepted
     :param instance: Reference to the just created object
     :param kwargs: Additional parameters
     """
-    operational_models.OperationalSlot.objects.filter(
-        compatible_channels=instance
-    ).delete()
+
+    if compatibility_models.ChannelCompatibility.objects.exclude(
+        pk=instance.pk
+    ).filter(
+        groundstation=instance.groundstation,
+        spacecraft=instance.spacecraft
+    ).count() == 0:
+
+        operational_models.OperationalSlot.objects.filter(
+            pass_slot=pass_models.PassSlots.objects.filter(
+                groundstation=instance.groundstation,
+                spacecraft=instance.spacecraft
+            )
+        ).delete()
 
 
 # noinspection PyUnusedLocal
@@ -71,8 +113,9 @@ def availability_slot_added(sender, instance, created, raw, **kwargs):
     """
     Callback for updating the OperationalSlots table when an AvailabilitySlot
     has just been created.
-    :param sender The object that sent the signal.
-    :param instance The instance of the object itself.
+
+    :param sender The object that sent the signal
+    :param instance The instance of the object itself
     :param created: Flag that indicates that this object has just been created
     :param raw: Flag that indicates that the object is not stable within the db
     :param kwargs: Additional parameters
@@ -80,33 +123,8 @@ def availability_slot_added(sender, instance, created, raw, **kwargs):
     if not created or raw:
         return
 
-    # 1) Pass slots for all the spacecraft that:
-    #       (a) are compatible with the GroundStation whose rules update
-    #           provoked the generation of this availability slot,
-    #       (b) occur within the applicability range of the availability slot
-    pass_slots = pass_models.PassSlots.objects.filter(
-        groundstation=instance.groundstation,
-        spacecraft__in=[
-            c.spacecraft for c in
-            compatibility_models.ChannelCompatibility.objects.filter(
-                groundstation=instance.groundstation
-            )
-        ]
-    ).filter(
-        Q(start__gt=instance.start) | Q(end__lt=instance.end)
-    )
-
-    # 2) we filter the pass slots that are applicable to the window of this
-    #       availability slot
-    for p in pass_slots:
-
-        operational_models.OperationalSlot.objects.create(
-            availability_slot=instance,
-            pass_slot=p
-        )
-
-    operational_models.OperationalSlotsManager.availability_slot_added(
-        sender, instance, **kwargs
+    operational_models.OperationalSlot.objects.availability_generates_slots(
+        instance
     )
 
 
@@ -119,8 +137,9 @@ def availability_slot_deleted(sender, instance, **kwargs):
     """
     Callback for updating the OperationalSlots table when an AvailabilitySlot
     has just been removed.
-    :param sender The object that sent the signal.
-    :param instance The instance of the object itself.
+
+    :param sender The object that sent the signal
+    :param instance The instance of the object itself
     :param kwargs: Additional parameters
     """
     operational_models.OperationalSlot.objects.filter(
@@ -137,6 +156,7 @@ def pass_slot_added(sender, instance, created, raw, **kwargs):
     """
     Updates the available Operational Slots after a new pass slot has been
     created.
+
     :param sender: any sender is accepted
     :param instance: Reference to the just created object
     :param created: Flag that indicates that this object has just been created
@@ -145,6 +165,8 @@ def pass_slot_added(sender, instance, created, raw, **kwargs):
     """
     if not created or raw:
         return
+
+    operational_models.OperationalSlot.objects.pass_generates_slots(instance)
 
 
 # noinspection PyUnusedLocal
@@ -156,8 +178,9 @@ def pass_slot_deleted(sender, instance, **kwargs):
     """
     Callback for updating the OperationalSlots table when a PassSlots
     has just been removed.
-    :param sender The object that sent the signal.
-    :param instance The instance of the object itself.
+
+    :param sender The object that sent the signal
+    :param instance The instance of the object itself
     :param kwargs: Additional parameters
     """
     operational_models.OperationalSlot.objects.filter(

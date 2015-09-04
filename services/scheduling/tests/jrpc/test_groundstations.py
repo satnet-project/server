@@ -100,7 +100,6 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        operational_models.OperationalSlot.objects.get_simulator().set_debug()
         operational_models.OperationalSlot.objects.set_debug()
 
     def test_gs_get_operational_slots(self):

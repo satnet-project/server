@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 
-from services.configuration.models import segments
 from services.scheduling.models import operational as operational_models
 from services.scheduling.jrpc.serializers import operational as \
     scheduling_serializers
@@ -39,26 +38,6 @@ def get_operational_slots(spacecraft_id):
     return scheduling_serializers.serialize_sc_operational_slots(
         spacecraft_id
     )
-
-
-@rpc4django.rpcmethod(
-    name='scheduling.sc.getSlotChanges',
-    signature=['String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def get_changes(spacecraft_id):
-    """
-    JRPC method that returns the OperationalSlots that have suffered changes
-    for the given Spacecraft.
-    :param spacecraft_id: The identifier of the Spacecraft.
-    :return: JSON-like structure with the data serialized.
-    """
-    changed_slots = operational_models.OperationalSlot.objects\
-        .get_spacecraft_changes(
-            segments.Spacecraft.objects.get(identifier=spacecraft_id)
-        )
-
-    return scheduling_serializers.serialize_slots(changed_slots)
 
 
 # noinspection PyUnusedLocal
@@ -92,8 +71,7 @@ def select_slots(spacecraft_id, slot_identifiers):
         raise Exception('No valid <slot_identifiers> provided.')
 
     changed_slots = operational_models.OperationalSlot.objects.update_state(
-        state=operational_models.STATE_SELECTED, slots=slots,
-        notify_sc=False, notify_gs=True
+        state=operational_models.STATE_SELECTED, slots=slots
     )
 
     return scheduling_serializers.serialize_slots(changed_slots)
@@ -127,8 +105,7 @@ def cancel_selections(spacecraft_id, slot_identifiers):
         raise Exception('No valid <slot_identifiers> provided.')
 
     changed_slots = operational_models.OperationalSlot.objects.update_state(
-        state=operational_models.STATE_FREE, slots=slots,
-        notify_sc=False, notify_gs=True
+        state=operational_models.STATE_FREE, slots=slots
     )
 
     return scheduling_serializers.serialize_slots(changed_slots)
@@ -163,8 +140,7 @@ def cancel_reservations(spacecraft_id, slot_identifiers):
         raise Exception('No valid <slot_identifiers> provided.')
 
     changed_slots = operational_models.OperationalSlot.objects.update_state(
-        state=operational_models.STATE_FREE, slots=slots,
-        notify_sc=False, notify_gs=True
+        state=operational_models.STATE_FREE, slots=slots
     )
 
     return scheduling_serializers.serialize_slots(changed_slots)

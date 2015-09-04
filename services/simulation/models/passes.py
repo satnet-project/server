@@ -123,7 +123,7 @@ class PassManager(django_models.Manager):
         simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
 
-    def propagate_pass_slots(self):
+    def propagate(self):
         """Manager method
         Propagates the pass slots for all the registered groundstation and
         spacecraft pairs.

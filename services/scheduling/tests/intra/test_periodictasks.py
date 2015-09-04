@@ -67,7 +67,6 @@ class TestSlotPropagation(test.TestCase):
         self.__sc_1_ch_1 = db_tools.sc_add_channel(
             self.__sc_1, self.__sc_1_ch_1_f, self.__sc_1_ch_1_id,
         )
-        operational.OperationalSlot.objects.get_simulator().set_debug()
 
     def test_propagate_empty_db(self):
         """INTRA scheduling: initial slot propagation

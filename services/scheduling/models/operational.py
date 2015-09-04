@@ -15,15 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
 import logging
 
 from django.db import models as django_models
 from django.db.models import Q
 
-from services.common import misc, simulation
-from services.configuration.models import channels as channel_models
-from services.configuration.models import tle as tle_models
+from services.common import misc
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.simulation.models import passes as pass_models
@@ -61,16 +58,12 @@ class OperationalSlotsManager(django_models.Manager):
         """
         self._test_last_id = 0
 
-    def create_identifier(
-            self, groundstation_channel, spacecraft_channel, start
-    ):
+    def create_identifier(self, groundstation, spacecraft, start):
         """
         This method creates a unique identifier for this OperationalSlot
         based on the information of the channels related with the slot itself.
-        :param groundstation_channel: The channel of the GroundStation that
-        owns this OperationalSlot.
-        :param spacecraft_channel: The channel of the Spacecraft that is
-        compatible with this OperationalSlot.
+        :param groundstation: The GroundStation that owns this OperationalSlot.
+        :param spacecraft: The Spacecraft that owns this  OperationalSlot.
         :param start: Datetime object that designates the start of the slot.
         :return: The just created identifier as a String.
         """
@@ -78,172 +71,57 @@ class OperationalSlotsManager(django_models.Manager):
             self._test_last_id += 1
             return str(self._test_last_id)
         else:
-            return groundstation_channel.identifier\
-                + OperationalSlot.ID_FIELDS_SEPARATOR\
-                + spacecraft_channel.identifier\
-                + OperationalSlot.ID_FIELDS_SEPARATOR\
-                + str(misc.get_utc_timestamp(start))
+            return str(
+                groundstation.identifier
+            ) + OperationalSlot.ID_FIELDS_SEPARATOR + str(
+                spacecraft.identifier
+            ) + OperationalSlot.ID_FIELDS_SEPARATOR + str(
+                misc.get_utc_timestamp(start)
+            )
 
-    # Embedded OrbitalSimulator object.
-    _simulator = None
-
-    def get_simulator(self):
-        """
-        The embedded simulator should be accessed always through this
-        function, since it is the responsible for creating it in case it does
-        not exist. Several problems while including the creation of the
-        embedded simulator within this class forced the implementation of
-        this solution.
-        """
-        if self._simulator is None:
-
-            self._simulator = simulation.OrbitalSimulator()
-            tle_models.TwoLineElementsManager.load_tles()
-
-        return self._simulator
-
-    def set_spacecraft(self, spacecraft):
-        """
-        Sets the Spacecraft for which the embeded simulator will calculate
-        the OperationalSlot set.
-        :param spacecraft: The Spacecraft object as read from the Spacecraft
-        database.
-        """
-        simulator = self.get_simulator()
-        simulator.set_spacecraft(spacecraft.tle)
-
-    def create(
-        self, groundstation_channel, spacecraft_channel,
-        start, end, availability_slot
-    ):
+    def create(self, pass_slot, availability_slot, start, end):
         """
         Creates a new OperationalSlot in the database.
-        :param groundstation_channel: The channel of the GroundStation to
-        which this operational slot belongs to.
-        :param spacecraft_channel: The channel of the Spacecraft that is
-        compatible with this operational slot.
-        :param start: The start of the operational slot.
-        :param end: The end of the operational slot.
         :param availability_slot: The availability slot during which the
         channel of the GroundStation can be operated.
+        :param start: The start of the operational slot.
+        :param end: The end of the operational slot.
         :return: The just created object in the database.
         """
         return super(OperationalSlotsManager, self).create(
             identifier=self.create_identifier(
-                groundstation_channel, spacecraft_channel, start
+                pass_slot.groundstation, pass_slot.spacecraft, start
             ),
-            groundstation_channel=groundstation_channel,
-            spacecraft_channel=spacecraft_channel,
             start=start,
             end=end,
+            pass_slot=pass_slot,
             availability_slot=availability_slot
         )
 
-    def create_list(
-        self, groundstation_channel, spacecraft_channel, simulations
-    ):
+    @staticmethod
+    def _truncate_slot(slot, window):
         """
-        Creates all the objects from the given list.
-        :param simulations: List with 3-tuple objects containing the
-        a list with all the passes during a given AvailabilitySlot and the
-        identifier of the AvailabilitySlot.
-        :return: List with all the objects created.
+        Truncates the given slot to the duration of the given window.
+        :param slot: Slot to be truncated (if necessary)
+        :param window: Window used to truncate the slot
+        :return: (start, end) new truncated duration of the slot
         """
-        o_slots = []
+        # 1) first slot should be truncated
+        if slot.start < window.start:
+            start = window.start
+        else:
+            start = slot.start
 
-        for info_i in simulations:
+        # 2) last slot should be truncated
+        if slot.end > window.end:
+            end = window.end
+        else:
+            end = slot.end
 
-            a_slot = availability_models.AvailabilitySlot.objects.get(
-                identifier=info_i[1]
-            )
-
-            for pass_i in info_i[0]:
-
-                o_slots.append(
-                    self.create(
-                        groundstation_channel, spacecraft_channel,
-                        pass_i[0], pass_i[1],
-                        a_slot
-                    )
-                )
-
-        return o_slots
-
-    def get_spacecraft_changes(self, spacecraft):
-        """
-        Returns the list of OperationalSlots that have suffered changes for
-        the given Spacecraft. After returning that list, it changes the flag
-        "sc_notified" to True.
-        :param spacecraft: The Spacecraft for which the OperationalSlots are
-        requested.
-        :return: List with all the OperationalSlots.
-        """
-        result = []
-
-        for sc_ch_i in channel_models.SpacecraftChannel.objects.filter(
-            enabled=True, spacecraft=spacecraft
-        ):
-
-            o_slots_i = self.filter(
-                compatible_channels__spacecraft_channel=sc_ch_i
-            ).filter(
-                sc_notified=False
-            )
-            result += o_slots_i
-            o_slots_i.update(sc_notified=True)
-
-        if len(result) == 0:
-            raise Exception(
-                'No OperationalSlots available for Spacecraft <' + str(
-                    spacecraft.identifier
-                ) + '>'
-            )
-
-        # Once notified, 'CANCELED' and 'DENIED' slots have to be
-        # automatically changed to 'FREE'.
-        ids_i = [s_i.identifier for s_i in result]
-        OperationalSlot.objects.filter(
-            identifier__in=ids_i
-        ).filter(
-            Q(state=STATE_CANCELED) | Q(state=STATE_DENIED)
-        ).update(
-            state=STATE_FREE
-        )
-
-        return result
-
-    def get_groundstation_changes(self, groundstation):
-        """
-        Returns the list of OperationalSlots that have suffered changes for
-        the given Spacecraft. After returning that list, it changes the flag
-        "gs_notified" to True.
-        :param groundstation: The GroundStation for which the
-        OperationalSlots are requested.
-        :return: List with all the OperationalSlots.
-        """
-        result = []
-
-        for gs_ch_i in channel_models.GroundStationChannel.objects.filter(
-            enabled=True, groundstation=groundstation
-        ):
-
-            o_slots_i = self\
-                .filter(groundstation_channel=gs_ch_i)\
-                .filter(gs_notified=False)
-            result += o_slots_i
-            o_slots_i.update(gs_notified=True)
-
-        if len(result) == 0:
-            raise Exception(
-                'No OperationalSlots available for GroundStation <' + str(
-                    groundstation.identifier
-                ) + '>'
-            )
-
-        return result
+        return start, end
 
     def update_state(
-        self, state=STATE_FREE, slots=None, notify_sc=True, notify_gs=True
+        self, state=STATE_FREE, slots=None
     ):
         """
         Updates the state of the OperationalSlots implementing the policy for
@@ -264,190 +142,117 @@ class OperationalSlotsManager(django_models.Manager):
         for slot_i in slots:
 
             try:
-
-                slot_i.change_state(
-                    new=state, notify_sc=notify_sc, notify_gs=notify_gs
-                )
+                slot_i.change_state(new=state)
                 result.append(slot_i)
-
             except ValueError as e:
-
                 logger.warning(str(e))
                 continue
 
         return result
 
-    # noinspection PyUnusedLocal
     @staticmethod
-    def compatibility_sc_channel_added(
-        sender, instance, compatible_channels, **kwargs
-    ):
+    def _slots_query(start, end):
+        """Private method
+        Returns the Q() expression to properly filter the applicable slots for
+        the given window. This expression selects the following set of slots:
+            1) all the slots that completely occur within the window,
+            2) all the slots that starts before the window and end after it
+                starts,
+            3) all the slots that end after the window and start before it ends,
+            4) all the slots that start before the window and end after it ends.
+
+        IMPORTANT: It does not truncate slots selected with criterions
+        {2, 3, 4}, being this an issue left for further steps if it is
+        strictly require to meet the restrictions of the window.
+
+        NOTE: This Q() expression can be either used with Availability or with
+        Operational slots.
+
+        :param start: Start of the window
+        :param end: End of the window
+        :return: Q() expression to be used together with filter()
         """
-        Handles the addition of a new SpacecraftChannel.
-        :param sender: The database object that sent the signal.
-        :param instance: The Channel affected by the event.
-        :param compatible_channels: List with the channels compatible with
-        the Channel affected by the event.
+        return \
+            Q(start__gte=start) & Q(end__lte=end) | \
+            Q(start__lt=start) & Q(end__gt=start) & Q(end__lte=end) | \
+            Q(end__gt=end) & Q(start__lt=start) & Q(end__lte=end) | \
+            Q(start__lte=start) & Q(end__gte=end)
+
+    def availability_generates_slots(self, availability_slot):
         """
-        OperationalSlotsManager.populate_spacecraft_channel_slots(
-            instance, compatible_channels
-        )
+        Method that generates the Operational slots corresponding to the given
+        Availability slot.
 
-    # noinspection PyUnusedLocal
-    @staticmethod
-    def compatibility_gs_channel_added(
-        sender, instance, compatible_channels, **kwargs
-    ):
-        """
-        Handles the addition of a new GroundStationChannel.
-        :param sender: The database object that sent the signal.
-        :param instance: The Channel affected by the event.
-        :param compatible_channels: List with the channels compatible with
-        the Channel affected by the event.
-        """
-        OperationalSlot.objects.get_simulator().set_groundstation(
-            instance.groundstation
-        )
-
-        start = misc.get_today_utc()
-        end = start + datetime.timedelta(days=2)
-
-        a_slots = availability_models.AvailabilitySlot.objects.get_applicable(
-            groundstation_channel=instance, start=start, end=end
-        )
-
-        for sc_ch_i in compatible_channels:
-
-            OperationalSlot.objects.set_spacecraft(
-                sc_ch_i.spacecraft
-            )
-
-            operational_s = OperationalSlot.objects.get_simulator()\
-                .calculate_passes(a_slots)
-
-            OperationalSlot.objects.create_list(
-                instance, sc_ch_i, operational_s
-            )
-
-    # noinspection PyUnusedLocal
-    @staticmethod
-    def availability_slot_added(sender, instance, **kwargs):
-        """
-        Callback for updating the OperationalSlots table when an
-        AvailabilitySlot has just been added.
-        :param sender The object that sent the signal.
-        :param instance The instance of the object itself.
+        :param availability_slot: reference to the Availability object
         """
 
-        print('@availability_slot_added, instance = ' + str(instance))
-        print('@availability_slot_added, 1')
-
-        groundstation = instance.groundstation
-        # start, end = simulation.OrbitalSimulator.get_simulation_window()
-        print(
-            '@availability_slot_added, 2, groundstation = ' + str(
-                groundstation
-            )
-        )
-
-        for c in compatibility_models.ChannelCompatibility.objects.filter(
-            groundstation_channel__in=channel_models.GroundStationChannel
-                .objects.filter(
-                    groundstation=groundstation
+        # 1) Pass slots for all the spacecraft that:
+        #   (a) are compatible with the GroundStation whose rules update
+        #       provoked the generation of this Availability slot,
+        #   (b) occur within the applicability range of the Availability slot
+        p_slots = pass_models.PassSlots.objects.filter(
+            groundstation=availability_slot.groundstation,
+            spacecraft__in=[
+                c.spacecraft for c in
+                compatibility_models.ChannelCompatibility.objects.filter(
+                    groundstation=availability_slot.groundstation
                 )
-        ):
-
-            print('@availability_slot_added, 3, comp_sc_ch = ' + str(
-                c.spacecraft_channel.identifier
-            ))
-
-            OperationalSlot.objects.set_spacecraft(
-                c.spacecraft_channel.spacecraft
+            ]
+        ).filter(
+            OperationalSlotsManager._slots_query(
+                availability_slot.start,
+                availability_slot.end
             )
-            print('@availability_slot_added, 4')
-            OperationalSlot.objects.get_simulator().set_groundstation(
-                groundstation
-            )
+        )
 
-            # t_slot = availability.AvailabilitySlotsManager.truncate(
-            #     instance, start=start, end=end
-            # )
-            # if t_slot is None:
-            #     continue
+        # 2) we filter the pass slots that are applicable to the window of this
+        #       availability slot; truncating the first and the last one if
+        #       necessary
+        for p in p_slots:
 
-            operational_s = OperationalSlot.objects\
-                .get_simulator().calculate_passes([
-                    (instance.start, instance.end, instance.identifier)
-                ])
-
-            print('@availability_slot_added, operational_s = ' + str(
-                operational_s
-            ))
-
-            OperationalSlot.objects.create_list(
-                groundstation, c.spacecraft_channel, operational_s
+            start, end = OperationalSlotsManager._truncate_slot(
+                p, availability_slot
             )
 
-    @staticmethod
-    def populate_spacecraft_channel_slots(
-        spacecraft_channel, groundstation_channels, start=None, end=None
-    ):
+            self.create(
+                availability_slot=availability_slot,
+                pass_slot=p,
+                start=start,
+                end=end
+            )
+
+    def pass_generates_slots(self, pass_slot):
         """
-        Static method that updates the OperationalSlots for a given
-        SpacecraftChannel.
-        :param spacecraft_channel: The channel whose slots are to be updated.
-        :param groundstation_channels: The list of compatible GroundStation
-        channels.
-        :param start: The start for the update process.
-        :param end: The end for the update process.
+        Method that generates all the Operational slots related to the newly
+        created pass slot.
+
+        :param pass_slot: reference to the Pass slot
         """
-        if start is None or end is None:
-            start, end = simulation.OrbitalSimulator.get_simulation_window()
-        elif start >= end:
-            raise TypeError(
-                '<start=' + str(start) + '> '
-                + 'should occurr sooner than <end=' + str(end) + '>'
+
+        # 1) Availability slots for all the spacecraft that:
+        #   (a) are owned by the GroundStation over which the Spacecraft passes,
+        #   (b) occur within the applicability range of the Availability slot
+        a_slots = availability_models.AvailabilitySlot.objects.filter(
+            groundstation=pass_slot.groundstation
+        ).filter(
+            OperationalSlotsManager._slots_query(
+                pass_slot.start,
+                pass_slot.end
             )
+        )
 
-        OperationalSlot.objects.set_spacecraft(spacecraft_channel.spacecraft)
+        # 2) we filter the pass slots that are applicable to the window of this
+        #       availability slot; truncating the first and the last one if
+        #       necessary
+        for a in a_slots:
 
-        for gs_ch_i in groundstation_channels:
+            start, end = OperationalSlotsManager._truncate_slot(a, pass_slot)
 
-            OperationalSlot.objects.get_simulator().set_groundstation(
-                gs_ch_i.groundstation
-            )
-
-            a_slots = availability_models.AvailabilitySlot.objects\
-                .get_applicable(
-                    groundstation_channel=gs_ch_i,
-                    start=start, end=end
-                )
-
-            operational_s = OperationalSlot.objects\
-                .get_simulator().calculate_passes(a_slots)
-
-            OperationalSlot.objects.create_list(
-                gs_ch_i, spacecraft_channel, operational_s
-            )
-
-    @staticmethod
-    def populate_slots(duration=datetime.timedelta(days=1)):
-        """
-        Static method that populates the slots for all the compatible
-        channels during an interval of lenght 'duration', after the
-        simulation window.
-        :param duration: Time length for which the slots will be populated.
-        """
-        s_start, s_end = simulation.OrbitalSimulator.get_simulation_window()
-        start = s_end
-        end = start + duration
-
-        for c in compatibility_models.ChannelCompatibility.objects.all():
-
-            OperationalSlotsManager.populate_spacecraft_channel_slots(
-                c.spacecraft_channel,
-                c.groundstation_channels,
-                start, end
+            self.create(
+                availability_slot=a,
+                pass_slot=pass_slot,
+                start=start,
+                end=end
             )
 
 
@@ -468,12 +273,6 @@ class OperationalSlot(django_models.Model):
         'Unique identifier for this slot',
         max_length=150,
         unique=True
-    )
-
-    compatible_channels = django_models.ForeignKey(
-        compatibility_models.ChannelCompatibility,
-        verbose_name='Reference to the compatible pair of channels',
-        default=1
     )
 
     availability_slot = django_models.ForeignKey(
@@ -558,39 +357,18 @@ class OperationalSlot(django_models.Model):
         default=STATE_FREE
     )
 
-    gs_notified = django_models.BooleanField(
-        'Flag that indicates whether the changes in the status of the slot '
-        'need already to be notified to the compatible GroundStation.',
-        default=False
-    )
-    sc_notified = django_models.BooleanField(
-        'Flag that indicates whether the changes in the status of the slot '
-        'need already to be notified to the compatible Spacecraft.',
-        default=False
-    )
-
-    def change_state(self, new, notify_sc=True, notify_gs=True):
+    def change_state(self, new):
         """
         Static method that returns 'True' in case the state change from
         'current' to 'new' can be performed; otherwise, it returns 'False'.
         :param new: The new state for this slot.
-        :param notify_sc: Flag that defines whether Spacecraft should be
-        notified about this change or not.
-        :param notify_gs: Flag that defines whether GroundStations should be
-        notified about this change or not.
         :raises TypeError: any of the states (either current or new) is not
         valid.
         """
         if self.STATE_CHANGE[self.state][new]:
-
             self.state = new
-            self.gs_notified = not notify_gs
-            self.sc_notified = not notify_sc
-
             self.save()
-
         else:
-
             raise ValueError(
                 'Change from <' + str(
                     self.state
@@ -610,8 +388,4 @@ class OperationalSlot(django_models.Model):
             self.end
         ) + u', state = ' + str(
             self.state
-        ) + u', sc_notified = ' + str(
-            self.sc_notified
-        ) + u', gs_notified = ' + str(
-            self.gs_notified
         )

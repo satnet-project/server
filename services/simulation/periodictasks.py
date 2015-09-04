@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
+from services.common import misc
 from services.simulation.models import groundtracks as gt_models
 from services.simulation.models import passes as pass_models
 
@@ -25,21 +26,79 @@ logger = logging.getLogger('simulation')
 
 @decorators.daily()
 def propagate_groundtracks():
-    """Periodic task.
-    This task updates the available groundtracks for the different registered
-    Spacecraft.
+    """Periodic groundtracks propagation
     """
     logger.info('[DAILY] >>> Propagating groundtracks')
-    gt_models.GroundTrack.objects.propagate_groundtracks()
-    logger.info('> Propagated!')
+
+    try:
+        gt_models.GroundTrack.objects.propagate()
+    except Exception as ex:
+        logger.warning(
+            '[DAILY] >>> Exception while propagating groundtracks, ex = ' + str(
+                ex
+            )
+        )
+
+    logger.info('[DAILY] >>> DONE propagating groundtracks')
+
+
+@decorators.daily()
+def clean_groundtracks():
+    """Periodic groundtracks cleanup
+    """
+    logger.info('[DAILY] >>> Cleaning groundtracks')
+
+    try:
+        gt_models.GroundTrack.objects.filter(
+            timestamp__lt=misc.get_utc_timestamp(
+                misc.get_now_utc()
+            )
+        ).delete()
+    except Exception as ex:
+        logger.warning(
+            '[DAILY] >>> Exception while cleaning groundtracks, ex = ' + str(
+                ex
+            )
+        )
+
+    logger.info('[DAILY] >>> DONE cleaning groundtracks')
 
 
 @decorators.daily()
 def propagate_passes():
-    """Periodic task.
-    This task updates the available groundtracks for the different registered
-    Spacecraft.
+    """Periodic groundtracks propagation
     """
     logger.info('[DAILY] >>> Propagating passes')
-    pass_models.PassSlots.objects.propagate_pass_slots()
-    logger.info('> Propagated!')
+
+    try:
+        pass_models.PassSlots.objects.propagate()
+    except Exception as ex:
+        logger.warning(
+            '[DAILY] >>>  Exception while propagating passes, ex = ' + str(
+                ex
+            )
+        )
+
+    logger.info('[DAILY] >>> DONE propagating groundtracks')
+
+
+@decorators.daily()
+def clean_passes():
+    """Periodic groundtracks cleanup
+    """
+    logger.info('[DAILY] >>> Cleaning passes')
+
+    try:
+        pass_models.PassSlots.objects.filter(
+            end__lt=misc.get_utc_timestamp(
+                misc.get_now_utc()
+            )
+        ).delete()
+    except Exception as ex:
+        logger.warning(
+            '[DAILY] >>>  Exception while cleaning passes, ex = ' + str(
+                ex
+            )
+        )
+
+    logger.info('[DAILY] >>> DONE cleaning passes')

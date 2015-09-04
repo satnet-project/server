@@ -71,7 +71,7 @@ class JRPCSimulationTest(test.TestCase):
         Creates a KML output file with the generated coordinates. The name for
         the points is the timestamp for that given coordinate.
         """
-        simulation_models.GroundTrack.objects.propagate_groundtracks()
+        simulation_models.GroundTrack.objects.propagate()
         gt_f = simulation_models.GroundTrack.objects.all()[0]
         track = simulation_serializer\
             .SimulationSerializer().serialize_groundtrack(gt_f)

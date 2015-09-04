@@ -56,7 +56,6 @@ class JRPCBookingProcessTest(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
-        operational.OperationalSlot.objects.get_simulator().set_debug()
         operational.OperationalSlot.objects.set_debug()
 
         # noinspection PyUnresolvedReferences
@@ -166,22 +165,7 @@ class JRPCBookingProcessTest(test.TestCase):
         )
         db_tools.create_identifier_list(sc_s_slots)
 
-        # 1) selection has to be notified only once to the GS
-        gs_s_slots = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
-        self.assertEqual(
-            len(gs_s_slots), 2, 'Selected slots should be 2, selected = ' +
-            misc.list_2_string(gs_s_slots)
-        )
-        self.assertRaises(
-            Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
-        )
-
-        # 2) selection should not be notified to the SC (they already made it!)
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
-
-        # 3) GroundStation operators confirm the selected slots...
+        # 1) GroundStation operators confirm the selected slots...
         gs_c_slots = jrpc_gs_scheduling.confirm_selections(
             self.__gs_1_id, [1, 2, 3]
         )
@@ -189,39 +173,14 @@ class JRPCBookingProcessTest(test.TestCase):
             len(gs_c_slots), 2, 'Confirmed slots should be 2, selected = ' +
             misc.list_2_string(gs_c_slots)
         )
-        self.assertRaises(
-            Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
-        )
-
-        # 4) Spacecraft operators must be notified with the reservations,
-        # but only once!
-        sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEqual(
-            len(sc_r_slots), 2, 'Reserved slots should be 2, selected = ' +
-            misc.list_2_string(sc_r_slots)
-        )
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
 
         # 5) GroundStation operators cancel the selected slots...
         jrpc_gs_scheduling.cancel_reservations(
             self.__gs_1_id, [1, 2, 3]
         )
-        self.assertRaises(
-            Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
-        )
+        # TODO assert this cancel
 
-        # 6) Spacecraft operators must be notified with the cancelations,
-        # but only once!
-        sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEqual(
-            len(sc_r_slots), 2, 'Canceled slots should be 2, selected = ' +
-            misc.list_2_string(sc_r_slots)
-        )
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
+        # 6) No canceled Operational Slots
         self.assertEqual(
             len(
                 operational.OperationalSlot.objects.filter(
@@ -253,17 +212,7 @@ class JRPCBookingProcessTest(test.TestCase):
             len(gs_d_slots), 2, 'Denied slots should be 3, selected = ' +
             misc.list_2_string(gs_d_slots)
         )
-        self.assertRaises(
-            Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
-        )
-        sc_r_slots = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        self.assertEqual(
-            len(sc_r_slots), 2, 'Denied slots should be 3, selected = ' +
-            misc.list_2_string(sc_r_slots)
-        )
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
+
         self.assertEqual(
             len(
                 operational.OperationalSlot.objects.filter(
@@ -281,19 +230,17 @@ class JRPCBookingProcessTest(test.TestCase):
         )
 
         # ### clean up sc/gs
-        self.assertEqual(
+        self.assertTrue(
             jrpc_gs_chs.gs_channel_delete(
                 groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
             ),
-            True,
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
             )
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_sc_chs.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
-            True,
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )

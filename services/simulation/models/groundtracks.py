@@ -121,7 +121,7 @@ class GroundTrackManager(models.Manager):
 
         return timestamps, latitudes, longitudes
 
-    def propagate_groundtracks(self):
+    def propagate(self):
         """
         This method propagates the points for the GroundTracks along the
         update window. This propagation should be done after the new TLE's
@@ -163,7 +163,7 @@ class GroundTrackManager(models.Manager):
 
                 logger.warning(
                     'Error while propagating groundtrack = ' + str(gt)
-                    + 'ex = ' + str(ex.message)
+                    + 'ex = ' + str(ex)
                 )
 
 
@@ -195,7 +195,8 @@ class GroundTrack(models.Model):
         verbose_name='Longitude for the points of the GroundTrack'
     )
     timestamp = pgarray_fields.BigIntegerArrayField(
-        verbose_name='UTC time at which the spacecraft is going to pass over this point'
+        verbose_name='UTC time at which the spacecraft is going to pass over '
+                     'this point'
     )
 
     def __unicode__(self):
@@ -209,6 +210,6 @@ class GroundTrack(models.Model):
 
         if self.timestamp:
             ts = 'timestamp = ' + str(self.timestamp)
-            result += result
+            result += ts
 
         return result

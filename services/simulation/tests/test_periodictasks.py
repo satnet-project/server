@@ -66,7 +66,7 @@ class PeriodicSimulationTest(test.TestCase):
             len(gt_i.timestamp), 0, 'Initial GroundTrack should not be empty'
         )
 
-        groundtrack_models.GroundTrack.objects.propagate_groundtracks()
+        groundtrack_models.GroundTrack.objects.propagate()
         gt_f = groundtrack_models.GroundTrack.objects.get(spacecraft=sc)
 
         self.assertNotEqual(
@@ -82,7 +82,7 @@ class PeriodicSimulationTest(test.TestCase):
         """Periodict task test
         Test that validates the periodical propagation of the pass slots.
         """
-        pass_models.PassSlots.objects.propagate_pass_slots()
+        pass_models.PassSlots.objects.propagate()
 
         self.assertEqual(
             len(pass_models.PassSlots.objects.all()), 0, 'No pass slots'
@@ -94,7 +94,7 @@ class PeriodicSimulationTest(test.TestCase):
             initial_p_slots, 0, 'There should be some pass slots available'
         )
 
-        pass_models.PassSlots.objects.propagate_pass_slots()
+        pass_models.PassSlots.objects.propagate()
         propagated_p_slots = len(pass_models.PassSlots.objects.all())
 
         self.assertNotEqual(

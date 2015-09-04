@@ -17,10 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
-
 from django import test
 from django.db import models
-import datadiff
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
@@ -34,8 +32,6 @@ from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_chs
 from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import operational as operational_models
-from services.scheduling.jrpc.views.operational import \
-    groundstations as jrpc_gs_scheduling
 from services.scheduling.jrpc.views.operational import \
     spacecraft as jrpc_sc_scheduling
 from services.scheduling.jrpc.serializers import operational as \
@@ -101,7 +97,6 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        operational_models.OperationalSlot.objects.get_simulator().set_debug()
         operational_models.OperationalSlot.objects.set_debug()
 
     def _sc_get_operational_slots(self):
@@ -187,17 +182,13 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 }
             }
         }
-        self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected, 'Expected different slots!')
 
         # ### clean up
         self.assertTrue(
             jrpc_gs_chs.gs_channel_delete(
-                groundstation_id=self.__gs_1_id, channel_id=self.__gs_1_ch_1_id
+                groundstation_id=self.__gs_1_id,
+                channel_id=self.__gs_1_ch_1_id
             ),
             'Could not delete GroundStationChannel = ' + str(
                 self.__gs_1_ch_1_id
@@ -205,9 +196,12 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
         self.assertTrue(
             jrpc_sc_chs.sc_channel_delete(
-                spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
+                spacecraft_id=self.__sc_1_id,
+                channel_id=self.__sc_1_ch_1_id
             ),
-            'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
+            'Could not delete SpacecraftChannel = ' + str(
+                self.__sc_1_ch_1_id
+            )
         )
 
     def test_sc_get_changes(self):
@@ -217,15 +211,6 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         if self.__verbose_testing:
             print('##### test_sc_get_changes')
         operational_models.OperationalSlot.objects.reset_ids_counter()
-
-        # 1) non-existant Spacecraft
-        self.assertRaises(
-            models.ObjectDoesNotExist, jrpc_sc_scheduling.get_changes, 0
-        )
-        # 2) Non slots available for the given spacecraft
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
-        )
 
         # ### channels required for the tests
         self.assertTrue(
@@ -264,45 +249,9 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             )
         )
 
-        actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        expected = {
-            self.__sc_1_ch_1_id: {
-                self.__gs_1_ch_1_id: {
-                    segment_serializers.GS_ID_K: self.__sc_1_id,
-                    jrpc_sch_serial.SLOTS_K: [{
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=1)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=1)
-                        ).isoformat()
-                    }, {
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=2)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=2)
-                        ).isoformat()
-                    }]
-                }
-            }
-        }
+        actual = operational_models.OperationalSlot.objects.all()
         self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
-
-        # 4) the second call asking for changes must return no slots
-        self.assertRaises(
-            Exception,
-            jrpc_sc_scheduling.get_changes,
-            self.__sc_1_id
+            len(actual), 2, 'Wrong slots number!'
         )
 
         # 5) we add some slots and they should be retrieved as 'changed' only
@@ -324,38 +273,9 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             )
         )
 
-        actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
-        expected = {
-            self.__sc_1_ch_1_id: {
-                self.__gs_1_ch_1_id: {
-                    segment_serializers.GS_ID_K: self.__sc_1_id,
-                    jrpc_sch_serial.SLOTS_K: [{
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=1)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=1)
-                        ).isoformat()
-                    }, {
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=2)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=2)
-                        ).isoformat()
-                    }]
-                }
-            }
-        }
+        actual = operational_models.OperationalSlot.objects.all()
         self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
+            len(actual), 2, 'Wrong slots number!'
         )
 
         # ### clean up sc/gs
@@ -383,19 +303,21 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # ### channels required for the tests
-        self.assertEqual(
+        self.assertTrue(
             jrpc_sc_chs.sc_channel_create(
                 spacecraft_id=self.__sc_1_id,
                 channel_id=self.__sc_1_ch_1_id,
                 configuration=self.__sc_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
-        self.assertEqual(
+        self.assertTrue(
             jrpc_gs_chs.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
                 channel_id=self.__gs_1_ch_1_id,
                 configuration=self.__gs_1_ch_1_cfg
-            ), True, 'Channel should have been created!'
+            ),
+            'Channel should have been created!'
         )
 
         date_i = misc.get_today_utc() + datetime.timedelta(days=1)
@@ -415,61 +337,12 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
         # 1) select all the slots and retrieve the changes
-        actual = jrpc_sc_scheduling.get_changes(self.__sc_1_id)
+        actual = operational_models.OperationalSlot.objects.all()
         id_list = db_tools.create_identifier_list(actual)
         actual = jrpc_sc_scheduling.select_slots(self.__sc_1_id, id_list)
 
-        expected = {
-            self.__sc_1_ch_1_id: {
-                self.__gs_1_ch_1_id: {
-                    segment_serializers.GS_ID_K: self.__sc_1_id,
-                    jrpc_sch_serial.SLOTS_K: [{
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=1)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=1)
-                        ).isoformat()
-                    }, {
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=2)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=2)
-                        ).isoformat()
-                    }]
-                }
-            }
-        }
-
         self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
-
-        # 2) The changes should be notified now to the compatible gs, but only
-        # once!
-        actual = jrpc_gs_scheduling.get_changes(self.__gs_1_id)
-        self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
-        self.assertRaises(
-            Exception, jrpc_gs_scheduling.get_changes, self.__gs_1_id
-        )
-
-        # 3) Spacecraft should not be notified about the changes that its
-        # actions provoked
-        self.assertRaises(
-            Exception, jrpc_sc_scheduling.get_changes, self.__sc_1_id
+            len(actual), 2, 'Wrong slots number!'
         )
 
         # ### clean up sc/gs
