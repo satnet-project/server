@@ -70,8 +70,10 @@ class PassManager(django_models.Manager):
             for s in slots:
 
                 self.create(
-                    spacecraft=spacecraft, groundstation=groundstation,
-                    start=s[0], end=s[1]
+                    spacecraft=spacecraft,
+                    groundstation=groundstation,
+                    start=s[0],
+                    end=s[1]
                 )
 
             all_slots += slots

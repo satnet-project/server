@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 from django.db import models as django_models
 from services.configuration.models import channels as channel_models
+from services.configuration.models import segments as segment_models
 
 logger = logging.getLogger(__name__)
 
@@ -26,6 +27,20 @@ class ChannelCompatibilityManager(django_models.Manager):
     """
     Manager for the ChannelCompatibility table.
     """
+
+    def create(self, spacecraft_channel, groundstation_channel):
+        """
+        Overriden create method from the general manager.
+        :param spacecraft_channel: compatible Spacecraft channel
+        :param groundstation_channel: compatible GroundStation channel
+        :return: the just created Compatibility object
+        """
+        return super(ChannelCompatibilityManager, self).create(
+            spacecraft_channel=spacecraft_channel,
+            spacecraft=spacecraft_channel.spacecraft,
+            groundstation_channel=groundstation_channel,
+            groundstation=groundstation_channel.groundstation
+        )
 
     @staticmethod
     def diff_gs(groundstation_ch):
@@ -138,13 +153,25 @@ class ChannelCompatibility(django_models.Model):
         default=1
     )
 
+    spacecraft = django_models.ForeignKey(
+        segment_models.Spacecraft,
+        verbose_name='Reference to the compatible Spacecraft segment',
+        default=1
+    )
+
     groundstation_channel = django_models.ForeignKey(
         channel_models.GroundStationChannel,
         verbose_name='Reference to the compatible Ground Station channel',
         default=1
     )
 
-    def __unicode__(self):
+    groundstation = django_models.ForeignKey(
+        segment_models.GroundStation,
+        verbose_name='Reference to the compatible GroundStation segment',
+        default=1
+    )
+
+    def __str__(self):
         """
         Transforms the contents of this object into a human readable string.
         """

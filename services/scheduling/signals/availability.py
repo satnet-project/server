@@ -26,7 +26,6 @@ def rule_updated(rule):
     """
     Common handler to be invoked whenever any of the different rules is
     updated.
-
     :param rule: Rule object that has been updated/created
     """
     availability_models.AvailabilitySlot.objects.update_slots(

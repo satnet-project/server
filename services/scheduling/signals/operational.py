@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import dispatch as django_dispatch
+from django.db.models import Q
 from django.db.models import signals as django_signals
 
 from services.scheduling.models import availability as availability_models
@@ -78,6 +79,31 @@ def availability_slot_added(sender, instance, created, raw, **kwargs):
     """
     if not created or raw:
         return
+
+    # 1) Pass slots for all the spacecraft that:
+    #       (a) are compatible with the GroundStation whose rules update
+    #           provoked the generation of this availability slot,
+    #       (b) occur within the applicability range of the availability slot
+    pass_slots = pass_models.PassSlots.objects.filter(
+        groundstation=instance.groundstation,
+        spacecraft__in=[
+            c.spacecraft for c in
+            compatibility_models.ChannelCompatibility.objects.filter(
+                groundstation=instance.groundstation
+            )
+        ]
+    ).filter(
+        Q(start__gt=instance.start) | Q(end__lt=instance.end)
+    )
+
+    # 2) we filter the pass slots that are applicable to the window of this
+    #       availability slot
+    for p in pass_slots:
+
+        operational_models.OperationalSlot.objects.create(
+            availability_slot=instance,
+            pass_slot=p
+        )
 
     operational_models.OperationalSlotsManager.availability_slot_added(
         sender, instance, **kwargs
