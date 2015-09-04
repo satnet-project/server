@@ -26,6 +26,7 @@ from services.configuration.models import channels as channel_models
 from services.configuration.models import tle as tle_models
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
+from services.simulation.models import passes as pass_models
 
 logger = logging.getLogger('scheduling')
 
@@ -201,12 +202,13 @@ class OperationalSlotsManager(django_models.Manager):
         # Once notified, 'CANCELED' and 'DENIED' slots have to be
         # automatically changed to 'FREE'.
         ids_i = [s_i.identifier for s_i in result]
-        OperationalSlot.objects\
-            .filter(identifier__in=ids_i)\
-            .filter(
-                Q(state=STATE_CANCELED) | Q(state=STATE_DENIED)
-            )\
-            .update(state=STATE_FREE)
+        OperationalSlot.objects.filter(
+            identifier__in=ids_i
+        ).filter(
+            Q(state=STATE_CANCELED) | Q(state=STATE_DENIED)
+        ).update(
+            state=STATE_FREE
+        )
 
         return result
 
@@ -340,24 +342,31 @@ class OperationalSlotsManager(django_models.Manager):
         print('@availability_slot_added, instance = ' + str(instance))
         print('@availability_slot_added, 1')
 
-        gs_ch = instance.groundstation_channel
+        groundstation = instance.groundstation
         # start, end = simulation.OrbitalSimulator.get_simulation_window()
-        print('@availability_slot_added, 2, gs_ch = ' + str(gs_ch.identifier))
+        print(
+            '@availability_slot_added, 2, groundstation = ' + str(
+                groundstation
+            )
+        )
 
-        for comp_i in compatibility_models.ChannelCompatibility.objects.filter(
-            groundstation_channel=gs_ch
+        for c in compatibility_models.ChannelCompatibility.objects.filter(
+            groundstation_channel__in=channel_models.GroundStationChannel
+                .objects.filter(
+                    groundstation=groundstation
+                )
         ):
 
             print('@availability_slot_added, 3, comp_sc_ch = ' + str(
-                comp_i.spacecraft_channel.identifier
+                c.spacecraft_channel.identifier
             ))
 
             OperationalSlot.objects.set_spacecraft(
-                comp_i.spacecraft_channel.spacecraft
+                c.spacecraft_channel.spacecraft
             )
             print('@availability_slot_added, 4')
             OperationalSlot.objects.get_simulator().set_groundstation(
-                gs_ch.groundstation
+                groundstation
             )
 
             # t_slot = availability.AvailabilitySlotsManager.truncate(
@@ -376,7 +385,7 @@ class OperationalSlotsManager(django_models.Manager):
             ))
 
             OperationalSlot.objects.create_list(
-                gs_ch, comp_i.spacecraft_channel, operational_s
+                groundstation, c.spacecraft_channel, operational_s
             )
 
     @staticmethod
@@ -469,7 +478,13 @@ class OperationalSlot(django_models.Model):
 
     availability_slot = django_models.ForeignKey(
         availability_models.AvailabilitySlot,
-        verbose_name='Availability slot that generates this OperationalSlot',
+        verbose_name='Availability slot related with this OperationalSlot',
+        default=1
+    )
+
+    pass_slot = django_models.ForeignKey(
+        pass_models.PassSlots,
+        verbose_name='Pass slots related with this OperationalSlot',
         default=1
     )
 
@@ -582,7 +597,7 @@ class OperationalSlot(django_models.Model):
                 ) + '> to <' + str(new) + ' is forbidden.'
             )
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Unicode string representation of the contents of this object.
         :return: Unicode string.

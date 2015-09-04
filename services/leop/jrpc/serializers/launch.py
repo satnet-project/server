@@ -143,3 +143,25 @@ def deserialize_launch(launch):
         tle_l2 = launch[JRPC_K_TLE_L2]
 
     return date, tle_l1, tle_l2
+
+
+# noinspection PyUnusedLocal
+def serialize_pass_slots(pass_slots, by_gs=True):
+    """
+    Serializes a list of pass slots into an array of JSON-like serializable
+    slot objects.
+    :param pass_slots: Original array with the database slot models
+    :return: Serializable list
+    """
+    serial_array = []
+
+    for s in pass_slots:
+
+        serial_array.append({
+            JRPC_K_SC_ID: s.spacecraft.identifier,
+            JRPC_K_GS_ID: s.groundstation.identifier,
+            JRPC_K_SLOT_START: s.start.isoformat(),
+            JRPC_K_SLOT_END: s.end.isoformat()
+        })
+
+    return serial_array

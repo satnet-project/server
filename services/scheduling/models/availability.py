@@ -243,10 +243,11 @@ class AvailabilitySlot(models.Model):
         return groundstation.identifier + AvailabilitySlot.ID_FIELDS_SEPARATOR\
             + str(misc.get_utc_timestamp(start))
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Unicode string representation of the contents of this object.
         :return: Unicode string.
         """
-        return 'id = ' + str(self.identifier) + ', start = '\
-               + self.start.isoformat() + ', end = ' + self.end.isoformat()
+        return 'id = ' + str(self.identifier) + \
+            ', start = ' + self.start.isoformat() + \
+            ', end = ' + self.end.isoformat()

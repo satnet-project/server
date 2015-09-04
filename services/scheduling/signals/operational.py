@@ -18,9 +18,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
 
-from services.configuration.models import availability as availability_models
+from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
+from services.simulation.models import passes as pass_models
 
 
 # noinspection PyUnusedLocal
@@ -65,14 +66,19 @@ def compatibility_deleted(sender, instance, **kwargs):
     django_signals.post_save,
     sender=availability_models.AvailabilitySlot
 )
-def availability_slot_added(sender, instance, **kwargs):
+def availability_slot_added(sender, instance, created, raw, **kwargs):
     """
     Callback for updating the OperationalSlots table when an AvailabilitySlot
     has just been created.
     :param sender The object that sent the signal.
     :param instance The instance of the object itself.
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates that the object is not stable within the db
     :param kwargs: Additional parameters
     """
+    if not created or raw:
+        return
+
     operational_models.OperationalSlotsManager.availability_slot_added(
         sender, instance, **kwargs
     )
@@ -93,4 +99,41 @@ def availability_slot_deleted(sender, instance, **kwargs):
     """
     operational_models.OperationalSlot.objects.filter(
         availability_slot=instance
+    ).delete()
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.post_save,
+    sender=pass_models.PassSlots
+)
+def pass_slot_added(sender, instance, created, raw, **kwargs):
+    """
+    Updates the available Operational Slots after a new pass slot has been
+    created.
+    :param sender: any sender is accepted
+    :param instance: Reference to the just created object
+    :param created: Flag that indicates that this object has just been created
+    :param raw: Flag that indicates that the object is not stable within the db
+    :param kwargs: Additional parameters
+    """
+    if not created or raw:
+        return
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(
+    django_signals.pre_delete,
+    sender=pass_models.PassSlots
+)
+def pass_slot_deleted(sender, instance, **kwargs):
+    """
+    Callback for updating the OperationalSlots table when a PassSlots
+    has just been removed.
+    :param sender The object that sent the signal.
+    :param instance The instance of the object itself.
+    :param kwargs: Additional parameters
+    """
+    operational_models.OperationalSlot.objects.filter(
+        pass_slot=instance
     ).delete()

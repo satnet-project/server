@@ -31,12 +31,14 @@ from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_ch_if
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import channels as channel_models
-from services.configuration.models import rules
-from services.scheduling.models import operational, availability
+from services.configuration.models import rules as rule_models
+from services.scheduling.models import availability as availability_models
+from services.scheduling.models import operational as operational_models
 
 
 class OperationalModels(test.TestCase):
 
+    # noinspection PyUnresolvedReferences
     def setUp(self):
         """
         This method populates the database with some information to be used
@@ -80,8 +82,9 @@ class OperationalModels(test.TestCase):
             channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
-        # noinspection PyUnresolvedReferences
         from services.scheduling.signals import availability
+        from services.scheduling.signals import compatibility
+        from services.scheduling.signals import operational
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -93,7 +96,7 @@ class OperationalModels(test.TestCase):
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
-        operational.OperationalSlot.objects.get_simulator().set_debug()
+        operational_models.OperationalSlot.objects.get_simulator().set_debug()
 
     def test_1_compatibility_sc_channel_added_deleted(self):
         """
@@ -141,22 +144,23 @@ class OperationalModels(test.TestCase):
             ), 'Channel should have been created!'
         )
 
-        a_slots = availability.AvailabilitySlot.objects.get_applicable(
+        a_slots = availability_models.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs_1
         )
-        actual = len(operational.OperationalSlot.objects.all())
+        actual = len(operational_models.OperationalSlot.objects.all())
         expected = len(a_slots)
 
         if self.__verbose_testing:
             misc.print_list(a_slots, 'AvailabilitySlots')
             misc.print_list(
-                operational.OperationalSlot.objects.all(), 'OperationalSlots'
+                operational_models.OperationalSlot.objects.all(),
+                'OperationalSlots'
             )
 
         self.assertEqual(
             actual, expected,
-            'Simulated operational slots differ from expected!'
-            'actual = ' + str(actual) + ', expected = ' + str(expected)
+            'Simulated operational slots differ from expected! actual = ' +
+            str(actual) + ', expected = ' + str(expected)
         )
 
         self.assertTrue(
@@ -168,12 +172,12 @@ class OperationalModels(test.TestCase):
         )
 
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
 
@@ -181,16 +185,16 @@ class OperationalModels(test.TestCase):
             print('>>> window = ' + str(
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
-            misc.print_list(rules.AvailabilityRule.objects.all())
-            misc.print_list(availability.AvailabilitySlot.objects.all())
-            misc.print_list(operational.OperationalSlot.objects.all())
+            misc.print_list(rule_models.AvailabilityRule.objects.all())
+            misc.print_list(availability_models.AvailabilitySlot.objects.all())
+            misc.print_list(operational_models.OperationalSlot.objects.all())
             misc.print_list(actual)
             misc.print_list(expected)
 
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -201,18 +205,18 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -225,18 +229,18 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -288,18 +292,18 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (str(operational.STATE_FREE),),
-            (str(operational.STATE_FREE),)
+            (str(operational_models.STATE_FREE),),
+            (str(operational_models.STATE_FREE),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_FREE
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_FREE
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_FREE
+                operational_models.STATE_FREE
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -310,18 +314,18 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),)
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -340,13 +344,15 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_FREE),),
-            (str(operational.STATE_FREE),)
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_FREE),),
+            (str(operational_models.STATE_FREE),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.all().values_list('state')
+            operational_models.OperationalSlot.objects.all().values_list(
+                'state'
+            )
         )
         self.assertEqual(
             actual, expected,
@@ -362,20 +368,20 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -428,18 +434,18 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (str(operational.STATE_FREE),),
-            (str(operational.STATE_FREE),)
+            (str(operational_models.STATE_FREE),),
+            (str(operational_models.STATE_FREE),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_FREE
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_FREE
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_FREE
+                operational_models.STATE_FREE
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -450,18 +456,18 @@ class OperationalModels(test.TestCase):
             'Rule should have been removed!'
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),)
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -473,18 +479,18 @@ class OperationalModels(test.TestCase):
             ), 'Channel should have been created!'
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),)
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )
 
@@ -503,13 +509,15 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_FREE),),
-            (str(operational.STATE_FREE),)
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_FREE),),
+            (str(operational_models.STATE_FREE),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.all().values_list('state')
+            operational_models.OperationalSlot.objects.all().values_list(
+                'state'
+            )
         )
         self.assertEqual(
             actual, expected,
@@ -531,11 +539,11 @@ class OperationalModels(test.TestCase):
         )
         self.assertIsNot(r_2_id, 0, 'Rule should have been added!')
         expected = [
-            (str(operational.STATE_FREE),),
-            (str(operational.STATE_FREE),)
+            (str(operational_models.STATE_FREE),),
+            (str(operational_models.STATE_FREE),)
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
+            operational_models.OperationalSlot.objects.filter(
                 groundstation_channel=channel_models.GroundStationChannel
                 .objects.get(identifier=self.__gs_1_ch_2_id)
             ).values_list('state')
@@ -554,21 +562,21 @@ class OperationalModels(test.TestCase):
             )
         )
         expected = [
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
-            (str(operational.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
+            (str(operational_models.STATE_REMOVED),),
         ]
         actual = list(
-            operational.OperationalSlot.objects.filter(
-                state=operational.STATE_REMOVED
+            operational_models.OperationalSlot.objects.filter(
+                state=operational_models.STATE_REMOVED
             ).values_list('state')
         )
         self.assertEqual(
             actual, expected,
             'All remaining slots must have the state ' + str(
-                operational.STATE_REMOVED
+                operational_models.STATE_REMOVED
             ) + ', diff = ' + str(datadiff.diff(actual, expected))
         )

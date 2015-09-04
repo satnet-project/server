@@ -1,5 +1,5 @@
 """
-   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+   Copyright 2015 Ricardo Tubio-Pardavila
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -15,9 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.leop.jrpc.serializers import launch as launch_serializers
+from services.configuration.jrpc.serializers import segments as segment_serial
+
+SLOT_START_K = 'slot_start'
+SLOT_END_K = 'slot_end'
 
 
+# noinspection PyUnusedLocal
 def serialize_pass_slots(pass_slots, by_gs=True):
     """
     Serializes a list of pass slots into an array of JSON-like serializable
@@ -30,10 +34,10 @@ def serialize_pass_slots(pass_slots, by_gs=True):
     for s in pass_slots:
 
         serial_array.append({
-            launch_serializers.JRPC_K_SC_ID: s.spacecraft.identifier,
-            launch_serializers.JRPC_K_GS_ID: s.groundstation.identifier,
-            launch_serializers.JRPC_K_SLOT_START: s.start.isoformat(),
-            launch_serializers.JRPC_K_SLOT_END: s.end.isoformat()
+            segment_serial.SC_ID_K: s.spacecraft.identifier,
+            segment_serial.GS_ID_K: s.groundstation.identifier,
+            SLOT_START_K: s.start.isoformat(),
+            SLOT_END_K: s.end.isoformat()
         })
 
     return serial_array

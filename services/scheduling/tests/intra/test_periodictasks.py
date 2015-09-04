@@ -70,7 +70,7 @@ class TestSlotPropagation(test.TestCase):
         operational.OperationalSlot.objects.get_simulator().set_debug()
 
     def test_propagate_empty_db(self):
-        """services.configuration: initial slot propagation
+        """INTRA scheduling: initial slot propagation
         This test validates the propagation of the slots throughout the
         database when no rules are available (empty database stability check).
         """

@@ -41,9 +41,13 @@ class TestAvailability(test.TestCase):
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
+
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import availability, compatibility
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -53,9 +57,6 @@ class TestAvailability(test.TestCase):
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
-        if not self.__verbose_testing:
-            logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_0_add_slots_no_rules(self):
         """services.configuration: add slots without rules

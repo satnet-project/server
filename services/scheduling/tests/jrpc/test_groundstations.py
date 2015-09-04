@@ -41,6 +41,8 @@ from services.scheduling.jrpc.views.operational import \
 
 
 class JRPCGroundStationsSchedulingTest(test.TestCase):
+    """JRPC: services.scheduling.groundstations
+    """
 
     def setUp(self):
         """

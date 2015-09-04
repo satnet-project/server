@@ -39,8 +39,8 @@ class CompatibilityGsChUpdate(TestCase):
         self.__verbose_testing = False
 
         if not self.__verbose_testing:
-            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
+            logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
         # noinspection PyUnresolvedReferences
