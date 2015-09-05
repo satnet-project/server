@@ -158,8 +158,7 @@ class OperationalModels(test.TestCase):
 
         self.assertEqual(
             actual, expected,
-            'Simulated operational slots differ from expected! actual = ' +
-            str(actual) + ', expected = ' + str(expected)
+            'Simulated operational slots differ from expected!'
         )
 
         self.assertTrue(
