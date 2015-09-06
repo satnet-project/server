@@ -18,10 +18,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 
 from services.common import serialization as common_serializers
-from services.configuration.models import segments as segment_models
-from services.configuration.models import channels as channel_models
-from services.configuration.jrpc.serializers import rules as \
-    cfg_serializers
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
 from services.scheduling.models import operational as operational_models
 
 logger = logging.getLogger('scheduling')
@@ -87,32 +85,7 @@ def serialize_slots(slots):
     return s_slots
 
 
-def serialize_sc_operational_slots(spacecraft_id):
-    """
-    Serializes all the OperationalSlots for a given spacecraft.
-    :param spacecraft_id: The identifier of the Spacecraft.
-    :return: The list with all the serialized slots.
-    """
-    slots = []
-
-    for sc_ch_i in channel_models.SpacecraftChannel.objects.filter(
-        enabled=True,
-        spacecraft=segment_models.Spacecraft.objects.get(
-            identifier=spacecraft_id
-        )
-    ):
-
-        o_slots_i = operational_models.OperationalSlot.objects.filter(
-            spacecraft_channel=sc_ch_i
-        )
-
-        for o in operational_models.OperationalSlot.serialize_slots(o_slots_i):
-            slots.append(o)
-
-    return slots
-
-
-def insert_slot(slots, master_ch_id, slave_ch_id, segment_id, slot):
+def insert_slot(slots, master_segment_id, slave_segment_id, slot):
     """
     Inserts the slot into the given slots dictionary, preserving the structure
     regardless of who is the master or the slave (this is, regardless of
@@ -120,32 +93,52 @@ def insert_slot(slots, master_ch_id, slave_ch_id, segment_id, slot):
     channels are the primary). It is, pretty much, a convenience method.
 
     :param slots: Dictionary with the slots
-    :param master_ch_id: Identifier of the primary channel
-    :param slave_ch_id: Identifier of the secondary channel
-    :param segment_id: Identifier of the segment to which the secondary
-    channel belongs to
+    :param master_segment_id: Identifier of the primary segment
+    :param slave_segment_id: Identifier of the slave segment
     :param slot: Slot object form the database
     :return: Dictionary with the new added slot
     """
-
     sc_ch_o = {
-        cfg_serializers.SC_ID_K: segment_id,
+        segment_serializers.SEGMENT_ID_K: slave_segment_id,
         SLOTS_K: []
     }
 
-    if master_ch_id not in slots:
+    if master_segment_id not in slots:
 
-        slots[master_ch_id] = {
-            slave_ch_id: sc_ch_o
+        slots[master_segment_id] = {
+            slave_segment_id: sc_ch_o
         }
 
-    elif slave_ch_id not in slots[master_ch_id]:
+    elif slave_segment_id not in slots[master_segment_id]:
 
-        slots[master_ch_id][slave_ch_id] = {
-            slave_ch_id: sc_ch_o
+        slots[master_segment_id][slave_segment_id] = {
+            slave_segment_id: sc_ch_o
         }
 
-    slots[master_ch_id][slave_ch_id][SLOTS_K].append(serialize_slot(slot))
+    slots[master_segment_id][slave_segment_id][SLOTS_K].append(
+        serialize_slot(slot)
+    )
+
+
+def serialize_sc_operational_slots(spacecraft_id):
+    """
+    Serializes all the OperationalSlots for a given spacecraft.
+
+    :param spacecraft_id: The identifier of the Spacecraft
+    :return: The list with all the serialized slots
+    """
+    slots = {}
+
+    for slot in operational_models.OperationalSlot.objects.filter(
+        pass_slot__spacecraft__identifier=spacecraft_id
+    ):
+
+        insert_slot(
+            slots,
+            slot.pass_slot.spacecraft.identifier,
+            slot.pass_slot.groundstation.identifier,
+            slot
+        )
 
     return slots
 
@@ -160,22 +153,14 @@ def serialize_gs_operational_slots(groundstation_id):
 
     slots = {}
 
-    gs_channels = channel_models.GroundStationChannel.objects.filter(
-        enabled=True,
-        groundstation=segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
-        )
-    )
-
     for slot in operational_models.OperationalSlot.objects.filter(
-        compatible_channels__groundstation_channel__in=gs_channels
+        pass_slot__groundstation__identifier=groundstation_id
     ):
 
         insert_slot(
             slots,
-            slot.groundstation_channel.identifier,
-            slot.spacecraft_channel.identifier,
-            slot.spacecraft_channel.spacecraft_set.all()[0].identifier,
+            slot.pass_slot.groundstation.identifier,
+            slot.pass_slot.spacecraft.identifier,
             slot
         )
 

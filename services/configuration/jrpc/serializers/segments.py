@@ -16,6 +16,9 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+# ### JSON keys for encoding/decoding information related to any segment
+SEGMENT_ID_K = 'segment_id'
+
 # ### JSON keys for enconding/decoding GroundStation dictionaries
 GS_ID_K = 'groundstation_id'
 GS_LATLON_K = 'groundstation_latlon'

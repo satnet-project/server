@@ -17,9 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import re
 import logging
-from django.db import models
-
 logger = logging.getLogger(__name__)
+from django.db import models
 
 
 class AvailableModulations(models.Model):

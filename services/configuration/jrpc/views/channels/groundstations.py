@@ -16,18 +16,16 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+logger = logging.getLogger('configuration')
 from django import db as django_db
 from rpc4django import rpcmethod
 
-from services.configuration.models import channels as channel_models
 from services.configuration.models import bands as band_models
+from services.configuration.models import channels as channel_models
 from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import channels as \
     jrpc_channels_serial
 from website import settings as satnet_settings
-
-
-logger = logging.getLogger('configuration')
 
 
 @rpcmethod(
@@ -46,40 +44,6 @@ def gs_channel_list(identifier):
         )
     )
     return [str(c.identifier) for c in channels]
-
-
-@rpcmethod(
-    name='configuration.channels.getOptions',
-    signature=[],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def get_options():
-    """JRPC method: configuration.channels.getOptions
-    Returns a dictionary containing all the possible configuration
-    options for adding a new communications channel to a Ground Station.
-    """
-    return {
-        jrpc_channels_serial.BANDS_K: [
-            obj.get_band_name()
-            for obj in band_models.AvailableBands.objects.all()
-        ],
-        jrpc_channels_serial.MODULATIONS_K: [
-            obj.modulation
-            for obj in band_models.AvailableModulations.objects.all()
-        ],
-        jrpc_channels_serial.POLARIZATIONS_K: [
-            obj.polarization
-            for obj in band_models.AvailablePolarizations.objects.all()
-        ],
-        jrpc_channels_serial.BITRATES_K: [
-            str(obj.bitrate)
-            for obj in band_models.AvailableBitrates.objects.all()
-        ],
-        jrpc_channels_serial.BANDWIDTHS_K: [
-            str(obj.bandwidth)
-            for obj in band_models.AvailableBandwidths.objects.all()
-        ]
-    }
 
 
 @rpcmethod(

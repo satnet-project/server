@@ -25,6 +25,7 @@ from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
+from services.configuration.jrpc.views import bands as band_jrpc
 from services.configuration.jrpc.views.channels import groundstations as \
     jrpc_gs_channels_if
 from services.configuration.jrpc.views.channels import spacecraft as \
@@ -145,7 +146,7 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             print('>>> TEST (test_get_channel_options)')
 
-        actual_o = jrpc_gs_channels_if.get_options()
+        actual_o = band_jrpc.get_options()
         expected_o = {
             channel_serializers.BANDS_K: [
                 'UHF / U / 435000000.000000 / 438000000.000000'
