@@ -128,7 +128,7 @@ class Spacecraft(models.Model):
         Prints in a unicode string the most remarkable data for this
         spacecraft object.
         """
-        return u' >>> SC, id = ' + str(
+        return ' >>> SC, id = ' + str(
             self.identifier
         )
 
@@ -289,8 +289,8 @@ class GroundStation(models.Model):
         Prints in a unicode string the most remarkable data for this
         spacecraft object.
         """
-        return u' >>> GS, id = ' + str(
+        return ' >>> GS, id = ' + str(
             self.identifier
-        ) + u', callsign = ' + str(
+        ) + ', callsign = ' + str(
             self.callsign
         )

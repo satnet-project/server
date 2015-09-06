@@ -175,8 +175,8 @@ class ChannelCompatibility(django_models.Model):
         """
         Transforms the contents of this object into a human readable string.
         """
-        return u'{ sc_ch = ' + str(
+        return '{ sc_ch = ' + str(
             self.spacecraft_channel
-        ) + u', gs_ch = ' + str(
+        ) + ', gs_ch = ' + str(
             self.groundstation_channel
-        ) + u' }'
+        ) + ' }'

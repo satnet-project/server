@@ -380,12 +380,12 @@ class OperationalSlot(django_models.Model):
         Unicode string representation of the contents of this object.
         :return: Unicode string.
         """
-        return u'id = ' + str(
+        return 'id = ' + str(
             self.identifier
-        ) + u', start = ' + str(
+        ) + ', start = ' + str(
             self.start
-        ) + u', end = ' + str(
+        ) + ', end = ' + str(
             self.end
-        ) + u', state = ' + str(
+        ) + ', state = ' + str(
             self.state
         )

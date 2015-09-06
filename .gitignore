@@ -1,5 +1,6 @@
 *~
 __v_env/
+.32venv/
 .venv
 .idea
 .env
