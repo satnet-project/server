@@ -38,6 +38,9 @@ class AvailableModulations(models.Model):
 
     modulation = models.CharField('Modulation', max_length=9)
 
+    def __str__(self):
+        return str(self.modulation)
+
 
 class AvailableBitrates(models.Model):
     """
@@ -55,6 +58,9 @@ class AvailableBitrates(models.Model):
         app_label = 'configuration'
 
     bitrate = models.IntegerField('Bitrate (bps)')
+
+    def __str__(self):
+        return str(self.bitrate)
 
 
 class AvailableBandwidths(models.Model):
@@ -75,6 +81,9 @@ class AvailableBandwidths(models.Model):
         'Bandwidth (kHz)',
         max_digits=24, decimal_places=9
     )
+
+    def __str__(self):
+        return str(self.bandwidth)
 
 
 class AvailablePolarizations(models.Model):
@@ -97,6 +106,9 @@ class AvailablePolarizations(models.Model):
         max_length=10,
         choices=POLARIZATION_CHOICES
     )
+
+    def __str__(self):
+        return str(self.polarization)
 
 
 class AvailableBandsManager(models.Manager):
@@ -191,5 +203,5 @@ class AvailableBands(models.Model):
 
         return band_name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.get_band_name()

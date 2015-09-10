@@ -284,7 +284,7 @@ class GroundStation(models.Model):
         if changes:
             self.save(update_fields=update_fields)
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Prints in a unicode string the most remarkable data for this
         spacecraft object.

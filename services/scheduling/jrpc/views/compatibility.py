@@ -33,10 +33,12 @@ def get_compatiblility(spacecraft_ch):
     :param spacecraft_ch: The channel for which the tuples are compatible with
     :return: List with the (GS, GS_CH) tuples
     """
-
     gs_chs = compatibility_models.ChannelCompatibility.objects.filter(
         spacecraft_channel=spacecraft_ch
     )
+
+    for g in gs_chs:
+        print(g)
 
     compatible_tuples = [
         (
@@ -44,9 +46,15 @@ def get_compatiblility(spacecraft_ch):
         ) for c in gs_chs
     ]
 
-    return compatibility_serializers.serialize_gs_ch_compatibility_tuples(
-        compatible_tuples
-    )
+    for c in compatible_tuples:
+        print(c)
+
+    serialized_result = compatibility_serializers\
+        .serialize_gs_ch_compatibility_tuples(
+            compatible_tuples
+        )
+
+    return serialized_result
 
 
 @rpcmethod(
@@ -96,11 +104,16 @@ def sc_get_compatible(spacecraft_id):
     ):
 
         r = compatibility_serializers.serialize_sc_ch_compatibility(
-            spacecraft_ch, get_compatiblility(spacecraft_ch)
+            spacecraft_ch,
+            get_compatiblility(spacecraft_ch)
         )
 
         results.append(r)
 
-    return compatibility_serializers.serialize_sc_compatibility(
+    serial_result = compatibility_serializers.serialize_sc_compatibility(
         spacecraft, results
     )
+    print('ZZZZZZZZZZZZ')
+    import services.common.misc as common_misc
+    common_misc.print_dictionary(serial_result)
+    return serial_result

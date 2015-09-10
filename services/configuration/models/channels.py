@@ -146,18 +146,12 @@ class SpacecraftChannel(models.Model):
 
         return self
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Unicode representation of the object.
         :returns Unicode string.
         """
-        return str(
-            self.__class__.__name__
-        ) + ', identifier = ' + str(
-            self.identifier
-        ) + ', frequency = ' + str(
-            self.frequency
-        )
+        return self.get_string_definition()
 
     # noinspection PyProtectedMember
     @staticmethod
@@ -201,7 +195,8 @@ class GroundStationChannelManager(models.Manager):
         gs_ch.save()
         return gs_ch
 
-    def find_compatible(self, sc_channel):
+    @staticmethod
+    def find_compatible(sc_channel):
         """
         Static method that finds all the compatible GroundStation channels
         with the given Spacecraft channel.
@@ -209,8 +204,7 @@ class GroundStationChannelManager(models.Manager):
         :return: A query list with the results of the search throughout the
         database.
         """
-
-        return self.filter(
+        return GroundStationChannel.objects.filter(
             enabled=True
         ).filter(
             band__IARU_allocation_minimum_frequency__lt=sc_channel.frequency
@@ -335,7 +329,7 @@ class GroundStationChannel(models.Model):
 
         return self
 
-    def __unicode__(self):
+    def __str__(self):
         """
         Unicode representation of the object.
         :returns Unicode string.
@@ -344,8 +338,16 @@ class GroundStationChannel(models.Model):
             self.__class__.__name__
         ) + ', identifier = ' + str(
             self.identifier
+        ) + ', enabled = ' + str(
+            self.enabled
         ) + ', band.pk = ' + str(
-            self.band.pk
+            self.band.get_band_name()
+        ) + ', modulations = ' + str(
+            self.modulations.all()
+        ) + ', bitrates = ' + str(
+            self.bitrates.all()
+        ) + ', polarizations = ' + str(
+            self.polarizations.all()
         )
 
     # noinspection PyProtectedMember

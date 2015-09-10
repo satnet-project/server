@@ -67,6 +67,10 @@ def spacecraft_channel_saved(sender, instance, created, raw, **kwargs):
     add, remove = compatibility_models.ChannelCompatibility.objects.diff_sc(
         instance
     )
+
+    print('>>>> add = ' + str(add))
+    print('>>>> del = ' + str(remove))
+
     compatibility_models.ChannelCompatibility.objects.patch_sc(
         instance, add, remove
     )

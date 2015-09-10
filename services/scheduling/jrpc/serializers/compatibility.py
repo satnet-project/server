@@ -35,7 +35,6 @@ def serialize_gs_ch_compatibility_tuples(gs_ch_list):
     :param gs_ch_list: List with the tuples to be serialized
     :return: List with the tuples gs, gs_ch in JSON format
     """
-
     result = []
 
     for t in gs_ch_list:
@@ -44,7 +43,7 @@ def serialize_gs_ch_compatibility_tuples(gs_ch_list):
         gs_ch_serial = serialize(
             t[1],
             camelcase=True,
-            exclude=['id'],
+            exclude=['id', 'groundstation'],
             related={
                 'band': {
                     'fields': [
@@ -92,7 +91,7 @@ def serialize_sc_ch_compatibility(spacecraft_ch, compatibility):
     sc_ch_serial = serialize(
         spacecraft_ch,
         camelcase=True,
-        exclude=['id'],
+        exclude=['id', 'spacecraft'],
         related={
             'modulation': {
                 'fields': ['modulation']
@@ -124,7 +123,9 @@ def serialize_sc_compatibility(spacecraft, compatibility):
     :return: Object with the spacecraft and the compatibility
     """
 
-    return {
+    result = {
         segment_serializers.SC_ID_K: spacecraft.identifier,
         COMPATIBILITY_OBJECT_K: compatibility
     }
+    print('XXXXXXXXXXXX')
+    return result
