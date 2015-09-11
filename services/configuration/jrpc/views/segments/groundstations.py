@@ -75,7 +75,7 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
 
 
 @rpcmethod(
-    name='configuration.gs.getConfiguration',
+    name='configuration.gs.get',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -89,7 +89,7 @@ def get_configuration(ground_station_id):
 
 
 @rpcmethod(
-    name='configuration.gs.setConfiguration',
+    name='configuration.gs.set',
     signature=['String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

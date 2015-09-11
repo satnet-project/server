@@ -58,7 +58,7 @@ def get_compatiblility(spacecraft_ch):
 
 
 @rpcmethod(
-    name="scheduling.sc.channel.getCompatibility",
+    name="scheduling.sc.channel.compatibility",
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -81,7 +81,7 @@ def sc_channel_get_compatible(spacecraft_id, channel_id):
 
 
 @rpcmethod(
-    name="scheduling.sc.getCompatibility",
+    name="scheduling.sc.compatibility",
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

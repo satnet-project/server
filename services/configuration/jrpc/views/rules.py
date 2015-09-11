@@ -68,7 +68,7 @@ def add_rule(groundstation_id, rule_cfg):
 
 
 @rpc4django.rpcmethod(
-    name='configuration.gs.rules.remove',
+    name='configuration.gs.rules.delete',
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

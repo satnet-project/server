@@ -47,7 +47,7 @@ def gs_channel_list(identifier):
 
 
 @rpcmethod(
-    name='configuration.gs.channel.isUnique',
+    name='configuration.gs.channel.unique',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -114,27 +114,7 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
 
 
 @rpcmethod(
-    name='configuration.gs.channel.delete',
-    signature=['String', 'String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def gs_channel_delete(groundstation_id, channel_id):
-    """JRPC method: configuration.gs.channel.delete
-    Method that removes the given channel from the database and from the list
-    of available channels of the Ground Station that owns it.
-    """
-    channel_models.GroundStationChannel.objects.get(
-        identifier=channel_id,
-        groundstation=segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
-        )
-    ).delete()
-
-    return True
-
-
-@rpcmethod(
-    name='configuration.gs.channel.getConfiguration',
+    name='configuration.gs.channel.get',
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -154,7 +134,7 @@ def gs_channel_get_configuration(groundstation_id, channel_id):
 
 
 @rpcmethod(
-    name='configuration.gs.channel.setConfiguration',
+    name='configuration.gs.channel.set',
     signature=['String', 'String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -184,4 +164,24 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
         bandwidths_list=bws_l,
         polarizations_list=pol_l
     )
+    return True
+
+
+@rpcmethod(
+    name='configuration.gs.channel.delete',
+    signature=['String', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def gs_channel_delete(groundstation_id, channel_id):
+    """JRPC method: configuration.gs.channel.delete
+    Method that removes the given channel from the database and from the list
+    of available channels of the Ground Station that owns it.
+    """
+    channel_models.GroundStationChannel.objects.get(
+        identifier=channel_id,
+        groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
+    ).delete()
+
     return True

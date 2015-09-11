@@ -28,7 +28,7 @@ from website import settings as satnet_settings
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
-def sc_channel_get_compatible(groundstation_id):
+def gs_get_availability_slots(groundstation_id):
     """JRPC method: scheduling.gs.availability
     JRPC method that returns the availability slots for a given ground station.
     :param groundstation_id: String with the groundstation identifier

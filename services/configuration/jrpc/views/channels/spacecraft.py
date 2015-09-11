@@ -48,7 +48,7 @@ def sc_channel_list(identifier):
 
 
 @rpcmethod(
-    name='configuration.sc.channel.isUnique',
+    name='configuration.sc.channel.unique',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -112,36 +112,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
 
 
 @rpcmethod(
-    name='configuration.sc.channel.delete',
-    signature=['String', 'String'],
-    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
-)
-def sc_channel_delete(spacecraft_id, channel_id):
-    """JRPC method: configuration.sc.channel.delete
-    Method that removes the given channel from the database and from the list
-    of available channels of the SpacecraftConfiguration object that owns it.
-    """
-    try:
-        channel_models.SpacecraftChannel.objects.get(
-            identifier=channel_id,
-            spacecraft=segment_models.Spacecraft.objects.get(
-                identifier=spacecraft_id
-            )
-        ).delete()
-
-    except segment_models.Spacecraft.DoesNotExist as ex:
-        logger.warn(str(ex))
-        raise Exception(
-            'Spacecraft identifier does not exist, id = <' + str(
-                spacecraft_id
-            ) + '>'
-        )
-
-    return True
-
-
-@rpcmethod(
-    name='configuration.sc.channel.getConfiguration',
+    name='configuration.sc.channel.get',
     signature=['String', 'String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -161,7 +132,7 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
 
 
 @rpcmethod(
-    name='configuration.sc.channel.setConfiguration',
+    name='configuration.sc.channel.set',
     signature=['String', 'String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -189,4 +160,33 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
         bandwidth=bandwidth,
         polarization=polarization
     )
+    return True
+
+
+@rpcmethod(
+    name='configuration.sc.channel.delete',
+    signature=['String', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def sc_channel_delete(spacecraft_id, channel_id):
+    """JRPC method: configuration.sc.channel.delete
+    Method that removes the given channel from the database and from the list
+    of available channels of the SpacecraftConfiguration object that owns it.
+    """
+    try:
+        channel_models.SpacecraftChannel.objects.get(
+            identifier=channel_id,
+            spacecraft=segment_models.Spacecraft.objects.get(
+                identifier=spacecraft_id
+            )
+        ).delete()
+
+    except segment_models.Spacecraft.DoesNotExist as ex:
+        logger.warn(str(ex))
+        raise Exception(
+            'Spacecraft identifier does not exist, id = <' + str(
+                spacecraft_id
+            ) + '>'
+        )
+
     return True

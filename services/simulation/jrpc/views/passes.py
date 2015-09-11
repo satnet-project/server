@@ -23,7 +23,7 @@ from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
-    name='simulation.spacecraft.getPasses',
+    name='simulation.sc.passes',
     signature=['String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

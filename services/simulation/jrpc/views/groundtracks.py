@@ -23,7 +23,7 @@ from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
-    name='simulation.spacecraft.getGroundtrack',
+    name='simulation.sc.groundtrack',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

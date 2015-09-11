@@ -25,7 +25,7 @@ from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
-    name='configuration.tle.celestrak.getSections',
+    name='configuration.tle.celestrak.sections',
     signature=[],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -38,7 +38,7 @@ def get_celestrak_sections():
 
 
 @rpc4django.rpcmethod(
-    name='configuration.tle.celestrak.getResource',
+    name='configuration.tle.celestrak.resource',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -56,7 +56,7 @@ def get_celestrak_resource(subsection):
 
 
 @rpc4django.rpcmethod(
-    name='configuration.tle.celestrak.getTle',
+    name='configuration.tle.celestrak.tle',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

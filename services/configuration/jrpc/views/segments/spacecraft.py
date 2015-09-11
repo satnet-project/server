@@ -76,7 +76,7 @@ def create(identifier, callsign, tle_id, **kwargs):
 
 
 @rpcmethod(
-    name='configuration.sc.getConfiguration',
+    name='configuration.sc.get',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
@@ -90,7 +90,7 @@ def get_configuration(spacecraft_id):
 
 
 @rpcmethod(
-    name='configuration.sc.setConfiguration',
+    name='configuration.sc.set',
     signature=['String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
