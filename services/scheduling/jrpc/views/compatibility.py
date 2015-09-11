@@ -110,10 +110,6 @@ def sc_get_compatible(spacecraft_id):
 
         results.append(r)
 
-    serial_result = compatibility_serializers.serialize_sc_compatibility(
+    return compatibility_serializers.serialize_sc_compatibility(
         spacecraft, results
     )
-    print('ZZZZZZZZZZZZ')
-    import services.common.misc as common_misc
-    common_misc.print_dictionary(serial_result)
-    return serial_result
