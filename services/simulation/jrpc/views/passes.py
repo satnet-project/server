@@ -51,7 +51,7 @@ def get_sc_passes(spacecraft_id, groundstations):
 
 
 @rpc4django.rpcmethod(
-    name='simulation.groundstation.getPasses',
+    name='simulation.gs.passes',
     signature=['String', 'Object'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

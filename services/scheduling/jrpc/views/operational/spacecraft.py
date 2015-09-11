@@ -24,7 +24,7 @@ from website import settings as satnet_settings
 
 
 @rpc4django.rpcmethod(
-    name='scheduling.sc.getOperationalSlots',
+    name='scheduling.sc.operational',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )

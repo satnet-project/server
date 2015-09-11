@@ -24,7 +24,7 @@ from services.scheduling.jrpc.serializers import operational as \
 
 
 @rpc4django.rpcmethod(
-    name='scheduling.getSlot',
+    name='scheduling.slot.get',
     signature=['String'],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
