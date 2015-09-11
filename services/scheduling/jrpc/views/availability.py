@@ -19,7 +19,7 @@ from rpc4django import rpcmethod
 from services.configuration.models import segments as segment_models
 from services.scheduling.models import availability as availability_models
 from services.scheduling.jrpc.serializers import \
-    operational as operational_serial
+    availability as availability_serial
 from website import settings as satnet_settings
 
 
@@ -34,7 +34,7 @@ def gs_get_availability_slots(groundstation_id):
     :param groundstation_id: String with the groundstation identifier
     :return: JSON-like object with the availability slots
     """
-    return operational_serial.serialize_slots(
+    return availability_serial.serialize_slots(
         availability_models.AvailabilitySlot.objects.filter(
             groundstation=segment_models.GroundStation.objects.get(
                 identifier=groundstation_id
