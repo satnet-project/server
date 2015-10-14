@@ -24,4 +24,4 @@ ruby
 rubygems-integration
 yui-compressor
 libpq-dev
-
+libsnappy-dev

@@ -28,3 +28,4 @@ python3-dev
 ruby
 rubygems-integration
 yui-compressor
+libsnappy-dev

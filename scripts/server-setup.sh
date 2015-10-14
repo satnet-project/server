@@ -112,6 +112,7 @@ __apache_server_key="$__apache_server_certificates_dir/$KEY_NAME"
 __apache_rotate_logs="/usr/local/apache/bin/rotatelogs"
 __phppgadmin_apache_config='/etc/apache2/conf.d/phppgadmin'
 __phppgadmin_config_file='/etc/phppgadmin/config.inc.php'
+__phppgadmin_apache_enabled='/etc/apache2/conf-enabled/phppgadmin'
 
 # ### This function configures the apache2 server.
 configure_apache()
@@ -135,6 +136,12 @@ configure_apache()
         echo '>>> Debian 8 detected, phppgadmin moved to conf-available...'
         __phppgadmin_apache_config='/etc/apache2/conf-available/phppgadmin.conf'
         echo ">>> phppgadmin = $__phppgadmin_apache_config"
+    }
+
+    [[ $linux_Dist -eq 'Ubuntu' ]] && {
+        echo '>> Ubuntu detected, enabling phppgadmin...'
+        sudo ln -sf $__phppgadmin_apache_config $__phppgadmin_apache_enabled
+        echo '>>> phppgadmin linked into conf-enabled'
     }
 
     # ### CONFIGURATION OF THE SSL MODULE
