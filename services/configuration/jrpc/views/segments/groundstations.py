@@ -23,7 +23,7 @@ from services.configuration.jrpc.serializers import \
     segments as segment_serializers
 from website import settings as satnet_settings
 
-logger = logging.getLogger('jrpc')
+logger = logging.getLogger('configuration')
 
 
 @rpcmethod(

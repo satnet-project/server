@@ -37,7 +37,7 @@ def keep_alive():
 @rpcmethod(
     name='network.geoip',
     signature=['String'],
-    login_required=False
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def hostname_geoip(hostname):
     """JRPC method

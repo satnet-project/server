@@ -215,7 +215,7 @@ def remove_admin_profile(apps, schema_editor):
     UserProfile.objects.get(pk=1).delete()
 
 
-PERMISSION_EX_MSG = 'No HTTP request: user identity could not be verified.'
+PERMISSION_EX_MSG = 'No HTTP request: using testing identity.'
 
 
 def get_user(
