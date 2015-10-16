@@ -587,6 +587,8 @@ if [ $# -lt 1 ] ; then
     exit 0
 fi
 
+sudo apt-get install aptitude
+
 while getopts ":abcikprstovx" opt; do
     case $opt in
         a)
