@@ -187,6 +187,7 @@ configure_apache()
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    WSGIScriptAlias / $webservices_dir/website/wsgi.py" | sudo tee -a $__satnet_apache_conf
     echo "    WSGIDaemonProcess satnet python-path=$webservices_dir:$__webservices_python_env_dir" | sudo tee -a $__satnet_apache_conf
+    echo '    WSGIApplicationGroup %{GLOBAL}' | sudo tee -a $__satnet_apache_conf
     echo '' | sudo tee -a $__satnet_apache_conf
     echo "    <Directory $webservices_dir/>" | sudo tee -a $__satnet_apache_conf
     echo "        WSGIProcessGroup satnet" | sudo tee -a $__satnet_apache_conf
