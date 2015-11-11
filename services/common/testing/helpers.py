@@ -404,3 +404,4 @@ def create_identifier_list(json_slot_list):
         identifier_l.append(l_i['identifier'])
 
     return identifier_l
+

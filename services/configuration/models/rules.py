@@ -15,12 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import datetime, timedelta
-from django.db import models
+import datetime
+from django.db import models as django_models
 import pytz
 
 from services.common import misc, simulation, slots
 from services.configuration.models import segments as segment_models
+from website import settings as satnet_settings
 
 ADD_SLOTS = '+'
 REMOVE_SLOTS = '-'
@@ -32,7 +33,7 @@ WEEKLY_PERIODICITY = 'W'
 DEFAULT_GROUNDSTATION = 1
 
 
-class AvailabilityRuleManager(models.Manager):
+class AvailabilityRuleManager(django_models.Manager):
     """
     Manager that contains all the methods required for easing the access to
     the database AvailabilityRule objects.
@@ -77,6 +78,17 @@ class AvailabilityRuleManager(models.Manager):
         )
 
     @staticmethod
+    def create_test_window():
+        """
+        Creates a window to use as a reference for testing.
+        :return: Tuple with the start and end dates of the window
+        """
+        return (
+            misc.get_today_utc(),
+            misc.get_today_utc() + datetime.timedelta(days=2)
+        )
+
+    @staticmethod
     def get_specific_rule(rule_id):
         """
         Returns all the specific rules that inherit from this generic one.
@@ -114,11 +126,13 @@ class AvailabilityRuleManager(models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
+
             r_list = c.objects\
                 .filter(availabilityrule_ptr__operation=ADD_SLOTS)\
                 .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
                 .filter(availabilityrule_ptr__ending_date__gt=interval[0])
             add_slots.append(r_list)
+
             r_list = c.objects\
                 .filter(availabilityrule_ptr__operation=REMOVE_SLOTS)\
                 .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
@@ -140,8 +154,8 @@ class AvailabilityRuleManager(models.Manager):
         read from the database directly, the first list contains the rules
         that add slots and the second one contains those that remove slots.
         """
-        add_slots = []
-        remove_slots = []
+        add_r = []
+        remove_r = []
 
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
@@ -159,7 +173,7 @@ class AvailabilityRuleManager(models.Manager):
                 ).values()
             )
             if r_list:
-                add_slots += r_list
+                add_r += r_list
             r_list = list(
                 c.objects.filter(
                     availabilityrule_ptr__groundstation=groundstation
@@ -172,9 +186,9 @@ class AvailabilityRuleManager(models.Manager):
                 ).values()
             )
             if r_list:
-                remove_slots += r_list
+                remove_r += r_list
 
-        return add_slots, remove_slots
+        return add_r, remove_r
 
     @staticmethod
     def is_applicable(rule_values, interval):
@@ -189,12 +203,12 @@ class AvailabilityRuleManager(models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         i_date = pytz.utc.localize(
-            datetime.combine(
+            datetime.datetime.combine(
                 rule_values['starting_date'], rule_values['starting_time']
             )
         )
         f_date = pytz.utc.localize(
-            datetime.combine(
+            datetime.datetime.combine(
                 rule_values['ending_date'], rule_values['ending_time']
             )
         )
@@ -220,10 +234,14 @@ class AvailabilityRuleManager(models.Manager):
         )
 
         slot_start = pytz.utc.localize(
-            datetime.combine(rule_values['starting_date'], r.starting_time)
+            datetime.datetime.combine(
+                rule_values['starting_date'], r.starting_time
+            )
         )
         slot_end = pytz.utc.localize(
-            datetime.combine(rule_values['ending_date'], r.ending_time)
+            datetime.datetime.combine(
+                rule_values['ending_date'], r.ending_time
+            )
         )
 
         if slot_start < interval[0]:
@@ -257,10 +275,10 @@ class AvailabilityRuleManager(models.Manager):
         while i_day < interval[1]:
 
             ii_date = pytz.utc.localize(
-                datetime.combine(i_day, r.starting_time)
+                datetime.datetime.combine(i_day, r.starting_time)
             )
             ff_date = pytz.utc.localize(
-                datetime.combine(i_day, r.ending_time)
+                datetime.datetime.combine(i_day, r.ending_time)
             )
 
             # We might have to truncate the first slot...
@@ -270,7 +288,7 @@ class AvailabilityRuleManager(models.Manager):
 
                 if ff_date <= interval[0]:
 
-                    i_day += timedelta(days=1)
+                    i_day += datetime.timedelta(days=1)
                     continue
 
                 if ii_date <= interval[0]:
@@ -278,7 +296,7 @@ class AvailabilityRuleManager(models.Manager):
                     ii_date = interval[0]
 
             result.append((ii_date, ff_date))
-            i_day += timedelta(days=1)
+            i_day += datetime.timedelta(days=1)
 
         return result
 
@@ -320,8 +338,9 @@ class AvailabilityRuleManager(models.Manager):
                 i_date, f_date, rule_values, interval
             )
 
-        raise Exception('Rule periodicity = <' + periodicity + '> is not '
-                                                               'supported')
+        raise Exception(
+            'Rule periodicity = <' + periodicity + '> is not supported'
+        )
 
     @staticmethod
     def get_availability_slots(groundstation, interval=None):
@@ -331,19 +350,21 @@ class AvailabilityRuleManager(models.Manager):
                         generated.
         """
         if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
+            if satnet_settings.TESTING:
+                interval = AvailabilityRuleManager.create_test_window()
+            else:
+                interval = simulation.OrbitalSimulator.get_simulation_window()
 
         add_rules, remove_rules = AvailabilityRuleManager\
-            .get_applicable_rule_values(
-                groundstation, interval=interval
-            )
+            .get_applicable_rule_values(groundstation, interval=interval)
 
         # 0) We obtain the applicable slots from the database
         add_slots = []
         for r in add_rules:
-            add_slots = AvailabilityRuleManager.generate_available_slots(
+            add_slots += AvailabilityRuleManager.generate_available_slots(
                 r, interval=interval
             )
+
         remove_slots = []
         for r in remove_rules:
             remove_slots += AvailabilityRuleManager.generate_available_slots(
@@ -357,12 +378,23 @@ class AvailabilityRuleManager(models.Manager):
         remove_slots = slots.normalize_slots(
             sorted(remove_slots, key=lambda s: s[0])
         )
+
         # 2) Sorted and normalized slots can be merged to generated the final
         # availability slots.
-        return slots.merge_slots(add_slots, remove_slots)
+        final_slots = slots.merge_slots(add_slots, remove_slots)
+
+        misc.print_list(interval, 'xxxWINDOWxxx')
+        misc.print_list(add_rules, 'ADD_RULES')
+        misc.print_list(remove_rules, 'REMOVE_RULES')
+        misc.print_list(add_slots, name='ADD_SLOTS')
+        misc.print_list(remove_slots, name='REMOVE_SLOTS')
+        misc.print_list(final_slots, name='FINAL_SLOTS')
+        misc.print_list([], '------------------')
+
+        return final_slots
 
 
-class AvailabilityRule(models.Model):
+class AvailabilityRule(django_models.Model):
     """
     This model permits the definition of a rule for the definition of the
     available slots for a given Ground Station.
@@ -385,7 +417,7 @@ class AvailabilityRule(models.Model):
 
     objects = AvailabilityRuleManager()
 
-    groundstation = models.ForeignKey(
+    groundstation = django_models.ForeignKey(
         segment_models.GroundStation,
         verbose_name='Reference to the Ground Station that owns this rule',
         default=1
@@ -395,7 +427,7 @@ class AvailabilityRule(models.Model):
         (ADD_SLOTS, 'Operation for adding new slots'),
         (REMOVE_SLOTS, 'Operation for removing existing slots')
     )
-    operation = models.CharField(
+    operation = django_models.CharField(
         'Operation that this rule defines',
         choices=OPERATION_CHOICES,
         max_length=1
@@ -406,16 +438,16 @@ class AvailabilityRule(models.Model):
         (DAILY_PERIODICITY, 'Rule that defines daily repetition pattern.'),
         (WEEKLY_PERIODICITY, 'Rule that defines a weekly repetition pattern.'),
     )
-    periodicity = models.CharField(
+    periodicity = django_models.CharField(
         'Period of time that this rule occurs.',
         choices=PERIODICITY_CHOICES,
         max_length=1
     )
 
-    starting_date = models.DateField(
+    starting_date = django_models.DateField(
         'Starting date for an availability period'
     )
-    ending_date = models.DateField(
+    ending_date = django_models.DateField(
         'Ending date for an availability period'
     )
 
@@ -450,7 +482,7 @@ class AvailabilityRule(models.Model):
         return self.__unicode__()
 
 
-class AvailabilityRuleOnceManager(models.Manager):
+class AvailabilityRuleOnceManager(django_models.Manager):
     """
     Manager with static methods for easing the handling of this kind of
     objects in the database.
@@ -486,8 +518,12 @@ class AvailabilityRuleOnce(AvailabilityRule):
 
     objects = AvailabilityRuleOnceManager()
 
-    starting_time = models.TimeField('Beginning date and time for the rule.')
-    ending_time = models.TimeField('Ending date and time for the rule.')
+    starting_time = django_models.TimeField(
+        'Beginning date and time for the rule'
+    )
+    ending_time = django_models.TimeField(
+        'Ending date and time for the rule'
+    )
 
     def __unicode__(self):
         """
@@ -502,7 +538,7 @@ class AvailabilityRuleOnce(AvailabilityRule):
         return self.__unicode__()
 
 
-class AvailabilityRuleDailyManager(models.Manager):
+class AvailabilityRuleDailyManager(django_models.Manager):
     """
     Manager with static methods for easing the handling of this kind of
     objects in the database.
@@ -535,8 +571,8 @@ class AvailabilityRuleDaily(AvailabilityRule):
 
     objects = AvailabilityRuleDailyManager()
 
-    starting_time = models.TimeField('Starting time for a daily period.')
-    ending_time = models.TimeField('Ending time for a daily period.')
+    starting_time = django_models.TimeField('Starting time for a daily period')
+    ending_time = django_models.TimeField('Ending time for a daily period')
 
     def __unicode__(self):
         """
@@ -552,7 +588,7 @@ class AvailabilityRuleDaily(AvailabilityRule):
         return self.__unicode__()
 
 
-class AvailabilityRuleWeeklyManager(models.Manager):
+class AvailabilityRuleWeeklyManager(django_models.Manager):
     """
     Manager with static methods for easing the handling of this kind of
     objects in the database.
@@ -599,20 +635,48 @@ class AvailabilityRuleWeekly(AvailabilityRule):
 
     objects = AvailabilityRuleWeeklyManager()
 
-    monday_starting_time = models.TimeField('Starting time on Monday.')
-    monday_ending_time = models.TimeField('Ending time on this Monday.')
-    tuesday_starting_time = models.TimeField('Starting time on Tuesday.')
-    tuesday_ending_time = models.TimeField('Ending time on this Tuesday.')
-    wednesday_starting_time = models.TimeField('Starting time on Wednesday.')
-    wednesday_ending_time = models.TimeField('Ending time on this Wednesday.')
-    thursday_starting_time = models.TimeField('Starting time on Thursday.')
-    thursday_ending_time = models.TimeField('Ending time on this Thursday.')
-    friday_starting_time = models.TimeField('Starting time on Friday.')
-    friday_ending_time = models.TimeField('Ending time on this Friday.')
-    saturday_starting_time = models.TimeField('Starting time on Saturday.')
-    saturday_ending_time = models.TimeField('Ending time on this Saturday.')
-    sunday_starting_time = models.TimeField('Starting time on Sunday.')
-    sunday_ending_time = models.TimeField('Ending time on this Sunday.')
+    monday_starting_time = django_models.TimeField(
+        'Starting time on Monday'
+    )
+    monday_ending_time = django_models.TimeField(
+        'Ending time on this Monday'
+    )
+    tuesday_starting_time = django_models.TimeField(
+        'Starting time on Tuesday'
+    )
+    tuesday_ending_time = django_models.TimeField(
+        'Ending time on this Tuesday'
+    )
+    wednesday_starting_time = django_models.TimeField(
+        'Starting time on Wednesday'
+    )
+    wednesday_ending_time = django_models.TimeField(
+        'Ending time on this Wednesday'
+    )
+    thursday_starting_time = django_models.TimeField(
+        'Starting time on Thursday'
+    )
+    thursday_ending_time = django_models.TimeField(
+        'Ending time on this Thursday'
+    )
+    friday_starting_time = django_models.TimeField(
+        'Starting time on Friday'
+    )
+    friday_ending_time = django_models.TimeField(
+        'Ending time on this Friday'
+    )
+    saturday_starting_time = django_models.TimeField(
+        'Starting time on Saturday'
+    )
+    saturday_ending_time = django_models.TimeField(
+        'Ending time on this Saturday'
+    )
+    sunday_starting_time = django_models.TimeField(
+        'Starting time on Sunday'
+    )
+    sunday_ending_time = django_models.TimeField(
+        'Ending time on this Sunday'
+    )
 
     def __unicode__(self):
         """

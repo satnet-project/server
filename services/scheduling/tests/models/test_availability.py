@@ -22,14 +22,14 @@ import datetime
 import logging
 
 import datadiff
-import pytz
 from django import test
+from django.forms.models import model_to_dict
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import rules as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules_if
-from services.configuration.models import rules
+from services.configuration.models import rules as rule_models
 from services.scheduling.models import availability
 
 
@@ -37,14 +37,21 @@ class TestAvailability(test.TestCase):
 
     def setUp(self):
 
-        self.__verbose_testing = False
+        self.__verbose_testing = True
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
+        self.__rule_date = misc.get_today_utc() + datetime.timedelta(days=1)
+        self.__rule_s_time = misc.get_today_utc().replace(
+            hour=12, minute=0, second=0, microsecond=0
+        )
+        self.__rule_e_time = self.__rule_s_time + datetime.timedelta(hours=5)
+
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
+        self.__gs_2_id = 'gs-cuvi'
 
         # noinspection PyUnresolvedReferences
         from services.scheduling.signals import availability, compatibility
@@ -53,6 +60,9 @@ class TestAvailability(test.TestCase):
         self.__user_profile = db_tools.create_user_profile()
         self.__gs = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
+        )
+        self.__gs_2 = db_tools.create_gs(
+            user_profile=self.__user_profile, identifier=self.__gs_2_id,
         )
         self.__gs_1_ch_1 = db_tools.gs_add_channel(
             self.__gs, self.__band, self.__gs_1_ch_1_id
@@ -67,40 +77,172 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots: no rules')
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         self.assertEqual(
-            len(a_slots), 0, 'No new available slots should\'ve been generated.'
+            len(a_slots), 0, 'No new available slots should\'ve been created.'
         )
         self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()), 0,
             'No AvailabilitySlots expected.'
         )
 
-    def test_1_add_slots_once_rule(self):
+    def test_1a_add_slots_once_rule(self):
         """services.configuration: add slots with a single ONCE rule
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
         """
         if self.__verbose_testing:
-            print('##### test_add_slots: single once rule')
+            print('##### test_add_slots (A): single once rule (ADD)')
 
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
-            db_tools.create_jrpc_once_rule()
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
-        self.assertEqual(
-            len(a_slots), 1, '1 slot expected, got = ' + str(len(a_slots))
+        self.assertEqual(len(a_slots), 1)
+
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEqual(len(db_a_slots), 1)
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
         )
-        self.assertEqual(
-            len(availability.AvailabilitySlot.objects.all()), 1,
-            '1 AvailabilitySlot was expected.'
+
+    def test_1b_add_slots_once_rule(self):
+        """services.configuration: add slots with a single ONCE rule
+        This method tests the addition of new availability slots when there
+        is only a single applicable ONCE-type rule in the database.
+        Therefore, a single slot should be generated and added to the database.
+        """
+        if self.__verbose_testing:
+            print('##### test_add_slots (B): single once rule (ADD and DEL)')
+
+        jrpc_rules_if.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
+        )
+
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
+            self.__gs
+        )
+        self.assertEqual(len(a_slots), 1)
+
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEqual(len(db_a_slots), 1)
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
+        )
+
+        jrpc_rules_if.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                operation=jrpc_rules_if.rule_serializers.RULE_OP_REMOVE,
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
+        )
+
+        self.assertListEqual(
+            rule_models.AvailabilityRule.objects.get_availability_slots(
+                self.__gs
+            ),
+            []
+        )
+
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEquals(len(db_a_slots), 0)
+
+    def test_1c_add_slots_once_rule(self):
+        """services.configuration: add slots with a single ONCE rule
+        This method tests the addition of new availability slots when there
+        is only a single applicable ONCE-type rule in the database.
+        Therefore, a single slot should be generated and added to the database.
+        """
+        if self.__verbose_testing:
+            print('##### test_add_slots (C): single once rule (ADD), GSx2')
+
+        jrpc_rules_if.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
+        )
+
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
+            self.__gs
+        )
+        self.assertEqual(len(a_slots), 1)
+
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEqual(len(db_a_slots), 1)
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
+        )
+
+        self.assertEquals(len(rule_models.AvailabilityRule.objects.all()), 1)
+        jrpc_rules_if.add_rule(
+            self.__gs_2_id,
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
+        )
+        self.assertEquals(len(rule_models.AvailabilityRule.objects.all()), 2)
+
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
+            self.__gs_2
+        )
+        self.assertEqual(len(a_slots), 1)
+
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEqual(len(db_a_slots), 2)
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
+        )
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[1], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
         )
 
     def test_2_generate_slots_daily_rule(self):
@@ -110,38 +252,48 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_generate_slots_daily_rule')
 
-        utc_dt = datetime.datetime.now(pytz.timezone('UTC'))
-        utc_i_date = utc_dt
-        utc_e_date = utc_dt + datetime.timedelta(days=365)
-        utc_s_time = utc_dt - datetime.timedelta(minutes=15)
-        utc_e_time = utc_dt + datetime.timedelta(minutes=15)
+        utc_s_date = self.__rule_date - datetime.timedelta(days=1)
+        utc_e_date = self.__rule_date + datetime.timedelta(days=365)
+        utc_s_time = self.__rule_s_time
+        utc_e_time = self.__rule_e_time
 
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                date_i=utc_i_date,
+                date_i=utc_s_date,
                 date_f=utc_e_date,
                 starting_time=utc_s_time,
                 ending_time=utc_e_time
             )
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
 
-        self.assertEqual(
-            len(a_slots),
-            3,
-            '3 slots expected, got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(availability.AvailabilitySlot.objects.all()),
-            3,
-            '3 AvailabilitySlots were expected.'
+        self.assertEqual(len(a_slots), 2)
+        db_a_slots = availability.AvailabilitySlot.objects.all()
+        self.assertEqual(len(db_a_slots), 2)
+
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
+            }
         )
 
-    def test_3_generate_slots_several_rules_1(self):
+        self.assertEquals(
+            model_to_dict(
+                db_a_slots[1], exclude=['id', 'groundstation', 'identifier']
+            ), {
+                'start': self.__rule_s_time + datetime.timedelta(days=2),
+                'end': self.__rule_e_time + datetime.timedelta(days=2)
+            }
+        )
+
+    def _test_3_generate_slots_several_rules_1(self):
         """services.configuration: add slots with several rules
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
@@ -154,7 +306,7 @@ class TestAvailability(test.TestCase):
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule()
         )
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         self.assertEqual(
@@ -167,7 +319,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@1'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@1'
             )
             misc.print_list(av_slots, name='AVAILABLE@1')
 
@@ -177,7 +329,7 @@ class TestAvailability(test.TestCase):
             db_tools.create_jrpc_daily_rule()
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
@@ -188,7 +340,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@2'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@2'
             )
             misc.print_list(av_slots, name='AVAILABLE@2')
 
@@ -213,7 +365,7 @@ class TestAvailability(test.TestCase):
             )
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
@@ -224,7 +376,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@3'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@3'
             )
             misc.print_list(av_slots, name='AVAILABLE@3')
 
@@ -249,7 +401,7 @@ class TestAvailability(test.TestCase):
             )
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
@@ -260,7 +412,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@4'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@4'
             )
             misc.print_list(av_slots, name='AVAILABLE@4')
 
@@ -283,7 +435,7 @@ class TestAvailability(test.TestCase):
             rule_id=rule_4_id
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
@@ -294,7 +446,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@5'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@5'
             )
             misc.print_list(av_slots, name='AVAILABLE@5')
 
@@ -317,7 +469,7 @@ class TestAvailability(test.TestCase):
             rule_id=rule_3_id
         )
 
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         av_slots = availability.AvailabilitySlot.objects.all()
@@ -328,7 +480,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@6'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@6'
             )
             misc.print_list(av_slots, name='AVAILABLE@6')
 
@@ -350,7 +502,7 @@ class TestAvailability(test.TestCase):
             groundstation_id=self.__gs_1_id,
             rule_id=rule_2_id
         )
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         self.assertEqual(
@@ -363,7 +515,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@7'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@7'
             )
             misc.print_list(av_slots, name='AVAILABLE@7')
 
@@ -372,7 +524,7 @@ class TestAvailability(test.TestCase):
             groundstation_id=self.__gs_1_id,
             rule_id=rule_1_id
         )
-        a_slots = rules.AvailabilityRule.objects.get_availability_slots(
+        a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
         self.assertEqual(
@@ -385,13 +537,13 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@8'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@8'
             )
             misc.print_list(av_slots, name='AVAILABLE@8')
 
         self.__verbose_testing = False
 
-    def test_4_get_availability_slots(self):
+    def _test_4_get_availability_slots(self):
         """services.configuration: availability slot generation
         Validates the method that gathers the AvailabilitySlots that are
         applicable within a defined interval.
@@ -447,7 +599,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES@1'
+                rule_models.AvailabilityRule.objects.all(),  name='RULES@1'
             )
             misc.print_list(a_slots, name='AVAILABLE@1')
 

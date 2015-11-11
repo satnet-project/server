@@ -76,7 +76,7 @@ def print_list(l, name=None, output=sys.stdout):
     :param l: The list to be printed out.
     """
     if len(l) == 0:
-        print('Empty list', file=output)
+        print('>>>>>>> list = ' + name + ' - EMPTY', file=output)
         return
 
     if name is None:
@@ -99,7 +99,10 @@ def list_2_string(l, list_name='List'):
     return buff.getvalue()
 
 
-def print_dictionary(d, nested_level=0, output=sys.stdout, spacing='   '):
+def print_dictionary(
+    d, nested_level=0, output=sys.stdout, spacing='   ',
+    separator=None
+):
     """
     Function that recursively prints a dict and all its nested dictionaries.
     :param d: the dictionary to be printed.
@@ -110,6 +113,9 @@ def print_dictionary(d, nested_level=0, output=sys.stdout, spacing='   '):
     :param spacing: the string used as a base for spacing items in between
     dictionaries.
     """
+    if separator:
+        print(separator, file=output)
+
     if type(d) == dict:
         print('%s{' % (nested_level * spacing), file=output)
         for k, v in list(d.items()):

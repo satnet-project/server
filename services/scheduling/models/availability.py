@@ -21,7 +21,8 @@ import logging
 
 from services.common import misc, simulation
 from services.configuration.models import segments as segment_models
-from services.configuration.models import rules, channels
+from services.configuration.models import rules as rule_models
+from services.configuration.models import channels as channel_models
 
 logger = logging.getLogger('configuration')
 
@@ -120,7 +121,7 @@ class AvailabilitySlotsManager(models.Manager):
         added = []
         removed = []
 
-        for slot_i in self.all():
+        for slot_i in self.filter(groundstation=groundstation):
 
             s, e = slot_i.start, slot_i.end
 
@@ -154,14 +155,15 @@ class AvailabilitySlotsManager(models.Manager):
         update_window = simulation.OrbitalSimulator.get_update_window()
         logger.info('[POPULATE] p_window = ' + str(update_window))
 
-        for gs_ch_i in channels.GroundStationChannel.objects.filter(
+        for gs_ch_i in channel_models.GroundStationChannel.objects.filter(
                 enabled=True
         ):
 
             logger.info('[POPULATE] (1/2) Channel = ' + str(gs_ch_i))
-            slots_i = rules.AvailabilityRule.objects.get_availability_slots(
-                gs_ch_i, interval=update_window
-            )
+            slots_i = rule_models.AvailabilityRule.objects\
+                .get_availability_slots(
+                    gs_ch_i, interval=update_window
+                )
 
             logger.info(
                 '[POPULATE] (2/2) New slots = ' + misc.list_2_string(slots_i)
