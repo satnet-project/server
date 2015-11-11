@@ -294,7 +294,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
         )
 
-    def test_sc_select_slots(self):
+    def _test_sc_select_slots(self):
         """
         Validates the method for the selection of the slots.
         """

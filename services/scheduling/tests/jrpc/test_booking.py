@@ -143,7 +143,7 @@ class JRPCBookingProcessTest(test.TestCase):
             )
         )
 
-    def test_1_booking(self):
+    def _test_1_booking(self):
         """Basic booking test.
 
         This test should validate the basic booking process of remote

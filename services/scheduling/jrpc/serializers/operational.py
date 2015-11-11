@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 
 from services.common import serialization as common_serializers
+from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import \
     segments as segment_serializers
 from services.scheduling.models import operational as operational_models
@@ -154,7 +155,8 @@ def serialize_gs_operational_slots(groundstation_id):
     slots = {}
 
     for slot in operational_models.OperationalSlot.objects.filter(
-        pass_slot__groundstation__identifier=groundstation_id
+        pass_slot__groundstation=segment_models.GroundStation
+            .objects.get(identifier=groundstation_id)
     ):
 
         insert_slot(

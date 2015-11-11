@@ -21,7 +21,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-import datadiff
 from django import test
 from django.forms.models import model_to_dict
 
@@ -37,7 +36,7 @@ class TestAvailability(test.TestCase):
 
     def setUp(self):
 
-        self.__verbose_testing = True
+        self.__verbose_testing = False
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
@@ -48,6 +47,11 @@ class TestAvailability(test.TestCase):
             hour=12, minute=0, second=0, microsecond=0
         )
         self.__rule_e_time = self.__rule_s_time + datetime.timedelta(hours=5)
+
+        self.__utc_s_date = self.__rule_date - datetime.timedelta(days=1)
+        self.__utc_e_date = self.__rule_date + datetime.timedelta(days=365)
+        self.__utc_s_time = self.__rule_s_time
+        self.__utc_e_time = self.__rule_e_time
 
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
@@ -252,18 +256,13 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_generate_slots_daily_rule')
 
-        utc_s_date = self.__rule_date - datetime.timedelta(days=1)
-        utc_e_date = self.__rule_date + datetime.timedelta(days=365)
-        utc_s_time = self.__rule_s_time
-        utc_e_time = self.__rule_e_time
-
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                date_i=utc_s_date,
-                date_f=utc_e_date,
-                starting_time=utc_s_time,
-                ending_time=utc_e_time
+                date_i=self.__utc_s_date,
+                date_f=self.__utc_e_date,
+                starting_time=self.__utc_s_time,
+                ending_time=self.__utc_e_time
             )
         )
 
@@ -279,8 +278,8 @@ class TestAvailability(test.TestCase):
             model_to_dict(
                 db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
             ), {
-                'start': self.__rule_s_time + datetime.timedelta(days=1),
-                'end': self.__rule_e_time + datetime.timedelta(days=1)
+                'start': self.__rule_s_time,
+                'end': self.__rule_e_time
             }
         )
 
@@ -288,12 +287,12 @@ class TestAvailability(test.TestCase):
             model_to_dict(
                 db_a_slots[1], exclude=['id', 'groundstation', 'identifier']
             ), {
-                'start': self.__rule_s_time + datetime.timedelta(days=2),
-                'end': self.__rule_e_time + datetime.timedelta(days=2)
+                'start': self.__rule_s_time + datetime.timedelta(days=1),
+                'end': self.__rule_e_time + datetime.timedelta(days=1)
             }
         )
 
-    def _test_3_generate_slots_several_rules_1(self):
+    def test_3_generate_slots_several_rules_1(self):
         """services.configuration: add slots with several rules
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
@@ -304,7 +303,11 @@ class TestAvailability(test.TestCase):
         # R1) ADD+ONCE (+1 slot)
         rule_1_id = jrpc_rules_if.add_rule(
             self.__gs_1_id,
-            db_tools.create_jrpc_once_rule()
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
         )
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
@@ -326,7 +329,12 @@ class TestAvailability(test.TestCase):
         # R2) ADD+DAILY (+2 slots)
         rule_2_id = jrpc_rules_if.add_rule(
             self.__gs_1_id,
-            db_tools.create_jrpc_daily_rule()
+            db_tools.create_jrpc_daily_rule(
+                date_i=self.__utc_s_date,
+                date_f=self.__utc_e_date,
+                starting_time=self.__utc_s_time,
+                ending_time=self.__utc_e_time
+            )
         )
 
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
@@ -345,23 +353,17 @@ class TestAvailability(test.TestCase):
             misc.print_list(av_slots, name='AVAILABLE@2')
 
         expected_slots = 2
-
-        self.assertEqual(
-            len(a_slots), expected_slots,
-            'A_SLOTS, expected ' + str(expected_slots)
-            + ', got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(av_slots), expected_slots,
-            'AV_SLOTS, expected ' + str(expected_slots)
-            + ', got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), expected_slots)
+        self.assertEqual(len(av_slots), expected_slots)
 
         # R3) ADD-ONCE (-1 slot)
         rule_3_id = jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                operation=jrpc_serial.RULE_OP_REMOVE
+                operation=jrpc_serial.RULE_OP_REMOVE,
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
             )
         )
 
@@ -381,23 +383,18 @@ class TestAvailability(test.TestCase):
             misc.print_list(av_slots, name='AVAILABLE@3')
 
         expected_slots = 1
-
-        self.assertEqual(
-            len(a_slots), expected_slots,
-            'A_SLOTS, expected ' + str(expected_slots)
-            + ', got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(av_slots), expected_slots,
-            'AV_SLOTS, expected ' + str(expected_slots)
-            + ', got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), expected_slots)
+        self.assertEqual(len(av_slots), expected_slots)
 
         # R4) ADD-DAILY (-7 slots)
         rule_4_id = jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                operation=jrpc_serial.RULE_OP_REMOVE
+                operation=jrpc_serial.RULE_OP_REMOVE,
+                date_i=self.__utc_s_date,
+                date_f=self.__utc_e_date,
+                starting_time=self.__utc_s_time,
+                ending_time=self.__utc_e_time
             )
         )
 
@@ -417,17 +414,8 @@ class TestAvailability(test.TestCase):
             misc.print_list(av_slots, name='AVAILABLE@4')
 
         expected = 0
-
-        self.assertEqual(
-            len(a_slots), expected,
-            'A_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(av_slots), expected,
-            'AV_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), expected)
+        self.assertEqual(len(av_slots), expected)
 
         # REMOVE R#4 (+6 slots)
         jrpc_rules_if.remove_rule(
@@ -446,22 +434,14 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@5'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@5'
             )
             misc.print_list(av_slots, name='AVAILABLE@5')
 
         expected = 1
 
-        self.assertEqual(
-            len(a_slots), expected,
-            'A_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(av_slots), expected,
-            'AV_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), expected)
+        self.assertEqual(len(av_slots), expected)
 
         # REMOVE R#3 (+1 slot)
         jrpc_rules_if.remove_rule(
@@ -485,17 +465,8 @@ class TestAvailability(test.TestCase):
             misc.print_list(av_slots, name='AVAILABLE@6')
 
         expected = 2
-
-        self.assertEqual(
-            len(a_slots), expected,
-            'A_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
-        self.assertEqual(
-            len(av_slots), expected,
-            'AV_SLOTS, expected ' + str(expected)
-            + ', got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), expected)
+        self.assertEqual(len(av_slots), expected)
 
         # REMOVE R#2 (-7 slots)
         jrpc_rules_if.remove_rule(
@@ -505,13 +476,9 @@ class TestAvailability(test.TestCase):
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
-        self.assertEqual(
-            len(a_slots), 1, 'Only 1 slot expected, got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), 1)
         av_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEqual(
-            len(av_slots), 1, '1 slots expected, got = ' + str(len(av_slots))
-        )
+        self.assertEqual(len(av_slots), 1)
 
         if self.__verbose_testing:
             misc.print_list(
@@ -527,13 +494,9 @@ class TestAvailability(test.TestCase):
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
-        self.assertEqual(
-            len(a_slots), 0, 'None slots expected, got = ' + str(len(a_slots))
-        )
+        self.assertEqual(len(a_slots), 0)
         av_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEqual(
-            len(av_slots), 0, '0 slots expected, got = ' + str(len(av_slots))
-        )
+        self.assertEqual(len(av_slots), 0)
 
         if self.__verbose_testing:
             misc.print_list(
@@ -543,7 +506,7 @@ class TestAvailability(test.TestCase):
 
         self.__verbose_testing = False
 
-    def _test_4_get_availability_slots(self):
+    def test_4_get_availability_slots(self):
         """services.configuration: availability slot generation
         Validates the method that gathers the AvailabilitySlots that are
         applicable within a defined interval.
@@ -564,15 +527,14 @@ class TestAvailability(test.TestCase):
             '[] should be the result!'
         )
 
-        now = misc.get_now_utc()
-        starting_time = now + datetime.timedelta(minutes=30)
-        ending_time = now + datetime.timedelta(minutes=45)
         # 2) Single daily rule, adds availability slots...
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                starting_time=starting_time,
-                ending_time=ending_time
+                date_i=self.__utc_s_date,
+                date_f=self.__utc_e_date,
+                starting_time=self.__utc_s_time,
+                ending_time=self.__utc_e_time
             )
         )
 
@@ -585,12 +547,12 @@ class TestAvailability(test.TestCase):
         # ### execution of the method
         x_slots = [
             (
-                starting_time + datetime.timedelta(days=1),
-                ending_time + datetime.timedelta(days=1),
+                self.__rule_s_time,
+                self.__rule_e_time
             ),
             (
-                starting_time + datetime.timedelta(days=2),
-                ending_time + datetime.timedelta(days=2),
+                self.__rule_s_time + datetime.timedelta(days=1),
+                self.__rule_e_time + datetime.timedelta(days=1)
             ),
         ]
 
@@ -603,28 +565,19 @@ class TestAvailability(test.TestCase):
             )
             misc.print_list(a_slots, name='AVAILABLE@1')
 
-        self.assertEqual(
-            a_slots,
-            x_slots,
-            'Wrong slots! diff = ' + str(datadiff.diff(
-                a_slots, x_slots
-            ))
-        )
+        self.assertEqual(a_slots, x_slots)
 
         # 3) Period ending in the middle of an AvailabilitySlot, should
         # return the applicable half of that slot...
-        start = now + datetime.timedelta(days=1, minutes=25)
-        end = now + datetime.timedelta(days=1, minutes=35)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time,
+            end=self.__rule_s_time + datetime.timedelta(hours=3)
         )
         x_slots = [
             (
-                now + datetime.timedelta(days=1, minutes=30),
-                now + datetime.timedelta(days=1, minutes=35),
+                self.__rule_s_time,
+                self.__rule_s_time + datetime.timedelta(hours=3),
                 a_slots[0][2]
             )
         ]
@@ -636,97 +589,56 @@ class TestAvailability(test.TestCase):
             misc.print_list(x_slots, name='XSLOTS@2')
             misc.print_list(a_slots, name='AVAILABLE@2')
 
-        self.assertEqual(
-            a_slots, x_slots, 'Wrong slots! diff = ' + str(datadiff.diff(
-                a_slots, x_slots
-            ))
-        )
-
-        self.assertEqual(
-            a_slots, x_slots,
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, x_slots))
-        )
+        self.assertEqual(a_slots, x_slots)
 
         # 4) Period starting in the middle of an AvailabilitySlot, should
         # return the applicable half of that slot...
-        start = now + datetime.timedelta(days=1, minutes=35)
-        end = now + datetime.timedelta(days=1, minutes=50)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time + datetime.timedelta(hours=2),
+            end=self.__rule_s_time + datetime.timedelta(hours=8)
         )
         x_slots = [(
             (
-                now + datetime.timedelta(days=1, minutes=35),
-                now + datetime.timedelta(days=1, minutes=45),
+                self.__rule_s_time + datetime.timedelta(hours=2),
+                self.__rule_s_time + datetime.timedelta(hours=5),
                 a_slots[0][2]
             )
         )]
-        self.assertEqual(
-            a_slots,
-            x_slots,
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, x_slots))
-        )
+        self.assertEqual(a_slots, x_slots)
 
         # 5) Period starting after an AvailabilitySlot, should not return any
         #  slot at all...
-        start = now + datetime.timedelta(days=1, minutes=50)
-        end = now + datetime.timedelta(days=1, minutes=55)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time + datetime.timedelta(hours=8),
+            end=self.__rule_s_time + datetime.timedelta(hours=10)
         )
-        self.assertEqual(
-            a_slots, [],
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
-        )
+        self.assertEqual(a_slots, [])
 
         # 6) Period starting JUST after an AvailabilitySlot, should not return
         #  any slot at all...
-        start = now + datetime.timedelta(days=1, minutes=45)
-        end = now + datetime.timedelta(days=1, minutes=55)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time + datetime.timedelta(hours=5),
+            end=self.__rule_s_time + datetime.timedelta(hours=8)
         )
-        self.assertEqual(
-            a_slots, [],
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
-        )
+        self.assertEqual(a_slots, [])
 
-        # 7) Period ending after an AvailabilitySlot, should not return any
+        # 7) Period starting after an AvailabilitySlot, should not return any
         #  slot at all...
-        start = now + datetime.timedelta(days=1, minutes=10)
-        end = now + datetime.timedelta(days=1, minutes=15)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time + datetime.timedelta(hours=7),
+            end=self.__rule_s_time + datetime.timedelta(hours=8)
         )
-        self.assertEqual(
-            a_slots,
-            [],
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
-        )
+        self.assertEqual(a_slots, [])
 
         # 8) Period starting JUST before an AvailabilitySlot, should not return
         #  any slot at all...
-        start = now + datetime.timedelta(days=1, minutes=10)
-        end = now + datetime.timedelta(days=1, minutes=30)
-
         a_slots = availability.AvailabilitySlot.objects.get_applicable(
             groundstation=self.__gs,
-            start=start,
-            end=end
+            start=self.__rule_s_time - datetime.timedelta(hours=2),
+            end=self.__rule_s_time - datetime.timedelta(hours=1)
         )
-        self.assertEqual(
-            a_slots, [],
-            'Wrong slots! diff = ' + str(datadiff.diff(a_slots, []))
-        )
+        self.assertEqual(a_slots, [])

@@ -76,6 +76,12 @@ class INTRARulesAvailability(test.TestCase):
             channel_serializers.BANDWIDTHS_K: [12.500000000, 25.000000000]
         }
 
+        self.__rule_date = misc.get_today_utc() + datetime.timedelta(days=1)
+        self.__rule_s_time = misc.get_today_utc().replace(
+            hour=12, minute=0, second=0, microsecond=0
+        )
+        self.__rule_e_time = self.__rule_s_time + datetime.timedelta(hours=5)
+
         # noinspection PyUnresolvedReferences
         from services.scheduling.signals import availability
 
@@ -97,11 +103,14 @@ class INTRARulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_rule_created_deleted')
 
-        rule_1 = db_tools.create_jrpc_once_rule(
-            operation=rule_serializers.RULE_OP_ADD,
-            date=misc.get_today_utc() + datetime.timedelta(days=2)
+        rule_1_pk = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
         )
-        rule_1_pk = rule_jrpc.add_rule(self.__gs_1_id, rule_1)
 
         self.assertEquals(
             availability_models.AvailabilitySlot.objects.count(),
@@ -122,66 +131,59 @@ class INTRARulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_rule_created_deleted')
 
-        now = misc.get_now_utc()
-
-        rule_1 = db_tools.create_jrpc_once_rule(
-            operation=rule_serializers.RULE_OP_ADD,
-            date=misc.get_today_utc() + datetime.timedelta(days=2)
+        rule_1_pk = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
         )
-        rule_1_pk = rule_jrpc.add_rule(self.__gs_1_id, rule_1)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            1,
-            'One availability slot should have been created'
+            availability_models.AvailabilitySlot.objects.count(), 1
         )
 
-        rule_2 = db_tools.create_jrpc_once_rule(
-            operation=rule_serializers.RULE_OP_REMOVE,
-            date=misc.get_today_utc() + datetime.timedelta(days=2)
+        rule_2_pk = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            db_tools.create_jrpc_once_rule(
+                operation=rule_jrpc.rule_serializers.RULE_OP_REMOVE,
+                date=self.__rule_date,
+                starting_time=self.__rule_s_time,
+                ending_time=self.__rule_e_time
+            )
         )
-        rule_2_pk = rule_jrpc.add_rule(self.__gs_1_id, rule_2)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            0,
-            'No availability slots should be available'
+            availability_models.AvailabilitySlot.objects.count(), 0
         )
 
         rule_jrpc.remove_rule(self.__gs_1_id, rule_2_pk)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            1,
-            'One availability slot should have been created'
+            availability_models.AvailabilitySlot.objects.count(), 1
         )
 
         rule_3 = db_tools.create_jrpc_once_rule(
             operation=rule_serializers.RULE_OP_REMOVE,
-            date=misc.get_today_utc() + datetime.timedelta(days=2),
-            starting_time=now + datetime.timedelta(minutes=35),
-            ending_time=now + datetime.timedelta(minutes=40)
+            date=self.__rule_date,
+            starting_time=self.__rule_s_time,
+            ending_time=self.__rule_e_time
         )
         rule_3_pk = rule_jrpc.add_rule(self.__gs_1_id, rule_3)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            2,
-            'Two availability slots should have been created'
+            availability_models.AvailabilitySlot.objects.count(), 0
         )
 
         rule_jrpc.remove_rule(self.__gs_1_id, rule_3_pk)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            1,
-            'One availability slot should have been created'
+            availability_models.AvailabilitySlot.objects.count(), 1
         )
 
         rule_jrpc.remove_rule(self.__gs_1_id, rule_1_pk)
 
         self.assertEquals(
-            availability_models.AvailabilitySlot.objects.count(),
-            0,
-            'No availability slots should be available'
+            availability_models.AvailabilitySlot.objects.count(), 0
         )

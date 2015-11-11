@@ -57,20 +57,12 @@ class AvailabilityRuleManager(django_models.Manager):
         if periodicity not in self.__periodicity2class__:
             raise Exception('Periodicity ' + periodicity + 'not supported.')
 
-        print('>>>> @arule.create, 1')
-
         db_obj_classname = self.__periodicity2class__[periodicity]
-        print('>>>> @arule.create, 2, db_obj_classname = ' + str(
-            db_obj_classname
-        ))
-
         db_obj_class = globals()[db_obj_classname]
-        print('>>>> @arule.create, 3, db_obj_class = ' + str(db_obj_class))
 
         rule_child = db_obj_class.objects.create(
             groundstation, operation, periodicity, dates
         )
-        print('>>>> @arule.create, 4, rule_child = ' + str(rule_child))
 
         # ### Generate availability slots and write them in the table.
         return AvailabilityRule.objects.get(
@@ -381,17 +373,7 @@ class AvailabilityRuleManager(django_models.Manager):
 
         # 2) Sorted and normalized slots can be merged to generated the final
         # availability slots.
-        final_slots = slots.merge_slots(add_slots, remove_slots)
-
-        misc.print_list(interval, 'xxxWINDOWxxx')
-        misc.print_list(add_rules, 'ADD_RULES')
-        misc.print_list(remove_rules, 'REMOVE_RULES')
-        misc.print_list(add_slots, name='ADD_SLOTS')
-        misc.print_list(remove_slots, name='REMOVE_SLOTS')
-        misc.print_list(final_slots, name='FINAL_SLOTS')
-        misc.print_list([], '------------------')
-
-        return final_slots
+        return slots.merge_slots(add_slots, remove_slots)
 
 
 class AvailabilityRule(django_models.Model):
@@ -492,10 +474,6 @@ class AvailabilityRuleOnceManager(django_models.Manager):
         """
         This method creates a new object in the database.
         """
-        print('>>>> @aruleONCE.create, XXX, groundstation = ' + str(
-            groundstation
-        ))
-
         return super(AvailabilityRuleOnceManager, self).create(
             groundstation=groundstation,
             operation=operation,
@@ -635,48 +613,20 @@ class AvailabilityRuleWeekly(AvailabilityRule):
 
     objects = AvailabilityRuleWeeklyManager()
 
-    monday_starting_time = django_models.TimeField(
-        'Starting time on Monday'
-    )
-    monday_ending_time = django_models.TimeField(
-        'Ending time on this Monday'
-    )
-    tuesday_starting_time = django_models.TimeField(
-        'Starting time on Tuesday'
-    )
-    tuesday_ending_time = django_models.TimeField(
-        'Ending time on this Tuesday'
-    )
-    wednesday_starting_time = django_models.TimeField(
-        'Starting time on Wednesday'
-    )
-    wednesday_ending_time = django_models.TimeField(
-        'Ending time on this Wednesday'
-    )
-    thursday_starting_time = django_models.TimeField(
-        'Starting time on Thursday'
-    )
-    thursday_ending_time = django_models.TimeField(
-        'Ending time on this Thursday'
-    )
-    friday_starting_time = django_models.TimeField(
-        'Starting time on Friday'
-    )
-    friday_ending_time = django_models.TimeField(
-        'Ending time on this Friday'
-    )
-    saturday_starting_time = django_models.TimeField(
-        'Starting time on Saturday'
-    )
-    saturday_ending_time = django_models.TimeField(
-        'Ending time on this Saturday'
-    )
-    sunday_starting_time = django_models.TimeField(
-        'Starting time on Sunday'
-    )
-    sunday_ending_time = django_models.TimeField(
-        'Ending time on this Sunday'
-    )
+    monday_starting_time = django_models.TimeField('Start time on Monday')
+    monday_ending_time = django_models.TimeField('End time on this Monday')
+    tuesday_starting_time = django_models.TimeField('Start time on Tuesday')
+    tuesday_ending_time = django_models.TimeField('End time on this Tuesday')
+    wednesday_starting_time = django_models.TimeField('Start time on Wednesday')
+    wednesday_ending_time = django_models.TimeField('End t on this Wednesday')
+    thursday_starting_time = django_models.TimeField('Start time on Thursday')
+    thursday_ending_time = django_models.TimeField('End time on this Thursday')
+    friday_starting_time = django_models.TimeField('Start time on Friday')
+    friday_ending_time = django_models.TimeField('End time on this Friday')
+    saturday_starting_time = django_models.TimeField('Start time on Saturday')
+    saturday_ending_time = django_models.TimeField('End time on this Saturday')
+    sunday_starting_time = django_models.TimeField('Start time on Sunday')
+    sunday_ending_time = django_models.TimeField('End time on this Sunday')
 
     def __unicode__(self):
         """
