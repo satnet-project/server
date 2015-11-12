@@ -35,6 +35,10 @@ def get_slot(slot_id):
     :param slot_id: Identifier of the slot
     :return: JSON-like structure with the information serialized
     """
+
+    if slot_id < 0:
+        return schedule_serializers.serialize_test_slot_information()
+
     return schedule_serializers.serialize_slot_information(
         operational_models.OperationalSlot.objects.get(
             identifier=slot_id

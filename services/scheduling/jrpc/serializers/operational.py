@@ -15,8 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import datetime
 import logging
 
+from services.common import misc as common_misc
 from services.common import serialization as common_serializers
 from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import \
@@ -33,6 +35,24 @@ DATE_END_K = 'date_end'
 STATE_K = 'state'
 
 
+def serialize_test_slot_information():
+    """
+    Serializes the information about a TESTING slot, that is intended to be
+    used only for TESTING PURPOSES.
+    :return: JSON-like structure with the information of the operational slot
+    """
+    s_time = common_misc.get_now_utc(no_microseconds=True)
+    e_time = s_time + datetime.timedelta(hours=2)
+
+    return {
+        STATE_K: 'TEST',
+        'gs_username': 'test-gs-user',
+        'sc_username': 'test-sc-user',
+        'starting_time': common_serializers.serialize_iso8601_date(s_time),
+        'ending_time': common_serializers.serialize_iso8601_date(e_time),
+    }
+
+
 def serialize_slot_information(slot):
     """
     Serializes the information about a given operational slot.
@@ -40,7 +60,7 @@ def serialize_slot_information(slot):
     :return: JSON-like structure with the information of the operational slot
     """
     return {
-        'state': slot.state,
+        STATE_K: slot.state,
         'gs_username':
             slot.groundstation_channel.groundstation_set.all()[0].user
             .username,
