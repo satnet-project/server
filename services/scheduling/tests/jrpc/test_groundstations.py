@@ -32,11 +32,14 @@ from services.configuration.jrpc.views.channels import \
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_ch_if
 from services.configuration.jrpc.views import rules as jrpc_rules
+from services.scheduling.models import availability as availability_models
+from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
 from services.scheduling.jrpc.serializers import operational as \
     jrpc_sch_serial
 from services.scheduling.jrpc.views.operational import \
     groundstations as jrpc_gs_scheduling
+from services.simulation.models import passes as pass_models
 
 
 class JRPCGroundStationsSchedulingTest(test.TestCase):
@@ -88,6 +91,10 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
 
         # noinspection PyUnresolvedReferences
         from services.scheduling.signals import availability
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import compatibility
+        # noinspection PyUnresolvedReferences
+        from services.scheduling.signals import operational
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
@@ -111,6 +118,25 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             self.maxDiff = None
 
         operational_models.OperationalSlot.objects.reset_ids_counter()
+
+        if self.__verbose_testing:
+            print('######### CHECK #1')
+            misc.print_list(
+                availability_models.AvailabilitySlot.objects.all(),
+                name='availability'
+            )
+            misc.print_list(
+                compatibility_models.ChannelCompatibility.objects.all(),
+                name='compatibility'
+            )
+            misc.print_list(
+                pass_models.PassSlots.objects.all(),
+                name='passes'
+            )
+            misc.print_list(
+                operational_models.OperationalSlot.objects.all(),
+                name='operational'
+            )
 
         # 1) non-existant GroundStation
         self.assertRaises(
@@ -149,8 +175,8 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
         now = misc.get_now_utc()
-        s_time = now + datetime.timedelta(minutes=30)
-        e_time = now + datetime.timedelta(minutes=45)
+        s_time = now - datetime.timedelta(minutes=30)
+        e_time = now + datetime.timedelta(hours=5)
 
         jrpc_rules.add_rule(
             self.__gs_1_id,
@@ -163,7 +189,23 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         if self.__verbose_testing:
-            misc.print_list(operational_models.OperationalSlot.objects.all())
+            print('######### CHECK #2')
+            misc.print_list(
+                availability_models.AvailabilitySlot.objects.all(),
+                name='availability'
+            )
+            misc.print_list(
+                compatibility_models.ChannelCompatibility.objects.all(),
+                name='compatibility'
+            )
+            misc.print_list(
+                pass_models.PassSlots.objects.all(),
+                name='passes'
+            )
+            misc.print_list(
+                operational_models.OperationalSlot.objects.all(),
+                name='operational'
+            )
 
         actual = jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)
         expected = {

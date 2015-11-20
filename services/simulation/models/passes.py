@@ -81,10 +81,10 @@ class PassManager(django_models.Manager):
         except Exception as ex:
 
             logger.warning(
-                'Error while creating pass slots, context = '
-                + 'sc.id = ' + str(spacecraft.identifier) + '\n'
-                + 'tle.id = ' + str(spacecraft.tle.identifier) + '\n'
-                + 'ex = ' + str(ex)
+                'Error while creating pass slots, context = ' +
+                'sc.id = ' + str(spacecraft.identifier) + '\n' +
+                'tle.id = ' + str(spacecraft.tle.identifier) + '\n' +
+                'ex = ' + str(ex)
             )
 
         return all_slots
@@ -184,7 +184,7 @@ class PassSlots(django_models.Model):
     start = django_models.DateTimeField('Slot start')
     end = django_models.DateTimeField('Slot end')
 
-    def __unicode__(self):
+    def __str__(self):
         """Unicode string
         :return: Unicode string
         """
