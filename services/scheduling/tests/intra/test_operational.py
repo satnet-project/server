@@ -147,7 +147,7 @@ class OperationalModels(test.TestCase):
             groundstation=self.__gs_1
         )
         actual = len(operational_models.OperationalSlot.objects.all())
-        expected = len(a_slots)
+        expected = 2
 
         if self.__verbose_testing:
             misc.print_list(a_slots, 'AvailabilitySlots')

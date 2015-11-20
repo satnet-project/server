@@ -75,7 +75,10 @@ def print_list(l, name=None, output=sys.stdout):
     Function that prints the elements of a given list, one per line.
     :param l: The list to be printed out.
     """
-    if len(l) == 0:
+    if not name:
+        name = '<no name given>'
+
+    if not l or len(l) == 0:
         print('>>>>>>> list = ' + name + ' - EMPTY', file=output)
         return
 
@@ -100,8 +103,7 @@ def list_2_string(l, list_name='List'):
 
 
 def print_dictionary(
-    d, nested_level=0, output=sys.stdout, spacing='   ',
-    separator=None
+    d, nested_level=0, output=sys.stdout, spacing='   ', separator=None
 ):
     """
     Function that recursively prints a dict and all its nested dictionaries.

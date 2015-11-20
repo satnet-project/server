@@ -394,6 +394,8 @@ PUSHER_APP_KEY = pusher.PUSHER_APP_KEY
 PUSHER_APP_SECRET = pusher.PUSHER_APP_SECRET
 
 # ### DJANGO NOSE TESTING FRAMEWORK
+# TO ADD COVERAGE CALCULATIONS: '--with-coverage',
+
 NOSE_ARGS = [
     '--verbosity=3',
     '--cover-package='

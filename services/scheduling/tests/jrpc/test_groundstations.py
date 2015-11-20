@@ -20,7 +20,6 @@ import logging
 
 from django import test
 from django.db import models
-import datadiff
 
 from services.common import misc
 from services.common.testing import helpers as db_tools
@@ -106,8 +105,10 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         """
         Validates the JRPC method <gs_get_operational_slots>
         """
+        self.__verbose_testing = True
         if self.__verbose_testing:
             print('##### test_gs_get_operational_slots')
+            self.maxDiff = None
 
         operational_models.OperationalSlot.objects.reset_ids_counter()
 
@@ -161,6 +162,9 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             )
         )
 
+        if self.__verbose_testing:
+            misc.print_list(operational_models.OperationalSlot.objects.all())
+
         actual = jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)
         expected = {
             self.__gs_1_ch_1_id: {
@@ -189,12 +193,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             }
         }
 
-        self.assertEqual(
-            actual, expected,
-            'Expected different slots!, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected, 'Expected different slots!')
 
         # ### clean up sc/gs
         self.assertTrue(

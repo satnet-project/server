@@ -5,6 +5,7 @@ __v_env/
 .idea
 .env
 test.kml
+coverage.xml
 public_html/
 
 # Byte-compiled / optimized / DLL files

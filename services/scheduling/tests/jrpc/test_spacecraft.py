@@ -208,8 +208,11 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         """
         Validates the JRPC method <sc_get_changes>.
         """
+        self.__verbose_testing = True
         if self.__verbose_testing:
-            print('##### test_sc_get_changes')
+            print('##### test_gs_get_operational_slots')
+            self.maxDiff = None
+
         operational_models.OperationalSlot.objects.reset_ids_counter()
 
         # ### channels required for the tests
@@ -248,6 +251,9 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
                 ending_time=e_time
             )
         )
+
+        if self.__verbose_testing:
+            misc.print_list(operational_models.OperationalSlot.objects.all())
 
         actual = operational_models.OperationalSlot.objects.all()
         self.assertEqual(
