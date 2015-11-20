@@ -4,6 +4,8 @@ branches:
     - development_3k
 python:
   - '3.4'
+before_install:
+  - pip install codecov
 install:
   - 'pip install -r requirements.txt'
   - './scripts/server-setup.sh -t'
@@ -12,6 +14,9 @@ before_script:
   - 'python manage.py migrate'
 script:
   - 'python manage.py test --with-coverage'
+after_success:
+  - codecov
+
 # old coveralls.io method
 #  - 'coverage erase'
 #  - 'coverage run manage.py test'
