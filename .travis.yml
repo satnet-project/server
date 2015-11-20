@@ -11,8 +11,9 @@ before_script:
   - "psql -c 'create database satnet_db;' -U postgres"
   - 'python manage.py migrate'
 script:
-  - 'python manage.py test'
-  - 'coverage erase'
-  - 'coverage run manage.py test'
-after_script:
-  - 'coveralls'
+  - 'python manage.py test --with-coverage'
+# old coveralls.io method
+#  - 'coverage erase'
+#  - 'coverage run manage.py test'
+# after_script:
+#  - 'coveralls'
