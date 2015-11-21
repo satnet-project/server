@@ -6,6 +6,7 @@ python:
   - '3.4'
 before_install:
   - 'pip install codecov'
+  - 'pip install codacy-coverage'
 install:
   - 'pip install -r requirements.txt'
   - './scripts/server-setup.sh -t'
@@ -16,6 +17,8 @@ script:
   - 'python manage.py test --with-coverage'
 after_success:
   - 'codecov'
+  - "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
+  - 'python-codacy-coverage -r coverage.xml'
 
 # old coveralls.io method
 #  - 'coverage erase'
