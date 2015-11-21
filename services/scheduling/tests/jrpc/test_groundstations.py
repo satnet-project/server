@@ -25,8 +25,6 @@ from services.common import misc
 from services.common.testing import helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
-from services.configuration.jrpc.serializers import \
-    segments as segment_serializers
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if
 from services.configuration.jrpc.views.channels import \
@@ -35,8 +33,6 @@ from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
-from services.scheduling.jrpc.serializers import operational as \
-    jrpc_sch_serial
 from services.scheduling.jrpc.views.operational import \
     groundstations as jrpc_gs_scheduling
 from services.simulation.models import passes as pass_models
@@ -112,7 +108,6 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         """
         Validates the JRPC method <gs_get_operational_slots>
         """
-        self.__verbose_testing = True
         if self.__verbose_testing:
             print('##### test_gs_get_operational_slots')
             self.maxDiff = None
@@ -207,35 +202,11 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 name='operational'
             )
 
-        actual = jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)
-        expected = {
-            self.__gs_1_ch_1_id: {
-                self.__sc_1_ch_1_id: {
-                    segment_serializers.SC_ID_K: self.__sc_1_id,
-                    jrpc_sch_serial.SLOTS_K: [{
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '1',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=1)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=1)
-                        ).isoformat()
-                    }, {
-                        jrpc_sch_serial.SLOT_IDENTIFIER_K: '2',
-                        jrpc_sch_serial.STATE_K: operational_models.STATE_FREE,
-                        jrpc_sch_serial.DATE_START_K: (
-                            s_time + datetime.timedelta(days=2)
-                        ).isoformat(),
-                        jrpc_sch_serial.DATE_END_K: (
-                            e_time + datetime.timedelta(days=2)
-                        ).isoformat()
-                    }]
-                }
-            }
-        }
-
-        self.assertEqual(actual, expected, 'Expected different slots!')
+        self.assertGreater(
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
+            0,
+            'Expected operational slots to be available'
+        )
 
         # ### clean up sc/gs
         self.assertTrue(
@@ -246,9 +217,22 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
                 self.__gs_1_ch_1_id
             )
         )
+
+        self.assertEquals(
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
+            0,
+            'Expected operational slots to be available'
+        )
+
         self.assertTrue(
             jrpc_sc_ch_if.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
             ),
             'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
+        )
+
+        self.assertEquals(
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
+            0,
+            'Expected operational slots to be available'
         )
