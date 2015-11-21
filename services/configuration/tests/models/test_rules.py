@@ -71,9 +71,9 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_1_generate_available_slots_daily:')
 
-        now = misc.get_now_utc()
-        r_1_s_time = now + datetime.timedelta(minutes=30)
-        r_1_e_time = now + datetime.timedelta(minutes=45)
+        now = misc.get_next_midnight()
+        r_1_s_time = now - datetime.timedelta(hours=12)
+        r_1_e_time = r_1_s_time + datetime.timedelta(hours=4)
 
         r_cfg = db_tools.create_jrpc_daily_rule(
             starting_time=r_1_s_time,

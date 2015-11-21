@@ -1,3 +1,6 @@
 [report]
 omit = 
     */.venv/*
+    */__init__.py
+    */migrations/*
+    */tests/*
