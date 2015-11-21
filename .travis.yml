@@ -5,6 +5,7 @@ branches:
 python:
   - '3.4'
 before_install:
+  - 'pip install coverage'
   - 'pip install codecov'
   - 'pip install codacy-coverage'
 install:
