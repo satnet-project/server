@@ -4,8 +4,6 @@ branches:
     - development_3k
 python:
   - '3.4'
-# apt-get install libxml2-dev
-# apt-get install libxslt1-dev
 before_install:
   - 'pip install coverage'
   - 'pip install codecov'
@@ -17,15 +15,10 @@ before_script:
   - "psql -c 'create database satnet_db;' -U postgres"
   - 'python manage.py migrate'
 script:
+  - 'coverage erase'
   - 'python manage.py test --with-coverage'
 after_success:
   - 'codecov'
   - "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
   - 'python-codacy-coverage -r coverage.xml'
   - 'coveralls'
-
-# old coveralls.io method
-#  - 'coverage erase'
-#  - 'coverage run manage.py test'
-# after_script:
-#  - 'coveralls'
