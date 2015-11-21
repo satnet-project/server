@@ -14,8 +14,3 @@ To install the software for the server of the SATNet network, follow the instruc
 The wiki together with documentation of the project can be found at:
 
 https://github.com/satnet-project/satnet-main/wiki
-	
-Online Demo (LEOP operations)
-================
-
-https://satnet.aero.calpoly.edu/leop_staff/test
