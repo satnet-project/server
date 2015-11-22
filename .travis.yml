@@ -17,10 +17,10 @@ before_script:
   - "psql -c 'create database satnet_db;' -U postgres"
   - 'python manage.py migrate'
 script:
-  - 'coverage erase'
+  # - 'coverage erase'
   - 'python manage.py test --with-coverage'
 after_success:
-  #- 'codecov'
-  #- "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
-  #- 'python-codacy-coverage -r coverage.xml'
+  # - 'codecov'
+  # - "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
+  # - 'python-codacy-coverage -r coverage.xml'
   - 'coveralls'
