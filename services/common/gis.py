@@ -31,6 +31,8 @@ def get_remote_user_location(ip=None, geoplugin_ip=__GEOIP_URL__):
     This method returns the current geolocation of a given IP address by using
     the WebService provided by GeoPlugin. In case no ip address is given, it
     returns None.
+    :param ip: IP address for the remote user
+    :param geoplugin_ip: URL of the WebService to resolve the IP address
     """
     if not ip:
         return __SLO_LAT__, __SLO_LON__
@@ -84,9 +86,13 @@ def get_region(latitude, longitude):
 
     try:
 
-        address_list = r[__G_API_RESULTS_ARRAY__]\
-                        [__G_API_ADDRESS_ITEM__]\
-                        [__G_API_ADDRESS_ARRAY__]
+        address_list = r[
+            __G_API_RESULTS_ARRAY__
+        ][
+            __G_API_ADDRESS_ITEM__
+        ][
+            __G_API_ADDRESS_ARRAY__
+        ]
 
         for a in address_list:
             for t in a[__G_API_TYPES_ARRAY__]:
@@ -204,10 +210,9 @@ def latlng_2_degrees(latlng, add_direction=False):
     """
     return decimal_2_degrees(
         latlng[0], latitude=True, add_direction=add_direction
-    ),\
-        decimal_2_degrees(
-            latlng[1], latitude=False, add_direction=add_direction
-        )
+    ), decimal_2_degrees(
+        latlng[1], latitude=False, add_direction=add_direction
+    )
 
 
 def decimal_2_degrees(decimal, latitude=True, add_direction=False):
