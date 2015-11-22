@@ -266,8 +266,8 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
         now = misc.get_now_utc()
-        s_time = now + datetime.timedelta(minutes=15)
-        e_time = now + datetime.timedelta(minutes=20)
+        s_time = now - datetime.timedelta(minutes=30)
+        e_time = now + datetime.timedelta(hours=5)
 
         jrpc_rules.add_rule(
             self.__gs_1_id,
