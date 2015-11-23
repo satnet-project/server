@@ -138,6 +138,7 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
+        :param groundstation: Ground station owning this rule
         :param interval: Duration of the interval for matching applicable
         rules. This is a tuple with the first value being the begin_date for
         the interval and the second (and last) object being the end_date for
@@ -187,6 +188,7 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method checks whether this rule can generate slots for the given
         interval.
+        :param rule_values: Values for this rule as obtained
         :param interval: The interval for the check.
         :returns: In case the interval is applicable, it returns a tuple with
         the initial and final datetime objects.
@@ -217,6 +219,8 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method generates the available slots for a only-once rule that
         starts and ends in the given dates, during the specified interval.
+        :param interval: Interval of applicability
+        :param rule_values: The values for the ONCE availability rule
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
@@ -248,6 +252,8 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method generates the available slots for a daily rule that
         starts and ends in the given dates, during the specified interval.
+        :param interval: Interval of applicability
+        :param rule_values: The values for the ONCE availability rule
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
@@ -275,16 +281,13 @@ class AvailabilityRuleManager(django_models.Manager):
 
             # We might have to truncate the first slot...
             if first:
-
                 first = False
 
                 if ff_date <= interval[0]:
-
                     i_day += datetime.timedelta(days=1)
                     continue
 
                 if ii_date <= interval[0]:
-
                     ii_date = interval[0]
 
             result.append((ii_date, ff_date))
@@ -298,6 +301,10 @@ class AvailabilityRuleManager(django_models.Manager):
         This method generates the available slots for a weekly rule that
         starts and ends in the given dates, during the specified interval.
         TODO :: implement this weekly method for convenience.
+        :param i_date: Starting date
+        :param f_date: Finish date
+        :param interval: Interval of applicability
+        :param rule_values: The values for the ONCE availability rule
         """
         pass
 
@@ -305,7 +312,8 @@ class AvailabilityRuleManager(django_models.Manager):
     def generate_available_slots(rule_values, interval=None):
         """
         This method generates the available slots defined by this rule.
-        :param interval: The interval for the slots generation.
+        :param interval: Interval of applicability
+        :param rule_values: The values for the ONCE availability rule
         :return: Initial slots array, initial datetime and final datetime.
         """
         if interval is None:
@@ -338,6 +346,7 @@ class AvailabilityRuleManager(django_models.Manager):
     def get_availability_slots(groundstation, interval=None):
         """
         This method generates the availability slots for this set of rules.
+        :param groundstation; Reference to the ground station
         :param interval: The interval of time during which the slots must be
                         generated.
         """
@@ -473,7 +482,18 @@ class AvailabilityRuleOnceManager(django_models.Manager):
     def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
+        :param groundstation: reference to the ground station for the rule
+        :param operation: type of operation (create or remove slots)
+        :param periodicity: periodicity for the rule (once, daily, weekly)
+        :param dates: applicability dates for the rule
         """
+
+        print('# dates[1] = ' + dates[1].isoformat())
+        print('# dates[2] = ' + dates[2].isoformat())
+
+        if dates[2] <= dates[1]:
+            raise ValueError('Invalid rule, ending <= starting')
+
         return super(AvailabilityRuleOnceManager, self).create(
             groundstation=groundstation,
             operation=operation,
@@ -487,20 +507,19 @@ class AvailabilityRuleOnceManager(django_models.Manager):
 
 class AvailabilityRuleOnce(AvailabilityRule):
     """
-    This model describes the data necessary for describing an availability
-    rule that defines an operation over the slots of a period that occurs
-    only once.
+    This model describes the data necessary for describing an availability rule
+    that defines an operation over the slots of a period that occurs only once.
     """
     class Meta:
         app_label = 'configuration'
 
     objects = AvailabilityRuleOnceManager()
 
-    starting_time = django_models.TimeField(
-        'Beginning date and time for the rule'
+    starting_time = django_models.DateTimeField(
+        'Starting time for the rule', default=datetime.datetime.now, blank=True
     )
-    ending_time = django_models.TimeField(
-        'Ending date and time for the rule'
+    ending_time = django_models.DateTimeField(
+        'Ending time for the rule', default=datetime.datetime.now, blank=True
     )
 
     def __unicode__(self):
@@ -525,8 +544,11 @@ class AvailabilityRuleDailyManager(django_models.Manager):
     def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
+        :param groundstation: reference to the ground station for the rule
+        :param operation: type of operation (create or remove slots)
+        :param periodicity: periodicity for the rule (once, daily, weekly)
+        :param dates: applicability dates for the rule
         """
-
         return super(AvailabilityRuleDailyManager, self).create(
             groundstation=groundstation,
             operation=operation,
@@ -549,8 +571,12 @@ class AvailabilityRuleDaily(AvailabilityRule):
 
     objects = AvailabilityRuleDailyManager()
 
-    starting_time = django_models.TimeField('Starting time for a daily period')
-    ending_time = django_models.TimeField('Ending time for a daily period')
+    starting_time = django_models.DateTimeField(
+        'Starting time for the rule', default=datetime.datetime.now, blank=True
+    )
+    ending_time = django_models.DateTimeField(
+        'Ending time for the rule', default=datetime.datetime.now, blank=True
+    )
 
     def __unicode__(self):
         """
@@ -575,6 +601,10 @@ class AvailabilityRuleWeeklyManager(django_models.Manager):
     def create(self, groundstation, operation, periodicity, dates):
         """
         This method creates a new object in the database.
+        :param groundstation: reference to the ground station for the rule
+        :param operation: type of operation (create or remove slots)
+        :param periodicity: periodicity for the rule (once, daily, weekly)
+        :param dates: applicability dates for the rule
         """
         return super(AvailabilityRuleWeeklyManager, self).create(
             groundstation=groundstation,
@@ -582,20 +612,20 @@ class AvailabilityRuleWeeklyManager(django_models.Manager):
             periodicity=periodicity,
             starting_date=dates[0],
             ending_date=dates[1],
-            monday_starting_time=dates[2],
-            monday_ending_time=dates[3],
-            tuesday_starting_time=dates[4],
-            tuesday_ending_time=dates[5],
-            wednesday_starting_time=dates[6],
-            wednesday_ending_time=dates[7],
-            thursday_starting_time=dates[8],
-            thursday_ending_time=dates[9],
-            friday_starting_time=dates[10],
-            friday_ending_time=dates[11],
-            saturday_starting_time=dates[12],
-            saturday_ending_time=dates[13],
-            sunday_starting_time=dates[14],
-            sunday_ending_time=dates[15]
+            m_s_time=dates[2],
+            m_e_time=dates[3],
+            t_s_time=dates[4],
+            t_e_time=dates[5],
+            w_s_time=dates[6],
+            w_e_time=dates[7],
+            r_s_time=dates[8],
+            r_e_time=dates[9],
+            f_s_time=dates[10],
+            f_e_time=dates[11],
+            s_s_time=dates[12],
+            s_e_time=dates[13],
+            x_s_time=dates[14],
+            x_e_time=dates[15]
         )
 
 
@@ -613,20 +643,48 @@ class AvailabilityRuleWeekly(AvailabilityRule):
 
     objects = AvailabilityRuleWeeklyManager()
 
-    monday_starting_time = django_models.TimeField('Start time on Monday')
-    monday_ending_time = django_models.TimeField('End time on this Monday')
-    tuesday_starting_time = django_models.TimeField('Start time on Tuesday')
-    tuesday_ending_time = django_models.TimeField('End time on this Tuesday')
-    wednesday_starting_time = django_models.TimeField('Start time on Wednesday')
-    wednesday_ending_time = django_models.TimeField('End t on this Wednesday')
-    thursday_starting_time = django_models.TimeField('Start time on Thursday')
-    thursday_ending_time = django_models.TimeField('End time on this Thursday')
-    friday_starting_time = django_models.TimeField('Start time on Friday')
-    friday_ending_time = django_models.TimeField('End time on this Friday')
-    saturday_starting_time = django_models.TimeField('Start time on Saturday')
-    saturday_ending_time = django_models.TimeField('End time on this Saturday')
-    sunday_starting_time = django_models.TimeField('Start time on Sunday')
-    sunday_ending_time = django_models.TimeField('End time on this Sunday')
+    m_s_time = django_models.DateTimeField(
+        'Start time on Monday', default=datetime.datetime.now, blank=True
+    )
+    m_e_time = django_models.DateTimeField(
+        'End time on Monday', default=datetime.datetime.now, blank=True
+    )
+    t_s_time = django_models.DateTimeField(
+        'Start time on Tuesday', default=datetime.datetime.now, blank=True
+    )
+    t_e_time = django_models.DateTimeField(
+        'End time on Tuesday', default=datetime.datetime.now, blank=True
+    )
+    w_s_time = django_models.DateTimeField(
+        'Start time on Wednesday', default=datetime.datetime.now, blank=True
+    )
+    w_e_time = django_models.DateTimeField(
+        'End t on Wednesday', default=datetime.datetime.now, blank=True
+    )
+    r_s_time = django_models.DateTimeField(
+        'Start time on Thursday', default=datetime.datetime.now, blank=True
+    )
+    r_e_time = django_models.DateTimeField(
+        'End time on Thursday', default=datetime.datetime.now, blank=True
+    )
+    f_s_time = django_models.DateTimeField(
+        'Start time on Friday', default=datetime.datetime.now, blank=True
+    )
+    f_e_time = django_models.DateTimeField(
+        'End time on Friday', default=datetime.datetime.now, blank=True
+    )
+    s_s_time = django_models.DateTimeField(
+        'Start time on Saturday', default=datetime.datetime.now, blank=True
+    )
+    s_e_time = django_models.DateTimeField(
+        'End time on Saturday', default=datetime.datetime.now, blank=True
+    )
+    x_s_time = django_models.DateTimeField(
+        'Start time on Sunday', default=datetime.datetime.now, blank=True
+    )
+    x_e_time = django_models.DateTimeField(
+        'End time on Sunday', default=datetime.datetime.now, blank=True
+    )
 
     def __unicode__(self):
         """

@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 from django import test
 import logging
+import pytz
 
 from services.common import misc, simulation
 from services.common.testing import helpers as db_tools
@@ -63,6 +64,36 @@ class TestRulesAvailability(test.TestCase):
         self.__sc = db_tools.create_sc(
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
+
+    def test_slot_once_time_ranges(self):
+        """services.configuration: ONCE rule configuration
+        """
+        self.__verbose_testing = True
+
+        if self.__verbose_testing:
+            print('>>> test_slot_once_time_ranges:')
+
+        s_time = misc.get_next_midnight() - datetime.timedelta(hours=3)
+        e_time = s_time + datetime.timedelta(hours=6)
+        tz_la = pytz.timezone('America/Los_Angeles')
+        s_time = s_time.astimezone(tz_la)
+        e_time = e_time.astimezone(tz_la)
+
+        cfg = db_tools.create_jrpc_once_rule(
+            starting_time=s_time, ending_time=e_time
+        )
+
+        if self.__verbose_testing:
+            misc.print_dictionary(cfg)
+
+        jrpc_rules.add_rule(self.__gs_1_id, cfg)
+
+        # if self.__verbose_testing:
+        #     misc.print_dictionary(django_model2dict(
+        #         rule_models.AvailabilityRuleOnce.objects.get(
+        #             availabilityrule_ptr=r_1_id
+        #         )
+        #     ))
 
     def test_1_a_slots_daily(self):
         """services.configuration: generate available slots (DAILY rule, 1)

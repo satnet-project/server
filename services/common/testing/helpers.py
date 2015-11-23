@@ -334,9 +334,7 @@ def remove_gs_channel(gs_id, gs_ch_id):
 
 def create_jrpc_once_rule(
     operation=rules.RULE_OP_ADD,
-    date=None,
-    starting_time=None,
-    ending_time=None,
+    date=None, starting_time=None, ending_time=None
 ):
 
     if date is None:
