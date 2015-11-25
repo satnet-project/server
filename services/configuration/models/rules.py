@@ -18,11 +18,14 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 from django.db import models as django_models
 from django.utils import timezone as django_tz
+import logging
 import pytz
 
 from services.common import misc, simulation, slots
 from services.configuration.models import segments as segment_models
 from website import settings as satnet_settings
+
+logger = logging.getLogger('configuration')
 
 ADD_SLOTS = '+'
 REMOVE_SLOTS = '-'
@@ -296,6 +299,7 @@ class AvailabilityRuleManager(django_models.Manager):
 
         return result
 
+    # noinspection PyUnusedLocal
     @staticmethod
     def generate_available_slots_weekly(i_date, f_date, rule_values, interval):
         """
@@ -307,7 +311,8 @@ class AvailabilityRuleManager(django_models.Manager):
         :param interval: Interval of applicability
         :param rule_values: The values for the ONCE availability rule
         """
-        pass
+        logger.warn('generate_available_slots_weekly: still not implemented')
+        return []
 
     @staticmethod
     def generate_available_slots(rule_values, interval=None):
