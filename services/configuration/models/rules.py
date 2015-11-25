@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 from django.db import models as django_models
+from django.utils import timezone as django_tz
 import pytz
 
 from services.common import misc, simulation, slots
@@ -487,10 +488,6 @@ class AvailabilityRuleOnceManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
-
-        print('# dates[1] = ' + dates[1].isoformat())
-        print('# dates[2] = ' + dates[2].isoformat())
-
         if dates[2] <= dates[1]:
             raise ValueError('Invalid rule, ending <= starting')
 
@@ -516,10 +513,10 @@ class AvailabilityRuleOnce(AvailabilityRule):
     objects = AvailabilityRuleOnceManager()
 
     starting_time = django_models.DateTimeField(
-        'Starting time for the rule', default=datetime.datetime.now, blank=True
+        'Starting time for the rule', default=django_tz.now, null=True
     )
     ending_time = django_models.DateTimeField(
-        'Ending time for the rule', default=datetime.datetime.now, blank=True
+        'Ending time for the rule', default=django_tz.now, null=True
     )
 
     def __unicode__(self):
@@ -572,10 +569,10 @@ class AvailabilityRuleDaily(AvailabilityRule):
     objects = AvailabilityRuleDailyManager()
 
     starting_time = django_models.DateTimeField(
-        'Starting time for the rule', default=datetime.datetime.now, blank=True
+        'Starting time for the rule', default=django_tz.now, null=True
     )
     ending_time = django_models.DateTimeField(
-        'Ending time for the rule', default=datetime.datetime.now, blank=True
+        'Ending time for the rule', default=django_tz.now, null=True
     )
 
     def __unicode__(self):
@@ -644,46 +641,46 @@ class AvailabilityRuleWeekly(AvailabilityRule):
     objects = AvailabilityRuleWeeklyManager()
 
     m_s_time = django_models.DateTimeField(
-        'Start time on Monday', default=datetime.datetime.now, blank=True
+        'Start time on Monday', default=django_tz.now, null=True
     )
     m_e_time = django_models.DateTimeField(
-        'End time on Monday', default=datetime.datetime.now, blank=True
+        'End time on Monday', default=django_tz.now, null=True
     )
     t_s_time = django_models.DateTimeField(
-        'Start time on Tuesday', default=datetime.datetime.now, blank=True
+        'Start time on Tuesday', default=django_tz.now, null=True
     )
     t_e_time = django_models.DateTimeField(
-        'End time on Tuesday', default=datetime.datetime.now, blank=True
+        'End time on Tuesday', default=django_tz.now, null=True
     )
     w_s_time = django_models.DateTimeField(
-        'Start time on Wednesday', default=datetime.datetime.now, blank=True
+        'Start time on Wednesday', default=django_tz.now, null=True
     )
     w_e_time = django_models.DateTimeField(
-        'End t on Wednesday', default=datetime.datetime.now, blank=True
+        'End t on Wednesday', default=django_tz.now, null=True
     )
     r_s_time = django_models.DateTimeField(
-        'Start time on Thursday', default=datetime.datetime.now, blank=True
+        'Start time on Thursday', default=django_tz.now, null=True
     )
     r_e_time = django_models.DateTimeField(
-        'End time on Thursday', default=datetime.datetime.now, blank=True
+        'End time on Thursday', default=django_tz.now, null=True
     )
     f_s_time = django_models.DateTimeField(
-        'Start time on Friday', default=datetime.datetime.now, blank=True
+        'Start time on Friday', default=django_tz.now, null=True
     )
     f_e_time = django_models.DateTimeField(
-        'End time on Friday', default=datetime.datetime.now, blank=True
+        'End time on Friday', default=django_tz.now, null=True
     )
     s_s_time = django_models.DateTimeField(
-        'Start time on Saturday', default=datetime.datetime.now, blank=True
+        'Start time on Saturday', default=django_tz.now, null=True
     )
     s_e_time = django_models.DateTimeField(
-        'End time on Saturday', default=datetime.datetime.now, blank=True
+        'End time on Saturday', default=django_tz.now, null=True
     )
     x_s_time = django_models.DateTimeField(
-        'Start time on Sunday', default=datetime.datetime.now, blank=True
+        'Start time on Sunday', default=django_tz.now, null=True
     )
     x_e_time = django_models.DateTimeField(
-        'End time on Sunday', default=datetime.datetime.now, blank=True
+        'End time on Sunday', default=django_tz.now, null=True
     )
 
     def __unicode__(self):

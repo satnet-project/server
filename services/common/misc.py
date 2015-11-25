@@ -73,7 +73,9 @@ def get_fqdn_ip():
 def print_list(l, name=None, output=sys.stdout):
     """
     Function that prints the elements of a given list, one per line.
-    :param l: The list to be printed out.
+    :param l: The list to be printed out
+    :param name: Name for this list object
+    :param output: Output object to use for the print
     """
     if not name:
         name = '<no name given>'
@@ -114,6 +116,7 @@ def print_dictionary(
     dictionaries.
     :param spacing: the string used as a base for spacing items in between
     dictionaries.
+    :param separator: String separator to be included at the beginning
     """
     if separator:
         print(separator, file=output)
@@ -164,7 +167,7 @@ def unicode_2_string(unicode_string):
 def get_now_utc(no_microseconds=True):
     """
     This method returns now's datetime object UTC localized.
-    :param no_microseconds=True: sets whether microseconds should be cleared.
+    :param no_microseconds: sets whether microseconds should be cleared.
     :return: the just created datetime object with today's date.
     """
     if no_microseconds:
@@ -178,7 +181,7 @@ def get_now_utc(no_microseconds=True):
 def get_now_hour_utc(no_microseconds=True):
     """
     This method returns now's hour in the UTC timezone.
-    :param no_microseconds=True: sets whether microseconds should be cleared.
+    :param no_microseconds: sets whether microseconds should be cleared.
     :return: The time object within the UTC timezone.
     """
     if no_microseconds:
