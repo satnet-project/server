@@ -74,9 +74,9 @@ class TestCommunicationsViews(test.TestCase):
             logging.getLogger('communications').setLevel(level=logging.CRITICAL)
 
     def test_get_queryset(self):
-        """View test
-        Test for validating the retrieval of the messages for the GroundStations
-        of a given user (the one making the request).
+        """UNIT test: view process
+        Test for validating the retrieval of the messages for the
+        GroundStations of a given user (the one making the request).
         """
         if self.__verbose_testing:
             print('>>> test_get_queryset:')

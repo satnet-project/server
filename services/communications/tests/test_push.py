@@ -45,7 +45,7 @@ class TestPassiveCommunications(TestCase):
         self.__push = satnet_push.PushService()
 
     def test_push_downlink_frame(self):
-        """Unit test method.
+        """UNIT test: services.communications - Push downlink frame test
         Validates the transmission of a frame received from a remote client to
         the registered remote web clients of the push service.
         """

@@ -26,7 +26,7 @@ from services.communications import jrpc as comms_jrpc, models as comms_models
 
 
 class TestPassiveCommunications(TestCase):
-    """Unit test class.
+    """Unit test class
     Testing of the passive communications service.
     """
 
