@@ -110,6 +110,7 @@ def store_passive_message(groundstation_id, timestamp, doppler_shift, message):
     return message_o.pk
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='communications.sc.getPassiveMessagesAvailable',
     signature=['String', 'String'],
@@ -128,6 +129,7 @@ def get_available_passive_messages(groundstation_id):
     pass
 
 
+# noinspection PyUnusedLocal
 @rpc4django.rpcmethod(
     name='communications.sc.getPassiveMessage',
     signature=['String', 'String'],

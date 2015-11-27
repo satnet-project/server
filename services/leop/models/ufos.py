@@ -48,6 +48,7 @@ class IdentifiedObjectsManager(django_models.Manager):
         :param callsign: Callsign for the identified object
         :param tle_l1: First line of the TLE for the identified object
         :param tle_l2: Second line of the TLE for the identified object
+        :param kwargs: Additional parameters dictionary
         :return: Reference to the newly created object
         """
         tle = leop_utils.create_object_tle(object_id, callsign, tle_l1, tle_l2)
@@ -61,6 +62,7 @@ class IdentifiedObjectsManager(django_models.Manager):
             **kwargs
         )
 
+    # noinspection PyUnusedLocal
     def update(self, launch_id, object_id, callsign, tle_l1, tle_l2):
         """
         Updates the configuration for an identified object with the given data

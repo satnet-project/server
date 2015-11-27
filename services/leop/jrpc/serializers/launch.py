@@ -33,8 +33,9 @@ JRPC_K_IDENTIFIED_OBJECTS = 'identified'
 
 
 def serialize_leop_id(leop_id):
-    """JRPC serializer.
+    """JRPC serializer
     Serializes the identifier of a given LEOP cluster.
+
     :param leop_id: The identifier to be serialized.
     :return: JSON-RPC object with the identifier.
     """
@@ -44,9 +45,10 @@ def serialize_leop_id(leop_id):
 
 
 def serialize_gs_lists(available_gs, in_use_gs):
-    """JRPC serializer.
+    """JRPC serializer
     Method that serializes into a JRPC-like structure the lists of available
     and in-use ground stations for a given LEOP cluster.
+
     :param available_gs: The Ground Stations that have not been included in the
                             LEOP cluster yet.
     :param in_use_gs: The Ground Stations that have already been included in the
@@ -61,7 +63,8 @@ def serialize_gs_lists(available_gs, in_use_gs):
 
 def serialize_launch_unknown(unknown):
     """Serialization method
-    Serializes the unknown objects list
+    Serializes the unknown objects list.
+
     :param unknown: The list to be serialized
     :return: Resulting object
     """
@@ -79,6 +82,7 @@ def serialize_launch_unknown(unknown):
 def serialize_launch_identified(identified):
     """Serialization method
     Serializes the identified spacecraft objects for a given launch.
+
     :param identified: List with the spacecraft objects
     :return: JSON-RPC serializable object
     """
@@ -103,6 +107,7 @@ def serialize_launch_identified(identified):
 def serialize_launch(launch):
     """Serialization method
     Serializes the current configuration for a given LEOP cluster.
+
     :param launch: The LEOP cluster
     :return: JSON serialized structure with the configuration
     """
@@ -125,6 +130,7 @@ def deserialize_launch(launch):
     """Deserialization method
     Deserializes the configuration for a given LAUNCH cluster, without getting
     into the "ufo" or "identified" arrays (should be set separately).
+
     :param launch: JSON-like object with the configuration of the launch
     :return: (date, tle_l1, tle_l2) as a tuple
     """
@@ -147,10 +153,12 @@ def deserialize_launch(launch):
 
 # noinspection PyUnusedLocal
 def serialize_pass_slots(pass_slots, by_gs=True):
-    """
+    """Serialization method
     Serializes a list of pass slots into an array of JSON-like serializable
     slot objects.
+
     :param pass_slots: Original array with the database slot models
+    :param by_gs: Indicates whether the slots should be ordered by_gs
     :return: Serializable list
     """
     serial_array = []

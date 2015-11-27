@@ -79,13 +79,17 @@ class MessageManager(models.Manager):
     def create(
         self, operational_slot, upwards, forwarded, tx_timestamp, message
     ):
-        """Creates the object in the database.
+        """Creates the object in the database
         Creates the object in the database with the data provided and including
         the current UTC timestamp as the timestamp of the moment at which this
         message was received in the server.
+
+        :param operational_slot: The referenced slot
+        :param upwards: Flag indicating the direction of the message
+        :param forwarded: Flag indicating whether the message was forwarded
         :param tx_timestamp: Timestamp of the moment at which this message was
-                                received at the GroundStation.
-        :param message: Binary message to be stored in the database.
+                                received at the GroundStation
+        :param message: Binary message to be stored in the database
         """
         gs_channel = operational_slot.groundstation_channel,
         sc_channel = operational_slot.spacecraft_channel
@@ -106,7 +110,7 @@ class Message(models.Model):
     """Message model class.
 
     This class includes all the information related with the relay of a
-    message.
+    message
     """
 
     objects = MessageManager()

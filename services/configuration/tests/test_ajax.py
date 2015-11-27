@@ -47,6 +47,7 @@ class JRPCSegmentsTest(test.TestCase):
 
         self.assertEqual(
             ll_json, expected_ll,
-            'Expected CalPoly location = ' + str(expected_ll)
-            + ', found = ' + str(ll.content)
+            'Expected CalPoly location = ' + str(
+                expected_ll
+            ) + ', found = ' + str(ll.content)
         )

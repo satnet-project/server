@@ -39,6 +39,8 @@ class SatnetTestRunner(nose_runner.NoseTestSuiteRunner):
         """
         Sets up the database together with some additional objects required for
         the automated tests.
+
+        :param kwargs: Additional parameters dictionary
         """
 
         verbose_testing = False

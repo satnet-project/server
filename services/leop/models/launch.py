@@ -142,6 +142,7 @@ class LaunchManager(django_models.Manager):
         initializes the list of unknown objects to an empty one.
         :param admin: Username of the owner of this launch object
         :param launch_id: Identifier of the launcher
+        :param date: Date of the launch
         :param tle_l1: First line of the TLE for the cluster
         :param tle_l2: Second line of the TLE for the cluster
         :param kwargs: All other parameters

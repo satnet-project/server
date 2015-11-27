@@ -30,9 +30,10 @@ from website import settings as satnet_settings
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_celestrak_sections():
-    """
-    JRPC method. Returns the sections structure of the Celestrak database.
-    :return: Array with the pairs 'section' and 'subsection'.
+    """JRPC method
+    Returns the sections structure of the Celestrak database.
+
+    :return: Array with the pairs 'section' and 'subsection'
     """
     return CelestrakDatabase.CELESTRAK_SELECT_SECTIONS
 
@@ -43,12 +44,13 @@ def get_celestrak_sections():
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_celestrak_resource(subsection):
-    """
-    JRPC method. Returns the URI of the resources associated with the given
+    """JRPC method
+    Returns the URI of the resources associated with the given
     subsection of the Celestrak database.
+
     :param subsection: Subsection of the Celestrak database as retrieved from
-                        the JRPC method 'get_celestrak_sections()'.
-    :return: URI to the resource within the Celestrak databse.
+                        the JRPC method 'get_celestrak_sections()'
+    :return: URI to the resource within the Celestrak database
     """
     url = CelestrakDatabase.CELESTRAK_RESOURCES[subsection]
     tles = tle_models.TwoLineElement.objects.filter(source=url).all()
@@ -61,10 +63,11 @@ def get_celestrak_resource(subsection):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_spacecraft_tle(spacecraft_id):
-    """
-    JRPC method. Returns the TLE object associated with the spacecraft for the
-    given identifier.
-    :param spacecraft_id: Identififer of the spacecraft.
+    """JRPC method
+    Returns the TLE object associated with the spacecraft for the given
+    identifier.
+
+    :param spacecraft_id: Identififer of the spacecraft
     :return: Object containing: { spacecraft_id, tle_id, line_1, line_2 }
     """
     sc = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)

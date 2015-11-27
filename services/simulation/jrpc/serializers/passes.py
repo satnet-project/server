@@ -26,7 +26,9 @@ def serialize_pass_slots(pass_slots, by_gs=True):
     """
     Serializes a list of pass slots into an array of JSON-like serializable
     slot objects.
+
     :param pass_slots: Original array with the database slot models
+    :param by_gs: Indicates whether the serialization should be by GS
     :return: Serializable list
     """
     serial_array = []

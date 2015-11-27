@@ -49,7 +49,7 @@ class TestModels(test.TestCase):
         )
 
     def test_pass_models(self):
-        """Unit test case
+        """UNIT test: services.simulation.create_pass_slots_sc
         Validation of the creation of the pass slots
         """
 
@@ -98,7 +98,7 @@ class TestModels(test.TestCase):
         )
 
     def test_firebird(self):
-        """UNIT test
+        """UNIT test: Firebird TLE bug
         Test carried out to find what is the problem with the Firebird TLE and
         UVIGO groundstation.
         """

@@ -67,7 +67,7 @@ class TestRulesAvailability(test.TestCase):
         )
 
     def test_slot_once_time_ranges(self):
-        """services.configuration: ONCE rule configuration
+        """UNIT test: services.configuration - ONCE rule configuration
         """
         self.__verbose_testing = True
 

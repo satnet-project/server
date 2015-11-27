@@ -48,6 +48,8 @@ class OperationalSlotsManager(django_models.Manager):
         """
         This method sets the OrbitalSimulator debug mode ON (on=True) or OFF
         (on=False). Default: on=True
+
+        :param on: Flag that enables/disables the internal debug mode
         """
         self._test_mode = on
 
@@ -82,11 +84,13 @@ class OperationalSlotsManager(django_models.Manager):
     def create(self, pass_slot, availability_slot, start, end):
         """
         Creates a new OperationalSlot in the database.
+
+        :param pass_slot: Pass slot
         :param availability_slot: The availability slot during which the
-        channel of the GroundStation can be operated.
-        :param start: The start of the operational slot.
-        :param end: The end of the operational slot.
-        :return: The just created object in the database.
+            channel of the GroundStation can be operated
+        :param start: The start of the operational slot
+        :param end: The end of the operational slot
+        :return: The just created object in the database
         """
         return super(OperationalSlotsManager, self).create(
             identifier=self.create_identifier(
@@ -102,6 +106,7 @@ class OperationalSlotsManager(django_models.Manager):
     def _truncate_slot(slot, window):
         """
         Truncates the given slot to the duration of the given window.
+
         :param slot: Slot to be truncated (if necessary)
         :param window: Window used to truncate the slot
         :return: (start, end) new truncated duration of the slot
@@ -128,11 +133,12 @@ class OperationalSlotsManager(django_models.Manager):
         the change in the state of the OperationalSlots should be included
         before updating the slots themselves, together with setting/unsetting
         the flag for the notification of changes.
-        :param state: The new state requested for the OperationalSlots.
+
+        :param state: The new state requested for the OperationalSlots
         :param slots: List with all the OperationalSlots whose state must be
-        changed.
+        changed
         :return: List with the final state of the OperationalSlots whose
-        update was requested.
+        update was requested
         """
         if slots is None:
             slots = self.all()

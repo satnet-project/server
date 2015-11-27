@@ -37,6 +37,8 @@ def list_spacecraft(**kwargs):
     the user that is requesting the service.
     User name must be obtained from the request, since this has already been
     validated by the authentication backend
+
+    :param kwargs: Additional JRPC parameters dictionary
     """
     # 1) user must be obtained from the request
     user, username = account_models.get_user(
@@ -57,6 +59,11 @@ def create(identifier, callsign, tle_id, **kwargs):
     Creates a new ground station with the given configuration.
     User name must be obtained from the request, since this has already been
     validated by the authentication backend
+
+    :param identifier: Identifier of the Spacecraft
+    :param callsign: Callsign string of the Spacecraft
+    :param tle_id: Identifier of the TLE associated with the Spacecraft
+    :param kwargs: Additional JRPC parameters dictionary
     """
 
     user, username = account_models.get_user(
@@ -83,6 +90,8 @@ def create(identifier, callsign, tle_id, **kwargs):
 def get_configuration(spacecraft_id):
     """JRPC test: configuration.sc.getConfiguration
     Returns the configuration for the given Spacecraft.
+
+    :param spacecraft_id: Identifier of the Spacecraft
     """
     return segment_serializers.serialize_sc_configuration(
         segments.Spacecraft.objects.get(identifier=spacecraft_id)
@@ -97,6 +106,9 @@ def get_configuration(spacecraft_id):
 def set_configuration(spacecraft_id, configuration):
     """JRPC test: configuration.sc.setConfiguration
     Returns the configuration for the given Spacecraft.
+
+    :param spacecraft_id: Identifier of the Spacecraft
+    :param configuration: Configuration object for the Ground Station
     """
     callsign, tle_id = segment_serializers.deserialize_sc_configuration(
         configuration
@@ -115,6 +127,8 @@ def delete(spacecraft_id):
     """JRPC test: configuration.sc.delete
     Deletes the ground station identified by the given Spacecraft. It also
     deletes all channels associated to this ground station.
+
+    :param spacecraft_id: Identifier of the Spacecraft
     """
     segments.Spacecraft.objects.get(identifier=spacecraft_id).delete()
     return spacecraft_id

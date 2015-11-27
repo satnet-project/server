@@ -28,19 +28,19 @@ class ClientsManager(django_models.Manager):
     """
     def get_logged_users(self):
         """
-        Function that gets all the logged users excluding those who
-        are duplicated because they have multiple active sessions (e.g.
-        one from the Chrome client and the other one from the web).
-        :returns:
-            List of django.contrib.auth.models.User classes
+        Function that gets all the logged users excluding those who are
+        duplicated because they have multiple active sessions (e.g. one from
+        the Chrome client and the other one from the web).
+
+        :returns: List of django.contrib.auth.models.User classes
         """
-        return [ item.user for item in self.distinct('user') ]
+        return [item.user for item in self.distinct('user')]
 
 
 class Client(django_models.Model):
     """
-    This class holds a list corresponding to the logged users. More details here:
-    http://gavinballard.com/associating-django-users-sessions/
+    This class holds a list corresponding to the logged users. More details
+    here: http://gavinballard.com/associating-django-users-sessions/
     """
     class Meta:
         app_label = 'network'

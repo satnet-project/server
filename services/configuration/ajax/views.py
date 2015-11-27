@@ -78,9 +78,11 @@ def spacecraft_valid_id(request):
 def hostname_geoip(request):
     """AJAX method
     Retrieves the location of the given hostname using the GEO IP services.
+
     :param request: HTTP request
     :return: JSON object, { latitude: $lat, longitude: $lng }
     """
+    # noinspection PyUnusedLocal
     hostname = None
 
     if 'hostname' in request.GET:
@@ -99,7 +101,7 @@ def hostname_geoip(request):
     host_ip = socket.gethostbyname(hostname)
     lat, lng = gis.get_remote_user_location(ip=host_ip)
 
-    print('>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +\
+    print('>>> host = ' + str(hostname) + ', ip = ' + str(host_ip) +
           ', @(' + str(lat) + ', ' + str(lng) + ')')
 
     return {'latitude': lat, 'longitude': lng}

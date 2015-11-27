@@ -27,9 +27,13 @@ _ADMIN_DEFAULT_CFG = {
 }
 
 
+# noinspection PyUnusedLocal
 def test_create_admin(sender, **kwargs):
-    """Creates an admin user.
+    """Creates an admin user
     This function should be invoked as a callback to signals.post_syncdb.
+
+    :param sender: Reference to the sender object
+    :param kwargs: Additional parameters dictionary
     """
     try:
 

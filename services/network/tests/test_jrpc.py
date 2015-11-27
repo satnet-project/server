@@ -25,7 +25,7 @@ class JRPCTest(django_test.TestCase):
     """
 
     def test_keep_alive(self):
-        """Unit test
+        """JRPC test: services.network.keepAlive
         Test that validates the keep alive JRPC method.
         """
         self.assertTrue(net_jrpc.keep_alive(), 'Should have returned true')

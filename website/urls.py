@@ -43,11 +43,10 @@ urlpatterns = urls.patterns(
     ),
     urls.url(
         r'^leop_staff/(?P<identifier>\w+)$',
-        #decorators.login_required(website_views.redirect_leop),
         website_views.redirect_leop,
         name='leop_access'
     ),
-   urls.url(
+    urls.url(
         r'^leop/',
         urls.include('services.leop.urls')
     ),

@@ -25,18 +25,19 @@ from services.leop.models import launch as leop_models
 class LaunchCreateView(edit_views.CreateView):
     """Launch Manager create view
     """
-    #model = leop_models.Launch
     form_class = leop_forms.LaunchForm
     template_name = 'staff/leop_create.html'
     success_template_name = 'staff/leop_create_ok.html'
     success_url = django_resolvers.reverse_lazy('leop_management')
 
     def form_valid(self, form):
-        # TODO Improve object creationg for code re-utilization
-        """Method executed after ther form is found valid.
+        """Method executed after ther form is found valid
         It is necessary to override this method for adding the admin of the
         cluster taken from the username included in the request.
+
+        :param form: Form object
         """
+        # noinspection PyUnresolvedReferences
         form.instance.admin = account_models.UserProfile.objects.get(
             username=self.request.user
         )
@@ -70,6 +71,7 @@ class LaunchUpdateView(edit_views.UpdateView):
     def get_context_data(self, **kwargs):
 
         context = super(LaunchUpdateView, self).get_context_data(**kwargs)
+        # noinspection PyUnresolvedReferences
         context['cluster_id'] = self.kwargs['identifier']
         return context
 
@@ -100,6 +102,7 @@ class LaunchManagementView(list_views.ListView):
         Returns the set of LEOP spacecraft that are owned by the current user
         making the requests.
         """
+        # noinspection PyUnresolvedReferences
         return self.model.objects.filter(
             admin=account_models.UserProfile.objects.get(
                 username=self.request.user

@@ -35,9 +35,11 @@ logger = logging.getLogger('configuration')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_list(identifier):
-    """JRPC test: configuration.sc.channel.list
+    """JRPC method: configuration.sc.channel.list
     Simple method that returns the list of channels registered within this
     Spacecraft.
+
+    :param identifier: Identifier of the Spacecraft
     """
     channels = channel_models.SpacecraftChannel.objects.filter(
         spacecraft=segment_models.Spacecraft.objects.get(
@@ -53,9 +55,11 @@ def sc_channel_list(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_is_unique(identifier):
-    """JRPC test: configuration.sc.channel.isUnique
+    """JRPC method: configuration.sc.channel.isUnique
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
+
+    :param identifier: Identifier of the Spacecraft Channel
     """
     return channel_models.SpacecraftChannel.objects.filter(
         identifier=identifier
@@ -68,12 +72,15 @@ def sc_channel_is_unique(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_create(spacecraft_id, channel_id, configuration):
-    """JRPC test: configuration.sc.channel.create
+    """JRPC method: configuration.sc.channel.create
     Method that receives a configuration for a new channel to be added to the
     database. In case the channel could be added correctly to the database, it
     returns 'true'; otherwise, it raises an exception that is also returned.
-    """
 
+    :param spacecraft_id: Identifier of the Spacecraft
+    :param channel_id: Identifier of the Channel
+    :param configuration: Configuration object for the Channel
+    """
     # 1) Get channel parameters from JSON representation into variables
     frequency, modulation, bitrate, bandwidth, polarization\
         = jrpc_channels_serial.deserialize_sc_channel_parameters(configuration)
@@ -102,9 +109,9 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     except django_db.IntegrityError as ex:
         logger.warn(str(ex))
         raise Exception(
-            "Channel identifier already exists, { "
-            + str(jrpc_channels_serial.CH_ID_K) + ": "
-            + str(channel_id) + "}"
+            "Channel identifier already exists, { " + str(
+                jrpc_channels_serial.CH_ID_K
+            ) + ": " + str(channel_id) + "}"
         )
 
     # 2) Returns true or throws exception
@@ -117,9 +124,12 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_get_configuration(spacecraft_id, channel_id):
-    """JRPC test: configuration.sc.channel.getConfiguration
+    """JRPC method: configuration.sc.channel.getConfiguration
     Method that can be used for retrieving a complete configuration for the
     requested channel.
+
+    :param spacecraft_id: Identifier of the Spacecraft
+    :param channel_id: Identifier of the Channel
     """
     return jrpc_channels_serial.serialize_sc_channel_configuration(
         channel_models.SpacecraftChannel.objects.get(
@@ -137,10 +147,14 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
-    """JRPC test: configuration.sc.channel.setConfiguration
+    """JRPC method: configuration.sc.channel.setConfiguration
     Method that can be used for setting the configuration of an existing
     channel. Configuration can be incomplete, so that users may decide only
     to update some of the parameters of the channel.
+
+    :param spacecraft_id: Identifier of the Spacecraft
+    :param channel_id: Identifier of the Channel
+    :param configuration: Configuration object for the Channel
     """
     # 1) Retrieve objects from database
     ch = channel_models.SpacecraftChannel.objects.get(
@@ -169,9 +183,12 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_delete(spacecraft_id, channel_id):
-    """JRPC test: configuration.sc.channel.delete
+    """JRPC method: configuration.sc.channel.delete
     Method that removes the given channel from the database and from the list
     of available channels of the SpacecraftConfiguration object that owns it.
+
+    :param spacecraft_id: Identifier of the Spacecraft
+    :param channel_id: Identifier of the Channel
     """
     try:
         channel_models.SpacecraftChannel.objects.get(

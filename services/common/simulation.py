@@ -46,6 +46,9 @@ class OrbitalSimulator(object):
         """
         This method sets the OrbitalSimulator debug mode ON (on=True) or OFF
         (on=False). Default: on=True
+
+        :param on: Flag that enables/disables the debug mode
+        :param fail: Flag that triggers a simulated exception
         """
         self._test_mode = on
         self._fail_test = fail
@@ -275,6 +278,7 @@ class OrbitalSimulator(object):
         simulation.
         :param end: The datetime object (UTC) that defines the end of the
         simulation.
+        :param minimum_slot_duration: The minimum duration of a slot
         :return: List with the datetime objects (UTC) with the passess for
         the given Spacecraft over the given GroundStation
         :raises ephem.CircumpolarError: Raised whenever a pass for a given

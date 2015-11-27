@@ -20,8 +20,10 @@ from services.accounts import backend as accounts_backend
 
 
 def redirect_operations(request):
-    """Redirect method.
+    """Redirect method
     Redirects users either to their C2 interface or to the login window.
+
+    :param request: HTTP request
     """
     return django_response.TemplateResponse(
         request, 'angular/users_operations.html'
@@ -29,8 +31,11 @@ def redirect_operations(request):
 
 
 def redirect_leop(request, identifier):
-    """Redirect method.
+    """Redirect method
     Redirects staff either to the LEOP interface or to the login page.
+
+    :param request: HTTP request
+    :param identifier: Identifier for the LEOP
     """
     user_profile = accounts_backend.authenticate_anonymous(request)
     return django_response.TemplateResponse(

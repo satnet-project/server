@@ -76,7 +76,6 @@ class LaunchPush(object):
         :param launch_id: Identifier of the launch
         :param groundstations: Identifier of the groundstations assigned (array)
         """
-
         for g in groundstations:
 
             push_service.PushService().trigger_event(
@@ -95,6 +94,7 @@ class LaunchPush(object):
         UFO as a spacecraft.
         :param launch_id: Identifier of the Launch
         :param ufo_id: Identifier of the UFO.
+        :param spacecraft_id: Identifier of the spacecraft linked to this UFO
         """
         push_service.PushService().trigger_event(
             push_service.PushService.LEOP_EVENTS_CHANNEL,
@@ -132,6 +132,7 @@ class LaunchPush(object):
         server has <forgotten> about a given UFO as a spacecraft.
         :param launch_id: Identifier of the Launch
         :param ufo_id: Identifier of the UFO (matches spacecraft_id xxxx)
+        :param spacecraft_id: Identifier of the Spacecraft
         """
         push_service.PushService().trigger_event(
             push_service.PushService.LEOP_EVENTS_CHANNEL,

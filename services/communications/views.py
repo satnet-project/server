@@ -34,6 +34,7 @@ class PassiveMessages(list_views.ListView):
         Returns the set of LEOP spacecraft that are owned by the current user
         making the requests.
         """
+        # noinspection PyUnresolvedReferences
         user_groundstations = segment_models.GroundStation.objects.filter(
             user=self.request.user
         ).all()

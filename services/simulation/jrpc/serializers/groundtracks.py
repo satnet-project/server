@@ -57,8 +57,12 @@ class SimulationSerializer(object):
             if ts_i > start_ts:
                 result.append({
                     SimulationSerializer.TIMESTAMP_K: ts_i,
-                    SimulationSerializer.LATITUDE_K: groundtrack.latitude[index],
-                    SimulationSerializer.LONGITUDE_K: groundtrack.longitude[index]
+                    SimulationSerializer.LATITUDE_K: groundtrack.latitude[
+                        index
+                    ],
+                    SimulationSerializer.LONGITUDE_K: groundtrack.longitude[
+                        index
+                    ]
                 })
 
             index += self._DECIMATION_RATE

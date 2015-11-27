@@ -38,14 +38,15 @@ def list_groundstations(launch_id, **kwargs):
     Returns the list of groundstations available for creating this LEOP
     system. In case a Ground Station is already in use for this system, it will
     not be listed.
+
+    # user must be obtained from the request, since this has already been
+    # validated by the authentication backend
+
     :param launch_id: Identifier of the LEOP cluster.
     :param kwargs: Dictionary with additional variables like the HTTP request
                     itself (defined by RPC4Django).
     :return: List of the identifiers of the available groundstations.
     """
-
-    # user must be obtained from the request, since this has already been
-    # validated by the authentication backend
 
     if satnet_settings.JRPC_PERMISSIONS:
         http_request = kwargs.get('request', None)
@@ -69,7 +70,7 @@ def list_groundstations(launch_id, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_spacecraft(launch_id, **kwargs):
-    """JRPC method (LEOP service).
+    """JRPC method
     Returns the list of spacecraft registered for this launch.
     system.
     :param launch_id: Identifier of the LEOP cluster.
@@ -110,12 +111,14 @@ def list_spacecraft(launch_id, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def add_groundstations(launch_id, groundstations, **kwargs):
-    """JRPC method (LEOP service).
+    """JRPC method
     Adds the array of GroundStations to the LEOP cluster. If any of the given
     GroundStation identifiers does not exist, the operation is cancelled and
     an 'ObjectDoesNotExist' exception is raised.
+
     :param launch_id: Identifier of the LEOP cluster
     :param groundstations: List with the GroundStations to be added
+    :param kwargs: Additional JRPC parameters dictionary
     :return: Identifier of the just-updated LEOP cluster
     """
     # user must be obtained from the request, since this has already been
@@ -146,12 +149,14 @@ def add_groundstations(launch_id, groundstations, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def remove_groundstations(launch_id, groundstations, **kwargs):
-    """JRPC method (LEOP service).
+    """JRPC method
     Removes the array of GroundStations from the LEOP cluster. If any of the
     given GroundStation identifiers does not exist, the operation is
     cancelled and an 'ObjectDoesNotExist' exception is raised.
-    :param launch_id: Identifier of the LEOP cluster.
-    :param groundstations: List with the GroundStations to be added.
+
+    :param launch_id: Identifier of the LEOP cluster
+    :param groundstations: List with the GroundStations to be added
+    :param kwargs: Additional JRPC parameters dictionary
     :return: True if the operation was succesfully completed
     """
     # user must be obtained from the request, since this has already been

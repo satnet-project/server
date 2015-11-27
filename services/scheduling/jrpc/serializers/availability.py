@@ -15,8 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.scheduling.jrpc.serializers import \
-    operational as operational_serial
+from services.scheduling.jrpc.serializers import operational as \
+    operational_serial
 
 
 def serialize_slots(slots):

@@ -24,6 +24,7 @@ from services.network.models import server as server_models
 from services.network.models import clients as client_models
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_save,
     sender=segment_models.GroundStation
@@ -31,6 +32,11 @@ from services.network.models import clients as client_models
 def gs_saved_handler(sender, instance, created, raw, **kwargs):
     """Signal handler.
     Callback invoked whenever a GroundStation object is saved.
+    :param sender: Object who sent this signal
+    :param instance: Reference to the object
+    :param created: Flag indicating whether the object is a new creation
+    :param raw: Falg indicating whether the object is raw in the database
+    :param kwargs: Additional parameters dictionary from the signal
     """
     if not created or raw:
         return
@@ -40,6 +46,7 @@ def gs_saved_handler(sender, instance, created, raw, **kwargs):
     local_s.save()
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(allauth_signals.user_logged_in)
 def logged_in_receiver(sender, request, user, **kwargs):
     """User logged int callback

@@ -60,7 +60,7 @@ class JRPCSimulationTest(test.TestCase):
         )
 
     def test_get_groundtrack(self):
-        """UNIT test (JRPC Method).
+        """JRPC test: services.simulation.groundtrack.get
         Tests the generation of the GroundTracks for registered spacecraft.
         """
         gt = simulation_jrpc.get_groundtrack(self.__sc_1_id)
@@ -69,7 +69,7 @@ class JRPCSimulationTest(test.TestCase):
             print('gt.length = ' + str(len(gt)))
 
     def test_visualize_groundtracks(self):
-        """Basic groundtrack propagation.
+        """UNIT test: services.simulation.groundtrack - Simulate KML
         Creates a KML output file with the generated coordinates. The name for
         the points is the timestamp for that given coordinate.
         """
@@ -96,7 +96,7 @@ class JRPCSimulationTest(test.TestCase):
             print('>>> points = ' + str(len(track)))
 
     def test_remove_sc(self):
-        """JRPC remove spacecraft test.
+        """JRPC test: services.simulation.sc.remove
         Basic test for validating the removal of a given Spacecraft object from
         the database through the correspondent JRPC method.
         """

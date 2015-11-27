@@ -29,7 +29,7 @@ class SimulationPush(object):
 
     @staticmethod
     def trigger_passes_updated_event():
-        """
+        """Pusher event
         Triggers the transmission of this event through the pusher.com service.
         """
         satnet_push.PushService().trigger_event(
@@ -40,8 +40,10 @@ class SimulationPush(object):
 
     @staticmethod
     def trigger_gt_updated_event(spacecraft_id):
-        """
+        """Pusher event
         Triggers the transmission of this event through the pusher.com service.
+
+        :param spacecraft_id: Identifier of the Spacecraft
         """
         satnet_push.PushService().trigger_event(
             satnet_push.PushService.SIMULATION_EVENTS_CHANNEL,

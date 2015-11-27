@@ -32,9 +32,11 @@ logger = logging.getLogger('configuration')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_groundstations(**kwargs):
-    """JRPC test: configuration.gs.list
+    """JRPC method: configuration.gs.list
     Creates a list with the identifiers of the available ground stations for
     the user that is logged in within this request.
+
+    :param kwargs: Additional JRPC parameters dictionary
     """
 
     # 1) user must be obtained from the request
@@ -52,8 +54,15 @@ def list_groundstations(**kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
-    """JRPC test: configuration.gs.create
+    """JRPC method: configuration.gs.create
     Creates a new ground station with the given configuration.
+
+    :param identifier: Identifier of the Ground Station
+    :param callsign: Callsign string of the Ground Station
+    :param elevation: Minimum contact elevation
+    :param latitude: Latitude of the location
+    :param longitude: Longitude of the location
+    :param kwargs: Additional JRPC parameters dictionary
     """
 
     user, username = account_models.get_user(
@@ -80,8 +89,10 @@ def create(identifier, callsign, elevation, latitude, longitude, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(ground_station_id):
-    """JRPC test: configuration.gs.getConfiguration
+    """JRPC method: configuration.gs.getConfiguration
     Returns the configuration for the given ground station.
+
+    :param ground_station_id: Identifier of the Ground Station
     """
     return segment_serializers.serialize_gs_configuration(
         segment_models.GroundStation.objects.get(identifier=ground_station_id)
@@ -94,8 +105,11 @@ def get_configuration(ground_station_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(ground_station_id, configuration):
-    """JRPC test: configuration.gs.setConfiguration
+    """JRPC method: configuration.gs.setConfiguration
     Sets the configuration for the given ground station.
+
+    :param ground_station_id: Identifier of the Ground Station
+    :param configuration: Configuration object for the Ground Station
     """
     callsign, contact_elevation, latitude, longitude =\
         segment_serializers.deserialize_gs_configuration(configuration)
@@ -113,9 +127,11 @@ def set_configuration(ground_station_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def delete(ground_station_id):
-    """JRPC test: configuration.gs.delete
+    """JRPC method: configuration.gs.delete
     Deletes the ground station identified by the given 'ground_station_id'. It
     also deletes all channels associated to this ground station.
+
+    :param ground_station_id: Identifier of the Ground Station
     """
     segment_models.GroundStation.objects.get(
         identifier=ground_station_id

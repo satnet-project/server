@@ -18,21 +18,21 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.conf import urls
 from services.configuration.ajax import views
 
-urlpatterns = urls.patterns('',
-    urls.url(r'^groundstations/valid_id$',
-        views.groundstation_valid_id,
+urlpatterns = urls.patterns(
+    '',
+    urls.url(
+        r'^groundstations/valid_id$', views.groundstation_valid_id,
         name='ajax-cfg-gs-valid-id'
     ),
-    urls.url(r'^spacecraft/valid_id$',
-        views.spacecraft_valid_id,
+    urls.url(
+        r'^spacecraft/valid_id$', views.spacecraft_valid_id,
         name='ajax-cfg-sc-valid-id'
     ),
-    urls.url(r'^user/geoip$',
-        views.user_geoip,
-        name='ajax-cfg-user-geoip'
+    urls.url(
+        r'^user/geoip$', views.user_geoip, name='ajax-cfg-user-geoip'
     ),
-    urls.url(r'^hostname/geoip$',
-        views.hostname_geoip,
+    urls.url(
+        r'^hostname/geoip$', views.hostname_geoip,
         name='ajax-cfg-hostname-geoip'
     )
 )

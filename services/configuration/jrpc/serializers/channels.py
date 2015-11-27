@@ -56,6 +56,8 @@ def check_gs_channel_configuration(configuration):
     This method checks whether the given dictionary contains or not all the
     keys that are required for a valid channel configuration. In case it
     doesn't, an exception is raised.
+
+    :param configuration: Configuration object
     """
     if BAND_K not in configuration:
         raise Exception("Parameter not provided, key = " + BAND_K)
@@ -76,6 +78,8 @@ def check_sc_channel_configuration(configuration):
     This method checks whether the given dictionary contains or not all the
     keys that are required for a valid channel configuration. In case it
     doesn't, an exception is raised.
+
+    :param configuration: Configuration object
     """
     if FREQUENCY_K not in configuration:
         raise Exception("Parameter not provided, key = " + FREQUENCY_K)
@@ -94,6 +98,8 @@ def serialize_gs_channel_configuration(channel):
     This method returns a dictionary with the key, value pairs containing
     the current configuration for the given channel object. The keys used are
     the ones required by the JRPC protocol.
+
+    :param channel: Channel object
     """
     return {
         CH_ID_K: channel.identifier,
@@ -119,6 +125,8 @@ def serialize_sc_channel_configuration(channel):
     This method returns a dictionary with the key, value pairs containing
     the current configuration for the given channel object. The keys used are
     the ones required by the JRPC protocol.
+
+    :param channel: Channel object
     """
     return {
         CH_ID_K: channel.identifier,
@@ -134,24 +142,25 @@ def deserialize_sc_channel_parameters(configuration):
     """
     Spacecraft channel parameters are returned from within the configuration
     structure passed as first parameter.
-    :param configuration: The configuration structure with all the data.
-    :return: Tuple containing all parameters as separate variables.
+
+    :param configuration: The configuration structure with all the data
+    :return: Tuple containing all parameters as separate variables
     """
     check_sc_channel_configuration(configuration)
 
-    return configuration[FREQUENCY_K],\
+    return configuration[FREQUENCY_K], \
         band_models.AvailableModulations.objects.get(
             modulation=configuration[MODULATION_K]
-        ),\
+    ), \
         band_models.AvailableBitrates.objects.get(
             bitrate=configuration[BITRATE_K]
-        ),\
+    ),\
         band_models.AvailableBandwidths.objects.get(
             bandwidth=configuration[BANDWIDTH_K]
-        ),\
+    ),\
         band_models.AvailablePolarizations.objects.get(
             polarization=configuration[POLARIZATION_K]
-        )
+    )
 
 
 def deserialize_gs_channel_parameters(configuration):

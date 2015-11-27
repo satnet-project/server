@@ -43,7 +43,7 @@ class PeriodicSimulationTest(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_simulation_error(self):
-        """Error test
+        """UNIT test: Error test
         Validates the fail mode for the simulator.
         """
         sim = simulator.OrbitalSimulator()
@@ -58,7 +58,7 @@ class PeriodicSimulationTest(test.TestCase):
             pass
 
     def test_propagate_groundtracks(self):
-        """Periodic task test
+        """UNIT test: Periodic task test (propagate groundtracks)
         Test that validates the periodical propagation of the groundtracks. It
         uses the spacecraft created when the database was initialized some
         time ago at the beginning of the test.
@@ -83,7 +83,7 @@ class PeriodicSimulationTest(test.TestCase):
         )
 
     def test_propagate_passes(self):
-        """Periodict task test
+        """UNIT test: Periodic task test (propagate passes)
         Test that validates the periodical propagation of the pass slots.
         """
         pass_models.PassSlots.objects.propagate()

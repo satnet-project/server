@@ -24,6 +24,7 @@ from services.simulation.models import passes as pass_models
 logger = logging.getLogger('simulation')
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_save, sender=pass_models.PassSlots
 )
@@ -44,6 +45,7 @@ def passes_updated(sender, instance, created, raw, **kwargs):
     simulation_push.SimulationPush.trigger_passes_updated_event()
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.pre_delete, sender=pass_models.PassSlots
 )

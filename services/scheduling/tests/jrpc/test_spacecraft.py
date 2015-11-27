@@ -205,7 +205,7 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         )
 
     def test_sc_get_changes(self):
-        """
+        """JRPC test: services.scheduling.sc.getChanges
         Validates the JRPC method <sc_get_changes>.
         """
         if self.__verbose_testing:

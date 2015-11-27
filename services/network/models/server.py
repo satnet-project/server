@@ -38,8 +38,6 @@ class ServerManager(django_models.Manager):
         does not exist in the database, it creates the local server for the
         very first time.
         """
-        s_local = None
-
         try:
 
             s_local = self.get_local()
@@ -57,6 +55,7 @@ class ServerManager(django_models.Manager):
             logger.warning('>>> Local server NOT found, creating instance')
             Server.objects.create(is_me=True)
 
+    # noinspection PyMethodMayBeStatic
     def get_local(self):
         """
         Returns a reference to the object that defines the local Server within
@@ -65,10 +64,12 @@ class ServerManager(django_models.Manager):
         """
         return Server.objects.get(is_me=True)
 
+    # noinspection PyUnusedLocal
     def create(self, identifier=None, ip_address=None, **kwargs):
         """
         Creates a server and automatically adds the FQDN hostname as the
         identifier.
+
         :param identifier: Identifier for the server. If not given, the FQDN
                             for the current host will be used as the identifier.
         :param ip_address: IP address of the server. If not given, the IP

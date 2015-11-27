@@ -49,8 +49,8 @@ class JRPCBookingProcessTest(django_test.TestCase):
         if self.__verbose_testing:
             print('##### test_1_test_slot')
 
-        s_time = common_misc.get_now_utc(no_microseconds=True)
-        e_time = s_time + datetime.timedelta(hours=2)
+        # s_time = common_misc.get_now_utc(no_microseconds=True)
+        # e_time = s_time + datetime.timedelta(hours=2)
 
         self.assertEquals(
             scheduling_slots.get_slot(self.__test_slot_id), {

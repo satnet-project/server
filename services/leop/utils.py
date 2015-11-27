@@ -25,6 +25,7 @@ def generate_object_sc_identifier(launch_id, object_id):
     """Helper method
     Generates the identifier for the simulation-only-purposes spacecraft
     that represents this UFO object.
+
     :param launch_id: Identifier of the launch
     :param object_id: Identifier of the UFO (sequential number)
     :return: String with the complete TLE source
@@ -36,6 +37,7 @@ def generate_object_sc_identifier(launch_id, object_id):
 def generate_object_tle_source(object_id):
     """Helper method
     Generates the identificator for the source of the UFO TLE files.
+
     :param object_id: Identifier of the UFO (sequential number)
     :return: String with the complete TLE source
     """
@@ -46,6 +48,7 @@ def generate_object_tle_id(object_id, callsign):
     """Helper method
     Generates a complex UFO identifier that is to be used as the initial
     identifier of the associated TLE in the database.
+
     :param object_id: Identifier of the UFO (sequential number)
     :param callsign: Callsign for the UFO
     :return: String with the complete TLE source
@@ -57,6 +60,7 @@ def generate_object_tle_id(object_id, callsign):
 def create_object_tle(object_id, callsign, tle_l1, tle_l2):
     """Helper method
     Creates a TLE for this UFO object.
+
     :param object_id: Identifier of the UFO object
     :param callsign: Callsign for the UFO
     :param tle_l1: First line of the UFO's TLE
@@ -75,8 +79,11 @@ def create_object_spacecraft(
 ):
     """Helper method
     Creates the spacecraft that simulates the position of this object.
+    :param user_profile: Object with the profile of the user
+    :param launch_id: Identifier of the cluster
     :param object_id: Identifier of the object
     :param tle_id: Identifier of the TLE
+    :param callsign: Callsign for the Spacecraft object
     :return: Reference to the just created spacecraft object
     """
     sc_id = generate_object_sc_identifier(
@@ -95,6 +102,7 @@ def create_object_spacecraft(
 def generate_cluster_tle_source(launch_id):
     """Helper method
     Generates the identificator for the source of the cluster TLE files.
+
     :param launch_id: Identifier of the UFO (sequential number)
     :return: String with the complete TLE source
     """
@@ -105,6 +113,7 @@ def generate_cluster_tle_id(launcher_id):
     """Helper method
     Generates a complex UFO identifier that is to be used as the initial
     identifier of the associated TLE in the database.
+
     :param launcher_id: Identifier of the UFO (sequential number)
     :return: String with the complete TLE source
     """
@@ -115,6 +124,7 @@ def generate_cluster_tle_id(launcher_id):
 def create_cluster_tle(launch_id, tle_l1, tle_l2):
     """Helper method
     Creates a TLE for this UFO object.
+
     :param launch_id: Identifier of the UFO object
     :param tle_l1: First line of the UFO's TLE
     :param tle_l2: Second line of the UFO's TLE
@@ -131,6 +141,7 @@ def generate_cluster_sc_identifier(launch_id, callsign):
     """Helper method
     Generates the identifier for the simulation-only-purposes spacecraft
     that represents this UFO object.
+
     :param launch_id: Identifier of the UFO (sequential number)
     :param callsign: Callsign for the UFO
     :return: String with the complete TLE source
@@ -143,6 +154,7 @@ def generate_cluster_callsign(launch_id):
     """Helper method
     Generates the identifier for the simulation-only-purposes spacecraft
     that represents this cluster object.
+
     :param launch_id: Identifier of the cluster
     :return: String with the identifier
     """
@@ -153,8 +165,11 @@ def generate_cluster_callsign(launch_id):
 
 def create_cluster_spacecraft(user_profile, launch_id, tle_id):
     """Helper method
-    :param launch_id:
-    :param tle_id:
+    Creates a Cluster object for the Spacecraft.
+
+    :param user_profile: Object with the profile of the user
+    :param launch_id: Identifier of the cluster
+    :param tle_id: TLE identifier for the cluster
     :return: Reference to the just created spacecraft object
     """
     sc_callsign = generate_cluster_callsign(launch_id)

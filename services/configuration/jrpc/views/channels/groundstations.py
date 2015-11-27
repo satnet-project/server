@@ -34,9 +34,11 @@ from website import settings as satnet_settings
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_list(identifier):
-    """JRPC test: configuration.gs.channel.list
+    """JRPC method: configuration.gs.channel.list
     Simple method that returns the list of channels registered within this
     Ground Station.
+
+    :param identifier: Identifier of the Ground Station
     """
     channels = channel_models.GroundStationChannel.objects.filter(
         groundstation=segment_models.GroundStation.objects.get(
@@ -52,9 +54,11 @@ def gs_channel_list(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_is_unique(identifier):
-    """JRPC test: configuration.gs.channel.isUnique
+    """JRPC method: configuration.gs.channel.isUnique
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
+
+    :param identifier: Identifier of the Ground Station Channel
     """
     return channel_models.GroundStationChannel.objects.filter(
         identifier=identifier
@@ -67,10 +71,14 @@ def gs_channel_is_unique(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_create(groundstation_id, channel_id, configuration):
-    """JRPC test: configuration.gs.channel.create
+    """JRPC method: configuration.gs.channel.create
     Method that receives a configuration for a new channel to be added to the
     database. In case the channel could be added correctly to the database, it
     returns 'true'; otherwise, it raises an exception that is also returned.
+
+    :param groundstation_id: Identifier of the GroundStation
+    :param channel_id: Identifier of the Channel
+    :param configuration: Configuration object for the Channel
     """
     # 1) Get channel parameters from JSON representation into variables
     band_name, automated, mod_l, bps_l, bws_l, pol_l =\
@@ -104,9 +112,9 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
     except django_db.IntegrityError as ex:
         logger.warn(str(ex))
         raise Exception(
-            "Channel identifier already exists, { "
-            + str(jrpc_channels_serial.CH_ID_K) + ": "
-            + str(channel_id) + "}"
+            "Channel identifier already exists, { " + str(
+                jrpc_channels_serial.CH_ID_K
+            ) + ": " + str(channel_id) + "}"
         )
 
     # 2) Returns true or throws exception
@@ -119,9 +127,12 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_get_configuration(groundstation_id, channel_id):
-    """JRPC test: configuration.gs.channel.getConfiguration
+    """JRPC method: configuration.gs.channel.getConfiguration
     Method that can be used for retrieving a complete configuration for the
     requested channel.
+
+    :param groundstation_id: Identifier of the GroundStation
+    :param channel_id: Identifier of the Channel
     """
     return jrpc_channels_serial.serialize_gs_channel_configuration(
         channel_models.GroundStationChannel.objects.get(
@@ -139,10 +150,14 @@ def gs_channel_get_configuration(groundstation_id, channel_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
-    """JRPC test: configuration.gs.channel.setConfiguration
+    """JRPC method: configuration.gs.channel.setConfiguration
     Method that can be used for setting the configuration of an existing
     channel. Configuration can be incomplete, so that users may decide only
     to update some of the parameters of the channel.
+
+    :param groundstation_id: Identifier of the GroundStation
+    :param channel_id: Identifier of the Channel
+    :param configuration: Configuration object for the Channel
     """
     # 1) Retrieve objects from database
     ch = channel_models.GroundStationChannel.objects.get(
@@ -173,9 +188,12 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_delete(groundstation_id, channel_id):
-    """JRPC test: configuration.gs.channel.delete
+    """JRPC method: configuration.gs.channel.delete
     Method that removes the given channel from the database and from the list
     of available channels of the Ground Station that owns it.
+
+    :param groundstation_id: Identifier of the GroundStation
+    :param channel_id: Identifier of the Channel
     """
     channel_models.GroundStationChannel.objects.get(
         identifier=channel_id,

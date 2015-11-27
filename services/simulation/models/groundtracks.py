@@ -82,9 +82,12 @@ class GroundTrackManager(models.Manager):
         """
         Appends the new points to the existing groundtrack. It does not save
         the results in the database.
+
         :param groundtrack: The groundtrack to be updated.
-        :param new_lat: The array of new points to be appended.
-        :return: The updated groundtrack object.
+        :param new_ts: The new timestamps to be appended
+        :param new_lat: The new latitudes to be appended
+        :param new_lng: The new longitudes to be appended
+        :return: The updated groundtrack object
         """
         ts_l = groundtrack.timestamp
         la_l = groundtrack.latitude
@@ -102,10 +105,10 @@ class GroundTrackManager(models.Manager):
         Static method that transforms a groundtrack array composed by points
         (lat, lng, timestamp) into three independent oArrays that can be stored
         directly in a PostGres database.
-        :param groundtrack: The groundtrack to be split.
+
+        :param groundtrack: The groundtrack to be split
         :return: ([latitude], [longitude], [timestamp]), three independent
-                oArrays with the components of a given point from the
-                groundtrack.
+            oArrays with the components of a given point from the groundtrack
         """
         latitudes = []
         longitudes = []
@@ -162,8 +165,8 @@ class GroundTrackManager(models.Manager):
             except Exception as ex:
 
                 logger.warning(
-                    'Error while propagating groundtrack = ' + str(gt)
-                    + 'ex = ' + str(ex)
+                    'Error while propagating groundtrack = ' + str(gt) +
+                    'ex = ' + str(ex)
                 )
 
 
