@@ -63,7 +63,7 @@ class TestLeopViews(test.TestCase):
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
 
     def test_get_queryset(self):
-        """Unit test case.
+        """Unit test: view processing
         Simply checks this method of the LeopManagementView since it had to
         be implemented slightly different than what expected beforehand.
         """
@@ -71,8 +71,8 @@ class TestLeopViews(test.TestCase):
         cm.request = self.__request_1
 
         qs = cm.get_queryset()
-        self.assertEqual(len(qs), 0 , 'No LEOPs should be owned by user 1.')
+        self.assertEqual(len(qs), 0, 'No LEOPs should be owned by user 1.')
 
         cm.request = self.__request_3
         qs_2 = cm.get_queryset()
-        self.assertEqual(len(qs_2), 1 , '1 LEOP should be owned by user 2.')
+        self.assertEqual(len(qs_2), 1, '1 LEOP should be owned by user 2.')

@@ -43,9 +43,9 @@ class TestLaunchModels(test.TestCase):
         self.__ufo_1_cs = 'UFOXXXS'
 
         self.__tle_l1 = '1 27844U 03031E   15007.47529781  .00000328' \
-                            '  00000-0  16930-3 0  1108'
+            '  00000-0  16930-3 0  1108'
         self.__tle_l2 = '2 27844  98.6976  18.3001 0010316  50.6742 ' \
-                            '104.9393 14.21678727597601'
+            '104.9393 14.21678727597601'
         self.__launch = db_tools.create_launch(identifier=self.__launch_id)
 
         if not self.__verbose_testing:
@@ -53,7 +53,7 @@ class TestLaunchModels(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_create_launch(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.create
         Validates the creation of a launch object together with its associated
         resources.
         """
@@ -96,7 +96,7 @@ class TestLaunchModels(test.TestCase):
             print('>>> callsign (cluster) = ' + str(callsign))
 
     def test_delete_launch(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.delete
         Validates the deletion of a Launch object together with its associated
         resources.
         """
@@ -122,7 +122,7 @@ class TestLaunchModels(test.TestCase):
         )
 
     def test_add_unknown(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.addUnknown
         Validates the creation of an unknown object within the database.
         """
         self.assertEqual(
@@ -139,7 +139,7 @@ class TestLaunchModels(test.TestCase):
         )
 
     def test_remove_unknown(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.removeUnknown
         Validates the removal of an unknown object from the database.
         """
         launch_models.Launch.objects.add_unknown(
@@ -157,7 +157,7 @@ class TestLaunchModels(test.TestCase):
         )
 
     def test_identifiy(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.identify
         Validates the promotion of an unknown object into an identified one
         and the allocation of the resources necessary (spacecraft, tle and
         associated groundtrack).
@@ -219,7 +219,7 @@ class TestLaunchModels(test.TestCase):
             print(' >>> tle_id (object) = ' + str(tle_id))
 
     def test_forget(self):
-        """UNIT test case (model method)
+        """UNIT test: services.leop.launch.forget
         Validates the under-promotion of an identified object back to its
         unknown state.
         """
