@@ -34,12 +34,11 @@ logger = logging.getLogger('accounts')
 @account_decorators.login_required
 def user_details(request):
     """jQuery GET method for retrieving user details.
-    Parameters:
-    * user_id = identifier of the user within the database
+    :param request: The HTTP request to be processed
     """
     logger.info(__name__ + ', user_details (AJAX)')
 
-    if not 'user_id' in request.GET:
+    if 'user_id' not in request.GET:
         raise exceptions.BadRequest("'user_id' not found as a GET parameter.")
 
     user_id = request.GET['user_id']
@@ -58,23 +57,25 @@ def user_details(request):
 @account_decorators.login_required
 def user_verification(request):
     """ jQuery POST method for updating the set of users to be verified.
-    Parameters:
-    * list = list with the identifiers of the verified users.
+    :param request: The HTTP request to be processed
     """
     logger.info(__name__ + ', user_verification (AJAX)')
     for x in request.POST:
         print((x, ':', request.POST[x]))
 
-    if not 'user_list' in request.POST:
+    if 'user_list' not in request.POST:
         print((__name__ + ', user_verification, raising BadRequest.'))
         raise Exception("'user_list' not found as a POST parameter.")
 
     value = str(request.POST['user_list'])
     user_list = json.loads(value)
 
+    # noinspection PyProtectedMember
     if site_models.Site._meta.installed:
+        # noinspection PyUnusedLocal
         site = site_models.Site.objects.get_current()
     else:
+        # noinspection PyUnusedLocal
         site = site_models.RequestSite(request)
 
     v_users = []

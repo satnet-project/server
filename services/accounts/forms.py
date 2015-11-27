@@ -93,11 +93,13 @@ class RegistrationForm(forms.ModelForm):
             'organization', 'country'
         )
 
+    # noinspection PyUnusedLocal
     def signup(self, request, user):
         """(Overriden) save() method for ModelForm.
         This method has to be overriden for saving the UserProfile that
         extends the basic User handled by the Django auth system.
-        :param user: User linked with this UserProfile.
+        :param user: User linked with this UserProfile
+        :param request: The HTTP request to be processed
         """
         profile = account_models.UserProfile()
         profile.user_ptr = user

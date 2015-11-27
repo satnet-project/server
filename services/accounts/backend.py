@@ -38,6 +38,7 @@ class AnonymousAuthenticationBackend(object):
     This is for automatically signing in the user after signup etc.
     """
 
+    # noinspection PyMethodMayBeStatic
     def authenticate(self, user=None):
         """
         Authenticates the given user.
@@ -46,6 +47,7 @@ class AnonymousAuthenticationBackend(object):
         """
         return user
 
+    # noinspection PyMethodMayBeStatic
     def get_user(self, user_id):
         """
         Returns the user object related with the given user_id.

@@ -28,13 +28,15 @@ class UtilsTest(TestCase):
     out_guo = {"43": "verify"}
     
     def test_get_user_operations(self):
-        """Should extract all user_id and operations from the POST request
+        """UNIT test: services.accounts.utils - user ID and operations
+        Should extract all user_id and operations from the POST request
         """
         result = account_utils.get_user_operations(self.inp_guo)
         self.assertCountEqual(result, self.out_guo, "Wrong result!")
 
     def test_random_username(self):
-        """Should generate random user names
+        """UNIT test: services.accounts.utils - random username generation
+        Should generate random user names
         """
         name_1 = account_utils.generate_random_username()
         name_2 = account_utils.generate_random_username()
@@ -44,7 +46,8 @@ class UtilsTest(TestCase):
         )
 
     def test_get_user(self):
-        """Should extract the user object and username from a HTTP request
+        """UNIT test: services.accounts.utils - user from HTTP request
+        Should extract the user object and username from a HTTP request
         """
         username = 'test-user'
         user_profile = db_tools.create_user_profile(

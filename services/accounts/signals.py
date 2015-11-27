@@ -28,6 +28,7 @@ from user_sessions import models as user_session_models
 logger = logging.getLogger('accounts')
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_save, sender=auth_models.User
 )
@@ -38,7 +39,7 @@ def user_migrated(sender, instance, created, raw, **kwargs):
     :param instance: Reference to object
     :param created: Flag that indicates that this object has just been created
     :param raw: Flag that indicates whether the database is stable or not
-    :param kwargs: Additional arguments.
+    :param kwargs: Additional arguments
     """
     if not created or raw:
         return
@@ -55,6 +56,7 @@ def user_migrated(sender, instance, created, raw, **kwargs):
     instance.save()
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.pre_delete, sender=user_session_models.Session
 )
@@ -71,6 +73,7 @@ def session_closed_handler(sender, instance, **kwargs):
     pass
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(allauth_signals.user_signed_up)
 def user_signed_up_receiver(request, user, **kwargs):
     """User signed up callback
@@ -89,15 +92,16 @@ def user_signed_up_receiver(request, user, **kwargs):
 CONFIRMED_EMAIL_TEMPLATE = 'email/email_user_confirmed'
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(allauth_signals.email_confirmed)
 def email_confirmed_receiver(email_address, **kwargs):
-    """Email confirmed callback.
+    """Email confirmed callback
     This method overrides the default behavior for handling the sign up of a
     new user. In this case, a welcome email will be sent waiting for the
     operator of the system to accept the request made by this user.
-    :param request: the signed up request
-    :param user: the new user
-    :param kwargs: other args
+
+    :param email_address: email address that's been confirmed
+    :param kwargs: additional parameters dictionary
     """
 
     try:

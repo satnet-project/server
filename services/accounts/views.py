@@ -32,15 +32,20 @@ def csrf_failure_handler(request, reason=''):
     """
     Method that renders the HTML to be displayed whenever a CSRF exception is
     raised.
+
+    :param request: HTTP request to be processed
+    :param reason: String describing the reason of the CSRF failure
     """
     logger.error('CSRF ERROR, reason = ' + str(reason))
     return TemplateResponse(request, 'csrf_failure.html')
 
 
 def redirect_login(request):
-    """Redirect method.
+    """Redirect method
     Redirects user access to 'home', so in case a user is already logged in,
     the system redirects that access to the post-login 'home' page.
+
+    :param request: HTTP request to be processed
     """
     if request.user.is_authenticated():
         return redirect_home(request)
@@ -50,8 +55,10 @@ def redirect_login(request):
 
 @login_required
 def redirect_home(request):
-    """Redirect method.
+    """Redirect method
     Redirects users based on their priviledges.
+
+    :param request: HTTP request to be processed
     """
     if request.user.is_staff:
         return TemplateResponse(request, 'staff/staff_home.html')
@@ -73,13 +80,17 @@ class UserProfileView(UpdateView):
         For this view it is necessary to change dinamically the base template
         that this template extends since it is different depending on whether
         the user is a regular or a staff one.
+        :param kwargs: Additional parameters
         """
         context = super(UserProfileView, self).get_context_data(**kwargs)
 
+        # noinspection PyUnresolvedReferences
         if self.request.user.is_authenticated():
 
+            # noinspection PyUnresolvedReferences
             context['username'] = self.request.user.username
 
+            # noinspection PyUnresolvedReferences
             if self.request.user.is_staff:
                 context['base_template'] = 'staff/staff_home.html'
             else:
@@ -94,9 +105,14 @@ class UserProfileView(UpdateView):
         """Overriden <get_object>.
         This method is overriden so that it returns a UserProfile both for
         regular and for staff users.
+
+        :param queryset: Query set parameter for looking up for the object
         :return: UserProfile object to be shown
         """
+
+        # noinspection PyUnresolvedReferences
         if self.request.user.is_authenticated():
+            # noinspection PyUnresolvedReferences
             return models.UserProfile.objects.get(pk=self.request.user.id)
 
 
@@ -115,9 +131,13 @@ class PendingRegView(ListView):
     context_object_name = 'user_list'
 
     def post(self, request, *args, **kwargs):
-        """
-        POST method handler. This method is invoked once the submit button of
-        the form is pressed.
+        """POST method handler
+
+        This method is invoked once the submit button of the form is pressed.
+
+        :param request: HTTP request to be processed
+        :param args: Additional parameters list
+        :param kwargs: Additional parameters dictionary
         """
         operations = utils.get_user_operations(request.POST)
         self.apply_user_operations(operations)
@@ -131,8 +151,10 @@ class PendingRegView(ListView):
         links the key (operation name) with the callback function that
         implements that operation. Therefore, this class can be extended and,
         by simply modifying that dictionary, new operations can be implemented.
+
         :param operations: Dictionary whose keys are the identifiers for the
-        users and whose values are the operations to be applied to each user
+            users and whose values are the operations to be applied to each
+            user
         """
         for user_id, op in operations.items():
 
@@ -152,6 +174,7 @@ class PendingRegView(ListView):
         """
         models.UserProfile.objects.verify_user(user_id)
 
+    # noinspection PyMethodMayBeStatic
     def block_user(self, user_id):
         """
         Blocks a registration request made by the user whose identifier is
@@ -167,6 +190,7 @@ class PendingRegView(ListView):
         """
         models.UserProfile.objects.block_user(user_id)
 
+    # noinspection PyMethodMayBeStatic
     def delete_user(self, user_id):
         """
         Deletes all the information related to a given user from the 3 tables
@@ -204,6 +228,7 @@ class BlockedRegView(PendingRegView):
     template_name = 'staff/blocked_requests.html'
     queryset = models.UserProfile.objects.filter(blocked=True)
 
+    # noinspection PyMethodMayBeStatic
     def unblock_user(self, user_id):
         """
         Unblocks a registration request made by the user whose identifier is
@@ -228,6 +253,7 @@ class VerifiedView(PendingRegView):
         filter(is_verified=True).\
         filter(blocked=False)
 
+    # noinspection PyMethodMayBeStatic
     def deactivate_user(self, user_id):
         """
         Marks the given user as inactive, so that the user cannot login in

@@ -50,6 +50,7 @@ class UserProfileManager(models.Manager):
 
         return profile
 
+    # noinspection PyMethodMayBeStatic
     def verify_user(self, user_id):
         """
         Function that changes user status to 'verified' in the database.
@@ -73,6 +74,7 @@ class UserProfileManager(models.Manager):
             }
         )
 
+    # noinspection PyMethodMayBeStatic
     def block_user(self, user_id):
         """
         Function that changes user status to 'blocked' in the database.
@@ -96,6 +98,7 @@ class UserProfileManager(models.Manager):
             }
         )
 
+    # noinspection PyMethodMayBeStatic
     def unblock_user(self, user_id):
         """
         Function that changes user status to 'unblocked' in the database.
@@ -119,6 +122,7 @@ class UserProfileManager(models.Manager):
             }
         )
 
+    # noinspection PyMethodMayBeStatic
     def activate_user(self, user_id):
         """
         Function that changes user status to 'active' in the database.
@@ -142,6 +146,7 @@ class UserProfileManager(models.Manager):
             }
         )
 
+    # noinspection PyMethodMayBeStatic
     def deactivate_user(self, user_id):
         """
         Function that changes user status to 'active' in the database.
@@ -166,6 +171,7 @@ class UserProfileManager(models.Manager):
         )
 
 
+# noinspection PyAbstractClass
 class UserProfile(auth_models.User):
     """
     This class holds additional data required from each user. It is used in 
@@ -195,10 +201,14 @@ class UserProfile(auth_models.User):
     )
 
 
+# noinspection PyUnusedLocal
 def create_admin_profile(apps, schema_editor):
     """Data migrations
     This method creates the profile for the initial administrator user added
     by default by django manage.py.
+
+    :param apps: Not used variable
+    :param schema_editor: Not used variable
     """
     UserProfile.objects.create(
         user_ptr=auth_models.User.objects.get(is_superuser=True),
@@ -207,10 +217,14 @@ def create_admin_profile(apps, schema_editor):
     )
 
 
+# noinspection PyUnusedLocal
 def remove_admin_profile(apps, schema_editor):
     """Data migrations
     Reverse data migration that destroys the user profile initially created
     for the administrator.
+
+    :param apps: Not used variable
+    :param schema_editor: Not used variable
     """
     UserProfile.objects.get(pk=1).delete()
 
@@ -229,8 +243,11 @@ def get_user(
     takes into account all the permission policies implemented by the server.
 
     :param http_request: The HTTP request object
+    :param permissions_flag: Flag with whether the permissions should be used
+    :param test_username: Flag with the test username
+    :param testing_flag: Flag indicating the testing condition
     :return: (user, username) Tuple with the user object as per django_auth
-    contrib library and its username separate
+        contrib library and its username separate
     """
     if not permissions_flag and not testing_flag:
 
