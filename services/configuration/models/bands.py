@@ -124,16 +124,21 @@ class AvailableBandsManager(models.Manager):
         Returns the object whose name band is the one provided. If no band_name
         is provided, it simply returns the result of the overriden get
         method.
-        :rtype : AvailableBands object
+
+        :param band_name: Name of the band
+        :param args: N-Tuple of additional parameters
+        :param kwargs: Additional parameters dictionary
+        :returns: AvailableBands object
         """
         if not band_name:
             return super(AvailableBandsManager, self).get(args, kwargs)
 
         s = re.split(AvailableBandsManager.__band_name_separator, band_name)
         if len(s) != AvailableBandsManager.__band_name_splits:
-            raise Exception('<band_name> incorrect, should have '
-                            + str(AvailableBandsManager.__band_name_splits)
-                            + 'parts, but has ' + str(len(s)))
+            raise Exception(
+                '<band_name> incorrect, should have ' + str(
+                    AvailableBandsManager.__band_name_splits
+                ) + 'parts, but has ' + str(len(s)))
         qs = self \
             .filter(IARU_range=s[0]) \
             .filter(AMSAT_letter=s[1]) \

@@ -125,16 +125,21 @@ class SpacecraftChannel(models.Model):
         )
 
     def update(
-        self, frequency=None,
-        modulation=None, bitrate=None, bandwidth=None,
-        polarization=None
+        self,
+        frequency=None,
+        modulation=None, bitrate=None, bandwidth=None, polarization=None
     ):
         """
         Updates the configuration for the given channel. It is not necessary to
         provide all the parameters for this function, since only those that
         are not null will be updated.
-        """
 
+        :param frequency: The central frequency of the channel
+        :param modulation: The modulation of the channel
+        :param bitrate: The bitrate of the channel
+        :param bandwidth: The bandwidth of the channel
+        :param polarization: The polarization of the channel
+        """
         if frequency and self.frequency != frequency:
             self.frequency = frequency
 
@@ -176,7 +181,13 @@ class GroundStationChannelManager(models.Manager):
         """
         Creates a new channel object for a ground station, using the given
         band_name for linking it to an existing band.
-        :return: A reference to the just-created channel object.
+
+        :param modulations: The modulations of the channel
+        :param bitrates: The bitrate of the channel
+        :param bandwidths: The bandwidth of the channel
+        :param polarizations: The polarization of the channel
+        :param kwargs: Additional parameters dictionary
+        :return: A reference to the just-created channel object
         """
         gs_ch = super(GroundStationChannelManager, self).create(
             enabled=True, **kwargs
@@ -287,17 +298,20 @@ class GroundStationChannel(models.Model):
 
     def update(
         self,
-        band=None,
-        automated=None,
-        modulations_list=None,
-        bitrates_list=None,
-        bandwidths_list=None,
-        polarizations_list=None
+        band=None, automated=None,
+        modulations=None, bitrates=None, bandwidths=None, polarizations=None
     ):
         """
         Updates the configuration for the given channel. It is not necessary to
         provide all the parameters for this function, since only those that
         are not null will be updated.
+
+        :param band: Band for the channel
+        :param automated: Flag that indicates whether this GS is automated
+        :param modulations: The modulations of the channel
+        :param bitrates: The bitrate of the channel
+        :param bandwidths: The bandwidth of the channel
+        :param polarizations: The polarization of the channel
         """
         change = False
 
@@ -307,21 +321,21 @@ class GroundStationChannel(models.Model):
         if automated and self.automated != automated:
             self.automated = automated
             change = True
-        if modulations_list and len(modulations_list) > 0:
+        if modulations and len(modulations) > 0:
             self.modulations.clear()
-            self.modulations.add(*modulations_list)
+            self.modulations.add(*modulations)
             change = True
-        if bitrates_list and len(bitrates_list) > 0:
+        if bitrates and len(bitrates) > 0:
             self.bitrates.clear()
-            self.bitrates.add(*bitrates_list)
+            self.bitrates.add(*bitrates)
             change = True
-        if bandwidths_list and len(bandwidths_list) > 0:
+        if bandwidths and len(bandwidths) > 0:
             self.bandwidths.clear()
-            self.bandwidths.add(*bandwidths_list)
+            self.bandwidths.add(*bandwidths)
             change = True
-        if polarizations_list and len(polarizations_list) > 0:
+        if polarizations and len(polarizations) > 0:
             self.polarizations.clear()
-            self.polarizations.add(*polarizations_list)
+            self.polarizations.add(*polarizations)
             change = True
 
         if change:

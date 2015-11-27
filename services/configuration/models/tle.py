@@ -37,6 +37,11 @@ class TwoLineElementsManager(models.Manager):
         Overriden create method that adds a new entry in the TLE database
         with the correspondent timestamp about the time of update. The line 0
         of the TLE is used as a identifier for the TLE itself.
+
+        :param source: Link to the source for the TLE
+        :param l0: Line #0 of the TLE (identifier)
+        :param l1: Line #1 of the TLE
+        :param l2: Line #2 of the TLE
         """
         simulation.OrbitalSimulator.check_tle_format(l0, l1, l2)
 
@@ -53,9 +58,11 @@ class TwoLineElementsManager(models.Manager):
         This method creates the new entry in the databse (in case it does not
         exist); otherwise, it updates the existing entry with the given data
         (if necessary).
-        :param l0: the identifier line of the TLE element.
-        :param l1: the first line.
-        :param l2: the second line.
+
+        :param source: Link to the source for the TLE
+        :param l0: Line #0 of the TLE (identifier)
+        :param l1: Line #1 of the TLE
+        :param l2: Line #2 of the TLE
         :return: a reference to the newly created object in the databse.
         """
         try:
@@ -84,6 +91,7 @@ class TwoLineElementsManager(models.Manager):
 
             sys.stdout.write('*')
             sys.stdout.flush()
+            # noinspection PyUnusedLocal
             section = s_tuple[0]
             tle_info = s_tuple[1]
 
@@ -97,6 +105,9 @@ class TwoLineElementsManager(models.Manager):
         """
         This method loads the TLE's in the database and updates them in
         accordance with the latest information gathered from NORAD's website.
+
+        :param source: URL to the file with the TLE's
+        :param testing: Flag that indicates an internal testing state
         """
         l_n = 0
         l0, l1, l2 = '', '', ''

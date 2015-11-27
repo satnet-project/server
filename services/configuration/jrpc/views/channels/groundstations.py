@@ -174,10 +174,10 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     ch.update(
         band=band,
         automated=automated,
-        modulations_list=mod_l,
-        bitrates_list=bps_l,
-        bandwidths_list=bws_l,
-        polarizations_list=pol_l
+        modulations=mod_l,
+        bitrates=bps_l,
+        bandwidths=bws_l,
+        polarizations=pol_l
     )
     return True
 
