@@ -109,6 +109,10 @@ class Spacecraft(models.Model):
         Updates the configuration for the given GroundStation object. It is not
         necessary to provide all the parameters for this function, since only
         those that are not null will be updated.
+
+        :param callsign: Spacecraft's callsign string
+        :param tle_id: Identifier of the TLE
+
         """
         changes = False
 
@@ -146,10 +150,12 @@ class GroundStationsManager(models.Manager):
         """
         Method that creates a new GroundStation object using the given user as
         the owner of this new segment.
-        TODO IARU region has to be defined yet...
+
         :param latitude: Ground Station's latitude.
         :param longitude: Ground Station's Longitude.
         :param altitude: Ground Station's Altitude.
+        :param username: Username for the owner
+        :param user: User object for the owner
         :param kwargs: Additional parameters.
         :return: The just created GroundStation object.
         """
@@ -235,17 +241,18 @@ class GroundStation(models.Model):
     )
 
     def update(
-        self,
-        callsign=None,
-        contact_elevation=None,
-        latitude=None,
-        longitude=None,
-        is_automatic=None
+        self, callsign=None, contact_elevation=None,
+        latitude=None, longitude=None, is_automatic=None
     ):
         """
         Updates the configuration for the given GroundStation object. It is not
         necessary to provide all the parameters for this function, since only
         those that are not null will be updated.
+        :param callsign: CALLSIGN for this GS
+        :param contact_elevation: Minimum contact elevation
+        :param latitude: GS's latitude
+        :param longitude: GS's longitude
+        :param is_automatic: Flag that defines whether the station is automatic
         """
         changes = False
         change_altitude = False
