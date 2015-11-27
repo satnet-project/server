@@ -81,7 +81,7 @@ class SegmentsChannelsCascade(TestCase):
         )
 
     def test_gs_cascade(self):
-        """INTRA configuration: GS channels cascade deletion
+        """INTR test: GS channels cascade deletion
         """
 
         self.assertEquals(
@@ -110,7 +110,7 @@ class SegmentsChannelsCascade(TestCase):
         )
 
     def test_sc_cascade(self):
-        """INTRA configuration: SC channels cascade deletion
+        """INTR test: SC channels cascade deletion
         """
 
         self.assertEquals(

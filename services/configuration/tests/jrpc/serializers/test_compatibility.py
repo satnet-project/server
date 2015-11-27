@@ -71,7 +71,7 @@ class TestCompatibilitySerializers(test.TestCase):
         )
 
     def test_sc_ch_compatibility_serializers(self):
-        """JRPC serializers: compatibility tuples
+        """JRPC test: compatibility tuples
         """
 
         test_tuples = [
@@ -85,7 +85,7 @@ class TestCompatibilitySerializers(test.TestCase):
         self.assertEquals(len(c), 1, "Wrong number of tuples generated!")
 
     def test_sc_compatibility_serializers(self):
-        """JRPC serializers: compatibility for the spacecraft channels
+        """JRPC test: compatibility for the spacecraft channels
         """
 
         test_tuples = [
