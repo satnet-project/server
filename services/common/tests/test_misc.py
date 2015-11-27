@@ -50,7 +50,7 @@ class TestMisc(test.TestCase):
         )
 
     def test_get_utc_timestamp(self):
-        """
+        """UNIT test: services.common.misc.get_utc_timestamp
         Basic test for the generation of UTC timestamps.
         """
         if self.__verbose_testing:
@@ -63,7 +63,7 @@ class TestMisc(test.TestCase):
         self.assertEqual(expected_stamp, actual_stamp, 'Wrong timestamp!')
 
     def test_utc_database(self):
-        """
+        """UNIT test: UTC database datetimes
         This test validates whether the date/time information saved in the
         database is converted to UTC or not.
         """
@@ -187,7 +187,7 @@ class TestMisc(test.TestCase):
             )
 
     def test_get_fqdn(self):
-        """
+        """UNIT test: services.common.misc.get_fqdn
         This test validates the function that gets the current hostname.
         """
         self.__verbose_testing = False

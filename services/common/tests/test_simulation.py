@@ -19,13 +19,11 @@ import logging
 import math
 from datetime import timedelta, datetime
 
-import numpy
 from django.test import TestCase
 from pytz import utc as pytz_utc
 
-from services.common import simulation, misc, helpers as db_tools
+from services.common import simulation, helpers as db_tools
 from services.configuration.models import tle as tle_models
-from services.simulation.models import groundtracks as simulation_models
 
 
 class TestSimulation(TestCase):
@@ -70,7 +68,7 @@ class TestSimulation(TestCase):
         )
 
     def test_calculate_pass_slot(self):
-        """
+        """UNIT test: services.common.simualtion.trigger_event
         Validates the calculation of the pass slots that occur during an
         availability slot.
         """
@@ -100,7 +98,7 @@ class TestSimulation(TestCase):
                 print('[' + str(p[0]) + ', ' + str(p[1]) + ']')
 
     def test_calculate_groundtrack(self):
-        """
+        """UNIT test: services.common.simualtion.calculate_groundtrack
         Simple and easy test that calculates the groundtrack for a given
         satellite and that validates that calculation by asserting the number
         of expected points for that groundtrack.
@@ -135,33 +133,9 @@ class TestSimulation(TestCase):
             ) + ', a = ' + str(len(groundtrack))
         )
 
-    def __test_groundtrack_variation(self):
-
-        if self.__verbose_testing:
-            print('>>> test_groundtrack_statistics:')
-
-        step = timedelta(minutes=1)
-        (start, end) = self.__simulator.get_simulation_window()
-
-        groundtrack_1_m = self.__simulator.calculate_groundtrack(
-            tle_models.TwoLineElement.objects.get(
-                identifier=self.__sc_1_tle_id
-            ),
-            start=start, end=end, timestep=step
-        )
-
-        ts_1_m, lat_1_m, lng_1_m = simulation_models.GroundTrackManager\
-            .groundtrack_to_dbarray(groundtrack_1_m)
-
-        array_1_m = numpy.array(lat_1_m)
-        misc.print_list(array_1_m)
-
-        var_1_m_lat = numpy.std(array_1_m, dtype=numpy.float64)
-        var_1_m_lng = numpy.std(array_1_m, dtype=numpy.float64)
-
-        print('var_1_m = (' + str(var_1_m_lat) + ', ' + str(var_1_m_lng) + ')')
-
     def test_passes(self):
+        """UNIT test: services.common.simualtion.passes
+        """
 
         self.__tle_fb_id = 'FirebirdTEST'
         self.__tle_fb_l1 = '1 99991U          15030.59770833 -.00001217  ' \

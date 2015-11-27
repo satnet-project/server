@@ -26,7 +26,7 @@ class TestGis(TestCase):
     """
 
     def test_get_remote_user_location(self):
-        """Unit test: services.common.gis.get_remote_user_location
+        """UNIT test: services.common.gis.get_remote_user_location
         Tests for the validation of how to get the location of a remote user
         """
         self.assertEquals(
@@ -37,7 +37,7 @@ class TestGis(TestCase):
         )
 
     def test_get_region(self):
-        """Unit test: services.common.gis.get_region
+        """UNIT test: services.common.gis.get_region
         Tests the usage of the Google Web Service for retrieving the altitude
         associated with the coordinates of a given point.
         """
@@ -59,7 +59,7 @@ class TestGis(TestCase):
         )
 
     def test_get_altitude(self):
-        """Unit test: services.common.gis.get_altitude
+        """UNIT test: services.common.gis.get_altitude
         Tests the usage of the Google Web Service for retrieving the altitude
         associated with the coordinates of a given point.
         """
@@ -79,7 +79,7 @@ class TestGis(TestCase):
         )
 
     def test_get_altitude_bug_3(self):
-        """UNIT test for BUG#3 (Kamchatka bug).
+        """UNIT test: BUG#3 (Kamchatka bug).
         This test validates the utilization of the GIS method for obtaining
         the altitude of a given location, for the case of the Kamchatka
         peninsula. This case triggers an error while invoking this method.
@@ -92,7 +92,7 @@ class TestGis(TestCase):
         )
 
     def test_decimal_2_degrees(self):
-        """Unit test: services.common.gis.decimal_2_degrees
+        """UNIT test: services.common.gis.decimal_2_degrees
         Validates the method for converting from decimal degrees (float) to a
         DMS-formatted string.
         """
@@ -153,7 +153,7 @@ class TestGis(TestCase):
         self.assertEquals(gis.get_longitude_direction(0), '')
 
     def test_latlng_2_degrees_latitude_direction(self):
-        """Unit test: services.common.gis.decimal_2_degrees (latitude/dir)
+        """UNIT test: services.common.gis.decimal_2_degrees (latitude/dir)
         Validates the method for converting from decimal degrees (float) to a
         DMS-formatted string.
         """

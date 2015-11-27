@@ -28,7 +28,7 @@ class MergeSlotsTest(test.TestCase):
         self.__verbose_testing = False
 
     def test_merge_none(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (robustness)
         Nones and empties test.
         """
         self.assertCountEqual(
@@ -41,7 +41,7 @@ class MergeSlotsTest(test.TestCase):
         )
 
     def test_merge_case_a(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case A)
         Case A for merging slots.
         """
         if self.__verbose_testing:
@@ -66,7 +66,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
     def test_merge_case_b(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case B)
         Case B for merging slots.
         """
         if self.__verbose_testing:
@@ -91,7 +91,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
     def test_merge_case_c(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case C)
         Case C for merging slots.
         """
         if self.__verbose_testing:
@@ -116,7 +116,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
     def test_merge_case_d(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case D)
         Case D for merging slots.
         """
         if self.__verbose_testing:
@@ -141,7 +141,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE D: Wrong result!')
 
     def test_merge_case_e(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case E)
         Case E for merging slots.
         """
         if self.__verbose_testing:
@@ -166,7 +166,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE E: Wrong result!')
 
     def test_merge_case_f(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (case F)
         Case F for merging slots.
         """
         if self.__verbose_testing:
@@ -190,7 +190,7 @@ class MergeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE F: Wrong result!')
 
     def test_merge_case_no_m_slots(self):
-        """
+        """UNIT test: services.common.slots.merge_slots (p slots)
         Case merging p slots without m slots.
         """
         if self.__verbose_testing:
@@ -221,8 +221,8 @@ class MergeSlotsTest(test.TestCase):
         )
 
     def test_merge_case_multiple_end(self):
-        """
-        Case merging multiple ending (+) slots.
+        """UNIT test: services.common.slots.merge_slots (multiple + slots)
+        Case merging multiple ending (+) slots)
         """
         if self.__verbose_testing:
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
@@ -254,8 +254,7 @@ class MergeSlotsTest(test.TestCase):
         )
 
     def test_merge_case_complex_1(self):
-        """
-        Complex case #1.
+        """UNIT test: services.common.slots.merge_slots (complex case #1)
         """
         if self.__verbose_testing:
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
@@ -291,8 +290,7 @@ class MergeSlotsTest(test.TestCase):
         )
 
     def test_merge_case_complex_2(self):
-        """
-        Complex case #2.
+        """UNIT test: services.common.slots.merge_slots (complex case #2)
         """
         if self.__verbose_testing:
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')
@@ -325,8 +323,7 @@ class MergeSlotsTest(test.TestCase):
         )
 
     def test_merge_case_complex_3(self):
-        """
-        Complex case #3.
+        """UNIT test: services.common.slots.merge_slots (complex case #3)
         """
         if self.__verbose_testing:
             print('$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$')

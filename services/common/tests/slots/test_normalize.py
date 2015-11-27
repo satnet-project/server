@@ -29,7 +29,7 @@ class NormalizeSlotsTest(test.TestCase):
         self.__verbose_testing = False
 
     def test_normalize_none(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (robustness)
         Nones and empties test.
         """
         self.assertCountEqual(
@@ -42,7 +42,7 @@ class NormalizeSlotsTest(test.TestCase):
         )
 
     def test_normalize_a(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (case A)
         Case A for normalizing slots.
         """
         if self.__verbose_testing:
@@ -66,7 +66,7 @@ class NormalizeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE A: Wrong result!')
 
     def test_normalize_b(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (case B)
         Case B for normalizing slots.
         """
         if self.__verbose_testing:
@@ -90,7 +90,7 @@ class NormalizeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE B: Wrong result!')
 
     def test_normalize_c(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (case C)
         Case C for normalizing slots.
         """
         if self.__verbose_testing:
@@ -114,7 +114,7 @@ class NormalizeSlotsTest(test.TestCase):
         self.assertCountEqual(expected_s, actual_s, 'CASE C: Wrong result!')
 
     def test_normalize_complex_1(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (complex case #1)
         Case COMPLEX#1 for normalizing slots.
         """
         if self.__verbose_testing:
@@ -150,7 +150,7 @@ class NormalizeSlotsTest(test.TestCase):
         )
 
     def test_normalize_complex_2(self):
-        """
+        """UNIT test: services.common.slots.normalize_slots (complex case #2)
         Case COMPLEX#2 for normalizing slots.
         """
         if self.__verbose_testing:

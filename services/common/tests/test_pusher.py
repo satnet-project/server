@@ -37,14 +37,14 @@ class TestPusher(TestCase):
         }
 
     def test_basic(self):
-        """PUSH services unit test
+        """UNIT test: services.common.pusher.test_service
         Simple test that invokes a testing event through the test channel that
         is enabled by default at the pusher.com website.
         """
         self.__push_service.test_service()
 
     def test_connection(self):
-        """pusher.com unit test
+        """UNIT test: services.common.pusher.trigger_event
         Validates the basic usage of the testing channel.
         """
         self.__push_service.trigger_event(

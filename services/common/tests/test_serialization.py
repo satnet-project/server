@@ -46,7 +46,7 @@ class TestSerialization(test.TestCase):
         )
 
     def test_serialize_iso8601_date(self):
-        """
+        """UNIT test: services.common.serialization.serialize_iso8601_date
         Validates the function that transforms a Datetime object into a
         ISO-8601 string with Time and TimeZone.
         """
@@ -79,7 +79,7 @@ class TestSerialization(test.TestCase):
         self.__verbose_testing = False
 
     def test_deserialize_iso8601_date(self):
-        """
+        """UNIT test: services.common.serialization.deserialize_iso8601_date
         Validates the deserializaiton of an ISO-8601 string into a
         datetime.datetime object.
         """
@@ -113,7 +113,7 @@ class TestSerialization(test.TestCase):
         self.__verbose_testing = False
 
     def test_serialize_iso8601_time(self):
-        """
+        """UNIT test: services.common.serialization.serialize_iso8601_time
         Validates the function that transforms a Datetime object into a
         ISO-8601 string with Date and TimeZone.
         """
@@ -137,7 +137,7 @@ class TestSerialization(test.TestCase):
         self.assertEqual(actual, expected, 'Wrong ISO-8601 format.')
 
     def test_deserialize_iso8601_time(self):
-        """
+        """UNIT test: services.common.serialization.deserialize_iso8601_time
         Validates the deserializaiton of an ISO-8601 string into a
         datetime.datetime object.
         """
