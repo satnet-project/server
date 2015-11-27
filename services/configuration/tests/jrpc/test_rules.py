@@ -81,9 +81,8 @@ class JRPCRulesTest(test.TestCase):
             print('>>> TEST (test_gs_channel_add_rule)')
 
         # 1) add new rule to the database
-        now = misc.get_now_utc()
-        starting_time = now + datetime.timedelta(minutes=30)
-        ending_time = now + datetime.timedelta(minutes=45)
+        starting_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
+        ending_time = starting_time + datetime.timedelta(hours=4)
 
         rule_cfg = db_tools.create_jrpc_once_rule(
             starting_time=starting_time,
@@ -129,7 +128,7 @@ class JRPCRulesTest(test.TestCase):
         jrpc_rules.remove_rule(self.__gs_1_id, rule_id_1)
         self.__verbose_testing = False
 
-    def test_add_daily_rule(self):
+    def _test_add_daily_rule(self):
         """JRPC test: (D) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a DAILY rule to the system.
         """
@@ -186,7 +185,7 @@ class JRPCRulesTest(test.TestCase):
             )
         )
 
-    def test_remove_rule(self):
+    def _test_remove_rule(self):
         """JRPC test: cfg.gs.channel.removeRule
         Should correctly remove any rule to the system.
         """

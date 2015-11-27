@@ -63,9 +63,8 @@ def add_rule(groundstation_id, rule_cfg):
 
     op, periodicity, dates = rule_serializers.deserialize_rule_cfg(rule_cfg)
     rule = rule_models.AvailabilityRule.objects.create(
-        segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
-        ), op, periodicity, dates
+        segment_models.GroundStation.objects.get(identifier=groundstation_id),
+        op, periodicity, dates
     )
     return rule.pk
 
