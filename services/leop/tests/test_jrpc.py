@@ -108,7 +108,7 @@ class TestLaunchViews(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_list_groundstations(self):
-        """JRPC method: services.leop.groundstations.list
+        """JRPC test: services.leop.groundstations.list
         Checks the functioning of the JRPC method that returns the list of
         GroundStations available for the administrator to create a LEOP system.
         """
@@ -170,7 +170,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_add_groundstations(self):
-        """JRPC method: services.leop.groundstations.add
+        """JRPC test: services.leop.groundstations.add
         Validates the addition of an array of GroundStations to a given LEOP
         cluster.
         """
@@ -224,7 +224,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_remove_groundstations(self):
-        """JRPC method: services.leop.groundstations.remove
+        """JRPC test: services.leop.groundstations.remove
         Validates the removal of an array of GroundStations to a given LEOP
         cluster.
         """
@@ -293,7 +293,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_add_unknown(self):
-        """JRPC method: services.leop.unknown.add
+        """JRPC test: services.leop.unknown.add
         Validation of the remote addition of a new unknown object to the list.
         """
         self.assertRaises(
@@ -321,7 +321,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_remove_unknown(self):
-        """JRPC method: services.leop.unknown.remove
+        """JRPC test: services.leop.unknown.remove
         Validates the removal of an unknown object from the list
         """
         self.assertRaises(
@@ -351,7 +351,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_update_ufo(self):
-        """JRPC method: services.leop.ufo.update
+        """JRPC test: services.leop.ufo.update
         Validation of the updte method for an UFO-like object.
         """
         self.assertRaises(
@@ -422,7 +422,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_get_configuration(self):
-        """JRPC method: services.leop.getConfiguration
+        """JRPC test: services.leop.getConfiguration
         Validation of the JRPC method that permits obtaining the
         configuration for a given LEOP cluster.
         """
@@ -525,7 +525,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_set_configuration(self):
-        """JRPC method: services.leop.setConfiguration
+        """JRPC test: services.leop.setConfiguration
         Validates the update of the configuration for a given launch object.
         """
         self.assertRaises(
@@ -594,7 +594,7 @@ class TestLaunchViews(test.TestCase):
         self.assertNotEqual(old_gt, new_gt, 'GroundTracks should be different')
 
     def test_get_passes(self):
-        """JRPC method: services.leop.getPasses
+        """JRPC test: services.leop.getPasses
         Validates the retrieval of the passes for this launch.
         """
         self.assertEqual(
@@ -625,7 +625,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_list_sc(self):
-        """JRPC method: services.leop.spacecraft.list
+        """JRPC test: services.leop.spacecraft.list
         Validates the retrieval of the list of spacecraft associated to this
         launch.
         """
@@ -634,7 +634,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_get_messages(self):
-        """JRPC method: services.leop.getMessages
+        """JRPC test: services.leop.getMessages
         Validates the retrieval of messages from the server.
         """
         # 1) interface robustness

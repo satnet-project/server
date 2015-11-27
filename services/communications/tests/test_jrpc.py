@@ -41,7 +41,7 @@ class TestPassiveCommunications(TestCase):
         )
 
     def test_store_passive_message_null(self):
-        """JRPC method: services.communiations.storePassiveMessage (1)
+        """JRPC test: services.communiations.storePassiveMessage (1)
         Basic unit testing method for checking the behavior of the passive
         communications service under null or empty parameters.
         """
@@ -69,7 +69,7 @@ class TestPassiveCommunications(TestCase):
         )
 
     def test_store_passive_message(self):
-        """JRPC method: services.communiations.storePassiveMessage (2)
+        """JRPC test: services.communiations.storePassiveMessage (2)
         Simple test for validating the storage of passive messages.
         """
         if self.__verbose_testing:
@@ -120,7 +120,7 @@ class TestPassiveCommunications(TestCase):
             print('>>> message_2 (STR) = ' + str(base64.b64decode(message)))
 
     def test_store_message_null(self):
-        """JRPC method: services.communiations.storeMessage (1)
+        """JRPC test: services.communiations.storeMessage (1)
         Basic unit testing method for checking the behavior of the
         communications service under null or empty parameters.
         """

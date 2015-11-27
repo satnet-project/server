@@ -29,7 +29,7 @@ from services.scheduling.jrpc.serializers import operational as \
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_slot(slot_id):
-    """JRPC method: services.scheduling.getSlot
+    """JRPC test: services.scheduling.getSlot
     JRPC method that allows remote users to retrieve the information about a
     given operational slot
     :param slot_id: Identifier of the slot

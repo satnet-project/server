@@ -71,7 +71,7 @@ class TestCompatibilityViews(test.TestCase):
         )
 
     def test_sc_channel_get_compatible(self):
-        """JRPC method: configuration.sc.channel.getCompatible
+        """JRPC test: configuration.sc.channel.getCompatible
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_channel_get_compatible)')
@@ -87,7 +87,7 @@ class TestCompatibilityViews(test.TestCase):
         )
 
     def test_sc_get_compatible(self):
-        """JRPC method: configuration.sc.getCompatible
+        """JRPC test: configuration.sc.getCompatible
         """
         if self.__verbose_testing:
             print('>>> TEST (test_sc_get_compatible)')

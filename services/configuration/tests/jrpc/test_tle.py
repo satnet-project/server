@@ -56,7 +56,7 @@ class JRPCTestTle(test.TestCase):
         )
 
     def test_get_celestrak_sections(self):
-        """JRPC method: configuration.tle.celestrak.getSections
+        """JRPC test: configuration.tle.celestrak.getSections
         """
 
         e_sections = [
@@ -126,7 +126,7 @@ class JRPCTestTle(test.TestCase):
         )
 
     def test_get_celestrak_resource(self):
-        """JRPC method: configuration.tle.celestrak.getResource
+        """JRPC test: configuration.tle.celestrak.getResource
         Tests the retrieval of the information contained in one of the
         celestrak resouces.
         """
@@ -151,7 +151,7 @@ class JRPCTestTle(test.TestCase):
 
     # noinspection PyBroadException
     def test_get_spacecraft_tle(self):
-        """JRPC method: configuration.tle.celestrak.getTle
+        """JRPC test: configuration.tle.celestrak.getTle
         """
 
         try:

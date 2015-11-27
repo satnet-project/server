@@ -34,7 +34,7 @@ from website import settings as satnet_settings
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_list(identifier):
-    """JRPC method: configuration.gs.channel.list
+    """JRPC test: configuration.gs.channel.list
     Simple method that returns the list of channels registered within this
     Ground Station.
     """
@@ -52,7 +52,7 @@ def gs_channel_list(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_is_unique(identifier):
-    """JRPC method: configuration.gs.channel.isUnique
+    """JRPC test: configuration.gs.channel.isUnique
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
     """
@@ -67,7 +67,7 @@ def gs_channel_is_unique(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_create(groundstation_id, channel_id, configuration):
-    """JRPC method: configuration.gs.channel.create
+    """JRPC test: configuration.gs.channel.create
     Method that receives a configuration for a new channel to be added to the
     database. In case the channel could be added correctly to the database, it
     returns 'true'; otherwise, it raises an exception that is also returned.
@@ -119,7 +119,7 @@ def gs_channel_create(groundstation_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_get_configuration(groundstation_id, channel_id):
-    """JRPC method: configuration.gs.channel.getConfiguration
+    """JRPC test: configuration.gs.channel.getConfiguration
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
@@ -139,7 +139,7 @@ def gs_channel_get_configuration(groundstation_id, channel_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
-    """JRPC method: configuration.gs.channel.setConfiguration
+    """JRPC test: configuration.gs.channel.setConfiguration
     Method that can be used for setting the configuration of an existing
     channel. Configuration can be incomplete, so that users may decide only
     to update some of the parameters of the channel.
@@ -173,7 +173,7 @@ def gs_channel_set_configuration(groundstation_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_channel_delete(groundstation_id, channel_id):
-    """JRPC method: configuration.gs.channel.delete
+    """JRPC test: configuration.gs.channel.delete
     Method that removes the given channel from the database and from the list
     of available channels of the Ground Station that owns it.
     """

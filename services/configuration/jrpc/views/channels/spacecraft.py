@@ -35,7 +35,7 @@ logger = logging.getLogger('configuration')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_list(identifier):
-    """JRPC method: configuration.sc.channel.list
+    """JRPC test: configuration.sc.channel.list
     Simple method that returns the list of channels registered within this
     Spacecraft.
     """
@@ -53,7 +53,7 @@ def sc_channel_list(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_is_unique(identifier):
-    """JRPC method: configuration.sc.channel.isUnique
+    """JRPC test: configuration.sc.channel.isUnique
     Simple method that returns a boolean for indicating whether a channel for a
     ground station with the given identifier already exists.
     """
@@ -68,7 +68,7 @@ def sc_channel_is_unique(identifier):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_create(spacecraft_id, channel_id, configuration):
-    """JRPC method: configuration.sc.channel.create
+    """JRPC test: configuration.sc.channel.create
     Method that receives a configuration for a new channel to be added to the
     database. In case the channel could be added correctly to the database, it
     returns 'true'; otherwise, it raises an exception that is also returned.
@@ -117,7 +117,7 @@ def sc_channel_create(spacecraft_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_get_configuration(spacecraft_id, channel_id):
-    """JRPC method: configuration.sc.channel.getConfiguration
+    """JRPC test: configuration.sc.channel.getConfiguration
     Method that can be used for retrieving a complete configuration for the
     requested channel.
     """
@@ -137,7 +137,7 @@ def sc_channel_get_configuration(spacecraft_id, channel_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
-    """JRPC method: configuration.sc.channel.setConfiguration
+    """JRPC test: configuration.sc.channel.setConfiguration
     Method that can be used for setting the configuration of an existing
     channel. Configuration can be incomplete, so that users may decide only
     to update some of the parameters of the channel.
@@ -169,7 +169,7 @@ def sc_channel_set_configuration(spacecraft_id, channel_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def sc_channel_delete(spacecraft_id, channel_id):
-    """JRPC method: configuration.sc.channel.delete
+    """JRPC test: configuration.sc.channel.delete
     Method that removes the given channel from the database and from the list
     of available channels of the SpacecraftConfiguration object that owns it.
     """

@@ -29,7 +29,7 @@ from website import settings as satnet_settings
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def gs_get_availability_slots(groundstation_id):
-    """JRPC method: scheduling.gs.availability
+    """JRPC test: scheduling.gs.availability
     JRPC method that returns the availability slots for a given ground station.
     :param groundstation_id: String with the groundstation identifier
     :return: JSON-like object with the availability slots

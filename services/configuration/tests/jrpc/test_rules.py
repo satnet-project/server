@@ -73,7 +73,7 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_add_once_rule(self):
-        """JRPC method: (O) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
+        """JRPC test: (O) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a ONCE rule to the system.
         """
         self.__verbose_testing = True
@@ -130,7 +130,7 @@ class JRPCRulesTest(test.TestCase):
         self.__verbose_testing = False
 
     def test_add_daily_rule(self):
-        """JRPC method: (D) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
+        """JRPC test: (D) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a DAILY rule to the system.
         """
         if self.__verbose_testing:
@@ -187,7 +187,7 @@ class JRPCRulesTest(test.TestCase):
         )
 
     def test_remove_rule(self):
-        """JRPC method: cfg.gs.channel.removeRule
+        """JRPC test: cfg.gs.channel.removeRule
         Should correctly remove any rule to the system.
         """
         if self.__verbose_testing:

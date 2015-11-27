@@ -32,7 +32,7 @@ logger = logging.getLogger('configuration')
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def list_spacecraft(**kwargs):
-    """JRPC method: configuration.sc.list
+    """JRPC test: configuration.sc.list
     Creates a list with the identifiers of the available Spacecraft for
     the user that is requesting the service.
     User name must be obtained from the request, since this has already been
@@ -53,7 +53,7 @@ def list_spacecraft(**kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def create(identifier, callsign, tle_id, **kwargs):
-    """JRPC method: configuration.sc.create
+    """JRPC test: configuration.sc.create
     Creates a new ground station with the given configuration.
     User name must be obtained from the request, since this has already been
     validated by the authentication backend
@@ -81,7 +81,7 @@ def create(identifier, callsign, tle_id, **kwargs):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_configuration(spacecraft_id):
-    """JRPC method: configuration.sc.getConfiguration
+    """JRPC test: configuration.sc.getConfiguration
     Returns the configuration for the given Spacecraft.
     """
     return segment_serializers.serialize_sc_configuration(
@@ -95,7 +95,7 @@ def get_configuration(spacecraft_id):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def set_configuration(spacecraft_id, configuration):
-    """JRPC method: configuration.sc.setConfiguration
+    """JRPC test: configuration.sc.setConfiguration
     Returns the configuration for the given Spacecraft.
     """
     callsign, tle_id = segment_serializers.deserialize_sc_configuration(
@@ -112,7 +112,7 @@ def set_configuration(spacecraft_id, configuration):
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def delete(spacecraft_id):
-    """JRPC method: configuration.sc.delete
+    """JRPC test: configuration.sc.delete
     Deletes the ground station identified by the given Spacecraft. It also
     deletes all channels associated to this ground station.
     """

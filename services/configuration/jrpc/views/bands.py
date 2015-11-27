@@ -28,7 +28,7 @@ from website import settings as satnet_settings
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
 )
 def get_options():
-    """JRPC method: configuration.channels.getOptions
+    """JRPC test: configuration.channels.getOptions
     Returns a dictionary containing all the possible configuration
     options for adding a new communications channel to a Ground Station.
     """
