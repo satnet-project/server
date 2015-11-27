@@ -15,10 +15,11 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
 import json
 
-from services.common.testing import helpers as db_tools
+from django import test
+
+from services.common import helpers as db_tools
 from services.configuration.ajax import views as configuration_ajax
 
 

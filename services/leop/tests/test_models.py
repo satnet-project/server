@@ -15,11 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
 import logging
-from services.common.testing import helpers as db_tools
-from services.configuration.models import tle as tle_models
+
+from django import test
+
+from services.common import helpers as db_tools
 from services.configuration.models import segments as segment_models
+from services.configuration.models import tle as tle_models
 from services.leop import utils as leop_utils
 from services.leop.models import launch as launch_models
 from services.simulation.models import groundtracks as simulation_models

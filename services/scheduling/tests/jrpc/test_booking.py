@@ -20,15 +20,14 @@ import logging
 
 from django import test
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import channels as \
     channel_serializers
+from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_chs
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_chs
-from services.configuration.jrpc.views import rules as jrpc_rules
 from services.scheduling.jrpc.views.operational import \
     groundstations as jrpc_gs_scheduling
 from services.scheduling.jrpc.views.operational import \

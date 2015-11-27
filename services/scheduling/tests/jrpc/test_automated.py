@@ -16,8 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from django import test
-from services.common.testing import helpers as db_tools
+
+from services.common import helpers as db_tools
 from services.configuration.jrpc.serializers\
     import channels as channel_serializers
 from services.scheduling.models import operational

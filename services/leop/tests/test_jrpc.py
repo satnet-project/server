@@ -15,22 +15,23 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import datetime
 import difflib
+import logging
+
+import datadiff
 import pytz
 from django import test
 from django.core import exceptions as django_ex
-import logging
-from services.common import misc
-from services.common.testing import helpers as db_tools
+
+from services.common import misc, helpers as db_tools
 from services.configuration.models import tle as tle_models
 from services.leop import utils as launch_utils
-from services.leop.models import launch as launch_models
-from services.leop.jrpc.views import launch as launch_jrpc
-from services.leop.jrpc.views import messages as messages_jrpc
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.leop.jrpc.serializers import messages as messages_serial
+from services.leop.jrpc.views import launch as launch_jrpc
+from services.leop.jrpc.views import messages as messages_jrpc
+from services.leop.models import launch as launch_models
 from services.simulation.models import groundtracks as simulation_models
 from website import settings as satnet_settings
 
@@ -68,9 +69,11 @@ class TestLaunchViews(test.TestCase):
         self.__request_2 = db_tools.create_request(user_profile=self.__admin)
 
         self.__leop_tle_l1 =\
-            '1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0  1108'
+            '1 27844U 03031E   15007.47529781  ' +\
+            '.00000328  00000-0  16930-3 0  1108'
         self.__leop_tle_l2 =\
-            '2 27844  98.6976  18.3001 0010316  50.6742 104.9393 14.21678727597601'
+            '2 27844  98.6976  18.3001 0010316  ' +\
+            '50.6742 104.9393 14.21678727597601'
 
         self.__leop_id = 'leop_cluster_4testing'
         self.__leop_date = pytz.utc.localize(datetime.datetime.today())
@@ -94,16 +97,18 @@ class TestLaunchViews(test.TestCase):
         self.__ufo_tle_l2 = self.__leop_tle_l2
 
         self.__leop_2_tle_l1 =\
-            '1 36799U 10035E   15011.25448421  .00004255  00000-0  47713-3 0  8407'
+            '1 36799U 10035E   15011.25448421  .00004255  ' +\
+            '00000-0  47713-3 0  8407'
         self.__leop_2_tle_l2 =\
-            '2 36799  98.0147 109.9908 0013178   6.5991  46.1472 14.87298023243626'
+            '2 36799  98.0147 109.9908 0013178   6.5991  ' +\
+            '46.1472 14.87298023243626'
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_list_groundstations(self):
-        """Unit test case
+        """JRPC method: services.leop.groundstations.list
         Checks the functioning of the JRPC method that returns the list of
         GroundStations available for the administrator to create a LEOP system.
         """
@@ -165,7 +170,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_add_groundstations(self):
-        """Unit test case.
+        """JRPC method: services.leop.groundstations.add
         Validates the addition of an array of GroundStations to a given LEOP
         cluster.
         """
@@ -193,14 +198,13 @@ class TestLaunchViews(test.TestCase):
             self.fail('The leop cluster does not exist')
         except launch_models.Launch.DoesNotExist:
             pass
+
         # Basic parameters test (2)
-        try:
-            launch_jrpc.add_groundstations(
-                self.__leop_id, None, **{'request': self.__request_2}
-            )
-            self.fail('Groundstations is an empty array')
-        except Exception:
-            pass
+        self.assertRaises(
+            Exception,
+            launch_jrpc.add_groundstations,
+            None, **{'request': self.__request_2}
+        )
 
         # GroundStations array []
         gss = [self.__gs_1_id, self.__gs_2_id]
@@ -220,35 +224,32 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_remove_groundstations(self):
-        """Unit test case.
+        """JRPC method: services.leop.groundstations.remove
         Validates the removal of an array of GroundStations to a given LEOP
         cluster.
         """
 
         # Permissions test (1): no request, no permission
-        try:
-            launch_jrpc.remove_groundstations(
-                'FAKE_ID', None, **{'request': None}
-            )
-            self.fail('No request added, permission should not be granted')
-        except django_ex.PermissionDenied:
-            pass
+        self.assertRaises(
+            django_ex.PermissionDenied,
+            launch_jrpc.remove_groundstations,
+            'FAKE_ID', None, **{'request': None}
+        )
+
         # Permissions test (2): user not authorized
-        try:
-            launch_jrpc.remove_groundstations(
-                'FAKE', None, **{'request': self.__request_1}
-            )
-            self.fail('No request added, permission should not be granted')
-        except django_ex.PermissionDenied:
-            pass
+        self.assertRaises(
+            django_ex.PermissionDenied,
+            launch_jrpc.remove_groundstations,
+            'FAKE', None, **{'request': self.__request_1}
+        )
+
         # Basic parameters test (1)
-        try:
-            launch_jrpc.remove_groundstations(
-                'FAKE', ['fake'], **{'request': self.__request_2}
-            )
-            self.fail('The leop cluster does not exist')
-        except launch_models.Launch.DoesNotExist:
-            pass
+        self.assertRaises(
+            launch_models.Launch.DoesNotExist,
+            launch_jrpc.remove_groundstations,
+            'FAKE', ['fake'], **{'request': self.__request_2}
+        )
+
         # Basic parameters test (2)
         actual = launch_jrpc.remove_groundstations(
             self.__leop_id, None, **{'request': self.__request_2}
@@ -292,19 +293,15 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_add_unknown(self):
-        """JRPC unit test case
+        """JRPC method: services.leop.unknown.add
         Validation of the remote addition of a new unknown object to the list.
         """
-        try:
-            launch_jrpc.add_unknown(self.__leop_id, None)
-            self.fail('An exception should have been thrown, id < 0')
-        except Exception:
-            pass
-        try:
-            launch_jrpc.add_unknown(self.__leop_id, -1)
-            self.fail('An exception should have been thrown, id < 0')
-        except Exception:
-            pass
+        self.assertRaises(
+            Exception, launch_jrpc.add_unknown, self.__leop_id, None
+        )
+        self.assertRaises(
+            Exception, launch_jrpc.add_unknown, self.__leop_id, -1
+        )
 
         self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, 1), 1,
@@ -324,24 +321,18 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_remove_unknown(self):
-        """JRPC unit test
+        """JRPC method: services.leop.unknown.remove
         Validates the removal of an unknown object from the list
         """
-        try:
-            launch_jrpc.remove_unknown(self.__leop_id, None)
-            self.fail('An exception should have been thrown, id < 0')
-        except Exception:
-            pass
-        try:
-            launch_jrpc.remove_unknown(self.__leop_id, -1)
-            self.fail('An exception should have been thrown, id < 0')
-        except Exception:
-            pass
-        try:
-            launch_jrpc.remove_unknown(self.__leop_id, 2)
-            self.fail('An exception should have been thrown, wrong id')
-        except Exception:
-            pass
+        self.assertRaises(
+            Exception, launch_jrpc.remove_unknown, self.__leop_id, None
+        )
+        self.assertRaises(
+            Exception, launch_jrpc.remove_unknown, self.__leop_id, -1
+        )
+        self.assertRaises(
+            Exception, launch_jrpc.remove_unknown, self.__leop_id, 2
+        )
 
         self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, 1), 1,
@@ -360,43 +351,34 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_update_ufo(self):
-        """JRPC unit test case
+        """JRPC method: services.leop.ufo.update
         Validation of the updte method for an UFO-like object.
         """
-        try:
-            launch_jrpc.update(None, None, None, None, None)
-            self.fail('Wrong arguments, an exception should have been raised')
-        except Exception as ex:
-            if self.__verbose_testing:
-                print('#1 ex = ' + str(ex))
-            pass
-        try:
-            launch_jrpc.update(self.__leop_id, None, None, None, None)
-            self.fail('Wrong arguments, an exception should have been raised')
-        except Exception as ex:
-            if self.__verbose_testing:
-                print('#2 ex = ' + str(ex))
-            pass
-        try:
-            launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None)
-            self.fail('Wrong arguments, an exception should have been raised')
-        except Exception as ex:
-            if self.__verbose_testing:
-                print('#3 ex = ' + str(ex))
-            pass
+        self.assertRaises(
+            Exception, launch_jrpc.update, None, None, None, None, None
+        )
+        self.assertRaises(
+            Exception,
+            launch_jrpc.update,
+            self.__leop_id, None, None, None, None
+        )
+        self.assertRaises(
+            Exception,
+            launch_jrpc.update,
+            self.__leop_id, self.__ufo_id, None, None, None
+        )
 
         self.assertEqual(
             launch_jrpc.add_unknown(self.__leop_id, self.__ufo_id),
             self.__ufo_id,
             'Should return the same id'
         )
-        try:
-            launch_jrpc.update(self.__leop_id, self.__ufo_id, None, None, None)
-            self.fail('Wrong arguments, an exception should have been raised')
-        except Exception as ex:
-            if self.__verbose_testing:
-                print('#4 ex = ' + str(ex))
-            pass
+        self.assertRaises(
+            Exception,
+            launch_jrpc.update,
+            self.__leop_id, self.__ufo_id, None, None, None
+        )
+
         self.assertEqual(
             launch_jrpc.identify(
                 self.__leop_id, self.__ufo_id,
@@ -440,15 +422,13 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_get_configuration(self):
-        """JRPC unit test case
+        """JRPC method: services.leop.getConfiguration
         Validation of the JRPC method that permits obtaining the
         configuration for a given LEOP cluster.
         """
-        try:
-            launch_jrpc.get_configuration('')
-            self.fail('LEOP doesnt exist, an exception should have been raised')
-        except launch_models.Launch.DoesNotExist:
-            pass
+        self.assertRaises(
+            launch_models.Launch.DoesNotExist, launch_jrpc.get_configuration, ''
+        )
 
         # 1) No ufos
         a_cfg = launch_jrpc.get_configuration(self.__leop_id)
@@ -545,19 +525,17 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_set_configuration(self):
-        """JRPC method UNIT test
+        """JRPC method: services.leop.setConfiguration
         Validates the update of the configuration for a given launch object.
         """
-        try:
-            launch_jrpc.set_configuration('aaaaaaaaaaab', {})
-            self.fail('Wrong <identifier>, should have raised an exception')
-        except launch_models.Launch.DoesNotExist:
-            pass
-        try:
-            launch_jrpc.set_configuration(self.__leop_id, {})
-            self.fail('Wrong <configuration>, should have raised an exception')
-        except Exception:
-            pass
+        self.assertRaises(
+            launch_models.Launch.DoesNotExist,
+            launch_jrpc.set_configuration, 'aaaaaaaaaaab', {}
+        )
+        self.assertRaises(
+            Exception,
+            launch_jrpc.set_configuration, self.__leop_id, {}
+        )
 
         tomorrow = pytz.utc.localize(
             datetime.datetime.today() + datetime.timedelta(days=1)
@@ -616,7 +594,7 @@ class TestLaunchViews(test.TestCase):
         self.assertNotEqual(old_gt, new_gt, 'GroundTracks should be different')
 
     def test_get_passes(self):
-        """UNIT test (JRPC method)
+        """JRPC method: services.leop.getPasses
         Validates the retrieval of the passes for this launch.
         """
         self.assertEqual(
@@ -647,7 +625,7 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_list_sc(self):
-        """UNIT test (JRPC method)
+        """JRPC method: services.leop.spacecraft.list
         Validates the retrieval of the list of spacecraft associated to this
         launch.
         """
@@ -656,25 +634,23 @@ class TestLaunchViews(test.TestCase):
         )
 
     def test_get_messages(self):
-        """UNIT test (JRPC method)
+        """JRPC method: services.leop.getMessages
         Validates the retrieval of messages from the server.
         """
         # 1) interface robustness
-        try:
-            messages_jrpc.get_messages('DOESNTEXIST', 'nulldate')
-            self.fail('Wrong launch id should have risen an exception')
-        except launch_models.Launch.DoesNotExist:
-            pass
-        try:
-            messages_jrpc.get_messages(self.__leop_id, None)
-            self.fail('Wrong launch id should have risen an exception')
-        except Exception:
-            pass
-        try:
-            messages_jrpc.get_messages(self.__leop_id, 'null')
-            self.fail('Wrong launch id should have risen an exception')
-        except Exception:
-            pass
+        self.assertRaises(
+            launch_models.Launch.DoesNotExist,
+            messages_jrpc.get_messages, 'DOESNTEXIST', 'nulldate'
+        )
+        self.assertRaises(
+            Exception, messages_jrpc.get_messages, self.__leop_id, None
+        )
+        self.assertRaises(
+            Exception, messages_jrpc.get_messages, self.__leop_id, None
+        )
+        self.assertRaises(
+            Exception, messages_jrpc.get_messages, self.__leop_id, 'null'
+        )
 
         # 2) basic empty response
         self.assertEqual(
@@ -742,18 +718,10 @@ class TestLaunchViews(test.TestCase):
             messages_serial.JRPC_K_TS: message_2.groundstation_timestamp,
             messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64.decode()
         })
-        # ### TODO Check what is the problem in Python 3 with this test
-        # self.assertEqual(
-        #    actual, expected,
-        #    'Single message array expected, diff = ' + str(datadiff.diff(
-        #        actual, expected
-        #    ))
-        #)
 
-    def test_trigger_message_event(self):
-        """UNIT test
-        Validates the trigger of the message event by this service.
-        """
-        message_2 = db_tools.create_message(
-            self.__gs_2, message=db_tools.MESSAGE_BASE64
+        self.assertEqual(
+            actual, expected,
+            'Single message array expected, diff = ' + str(datadiff.diff(
+                actual, expected
+            ))
         )

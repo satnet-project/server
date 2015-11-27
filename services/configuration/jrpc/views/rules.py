@@ -58,6 +58,9 @@ def add_rule(groundstation_id, rule_cfg):
     :param rule_cfg: The configuration of the rule to be added.
     :return: Identifier of the rule that has just been added.
     """
+    import services.common.misc as sn_misc
+    sn_misc.print_dictionary(rule_cfg)
+
     op, periodicity, dates = rule_serializers.deserialize_rule_cfg(rule_cfg)
     rule = rule_models.AvailabilityRule.objects.create(
         segment_models.GroundStation.objects.get(

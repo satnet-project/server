@@ -15,7 +15,8 @@
 """
 
 import logging
-from services.common.push import service as satnet_push
+
+from services.common import pusher as satnet_push
 
 logger = logging.getLogger('simulation')
 

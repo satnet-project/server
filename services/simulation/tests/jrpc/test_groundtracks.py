@@ -15,19 +15,21 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
 import logging
 import traceback
+
+import simplekml
+from django import test
+
 from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import helpers as db_tools
+from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
-from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
-from services.simulation.jrpc.views import groundtracks as simulation_jrpc
 from services.simulation.jrpc.serializers import groundtracks as \
     simulation_serializer
+from services.simulation.jrpc.views import groundtracks as simulation_jrpc
 from services.simulation.models import groundtracks as simulation_models
-import simplekml
 
 
 class JRPCSimulationTest(test.TestCase):
@@ -79,8 +81,11 @@ class JRPCSimulationTest(test.TestCase):
         kml = simplekml.Kml()
         for p in track:
             if self.__verbose_testing:
-                print('>>> @, ' + str(p['timestamp']) + ':(' +\
-                    str(p['latitude']) + ',' + str(p['longitude']) + ')')
+                print(
+                    '>>> @, ' + str(p['timestamp']) + ':(' + str(
+                        p['latitude']
+                    ) + ',' + str(p['longitude']) + ')'
+                )
             kml.newpoint(
                 name=str(p['timestamp']),
                 coords=[(p['latitude'], p['longitude'])]
@@ -123,6 +128,7 @@ class JRPCSimulationTest(test.TestCase):
 
         if simulation_models.GroundTrack.objects.filter(tle=tle).exists():
             self.fail(
-                'GroundTrack should have been deleted, tle_id = '
-                    + str(self.__sc_1_tle_id)
+                'GroundTrack should have been deleted, tle_id = ' + str(
+                    self.__sc_1_tle_id
+                )
             )

@@ -16,9 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from django import test
-from services.common.testing import helpers as db_tools
+
 from services.common import simulation as simulator
+from services.common import helpers as db_tools
 from services.configuration.models import segments as segment_models
 from services.simulation.models import groundtracks as groundtrack_models
 from services.simulation.models import passes as pass_models
@@ -47,6 +49,8 @@ class PeriodicSimulationTest(test.TestCase):
         sim = simulator.OrbitalSimulator()
         sim.set_debug(fail=True)
         sc = segment_models.Spacecraft.objects.get(identifier='sc-canx-2')
+
+        # noinspection PyBroadException
         try:
             sim.calculate_groundtrack(sc.tle)
             self.fail('Should have thrown an exception')

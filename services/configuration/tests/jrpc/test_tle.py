@@ -15,15 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
-
-from django import test
-import datadiff
 # noinspection PyPackageRequirements
 import ephem
+import logging
+import datadiff
+from django import test
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.models import celestrak
 from services.configuration.jrpc.serializers import segments as \
     segment_serializer, tle as tle_serializer

@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
-from services.common.push import service as satnet_pusher
+
+from services.common import pusher as satnet_pusher
 
 
 class TestPusher(TestCase):

@@ -16,8 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from periodically import decorators
-from services.common.push import service as satnet_push
+
+from services.common import pusher as satnet_push
 
 logger = logging.getLogger('network')
 

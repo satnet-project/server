@@ -35,10 +35,6 @@ from services.network.models import server as server_models
 def create_user(
     username='testuser', password='testuser.', email='test@test.test'
 ):
-    """
-    This method creates a new user in the database.
-    :return: Reference to the just-created user.
-    """
     user = User.objects.create_user(
         username=username, email=email, password=password
     )
@@ -47,18 +43,9 @@ def create_user(
 
 
 def create_user_profile(
-    username='testuser',
-    password='testuser.',
-    email='test@test.test',
-    is_staff=False
+    username='testuser', password='testuser.',
+    email='test@test.test', is_staff=False
 ):
-    """
-    This method creates a new user profile and its associated User, with the
-    parameteres provided, in case the given user object is None.
-    :param username: Name for the new user, in case this had to be created.
-    :param password: Password for the new user, in case this had to be created.
-    :return: The UserProfile object created.
-    """
 
     first_name, last_name = 'test_first_name', 'test_last_name'
     organization, country = 'test_organization', 'US'
@@ -82,12 +69,7 @@ def create_user_profile(
 
 
 def create_request(url='/test', user_profile=None, user_ip='129.65.71.110'):
-    """
-    This method creates an HTTP request linked to a test user that, in case
-    it is not provided, it is created through the method
-    :param url: URL for the HTTP request.
-    :return: The created HTTP request.
-    """
+
     factory = RequestFactory()
     request = factory.get(url)
 
@@ -326,21 +308,17 @@ def gs_add_channel(
 
 def remove_gs_channel(gs_id, gs_ch_id):
 
-    channels.GroundStationChannel.objects.get(
-        identifier=gs_ch_id,
-        groundstation__identifier=gs_id
+    return channels.GroundStationChannel.objects.get(
+        identifier=gs_ch_id, groundstation__identifier=gs_id
     ).delete()
 
 
 def create_jrpc_once_rule(
-    operation=rules.RULE_OP_ADD,
-    date=None, starting_time=None, ending_time=None
+    operation=rules.RULE_OP_ADD, starting_time=None, ending_time=None
 ):
 
-    if date is None:
-        date = misc.get_today_utc() + datetime.timedelta(days=1)
-
     now = misc.get_now_utc()
+
     if starting_time is None:
         starting_time = now + datetime.timedelta(minutes=30)
     if ending_time is None:
@@ -350,13 +328,8 @@ def create_jrpc_once_rule(
         rules.RULE_OP: operation,
         rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_ONCE,
         rules.RULE_DATES: {
-            rules.RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
-                date
-            ),
-            rules.RULE_ONCE_S_TIME:
-            common_serial.serialize_iso8601_time(starting_time),
-            rules.RULE_ONCE_E_TIME:
-            common_serial.serialize_iso8601_time(ending_time)
+            rules.RULE_ONCE_S_TIME: starting_time.isoformat(),
+            rules.RULE_ONCE_E_TIME: ending_time.isoformat()
         },
     }
 
@@ -402,4 +375,3 @@ def create_identifier_list(json_slot_list):
         identifier_l.append(l_i['identifier'])
 
     return identifier_l
-

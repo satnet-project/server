@@ -19,14 +19,13 @@ import datetime
 import logging
 
 import datadiff
-from django import test
 import pytz
+from django import test
 
-from services.common import misc, simulation
-from services.common.testing import helpers as db_tools
+from services.common import misc, simulation, helpers as db_tools
+from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import rules
 from services.scheduling.models import availability
-from services.configuration.jrpc.views import rules as jrpc_rules_if
 
 
 class TestMisc(test.TestCase):
@@ -59,7 +58,7 @@ class TestMisc(test.TestCase):
 
         test_datetime = misc.TIMESTAMP_0 + datetime.timedelta(days=1)
         actual_stamp = misc.get_utc_timestamp(test_datetime)
-        expected_stamp = datetime.timedelta(days=1).days*24*3600 * 10**6
+        expected_stamp = datetime.timedelta(days=1).days * 24 * 3600 * 10**6
 
         self.assertEqual(expected_stamp, actual_stamp, 'Wrong timestamp!')
 
@@ -116,31 +115,37 @@ class TestMisc(test.TestCase):
             str(r) for r in rules.AvailabilityRule.objects.all()
         ]
         expected = [
-            '+(D):' + utc_i_date.isoformat().split('T')[0]
-            + '>>' + utc_e_date.isoformat().split('T')[0]
-            + '_T_' + utc_s_time.time().isoformat()
-            + '>>' + utc_e_time.time().isoformat()
+            '+(D):' + utc_i_date.isoformat().split('T')[0] +
+            '>>' + utc_e_date.isoformat().split('T')[0] +
+            '_T_' + pytz.utc.localize(datetime.datetime.combine(
+                utc_i_date.date(), utc_s_time.time()
+            ).replace(microsecond=0)).isoformat() +
+            '>>' + pytz.utc.localize(datetime.datetime.combine(
+                utc_e_date.date(), utc_e_time.time()
+            ).replace(microsecond=0)).isoformat()
         ]
 
         self.assertEqual(
-            actual, expected, 'Rules in the database differ, diff = ' +
-            str(datadiff.diff(actual, expected))
+            actual, expected,
+            'Rules in the database differ, diff = ' + str(
+                datadiff.diff(actual, expected)
+            )
         )
 
         # 2) adds a single PacificTime rule to the database (should be
         # converted into a UTC one).
         local_i_date = local_dt
         local_e_date = local_dt + datetime.timedelta(days=365)
-        local_s_time = local_dt - datetime.timedelta(minutes=30)
-        local_e_time = local_dt + datetime.timedelta(minutes=30)
+        local_s_time = local_dt.replace(
+            hour=0, minute=0, second=0, microsecond=0
+        ) + datetime.timedelta(hours=12)
+        local_e_time = local_s_time + datetime.timedelta(minutes=30)
 
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                date_i=local_i_date,
-                date_f=local_e_date,
-                starting_time=local_s_time,
-                ending_time=local_e_time
+                date_i=local_i_date, date_f=local_e_date,
+                starting_time=local_s_time, ending_time=local_e_time
             )
         )
 
@@ -149,26 +154,26 @@ class TestMisc(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rules.AvailabilityRule.objects.all(),  name='RULES'
+                rules.AvailabilityRule.objects.all(), name='RULES'
             )
 
         actual = [
             str(r) for r in rules.AvailabilityRule.objects.all()
         ]
-        e_str_0 = expected[0]
-        expected = [
-            e_str_0,
-            '+(D):' + local_i_date.replace(
-                hour=0, minute=0, second=0
-            ).astimezone(pytz.utc).isoformat().split('T')[0]
-            + '>>' + local_e_date.replace(
-                hour=0, minute=0, second=0
-            ).astimezone(pytz.utc).isoformat().split('T')[0]
-            + '_T_' + local_s_time.astimezone(pytz.utc).time().isoformat()
-            .split('.')[0]
-            + '>>' + local_e_time.astimezone(pytz.utc).time().isoformat()
-            .split('.')[0]
-        ]
+        expected.append(
+            '+(D):' + local_i_date.isoformat().split('T')[0] +
+            '>>' + local_e_date.isoformat().split('T')[0] +
+            '_T_' + pytz.timezone('US/Pacific').localize(
+                datetime.datetime.combine(
+                    local_i_date.date(), local_s_time.time()
+                )
+            ).replace(microsecond=0).astimezone(pytz.utc).isoformat() +
+            '>>' + pytz.timezone('US/Pacific').localize(
+                datetime.datetime.combine(
+                    local_e_date.date(), local_e_time.time()
+                )
+            ).replace(microsecond=0).astimezone(pytz.utc).isoformat()
+        )
 
         self.assertEqual(
             actual, expected, 'Rules in the database differ, diff = ' +

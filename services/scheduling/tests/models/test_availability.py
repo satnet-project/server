@@ -25,7 +25,7 @@ from django import test
 from django.forms.models import model_to_dict
 
 from services.common import misc, simulation
-from services.common.testing import helpers as db_tools
+from services.common import helpers as db_tools
 from services.configuration.jrpc.serializers import rules as jrpc_serial
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import rules as rule_models
@@ -104,9 +104,7 @@ class TestAvailability(test.TestCase):
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -138,9 +136,7 @@ class TestAvailability(test.TestCase):
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -164,9 +160,7 @@ class TestAvailability(test.TestCase):
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
                 operation=jrpc_rules_if.rule_serializers.RULE_OP_REMOVE,
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -192,9 +186,7 @@ class TestAvailability(test.TestCase):
         jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -218,9 +210,7 @@ class TestAvailability(test.TestCase):
         jrpc_rules_if.add_rule(
             self.__gs_2_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
         self.assertEquals(len(rule_models.AvailabilityRule.objects.all()), 2)
@@ -304,9 +294,7 @@ class TestAvailability(test.TestCase):
         rule_1_id = jrpc_rules_if.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
@@ -322,7 +310,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@1'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@1'
             )
             misc.print_list(av_slots, name='AVAILABLE@1')
 
@@ -348,7 +336,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@2'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@2'
             )
             misc.print_list(av_slots, name='AVAILABLE@2')
 
@@ -361,9 +349,7 @@ class TestAvailability(test.TestCase):
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
                 operation=jrpc_serial.RULE_OP_REMOVE,
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -378,7 +364,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@3'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@3'
             )
             misc.print_list(av_slots, name='AVAILABLE@3')
 
@@ -409,7 +395,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@4'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@4'
             )
             misc.print_list(av_slots, name='AVAILABLE@4')
 
@@ -460,7 +446,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@6'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@6'
             )
             misc.print_list(av_slots, name='AVAILABLE@6')
 
@@ -482,7 +468,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@7'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@7'
             )
             misc.print_list(av_slots, name='AVAILABLE@7')
 
@@ -500,7 +486,7 @@ class TestAvailability(test.TestCase):
 
         if self.__verbose_testing:
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@8'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@8'
             )
             misc.print_list(av_slots, name='AVAILABLE@8')
 
@@ -561,7 +547,7 @@ class TestAvailability(test.TestCase):
                 simulation.OrbitalSimulator.get_simulation_window()
             ))
             misc.print_list(
-                rule_models.AvailabilityRule.objects.all(),  name='RULES@1'
+                rule_models.AvailabilityRule.objects.all(), name='RULES@1'
             )
             misc.print_list(a_slots, name='AVAILABLE@1')
 

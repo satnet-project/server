@@ -16,14 +16,15 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 from django.test import TestCase
 
-from services.common.testing import helpers as db_tools
-from services.configuration.models import channels as channel_models
+from services.common import helpers as db_tools
 from services.configuration.jrpc.views.segments import groundstations as \
     jrpc_gs_if
 from services.configuration.jrpc.views.segments import spacecraft as \
     jrpc_sc_if
+from services.configuration.models import channels as channel_models
 
 
 # noinspection PyBroadException

@@ -16,7 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django import test
-from services.common.testing import helpers as db_tools
+
+from services.common import helpers as db_tools
 from services.configuration.models import tle as tle_models
 from services.simulation.models import passes as pass_models
 

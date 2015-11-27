@@ -15,14 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datadiff
 import logging
 
+import datadiff
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
 from services.configuration.jrpc.views import bands as band_jrpc

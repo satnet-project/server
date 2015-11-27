@@ -19,7 +19,7 @@ import logging
 
 from django import test
 
-from services.common.testing import helpers as db_tools
+from services.common import helpers as db_tools
 from services.configuration.models import bands as band_models
 from services.scheduling.models import compatibility as compat_models
 

@@ -16,11 +16,12 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
-from django import test
 import logging
+
 import pytz
-from services.common import serialization
-from services.common.testing import helpers as db_tools
+from django import test
+
+from services.common import serialization, helpers as db_tools
 
 
 class TestSerialization(test.TestCase):

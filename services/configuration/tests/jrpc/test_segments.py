@@ -16,16 +16,16 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+
 import datadiff
 from django import test
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
-from services.configuration.models import segments
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     segments as segment_serializaers
 from services.configuration.jrpc.views.segments import groundstations as jrpc_gs
 from services.configuration.jrpc.views.segments import spacecraft as jrpc_sc
+from services.configuration.models import segments
 
 
 class JRPCSegmentsTest(test.TestCase):

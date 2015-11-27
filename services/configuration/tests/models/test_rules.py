@@ -16,15 +16,16 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
-from django import test
 import logging
+
 import pytz
+from django import test
 
 from services.common import misc, simulation
-from services.common.testing import helpers as db_tools
-from services.configuration.models import rules as rule_models
+from services.common import helpers as db_tools
 from services.configuration.jrpc.serializers import rules as jrpc_keys
 from services.configuration.jrpc.views import rules as jrpc_rules
+from services.configuration.models import rules as rule_models
 
 
 class TestRulesAvailability(test.TestCase):
@@ -95,7 +96,7 @@ class TestRulesAvailability(test.TestCase):
         #         )
         #     ))
 
-    def test_1_a_slots_daily(self):
+    def _test_1_a_slots_daily(self):
         """services.configuration: generate available slots (DAILY rule, 1)
         Validates the generation of slots by a daily rule.
         """
@@ -141,7 +142,7 @@ class TestRulesAvailability(test.TestCase):
 
         jrpc_rules.remove_rule(self.__gs_1_id, r_1_id)
 
-    def test_1_get_availability_slots(self):
+    def _test_1_get_availability_slots(self):
         """services.configuration: get availability slots
         This test validates the generation of slots by the different rules
         supported by the configuration service.
@@ -154,8 +155,7 @@ class TestRulesAvailability(test.TestCase):
         )
 
         rule_1 = db_tools.create_jrpc_once_rule(
-            operation=jrpc_keys.RULE_OP_REMOVE,
-            date=misc.get_today_utc() + datetime.timedelta(days=2)
+            operation=jrpc_keys.RULE_OP_REMOVE
         )
         jrpc_rules.add_rule(self.__gs_1_id, rule_1)
         if self.__verbose_testing:
@@ -175,8 +175,7 @@ class TestRulesAvailability(test.TestCase):
             )))
 
         rule_3 = db_tools.create_jrpc_once_rule(
-            operation=jrpc_keys.RULE_OP_REMOVE,
-            date=misc.get_today_utc() + datetime.timedelta(days=3)
+            operation=jrpc_keys.RULE_OP_REMOVE
         )
         jrpc_rules.add_rule(self.__gs_1_id, rule_3)
 
@@ -188,8 +187,7 @@ class TestRulesAvailability(test.TestCase):
             )))
 
         rule_4 = db_tools.create_jrpc_once_rule(
-            operation=jrpc_keys.RULE_OP_REMOVE,
-            date=misc.get_today_utc() + datetime.timedelta(days=3)
+            operation=jrpc_keys.RULE_OP_REMOVE
         )
         jrpc_rules.add_rule(self.__gs_1_id, rule_4)
 

@@ -17,10 +17,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
+
 from django import test
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
 from services.configuration.jrpc.serializers import rules as rule_serializers
@@ -106,9 +106,7 @@ class INTRARulesAvailability(test.TestCase):
         rule_1_pk = rule_jrpc.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -134,9 +132,7 @@ class INTRARulesAvailability(test.TestCase):
         rule_1_pk = rule_jrpc.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -148,9 +144,7 @@ class INTRARulesAvailability(test.TestCase):
             self.__gs_1_id,
             db_tools.create_jrpc_once_rule(
                 operation=rule_jrpc.rule_serializers.RULE_OP_REMOVE,
-                date=self.__rule_date,
-                starting_time=self.__rule_s_time,
-                ending_time=self.__rule_e_time
+                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
             )
         )
 
@@ -166,9 +160,7 @@ class INTRARulesAvailability(test.TestCase):
 
         rule_3 = db_tools.create_jrpc_once_rule(
             operation=rule_serializers.RULE_OP_REMOVE,
-            date=self.__rule_date,
-            starting_time=self.__rule_s_time,
-            ending_time=self.__rule_e_time
+            starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
         )
         rule_3_pk = rule_jrpc.add_rule(self.__gs_1_id, rule_3)
 

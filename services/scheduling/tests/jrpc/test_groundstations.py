@@ -21,20 +21,19 @@ import logging
 from django import test
 from django.db import models
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
+from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_ch_if
-from services.configuration.jrpc.views import rules as jrpc_rules
+from services.scheduling.jrpc.views.operational import \
+    groundstations as jrpc_gs_scheduling
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
-from services.scheduling.jrpc.views.operational import \
-    groundstations as jrpc_gs_scheduling
 from services.simulation.models import passes as pass_models
 
 

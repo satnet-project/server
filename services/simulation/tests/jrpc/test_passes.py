@@ -15,13 +15,15 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django import test
 import logging
-from services.common.testing import helpers as db_tools
-from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
-from services.configuration.jrpc.views.segments import groundstations as gs_jrpc
+
+from django import test
+
+from services.common import helpers as db_tools
 from services.configuration.jrpc.serializers import rules as \
     segment_serializers
+from services.configuration.jrpc.views.segments import groundstations as gs_jrpc
+from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
 from services.configuration.models import segments as segment_models
 from services.simulation.jrpc.views import passes as pass_views
 from services.simulation.models import passes as pass_models

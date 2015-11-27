@@ -19,7 +19,7 @@ import logging
 
 from django.test import TestCase
 
-from services.common.testing import helpers as db_tools
+from services.common import helpers as db_tools
 from services.configuration.models import bands as band_models
 from services.configuration.models import channels as channel_models
 from services.scheduling.jrpc.views import compatibility as jrpc_compat_if

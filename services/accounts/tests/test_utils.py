@@ -16,9 +16,10 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
-from services.common.testing import helpers as db_tools
+
 from services.accounts import models as account_models
 from services.accounts import utils as account_utils
+from services.common import helpers as db_tools
 
 
 class UtilsTest(TestCase):

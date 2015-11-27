@@ -22,7 +22,7 @@ from django.test import TestCase
 import logging
 # noinspection PyPackageRequirements
 import ephem
-from services.common.testing import helpers as db_tools
+from services.common import helpers as db_tools
 
 
 class TestTle(TestCase):

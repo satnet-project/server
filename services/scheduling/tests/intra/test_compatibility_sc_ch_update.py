@@ -18,17 +18,16 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 
 import datadiff
-
 from django.test import TestCase
 
-from services.common.testing import helpers as db_tools
-from services.configuration.models import channels as channel_models
-from services.scheduling.models import compatibility as compatibility_models
+from services.common import helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
 from services.configuration.jrpc.views.channels import spacecraft\
     as jrpc_sc_ch_if
+from services.configuration.models import channels as channel_models
 from services.scheduling.jrpc.views import compatibility as jrpc_compat_if
+from services.scheduling.models import compatibility as compatibility_models
 
 
 # noinspection PyBroadException

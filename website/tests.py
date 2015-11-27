@@ -17,11 +17,13 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 import sys
-import urllib.request
 import urllib.error
 import urllib.parse
+import urllib.request
+
 from django_nose import runner as nose_runner
-from services.common.testing import helpers as db_tools
+
+from services.common import helpers as db_tools
 from services.configuration.models import tle
 from services.configuration.models.celestrak\
     import CelestrakDatabase as Celestrak

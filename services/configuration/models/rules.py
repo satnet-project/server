@@ -20,6 +20,7 @@ from django.db import models as django_models
 from django.utils import timezone as django_tz
 import logging
 import pytz
+from pytz import reference as pytz_ref
 
 from services.common import misc, simulation, slots
 from services.configuration.models import segments as segment_models
@@ -200,23 +201,12 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        i_date = pytz.utc.localize(
-            datetime.datetime.combine(
-                rule_values['starting_date'], rule_values['starting_time']
-            )
-        )
-        f_date = pytz.utc.localize(
-            datetime.datetime.combine(
-                rule_values['ending_date'], rule_values['ending_time']
-            )
-        )
-
-        if i_date > interval[1]:
+        if rule_values['starting_time'] > interval[1]:
             raise Exception('Not applicable to this interval [FUTURE].')
-        if f_date < interval[0]:
+        if rule_values['ending_time'] < interval[0]:
             raise Exception('Not applicable to this interval [PAST].')
 
-        return i_date, f_date
+        return rule_values['starting_time'], rule_values['ending_time']
 
     @staticmethod
     def generate_available_slots_once(rule_values, interval=None):
@@ -233,23 +223,12 @@ class AvailabilityRuleManager(django_models.Manager):
             availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
         )
 
-        slot_start = pytz.utc.localize(
-            datetime.datetime.combine(
-                rule_values['starting_date'], r.starting_time
-            )
-        )
-        slot_end = pytz.utc.localize(
-            datetime.datetime.combine(
-                rule_values['ending_date'], r.ending_time
-            )
-        )
+        if r.starting_time < interval[0]:
+            r.starting_time = interval[0]
+        if r.ending_time > interval[1]:
+            r.ending_time = interval[1]
 
-        if slot_start < interval[0]:
-            slot_start = interval[0]
-        if slot_end > interval[1]:
-            slot_end = interval[1]
-
-        return [(slot_start, slot_end)]
+        return [(r.starting_time, r.ending_time)]
 
     @staticmethod
     def generate_available_slots_daily(rule_values, interval=None):
@@ -276,12 +255,8 @@ class AvailabilityRuleManager(django_models.Manager):
 
         while i_day < interval[1]:
 
-            ii_date = pytz.utc.localize(
-                datetime.datetime.combine(i_day, r.starting_time)
-            )
-            ff_date = pytz.utc.localize(
-                datetime.datetime.combine(i_day, r.ending_time)
-            )
+            ii_date = r.starting_time
+            ff_date = r.ending_time
 
             # We might have to truncate the first slot...
             if first:
@@ -425,9 +400,7 @@ class AvailabilityRule(django_models.Model):
         (REMOVE_SLOTS, 'Operation for removing existing slots')
     )
     operation = django_models.CharField(
-        'Operation that this rule defines',
-        choices=OPERATION_CHOICES,
-        max_length=1
+        'Rule operation', choices=OPERATION_CHOICES, max_length=1
     )
 
     PERIODICITY_CHOICES = (
@@ -436,17 +409,11 @@ class AvailabilityRule(django_models.Model):
         (WEEKLY_PERIODICITY, 'Rule that defines a weekly repetition pattern.'),
     )
     periodicity = django_models.CharField(
-        'Period of time that this rule occurs.',
-        choices=PERIODICITY_CHOICES,
-        max_length=1
+        'Rule periodicity', choices=PERIODICITY_CHOICES, max_length=1
     )
 
-    starting_date = django_models.DateField(
-        'Starting date for an availability period'
-    )
-    ending_date = django_models.DateField(
-        'Ending date for an availability period'
-    )
+    starting_date = django_models.DateField('Starting date for the period')
+    ending_date = django_models.DateField('Ending date for the period')
 
     __operation2unicode__ = {
         ADD_SLOTS: '+',
@@ -493,8 +460,36 @@ class AvailabilityRuleOnceManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
-        if dates[2] <= dates[1]:
-            raise ValueError('Invalid rule, ending <= starting')
+        print('@@@@ dates[0] = ' + dates[0].isoformat())
+        print('@@@@ dates[1] = ' + dates[1].isoformat())
+        print('@@@@ tzinfo = ' + str(dates[0].tzinfo.tzname(dates[0])))
+        print('@@@@ tzinfo = ' + str(dates[1].tzinfo.tzname(dates[1])))
+
+        localtime = pytz_ref.LocalTimezone()
+        print('@@@@ tzinfo (2) = ' + localtime.tzname(dates[0]))
+        print('@@@@ tzinfo (2) = ' + localtime.tzname(dates[1]))
+
+        starting_tz = localtime.tzname(dates[0])
+        ending_tz = localtime.tzname(dates[1])
+
+        if starting_tz != ending_tz:
+            raise ValueError(
+                'Invalid ONCE rule, TZ differ: ' +
+                '( starting_tz = ' + starting_tz +
+                'ending_tz = ' + ending_tz + ' )'
+            )
+
+        starting_dt = dates[0].astimezone(pytz.utc)
+        ending_dt = dates[1].astimezone(pytz.utc)
+
+        print('@@@@ starting_dt = ' + starting_dt.isoformat())
+        print('@@@@ ending_dt = ' + ending_dt.isoformat())
+
+        if ending_dt <= starting_dt:
+            raise ValueError(
+                'Invalid ONCE rule, ending (' + ending_dt.isoformat() + ') ' +
+                '<= starting (' + starting_dt.isoformat() + ')'
+            )
 
         return super(AvailabilityRuleOnceManager, self).create(
             groundstation=groundstation,
@@ -502,8 +497,8 @@ class AvailabilityRuleOnceManager(django_models.Manager):
             periodicity=periodicity,
             starting_date=dates[0],
             ending_date=dates[0],
-            starting_time=dates[1],
-            ending_time=dates[2]
+            starting_time=starting_dt,
+            ending_time=ending_dt
         )
 
 
@@ -518,10 +513,10 @@ class AvailabilityRuleOnce(AvailabilityRule):
     objects = AvailabilityRuleOnceManager()
 
     starting_time = django_models.DateTimeField(
-        'Starting time for the rule', default=django_tz.now, null=True
+        'Starting datetime for the rule', default=django_tz.now, null=True
     )
     ending_time = django_models.DateTimeField(
-        'Ending time for the rule', default=django_tz.now, null=True
+        'Ending datetime for the rule', default=django_tz.now, null=True
     )
 
     def __unicode__(self):
@@ -557,8 +552,12 @@ class AvailabilityRuleDailyManager(django_models.Manager):
             periodicity=periodicity,
             starting_date=dates[0],
             ending_date=dates[1],
-            starting_time=dates[2],
-            ending_time=dates[3]
+            starting_time=datetime.datetime.combine(
+                dates[0], dates[2]
+            ).replace(microsecond=0),
+            ending_time=datetime.datetime.combine(
+                dates[1], dates[3]
+            ).replace(microsecond=0)
         )
 
 

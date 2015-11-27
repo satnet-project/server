@@ -15,11 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import base64
 import logging
+
+import base64
 from django import test
-from services.common import misc
-from services.common.testing import helpers as db_tools
+
+from services.common import misc, helpers as db_tools
 from services.communications import jrpc as comms_jrpc, views as comms_views
 
 

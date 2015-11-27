@@ -18,18 +18,17 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-from django import test
 import datadiff
+from django import test
 
-from services.common import misc, simulation
-from services.common.testing import helpers as db_tools
+from services.common import misc, simulation, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
+from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_ch_if
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_ch_if
-from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.configuration.models import rules as rule_models
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import operational as operational_models

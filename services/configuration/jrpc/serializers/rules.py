@@ -15,6 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import dateutil.parser as du_parser
+
 from services.common import serialization as common_serial
 from services.configuration.models import rules
 
@@ -82,8 +84,9 @@ def serialize_once_dates(rule, child_rule):
     """
     Function that serializes the dates from a once rule object as taken from
     the database.
-    :param rule: The parent rule to be fully serialized.
-    :return: An object serializable structure.
+    :param rule: The parent rule to be fully serialized
+    :param child_rule: Reference to the underlaying child object
+    :return: An object serializable structure
     """
     return {
         RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
@@ -103,6 +106,7 @@ def serialize_daily_dates(rule, child_rule):
     Function that serializes the dates from a daily rule object as taken from
     the database.
     :param rule: The daily rule to be serialized.
+    :param child_rule: Refernce to the rule object
     :return: An object serializable structure.
     """
     return {
@@ -125,8 +129,9 @@ def serialize_weekly_dates(rule, child_rule):
     """
     Function that serializes the dates from a weekly rule object as taken from
     the database.
-    :param rule: The reference to the dates as taken from the database.
-    :return: An object serializable structure.
+    :param rule: The reference to the dates as taken from the database
+    :param child_rule: Reference to the underlaying child object
+    :return: An object serializable structure
     """
     dates = []
     for d in RULE_WEEKLY_WEEKDAYS:
@@ -203,13 +208,19 @@ def deserialize_dates(period, dates):
 def deserialize_once_dates(dates):
     """
     Deserializes the dates as expected within a once dates object.
-    :param dates: The dates object.
-    :return: A 3-tuple containing all the deserialized date parameters.
+    :param dates: The dates object
+    :return: A 2-tuple containing all the deserialized date parameters
     """
-    return\
-        common_serial.deserialize_iso8601_date(dates[RULE_ONCE_DATE]),\
-        common_serial.deserialize_iso8601_time(dates[RULE_ONCE_S_TIME]),\
-        common_serial.deserialize_iso8601_time(dates[RULE_ONCE_E_TIME])
+    return (
+        du_parser.parse(dates[RULE_ONCE_S_TIME]),
+        du_parser.parse(dates[RULE_ONCE_E_TIME])
+    )
+
+    # OLD code for de-serializing 3 elements
+    # return\
+    #    common_serial.deserialize_iso8601_date(dates[RULE_ONCE_DATE]),\
+    #    common_serial.deserialize_iso8601_time(dates[RULE_ONCE_S_TIME]),\
+    #    common_serial.deserialize_iso8601_time(dates[RULE_ONCE_E_TIME])
 
 
 def deserialize_daily_dates(dates):

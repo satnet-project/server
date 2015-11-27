@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
 import logging
-from services.common import exocube
 from services.communications import models as comms_models
 from services.leop import push as leop_push
 from services.leop.models import launch as launch_models
@@ -26,6 +25,7 @@ from services.leop.models import launch as launch_models
 logger = logging.getLogger('leop')
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_delete, sender=launch_models.Launch
 )
@@ -47,6 +47,7 @@ def launch_deleted_handler(sender, instance, **kwargs):
         )
 
 
+# noinspection PyUnusedLocal
 @django_dispatch.receiver(
     django_signals.post_save, sender=comms_models.PassiveMessage
 )
@@ -54,6 +55,7 @@ def message_received_handler(sender, instance, created, raw, **kwargs):
     """
     Handler that feeds the received messages to the clients connected through
     the push suscription services.
+    :param sender: Reference to the object that sent this signal
     :param instance: Instance of the new message received
     :param created: Flag that marks whether this objects has just been created
     :param raw: Flag that marks whether this object is stable or not
@@ -63,4 +65,3 @@ def message_received_handler(sender, instance, created, raw, **kwargs):
         return
 
     leop_push.LaunchPush.trigger_received_frame_event(instance)
-    exocube.ExocubeService.send_exocube(instance)

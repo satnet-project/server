@@ -16,9 +16,8 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.test import TestCase
-from services.common import misc
-from services.common.push import service as satnet_push
-from services.common.testing import helpers as db_tools
+
+from services.common import misc, helpers as db_tools, pusher as satnet_push
 from services.communications import jrpc as comms_jrpc
 
 

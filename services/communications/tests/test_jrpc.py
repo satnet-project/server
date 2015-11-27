@@ -15,12 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import base64
 import difflib
+
+import base64
 from django.core import exceptions
 from django.test import TestCase
-from services.common import misc
-from services.common.testing import helpers as db_tools
+
+from services.common import misc, helpers as db_tools
 from services.communications import jrpc as comms_jrpc, models as comms_models
 
 

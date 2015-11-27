@@ -17,7 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
-from services.common.push import service as satnet_push
+
+from services.common import pusher as satnet_push
 from services.leop.models import launch as launch_models
 
 

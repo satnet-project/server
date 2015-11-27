@@ -15,14 +15,15 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.test import TestCase
-from datetime import timedelta, datetime
 import logging
 import math
+from datetime import timedelta, datetime
+
 import numpy
+from django.test import TestCase
 from pytz import utc as pytz_utc
-from services.common import simulation, misc
-from services.common.testing import helpers as db_tools
+
+from services.common import simulation, misc, helpers as db_tools
 from services.configuration.models import tle as tle_models
 from services.simulation.models import groundtracks as simulation_models
 
@@ -90,7 +91,7 @@ class TestSimulation(TestCase):
 
         pass_slots = self.__simulator.calculate_pass_slot(
             start=pytz_utc.localize(datetime.today()),
-            end=pytz_utc.localize(datetime.today())+timedelta(days=3)
+            end=pytz_utc.localize(datetime.today()) + timedelta(days=3)
         )
 
         if self.__verbose_testing:
@@ -111,25 +112,27 @@ class TestSimulation(TestCase):
         (start, end) = self.__simulator.get_simulation_window()
 
         groundtrack = self.__simulator.calculate_groundtrack(
-            tle_models.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            tle_models.TwoLineElement.objects.get(
+                identifier=self.__sc_1_tle_id
+            ),
             start=start, end=end, timestep=step
         )
 
         if self.__verbose_testing:
             for p in groundtrack:
-                print('>> @' + str(p['timestamp']) + ', ('\
-                    + str(p['latitude']) + ',' + str(p['longitude']) + ')')
-                #print '>> @' + str(p['timestamp']) + ', dd = ('\
-                #    + str(gis.degrees_2_float(p['latitude'])) + ','\
-                #    + str(gis.degrees_2_float(p['longitude'])) + ')'
+                print(
+                    '>> @' + str(p['timestamp']) + ', (' + str(
+                        p['latitude']) + ',' + str(p['longitude']) + ')'
+                )
 
         e_n_points = int(math.ceil(
-            (end - start).total_seconds()/step.total_seconds()
+            (end - start).total_seconds() / step.total_seconds()
         ))
         self.assertEqual(
             e_n_points, len(groundtrack),
-            'Number of points differs! e = ' + str(e_n_points)
-            + ', a = ' + str(len(groundtrack))
+            'Number of points differs! e = ' + str(
+                e_n_points
+            ) + ', a = ' + str(len(groundtrack))
         )
 
     def __test_groundtrack_variation(self):
@@ -141,7 +144,9 @@ class TestSimulation(TestCase):
         (start, end) = self.__simulator.get_simulation_window()
 
         groundtrack_1_m = self.__simulator.calculate_groundtrack(
-            tle_models.TwoLineElement.objects.get(identifier=self.__sc_1_tle_id),
+            tle_models.TwoLineElement.objects.get(
+                identifier=self.__sc_1_tle_id
+            ),
             start=start, end=end, timestep=step
         )
 
@@ -188,4 +193,5 @@ class TestSimulation(TestCase):
         self.__simulator.set_spacecraft(self.__tle_fb)
         self.__simulator.set_groundstation(self.__gs_uvigo)
         window = self.__simulator.get_simulation_window()
+        # noinspection PyUnusedLocal
         slots = self.__simulator.calculate_pass_slot(window[0], window[1])

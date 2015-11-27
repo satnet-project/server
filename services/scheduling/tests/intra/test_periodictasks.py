@@ -18,11 +18,10 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-from django import test
 import datadiff
+from django import test
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration import periodictasks
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.scheduling.models import operational, availability

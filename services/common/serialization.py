@@ -67,7 +67,7 @@ def serialize_iso8601_time(t):
             return t.isoformat()
 
     raise TypeError(
-        '<dt> should be either datetime.datetime or datetime.date'
+        '<dt> should be either datetime.datetime or datetime.time'
     )
 
 

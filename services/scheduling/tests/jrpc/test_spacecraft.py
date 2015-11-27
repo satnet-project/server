@@ -17,25 +17,25 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
 import logging
+
 from django import test
 from django.db import models
 
-from services.common import misc
-from services.common.testing import helpers as db_tools
+from services.common import misc, helpers as db_tools
 from services.configuration.jrpc.serializers import \
     channels as channel_serializers
 from services.configuration.jrpc.serializers import \
     segments as segment_serializers
+from services.configuration.jrpc.views import rules as jrpc_rules
 from services.configuration.jrpc.views.channels import \
     groundstations as jrpc_gs_chs
 from services.configuration.jrpc.views.channels import \
     spacecraft as jrpc_sc_chs
-from services.configuration.jrpc.views import rules as jrpc_rules
-from services.scheduling.models import operational as operational_models
-from services.scheduling.jrpc.views.operational import \
-    spacecraft as jrpc_sc_scheduling
 from services.scheduling.jrpc.serializers import operational as \
     jrpc_sch_serial
+from services.scheduling.jrpc.views.operational import \
+    spacecraft as jrpc_sc_scheduling
+from services.scheduling.models import operational as operational_models
 
 
 class JRPCSpacecraftSchedulingTest(test.TestCase):

@@ -15,7 +15,8 @@
 """
 
 import logging
-from services.common.push import service as push_service
+
+from services.common import pusher as push_service
 from services.leop.jrpc.serializers import launch as launch_serial
 from services.leop.jrpc.serializers import messages as message_serializers
 
