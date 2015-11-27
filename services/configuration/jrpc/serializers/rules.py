@@ -80,6 +80,7 @@ __supported_periodicities__ = {
 }
 
 
+# noinspection PyUnusedLocal
 def serialize_once_dates(rule, child_rule):
     """
     Function that serializes the dates from a once rule object as taken from
@@ -89,15 +90,8 @@ def serialize_once_dates(rule, child_rule):
     :return: An object serializable structure
     """
     return {
-        RULE_ONCE_DATE: common_serial.serialize_iso8601_date(
-            rule.starting_date
-        ),
-        RULE_ONCE_S_TIME: common_serial.serialize_iso8601_time(
-            child_rule.starting_time
-        ),
-        RULE_ONCE_E_TIME: common_serial.serialize_iso8601_time(
-            child_rule.ending_time
-        )
+        RULE_ONCE_S_TIME: child_rule.starting_time.isoformat(),
+        RULE_ONCE_E_TIME: child_rule.ending_time.isoformat()
     }
 
 

@@ -44,7 +44,8 @@ class JRPCBookingProcessTest(django_test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
     def test_1_test_slot(self):
-        """Basic TEST slot test
+        """JRPC test: services.scheduling - TESTING slot
+        Basic TEST slot test
         """
         if self.__verbose_testing:
             print('##### test_1_test_slot')

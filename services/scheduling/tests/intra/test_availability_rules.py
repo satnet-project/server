@@ -98,7 +98,7 @@ class INTRARulesAvailability(test.TestCase):
         operational_models.OperationalSlot.objects.set_debug()
 
     def test_rule_created_deleted(self):
-        """INTRA test: availability changed after basic rule operations
+        """INTR test: availability changed after basic rule operations
         """
         if self.__verbose_testing:
             print('##### test_rule_created_deleted')
@@ -124,7 +124,7 @@ class INTRARulesAvailability(test.TestCase):
         )
 
     def test_multiple_rules(self):
-        """INTRA test: multiple rules
+        """INTR test: multiple rules
         """
         if self.__verbose_testing:
             print('##### test_rule_created_deleted')

@@ -68,7 +68,7 @@ class TestSlotPropagation(test.TestCase):
         )
 
     def test_propagate_empty_db(self):
-        """INTRA test: initial slot propagation
+        """INTR test: initial slot propagation
         This test validates the propagation of the slots throughout the
         database when no rules are available (empty database stability check).
         """
@@ -83,7 +83,7 @@ class TestSlotPropagation(test.TestCase):
         )
 
     def _propagate_simple(self):
-        """Unit test.
+        """UNIT test: slot propagation
         This test validates the propagation of the slots with a simple set of
         rules.
         """

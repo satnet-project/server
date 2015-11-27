@@ -76,7 +76,6 @@ class JRPCRulesTest(test.TestCase):
         """JRPC test: (O) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a ONCE rule to the system.
         """
-        self.__verbose_testing = True
         if self.__verbose_testing:
             print('>>> TEST (test_gs_channel_add_rule)')
 
@@ -97,27 +96,14 @@ class JRPCRulesTest(test.TestCase):
             jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
             jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
             jrpc_serial.RULE_DATES: {
-                jrpc_serial.RULE_ONCE_DATE: common_serial
-                .serialize_iso8601_date(
-                    misc.get_today_utc() + datetime.timedelta(days=1)
-                ),
-                jrpc_serial.RULE_ONCE_S_TIME: common_serial
-                .serialize_iso8601_time(
-                    starting_time
-                ),
-                jrpc_serial.RULE_ONCE_E_TIME: common_serial
-                .serialize_iso8601_time(
-                    ending_time
-                )
+                jrpc_serial.RULE_ONCE_S_TIME: starting_time.isoformat(),
+                jrpc_serial.RULE_ONCE_E_TIME: ending_time.isoformat()
             }
         }
 
         if self.__verbose_testing:
-            print('>>> rules from JRPC[' + str(len(rules_g1c1)) + ']:')
-            for r in rules_g1c1:
-                print(str(r))
-            print('>>> expected_r:')
-            print(str(expected_r))
+            misc.print_list(rules_g1c1, name='DATABASE')
+            misc.print_dictionary(expected_r)
 
         self.assertEqual(
             rules_g1c1[0], expected_r, 'Wrong ONCE rule!, diff = ' + str(
@@ -128,7 +114,7 @@ class JRPCRulesTest(test.TestCase):
         jrpc_rules.remove_rule(self.__gs_1_id, rule_id_1)
         self.__verbose_testing = False
 
-    def _test_add_daily_rule(self):
+    def test_add_daily_rule(self):
         """JRPC test: (D) cfg.gs.channel.addRule, cfg.gs.channel.removeRule
         Should correctly add a DAILY rule to the system.
         """
@@ -185,7 +171,7 @@ class JRPCRulesTest(test.TestCase):
             )
         )
 
-    def _test_remove_rule(self):
+    def test_remove_rule(self):
         """JRPC test: cfg.gs.channel.removeRule
         Should correctly remove any rule to the system.
         """

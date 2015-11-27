@@ -63,7 +63,7 @@ class SegmentCompatibilityTest(test.TestCase):
         )
 
     def test_compatibility_case_1(self):
-        """ services.configuration: basic SC_CH compatibility test (1)
+        """INTR test: services.scheduling - basic SC_CH compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHECK-1) len(SegmentCompatibility) = 0
         (CHANGE-2) -SC_CH
@@ -86,7 +86,7 @@ class SegmentCompatibilityTest(test.TestCase):
         )
 
     def test_compatibility_case_2(self):
-        """ services.configuration: basic GS_CH compatibility test (2)
+        """INTR test: services.scheduling - basic GS_CH compatibility test (2)
         (CHANGE-1) +GS_CH
         (CHECK-1) len(SegmentCompatibility) = 0
         (CHANGE-2) -GS_CH
@@ -105,7 +105,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_1_id)
 
     def test_compatibility_case_3(self):
-        """ services.configuration: basic MIXED compatibility test (1)
+        """INTR test: services.scheduling - basic MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Non compatible)
         (CHECK-1) len(SegmentCompatibility) = 0
@@ -158,7 +158,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
     def test_compatibility_case_4(self):
-        """ services.configuration: basic MIXED compatibility test (2)
+        """INTR test: services.scheduling - basic MIXED compatibility test (2)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)
         (CHECK-1) len(SegmentCompatibility) = 1
@@ -212,7 +212,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_sc_channel(self.__sc_1_ch_1_id)
 
     def test_compatibility_case_5(self):
-        """ services.configuration: complex MIXED compatibility test (1)
+        """INTR test: services.scheduling - complex MIXED compatibility test (1)
         (CHANGE-1) +SC_CH
         (CHANGE-2) +GS_CH (Compatible)
         (CHANGE-3) +GS_CH
@@ -377,7 +377,7 @@ class SegmentCompatibilityTest(test.TestCase):
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_3_id)
 
     def test_compatibility_case_6(self):
-        """ services.configuration: complex MIXED compatibility test (2)
+        """INTR test: services.scheduling - complex MIXED compatibility test (2)
         (CHANGE-1) +SC-1
         (CHANGE-2) +SC-2
         (CHANGE-3) +GS-1 (SC-1 & SC-2 compatible)

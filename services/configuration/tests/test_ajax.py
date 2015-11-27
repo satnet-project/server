@@ -33,7 +33,7 @@ class JRPCSegmentsTest(test.TestCase):
         self.__http_request = db_tools.create_request()
 
     def test_geoip(self):
-        """AJAX method: configuration.geoip
+        """AJAX test: configuration.geoip
         Tests the AJAX method that retrieves the estimated location of the IP
         of the user.
         """

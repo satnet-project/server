@@ -412,8 +412,14 @@ class AvailabilityRule(django_models.Model):
         'Rule periodicity', choices=PERIODICITY_CHOICES, max_length=1
     )
 
-    starting_date = django_models.DateField('Starting date for the period')
-    ending_date = django_models.DateField('Ending date for the period')
+    starting_date = django_models.DateField(
+        'Starting date for the applicability period of the rule',
+        default=django_tz.now, null=True
+    )
+    ending_date = django_models.DateField(
+        'Ending date for the applicability period of the rule',
+        default=django_tz.now, null=True
+    )
 
     __operation2unicode__ = {
         ADD_SLOTS: '+',
@@ -495,8 +501,8 @@ class AvailabilityRuleOnceManager(django_models.Manager):
             groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
-            starting_date=dates[0],
-            ending_date=dates[0],
+            starting_date=None,
+            ending_date=None,
             starting_time=starting_dt,
             ending_time=ending_dt
         )

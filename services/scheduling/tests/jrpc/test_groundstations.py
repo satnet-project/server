@@ -104,7 +104,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         operational_models.OperationalSlot.objects.set_debug()
 
     def test_gs_get_operational_slots(self):
-        """
+        """JRPC test: services.scheduling.gs.getOperationalSlots
         Validates the JRPC method <gs_get_operational_slots>
         """
         if self.__verbose_testing:
