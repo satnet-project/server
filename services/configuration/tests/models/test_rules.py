@@ -89,13 +89,6 @@ class TestRulesAvailability(test.TestCase):
 
         jrpc_rules.add_rule(self.__gs_1_id, cfg)
 
-        # if self.__verbose_testing:
-        #     misc.print_dictionary(django_model2dict(
-        #         rule_models.AvailabilityRuleOnce.objects.get(
-        #             availabilityrule_ptr=r_1_id
-        #         )
-        #     ))
-
     def _test_1_a_slots_daily(self):
         """services.configuration: generate available slots (DAILY rule, 1)
         Validates the generation of slots by a daily rule.
