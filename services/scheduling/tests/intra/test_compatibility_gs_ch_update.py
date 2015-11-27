@@ -68,7 +68,7 @@ class CompatibilityGsChUpdate(TestCase):
         )
 
     def test_gs_channel_update_compatibility(self):
-        """INTRA scheduling: compatibility diff
+        """INTRA test: compatibility diff
         """
         if self.__verbose_testing:
             print('##### test_compatibility_case_6')

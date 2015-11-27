@@ -68,7 +68,7 @@ class TestSlotPropagation(test.TestCase):
         )
 
     def test_propagate_empty_db(self):
-        """INTRA scheduling: initial slot propagation
+        """INTRA test: initial slot propagation
         This test validates the propagation of the slots throughout the
         database when no rules are available (empty database stability check).
         """

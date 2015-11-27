@@ -98,7 +98,7 @@ class OperationalModels(test.TestCase):
         )
 
     def test_1_compatibility_sc_channel_added_deleted(self):
-        """INTRA scheduling: compatibility changed generates operational slots
+        """INTRA test:  compatibility changed generates operational slots
 
         1) +GS_CH
         2) +RULE

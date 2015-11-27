@@ -30,7 +30,7 @@ class NetworkModels(test.TestCase):
             logging.getLogger('network').setLevel(level=logging.CRITICAL)
 
     def test_load_server(self):
-        """UNIT test: server detection
+        """UNIT test: services.network - server detection
         Tests the correct creation of the server configuration within the
         database.
         """

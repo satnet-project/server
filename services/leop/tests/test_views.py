@@ -60,7 +60,7 @@ class TestLeopViews(test.TestCase):
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)
 
     def test_get_queryset(self):
-        """Unit test: view processing
+        """Unit test: services.leop - view processing
         Simply checks this method of the LeopManagementView since it had to
         be implemented slightly different than what expected beforehand.
         """

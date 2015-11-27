@@ -92,7 +92,7 @@ class CompatibilityScChUpdate(TestCase):
         )
 
     def test_sc_channel_update_compatibility(self):
-        """INTRA scheduling: SC channel update provokes compatibility change
+        """INTRA test: SC channel update provokes compatibility change
         Initially, the just created spacecraft channel should be compatible
         with the also created Ground Station channel. However, after the
         update they become incompatible and, therefore, this fact should be
