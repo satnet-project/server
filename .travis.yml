@@ -21,9 +21,10 @@ before_script:
   - 'python manage.py migrate'
 script:
   # - 'coverage erase'
-  - 'python manage.py test --with-coverage'
+  - 'python manage.py test'
 after_success:
   # - 'codecov'
   # - "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
   # - 'python-codacy-coverage -r coverage.xml'
+  - 'coverage run manage.py test --with-coverage'
   - 'coveralls'
