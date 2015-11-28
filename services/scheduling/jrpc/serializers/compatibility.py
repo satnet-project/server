@@ -118,14 +118,13 @@ def serialize_sc_compatibility(spacecraft, compatibility):
     """JSON serializer
     Serializes the compatibility object for all the channels of a given
     spacecraft together with the configuration of the spacecraft itself.
+
     :param spacecraft: The spacecraft object
     :param compatibility: The compatibility object
     :return: Object with the spacecraft and the compatibility
     """
 
-    result = {
+    return {
         segment_serializers.SC_ID_K: spacecraft.identifier,
         COMPATIBILITY_OBJECT_K: compatibility
     }
-    print('XXXXXXXXXXXX')
-    return result

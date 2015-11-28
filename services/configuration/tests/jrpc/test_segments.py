@@ -204,10 +204,8 @@ class JRPCSegmentsTest(test.TestCase):
 
         self.assertEqual(
             result['spacecraft_id'], self.__sc_3_id,
-            'Error creating the SC, expected id = '
-            + str(self.__sc_3_id) + ', actual id = ' + str(result[
-                'spacecraft_id'
-            ])
+            'Error creating the SC, expected id = ' + str(self.__sc_3_id) +
+            ', actual id = ' + str(result['spacecraft_id'])
         )
 
         self.assertNotEqual(
@@ -225,7 +223,7 @@ class JRPCSegmentsTest(test.TestCase):
         identifiers contain symbols, blanks and other types of non common
         characters.
         """
-        self.__verbose_testing = True
+        self.__verbose_testing = False
         if self.__verbose_testing:
             print('>>> TEST (test_sc_create_2):')
 
@@ -290,8 +288,9 @@ class JRPCSegmentsTest(test.TestCase):
         actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
         self.assertEqual(
             actual_cfg, cfg,
-            'Wrong configuration returned, diff = \n'
-            + str(datadiff.diff(actual_cfg, cfg))
+            'Wrong configuration returned, diff = \n' + str(datadiff.diff(
+                actual_cfg, cfg)
+            )
         )
 
     def test_sc_get_configuration(self):
@@ -330,9 +329,10 @@ class JRPCSegmentsTest(test.TestCase):
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
         self.assertEqual(
-            actual_cfg, cfg, 'Configurations differ'
-            + ', e = ' + str(cfg)
-            + ', a = ' + str(actual_cfg)
+            actual_cfg, cfg,
+            'Configurations differ' + ', e = ' + str(cfg) + ', a = ' + str(
+                actual_cfg
+            )
         )
         cfg[segment_serializaers.SC_CALLSIGN_K] = old_callsign
         cfg[segment_serializaers.SC_TLE_ID_K] = old_tle_id
@@ -343,7 +343,8 @@ class JRPCSegmentsTest(test.TestCase):
         )
         actual_cfg = jrpc_sc.get_configuration(self.__sc_1_id)
         self.assertEqual(
-            actual_cfg, cfg, 'Configurations differ'
-            + ', e = ' + str(cfg)
-            + ', a = ' + str(actual_cfg)
+            actual_cfg, cfg,
+            'Configurations differ' + ', e = ' + str(cfg) + ', a = ' + str(
+                actual_cfg
+            )
         )

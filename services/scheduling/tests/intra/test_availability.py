@@ -42,7 +42,7 @@ class TestAvailability(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
 
-        self.__rule_date = misc.get_today_utc() + datetime.timedelta(days=1)
+        self.__rule_date = misc.get_today_utc()
         self.__rule_s_time = misc.get_today_utc().replace(
             hour=12, minute=0, second=0, microsecond=0
         )
@@ -93,7 +93,7 @@ class TestAvailability(test.TestCase):
         )
 
     def test_1a_add_slots_once_rule(self):
-        """INTR test: services.scheduling - add slots with a single ONCE rule
+        """INTR test: services.scheduling - add slots w/single ONCE rule (1A)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
@@ -101,16 +101,14 @@ class TestAvailability(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots (A): single once rule (ADD)')
 
-        jrpc_rules_if.add_rule(
-            self.__gs_1_id,
-            db_tools.create_jrpc_once_rule(
-                starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
-            )
+        rule_cfg = db_tools.create_jrpc_once_rule(
+            starting_time=self.__rule_s_time, ending_time=self.__rule_e_time
         )
-
+        jrpc_rules_if.add_rule(self.__gs_1_id, rule_cfg)
         a_slots = rule_models.AvailabilityRule.objects.get_availability_slots(
             self.__gs
         )
+
         self.assertEqual(len(a_slots), 1)
 
         db_a_slots = availability.AvailabilitySlot.objects.all()
@@ -119,13 +117,12 @@ class TestAvailability(test.TestCase):
             model_to_dict(
                 db_a_slots[0], exclude=['id', 'groundstation', 'identifier']
             ), {
-                'start': self.__rule_s_time + datetime.timedelta(days=1),
-                'end': self.__rule_e_time + datetime.timedelta(days=1)
+                'start': self.__rule_s_time, 'end': self.__rule_e_time
             }
         )
 
-    def test_1b_add_slots_once_rule(self):
-        """INTR test: services.scheduling - add slots with a single ONCE rule
+    def _test_1b_add_slots_once_rule(self):
+        """INTR test: services.scheduling - add slots w/single ONCE rule (1B)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
@@ -174,8 +171,8 @@ class TestAvailability(test.TestCase):
         db_a_slots = availability.AvailabilitySlot.objects.all()
         self.assertEquals(len(db_a_slots), 0)
 
-    def test_1c_add_slots_once_rule(self):
-        """INTR test: services.scheduling - add slots with a single ONCE rule
+    def _test_1c_add_slots_once_rule(self):
+        """INTR test: services.scheduling - add slots w/single ONCE rule (1C)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
         Therefore, a single slot should be generated and added to the database.
@@ -239,8 +236,8 @@ class TestAvailability(test.TestCase):
             }
         )
 
-    def test_2_generate_slots_daily_rule(self):
-        """INTR test: services.scheduling - add slots with a DAILY rule
+    def _test_2_generate_slots_daily_rule(self):
+        """INTR test: services.scheduling - add slots with a DAILY rule (2)
         Tests the generation of slots for a given daily rule.
         """
         if self.__verbose_testing:
@@ -282,8 +279,8 @@ class TestAvailability(test.TestCase):
             }
         )
 
-    def test_3_generate_slots_several_rules_1(self):
-        """INTR test: services.scheduling - add slots with several rules
+    def _test_3_generate_slots_several_rules_1(self):
+        """INTR test: services.scheduling - add slots with several rules (3)
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
         """
@@ -492,8 +489,8 @@ class TestAvailability(test.TestCase):
 
         self.__verbose_testing = False
 
-    def test_4_get_availability_slots(self):
-        """INTR test: services.scheduling - availability slot generation
+    def _test_4_get_availability_slots(self):
+        """INTR test: services.scheduling - availability slot generation (4)
         Validates the method that gathers the AvailabilitySlots that are
         applicable within a defined interval.
         """

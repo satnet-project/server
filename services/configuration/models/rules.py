@@ -105,9 +105,9 @@ class AvailabilityRuleManager(django_models.Manager):
                         'Cannot find rule with id = ' + str(rule_id)
                     )
 
+    """
     @staticmethod
     def get_applicable_rules(interval):
-        """
         This method finds all applicable rules within the database whose
         initial_date and ending_date range within the given interval.
         :param interval: Duration of the interval for matching applicable
@@ -115,7 +115,6 @@ class AvailabilityRuleManager(django_models.Manager):
         the interval and the second (and last) object being the end_date for
         the interval.
         :returns: Two separate query lists.
-        """
         add_slots = []
         remove_slots = []
 
@@ -137,6 +136,7 @@ class AvailabilityRuleManager(django_models.Manager):
             remove_slots.append(r_list)
 
         return add_slots, remove_slots
+    """
 
     @staticmethod
     def get_applicable_rule_values(groundstation, interval=None):
@@ -159,15 +159,16 @@ class AvailabilityRuleManager(django_models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         for c in AvailabilityRule.__subclasses__():
+
             r_list = list(
                 c.objects.filter(
                     availabilityrule_ptr__groundstation=groundstation
                 ).filter(
                     availabilityrule_ptr__operation=ADD_SLOTS
                 ).filter(
-                    availabilityrule_ptr__starting_date__lt=interval[1]
+                    availabilityrule_ptr__starting_date__lte=interval[1].date()
                 ).filter(
-                    availabilityrule_ptr__ending_date__gt=interval[0]
+                    availabilityrule_ptr__ending_date__gte=interval[0].date()
                 ).values()
             )
             if r_list:
@@ -178,9 +179,9 @@ class AvailabilityRuleManager(django_models.Manager):
                 ).filter(
                     availabilityrule_ptr__operation=REMOVE_SLOTS
                 ).filter(
-                    availabilityrule_ptr__starting_date__lt=interval[1]
+                    availabilityrule_ptr__starting_date__lte=interval[1].date()
                 ).filter(
-                    availabilityrule_ptr__ending_date__gt=interval[0]
+                    availabilityrule_ptr__ending_date__gte=interval[0].date()
                 ).values()
             )
             if r_list:
@@ -466,15 +467,7 @@ class AvailabilityRuleOnceManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
-        print('@@@@ dates[0] = ' + dates[0].isoformat())
-        print('@@@@ dates[1] = ' + dates[1].isoformat())
-        print('@@@@ tzinfo = ' + str(dates[0].tzinfo.tzname(dates[0])))
-        print('@@@@ tzinfo = ' + str(dates[1].tzinfo.tzname(dates[1])))
-
         localtime = pytz_ref.LocalTimezone()
-        print('@@@@ tzinfo (2) = ' + localtime.tzname(dates[0]))
-        print('@@@@ tzinfo (2) = ' + localtime.tzname(dates[1]))
-
         starting_tz = localtime.tzname(dates[0])
         ending_tz = localtime.tzname(dates[1])
 
@@ -488,9 +481,6 @@ class AvailabilityRuleOnceManager(django_models.Manager):
         starting_dt = dates[0].astimezone(pytz.utc)
         ending_dt = dates[1].astimezone(pytz.utc)
 
-        print('@@@@ starting_dt = ' + starting_dt.isoformat())
-        print('@@@@ ending_dt = ' + ending_dt.isoformat())
-
         if ending_dt <= starting_dt:
             raise ValueError(
                 'Invalid ONCE rule, ending (' + ending_dt.isoformat() + ') ' +
@@ -501,8 +491,8 @@ class AvailabilityRuleOnceManager(django_models.Manager):
             groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
-            starting_date=None,
-            ending_date=None,
+            starting_date=starting_dt,
+            ending_date=ending_dt,
             starting_time=starting_dt,
             ending_time=ending_dt
         )

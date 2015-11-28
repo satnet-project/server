@@ -33,7 +33,7 @@ class TestCompatibilityViews(test.TestCase):
         Populates the initial database with a set of objects required to run
         the following tests.
         """
-        self.__verbose_testing = True
+        self.__verbose_testing = False
 
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
