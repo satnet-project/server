@@ -93,18 +93,10 @@ def serialize_sc_ch_compatibility(spacecraft_ch, compatibility):
         camelcase=True,
         exclude=['id', 'spacecraft'],
         related={
-            'modulation': {
-                'fields': ['modulation']
-            },
-            'bandwidth': {
-                'fields': ['bandwidth']
-            },
-            'bitrate': {
-                'fields': ['bitrate']
-            },
-            'polarization': {
-                'fields': ['polarization']
-            }
+            'modulation': {'fields': ['modulation']},
+            'bandwidth': {'fields': ['bandwidth']},
+            'bitrate': {'fields': ['bitrate']},
+            'polarization': {'fields': ['polarization']}
         }
     )
 

@@ -254,23 +254,26 @@ class AvailabilityRuleManager(django_models.Manager):
         else:
             i_day = interval[0]
 
+        ii_time = r.starting_time.timetz()
+        ff_time = r.ending_time.timetz()
+
         while i_day < interval[1]:
 
-            ii_date = r.starting_time
-            ff_date = r.ending_time
+            slot_s = datetime.datetime.combine(i_day, ii_time)
+            slot_e = datetime.datetime.combine(i_day, ff_time)
 
             # We might have to truncate the first slot...
             if first:
                 first = False
 
-                if ff_date <= interval[0]:
+                if slot_e <= interval[0]:
                     i_day += datetime.timedelta(days=1)
                     continue
 
-                if ii_date <= interval[0]:
-                    ii_date = interval[0]
+                if slot_s <= interval[0]:
+                    slot_s = interval[0]
 
-            result.append((ii_date, ff_date))
+            result.append((slot_s, slot_e))
             i_day += datetime.timedelta(days=1)
 
         return result

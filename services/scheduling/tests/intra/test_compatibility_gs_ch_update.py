@@ -68,7 +68,7 @@ class CompatibilityGsChUpdate(TestCase):
         )
 
     def test_gs_channel_update_compatibility(self):
-        """INTR test: compatibility diff
+        """INTR test: services.scheduling - compatibility diff
         """
         if self.__verbose_testing:
             print('##### test_compatibility_case_6')
@@ -94,39 +94,22 @@ class CompatibilityGsChUpdate(TestCase):
         gs_ch = channel_models.GroundStationChannel.objects.get(
             identifier=self.__gs_1_ch_1_id
         )
-
         c1 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
-        self.assertEquals(
-            len(c1['Compatibility'][0]['Compatibility']),
-            2,
-            'Wrong compatibility'
-        )
+        self.assertEquals(len(c1['Compatibility'][0]['Compatibility']), 2)
 
         # 2) changing the polarization should make the GS_CH incompatible
         gs_ch.polarizations.clear()
         gs_ch.polarizations.add(
-            band_models.AvailablePolarizations.objects.get(
-                polarization='LHCP'
-            )
+            band_models.AvailablePolarizations.objects.get(polarization='LHCP')
         )
         gs_ch.save()
         c2 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
-        self.assertEquals(
-            len(c2['Compatibility'][0]['Compatibility']),
-            1,
-            'Wrong compatibility'
-        )
+        self.assertEquals(len(c2['Compatibility'][0]['Compatibility']), 1)
 
         # 3) changing it to the original configuration
         gs_ch.polarizations.add(
-            band_models.AvailablePolarizations.objects.get(
-                polarization='RHCP'
-            )
+            band_models.AvailablePolarizations.objects.get(polarization='RHCP')
         )
         gs_ch.save()
         c3 = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
-        self.assertEquals(
-            len(c3['Compatibility'][0]['Compatibility']),
-            2,
-            'Wrong compatibility'
-        )
+        self.assertEquals(len(c3['Compatibility'][0]['Compatibility']), 2)

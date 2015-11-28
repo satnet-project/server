@@ -95,20 +95,17 @@ def sc_get_compatible(spacecraft_id):
     """
 
     results = []
-    spacecraft = segment_models.Spacecraft.objects.get(
-        identifier=spacecraft_id
-    )
+    spacecraft = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)
 
     for spacecraft_ch in channel_models.SpacecraftChannel.objects.filter(
         spacecraft=spacecraft
     ):
 
-        r = compatibility_serializers.serialize_sc_ch_compatibility(
-            spacecraft_ch,
-            get_compatiblility(spacecraft_ch)
+        results.append(
+            compatibility_serializers.serialize_sc_ch_compatibility(
+                spacecraft_ch, get_compatiblility(spacecraft_ch)
+            )
         )
-
-        results.append(r)
 
     return compatibility_serializers.serialize_sc_compatibility(
         spacecraft, results
