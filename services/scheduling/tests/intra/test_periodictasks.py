@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-import datadiff
 from django import test
 
 from services.common import misc, helpers as db_tools
@@ -140,12 +139,7 @@ class TestSlotPropagation(test.TestCase):
             operational.OperationalSlot.objects.values_list('start', 'end')
         )
 
-        self.assertEqual(
-            actual_post, expected_post,
-            'Wrong OperationalSlots (post-propagate), diff = ' + str(
-                datadiff.diff(actual_post, expected_post)
-            )
-        )
+        self.assertEqual(actual_post, expected_post)
 
         self.assertTrue(
             jrpc_rules_if.remove_rule(

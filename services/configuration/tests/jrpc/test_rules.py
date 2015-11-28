@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-import datadiff
 from django import test
 
 from services.common import misc
@@ -105,11 +104,7 @@ class JRPCRulesTest(test.TestCase):
             misc.print_list(rules_g1c1, name='DATABASE')
             misc.print_dictionary(expected_r)
 
-        self.assertEqual(
-            rules_g1c1[0], expected_r, 'Wrong ONCE rule!, diff = ' + str(
-                datadiff.diff(rules_g1c1[0], expected_r)
-            )
-        )
+        self.assertEqual(rules_g1c1[0], expected_r)
 
         jrpc_rules.remove_rule(self.__gs_1_id, rule_id_1)
         self.__verbose_testing = False
@@ -165,11 +160,7 @@ class JRPCRulesTest(test.TestCase):
             print('>>> expected_r:')
             misc.print_dictionary(expected_r)
 
-        self.assertEqual(
-            rules_g1c1[0], expected_r, 'Wrong DAILY rule!, diff = ' + str(
-                datadiff.diff(rules_g1c1[0], expected_r)
-            )
-        )
+        self.assertEqual(rules_g1c1[0], expected_r)
 
     def test_remove_rule(self):
         """JRPC test: cfg.gs.channel.removeRule

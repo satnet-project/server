@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 # noinspection PyPackageRequirements
 import ephem
 import logging
-import datadiff
 from django import test
 
 from services.common import misc, helpers as db_tools
@@ -118,12 +117,7 @@ class JRPCTestTle(test.TestCase):
         ]
         a_sections = tle_jrpc.get_celestrak_sections()
 
-        self.assertEqual(
-            a_sections, e_sections,
-            'Celestrak sections do not match, diff = ' + str(
-                datadiff.diff(a_sections, e_sections)
-            )
-        )
+        self.assertEqual(a_sections, e_sections)
 
     def test_get_celestrak_resource(self):
         """JRPC test: configuration.tle.celestrak.getResource
@@ -171,17 +165,17 @@ class JRPCTestTle(test.TestCase):
         self.assertEqual(
             a_result[segment_serializer.SC_ID_K],
             e_result[segment_serializer.SC_ID_K],
-            'Spacecraft identifiers do not match, a = '
-            + str(a_result[segment_serializer.SC_ID_K]) + ', e = '
-            + str(e_result[segment_serializer.SC_ID_K])
+            'Spacecraft identifiers do not match, a = ' + str(
+                a_result[segment_serializer.SC_ID_K]
+            ) + ', e = ' + str(e_result[segment_serializer.SC_ID_K])
         )
 
         self.assertEqual(
             a_result[segment_serializer.SC_TLE_ID_K],
             e_result[segment_serializer.SC_TLE_ID_K],
-            'TLE identifiers do not match, a = '
-            + str(a_result[segment_serializer.SC_TLE_ID_K]) + ', e = '
-            + str(e_result[segment_serializer.SC_TLE_ID_K])
+            'TLE identifiers do not match, a = ' + str(
+                a_result[segment_serializer.SC_TLE_ID_K]
+            ) + ', e = ' + str(e_result[segment_serializer.SC_TLE_ID_K])
         )
 
         self.assertEqual(

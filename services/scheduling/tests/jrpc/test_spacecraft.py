@@ -237,9 +237,8 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         date_i = misc.get_today_utc() + datetime.timedelta(days=1)
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
-        now = misc.get_now_utc()
-        s_time = now - datetime.timedelta(minutes=30)
-        e_time = now + datetime.timedelta(hours=5)
+        s_time = misc.get_next_midnight() - datetime.timedelta(hours=23)
+        e_time = s_time + datetime.timedelta(hours=20)
 
         jrpc_rules.add_rule(
             self.__gs_1_id,
@@ -265,9 +264,8 @@ class JRPCSpacecraftSchedulingTest(test.TestCase):
         date_i = misc.get_today_utc() + datetime.timedelta(days=1)
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
-        now = misc.get_now_utc()
-        s_time = now - datetime.timedelta(minutes=30)
-        e_time = now + datetime.timedelta(hours=5)
+        s_time = misc.get_next_midnight() - datetime.timedelta(hours=23)
+        e_time = s_time + datetime.timedelta(hours=20)
 
         jrpc_rules.add_rule(
             self.__gs_1_id,

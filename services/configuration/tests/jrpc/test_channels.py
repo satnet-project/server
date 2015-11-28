@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 
-import datadiff
 from django.db.models import ObjectDoesNotExist
 from django.test import TestCase
 
@@ -155,12 +154,7 @@ class JRPCChannelsTest(TestCase):
             channel_serializers.BITRATES_K: ['300', '600', '900'],
             channel_serializers.BANDWIDTHS_K: ['12.500000000', '25.000000000']
         }
-        self.assertEqual(
-            actual_o, expected_o,
-            'Options differ! diff = ' + str(
-                datadiff.diff(actual_o, expected_o)
-            )
-        )
+        self.assertEqual(actual_o, expected_o)
 
     def test_gs_channel_is_unique(self):
         """JRPC test: configuration.gs.channel.isUnique
@@ -406,14 +400,8 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
-            print(datadiff.diff(actual_c, expected_c))
 
-        self.assertEqual(
-            actual_c, expected_c,
-            'Configuration dictionaries do not match! Diff = ' + str(
-                datadiff.diff(actual_c, expected_c)
-            )
-        )
+        self.assertEqual(actual_c, expected_c)
         db_tools.remove_gs_channel(self.__gs_1_id, self.__gs_1_ch_2_id)
 
     def test_sc_channel_get_configuration(self):
@@ -458,7 +446,6 @@ class JRPCChannelsTest(TestCase):
         if self.__verbose_testing:
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
-            print(datadiff.diff(actual_c, expected_c))
 
         self.assertEqual(
             actual_c, expected_c,
@@ -562,11 +549,7 @@ class JRPCChannelsTest(TestCase):
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
 
-        self.assertEqual(
-            actual_c, expected_c,
-            'Configuration dictionaries do not match!, diff = \n'
-            + str(datadiff.diff(actual_c, expected_c))
-        )
+        self.assertEqual(actual_c, expected_c)
 
     def test_sc_channel_set_configuration(self):
         """JRPC test: configuration.sc.channel.setConfiguration
@@ -659,8 +642,4 @@ class JRPCChannelsTest(TestCase):
             misc.print_dictionary(actual_c)
             misc.print_dictionary(expected_c)
 
-        self.assertEqual(
-            actual_c, expected_c,
-            'Configuration dictionaries do not match!, diff = \n'
-            + str(datadiff.diff(actual_c, expected_c))
-        )
+        self.assertEqual(actual_c, expected_c)

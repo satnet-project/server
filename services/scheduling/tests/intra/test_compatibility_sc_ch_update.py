@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 
-import datadiff
 from django.test import TestCase
 
 from services.common import helpers as db_tools
@@ -130,22 +129,13 @@ class CompatibilityScChUpdate(TestCase):
         actual_c = jrpc_sc_ch_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
-
-        self.assertEqual(
-            actual_c, expected_c,
-            'Wrong configuration! diff = ' + str(
-                datadiff.diff(actual_c, expected_c)
-            )
-        )
+        self.assertEqual(actual_c, expected_c)
 
         self.assertEquals(
             jrpc_compat_if.sc_channel_get_compatible(
                 self.__sc_1_id, self.__sc_1_ch_1_id
             ),
-            [],
-            'No compatible channels should have been found, diff = ' + str(
-                datadiff.diff(compatibility, [])
-            )
+            []
         )
 
         compatibility = jrpc_compat_if.sc_get_compatible(self.__sc_1_id)
@@ -184,13 +174,7 @@ class CompatibilityScChUpdate(TestCase):
         actual_c = jrpc_sc_ch_if.sc_channel_get_configuration(
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
-
-        self.assertEqual(
-            actual_c, expected_c,
-            'Wrong configuration! diff = ' + str(
-                datadiff.diff(actual_c, expected_c)
-            )
-        )
+        self.assertEqual(actual_c, expected_c)
 
         compatibility = jrpc_compat_if.sc_channel_get_compatible(
             self.__sc_1_id, self.__sc_1_ch_1_id

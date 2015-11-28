@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-import datadiff
 from django import test
 
 from services.common import misc, simulation, helpers as db_tools
@@ -185,12 +184,7 @@ class OperationalModels(test.TestCase):
             misc.print_list(actual)
             misc.print_list(expected)
 
-        self.assertEqual(
-            actual, expected,
-            'All remaining slots must have the state ' + str(
-                operational_models.STATE_FREE
-            ) + ', diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
 
         self.assertTrue(
             jrpc_rules_if.remove_rule(self.__gs_1_id, r_1_id),
@@ -202,12 +196,7 @@ class OperationalModels(test.TestCase):
                 state=operational_models.STATE_FREE
             ).values_list('state')
         )
-        self.assertEqual(
-            actual, expected,
-            'All remaining slots must have the state ' + str(
-                operational_models.STATE_FREE
-            ) + ', diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
 
         self.assertTrue(
             jrpc_gs_ch_if.gs_channel_delete(
@@ -224,9 +213,4 @@ class OperationalModels(test.TestCase):
                 state=operational_models.STATE_FREE
             ).values_list('state')
         )
-        self.assertEqual(
-            actual, expected,
-            'All remaining slots must have the state ' + str(
-                operational_models.STATE_FREE
-            ) + ', diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)

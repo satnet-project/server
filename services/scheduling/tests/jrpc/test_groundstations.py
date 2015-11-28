@@ -168,9 +168,9 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         date_i = misc.get_today_utc() + datetime.timedelta(days=1)
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
-        now = misc.get_now_utc()
-        s_time = now - datetime.timedelta(minutes=30)
-        e_time = now + datetime.timedelta(hours=5)
+        now = misc.get_next_midnight()
+        s_time = now - datetime.timedelta(hours=23)
+        e_time = now + datetime.timedelta(hours=20)
 
         jrpc_rules.add_rule(
             self.__gs_1_id,
@@ -202,9 +202,7 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
             )
 
         self.assertGreater(
-            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
-            0,
-            'Expected operational slots to be available'
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)), 0
         )
 
         # ### clean up sc/gs
@@ -218,20 +216,15 @@ class JRPCGroundStationsSchedulingTest(test.TestCase):
         )
 
         self.assertEquals(
-            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
-            0,
-            'Expected operational slots to be available'
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)), 0
         )
 
         self.assertTrue(
             jrpc_sc_ch_if.sc_channel_delete(
                 spacecraft_id=self.__sc_1_id, channel_id=self.__sc_1_ch_1_id
-            ),
-            'Could not delete SpacecraftChannel = ' + str(self.__sc_1_ch_1_id)
+            )
         )
 
         self.assertEquals(
-            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)),
-            0,
-            'Expected operational slots to be available'
+            len(jrpc_gs_scheduling.get_operational_slots(self.__gs_1_id)), 0
         )

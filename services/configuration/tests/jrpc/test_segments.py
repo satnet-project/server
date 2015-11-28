@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 
-import datadiff
 from django import test
 
 from services.common import misc, helpers as db_tools
@@ -253,12 +252,7 @@ class JRPCSegmentsTest(test.TestCase):
             misc.print_dictionary(cfg)
             misc.print_dictionary(self.__gs_1_configuration)
 
-        self.assertEqual(
-            cfg, self.__gs_1_configuration,
-            'Wrong configuration returned, diff = \n' + str(
-                datadiff.diff(cfg, self.__gs_1_configuration)
-            )
-        )
+        self.assertEqual(cfg, self.__gs_1_configuration)
 
     def test_gs_set_configuration(self):
         """JRPC test: configuration.gs.setConfiguration
@@ -286,12 +280,7 @@ class JRPCSegmentsTest(test.TestCase):
             'The <set_configuration> JPRC method should have returned <True>'
         )
         actual_cfg = jrpc_gs.get_configuration(self.__gs_1_id)
-        self.assertEqual(
-            actual_cfg, cfg,
-            'Wrong configuration returned, diff = \n' + str(datadiff.diff(
-                actual_cfg, cfg)
-            )
-        )
+        self.assertEqual(actual_cfg, cfg)
 
     def test_sc_get_configuration(self):
         """JRPC test: configuration.sc.getConfiguration

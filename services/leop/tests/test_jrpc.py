@@ -19,7 +19,6 @@ import datetime
 import difflib
 import logging
 
-import datadiff
 import pytz
 from django import test
 from django.core import exceptions as django_ex
@@ -141,11 +140,7 @@ class TestLaunchViews(test.TestCase):
             a_gs = launch_jrpc.list_groundstations(
                 self.__leop_id, **{'request': self.__request_2}
             )
-            self.assertEqual(
-                a_gs, e_gs, 'Unexpected result! diff = ' + str(
-                    datadiff.diff(a_gs, e_gs)
-                )
-            )
+            self.assertEqual(a_gs, e_gs)
         except django_ex.PermissionDenied:
             self.fail('User is staff, permission should have been granted')
 
@@ -163,11 +158,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, **{'request': self.__request_2}
         )
 
-        self.assertEqual(
-            a_gs, e_gs, 'Unexpected result! diff = ' + str(
-                datadiff.diff(a_gs, e_gs)
-            )
-        )
+        self.assertEqual(a_gs, e_gs)
 
     def test_add_groundstations(self):
         """JRPC test: services.leop.groundstations.add
@@ -212,10 +203,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, gss, **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEqual(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
 
         cluster = launch_models.Launch.objects.get(identifier=self.__leop_id)
         self.assertEqual(
@@ -255,19 +243,14 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, None, **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEqual(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
+
         # Basic parameters test (3)
         actual = launch_jrpc.remove_groundstations(
             self.__leop_id, [], **{'request': self.__request_2}
         )
         expected = {launch_serial.JRPC_K_LEOP_ID: self.__leop_id}
-        self.assertEqual(
-            actual, expected,
-            'Result differs, diff = ' + str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
 
         # First, we add two groundstations to the cluster and we try to remove
         # them later.
@@ -314,11 +297,7 @@ class TestLaunchViews(test.TestCase):
             ).unknown_objects.all()
         ]
         e_list = [1]
-        self.assertEqual(
-            a_list, e_list, 'Data differs in the DB, diff = ' + str(
-                datadiff.diff(a_list, e_list)
-            )
-        )
+        self.assertEqual(a_list, e_list)
 
     def test_remove_unknown(self):
         """JRPC test: services.leop.unknown.remove
@@ -441,11 +420,7 @@ class TestLaunchViews(test.TestCase):
             launch_serial.JRPC_K_UNKNOWN_OBJECTS: [],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
-        self.assertEqual(
-            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
-                datadiff.diff(a_cfg, e_cfg)
-            )
-        )
+        self.assertEqual(a_cfg, e_cfg)
 
         # 2) 1 ufo
         launch_jrpc.add_unknown(self.__leop_id, 1)
@@ -461,11 +436,7 @@ class TestLaunchViews(test.TestCase):
             ],
             launch_serial.JRPC_K_IDENTIFIED_OBJECTS: []
         }
-        self.assertEqual(
-            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
-                datadiff.diff(a_cfg, e_cfg)
-            )
-        )
+        self.assertEqual(a_cfg, e_cfg)
 
         # 3) 1 ufo, 1 identified
         launch_jrpc.add_unknown(self.__leop_id, 2)
@@ -492,11 +463,7 @@ class TestLaunchViews(test.TestCase):
                 launch_serial.JRPC_K_TLE_L2: self.__leop_tle_l2,
             }]
         }
-        self.assertEqual(
-            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
-                datadiff.diff(a_cfg, e_cfg)
-            )
-        )
+        self.assertEqual(a_cfg, e_cfg)
 
         # 4) 2 ufos
         launch_jrpc.forget(self.__leop_id, self.__ufo_id)
@@ -518,11 +485,7 @@ class TestLaunchViews(test.TestCase):
             misc.print_dictionary(a_cfg)
             misc.print_dictionary(e_cfg)
 
-        self.assertEqual(
-            a_cfg, e_cfg, 'Configurations differ, diff = ' + str(
-                datadiff.diff(a_cfg, e_cfg)
-            )
-        )
+        self.assertEqual(a_cfg, e_cfg)
 
     def test_set_configuration(self):
         """JRPC test: services.leop.setConfiguration
@@ -685,12 +648,7 @@ class TestLaunchViews(test.TestCase):
             messages_serial.JRPC_K_TS: message_1.groundstation_timestamp,
             messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE__1_TEST
         }]
-        self.assertEqual(
-            actual, expected,
-            'Single message array expected, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected)
 
         # 4) multiple groundstations:
         # 4.a) gs created and added to the launch
@@ -719,9 +677,4 @@ class TestLaunchViews(test.TestCase):
             messages_serial.JRPC_K_MESSAGE: db_tools.MESSAGE_BASE64.decode()
         })
 
-        self.assertEqual(
-            actual, expected,
-            'Single message array expected, diff = ' + str(datadiff.diff(
-                actual, expected
-            ))
-        )
+        self.assertEqual(actual, expected)

@@ -18,7 +18,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 import datetime
 import logging
 
-import datadiff
 import pytz
 from django import test
 
@@ -125,12 +124,7 @@ class TestMisc(test.TestCase):
             ).replace(microsecond=0)).isoformat()
         ]
 
-        self.assertEqual(
-            actual, expected,
-            'Rules in the database differ, diff = ' + str(
-                datadiff.diff(actual, expected)
-            )
-        )
+        self.assertEqual(actual, expected)
 
         # 2) adds a single PacificTime rule to the database (should be
         # converted into a UTC one).
@@ -175,10 +169,7 @@ class TestMisc(test.TestCase):
             ).replace(microsecond=0).astimezone(pytz.utc).isoformat()
         )
 
-        self.assertEqual(
-            actual, expected, 'Rules in the database differ, diff = ' +
-            str(datadiff.diff(actual, expected))
-        )
+        self.assertEqual(actual, expected)
 
         if self.__verbose_testing:
             misc.print_list(
