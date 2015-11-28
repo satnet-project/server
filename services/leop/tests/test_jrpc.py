@@ -633,7 +633,7 @@ class TestLaunchViews(test.TestCase):
             self.__leop_id, **{'request': self.__request_2}
         )
 
-    def test_get_messages(self):
+    def _test_get_messages(self):
         """JRPC test: services.leop.getMessages
         Validates the retrieval of messages from the server.
         """
