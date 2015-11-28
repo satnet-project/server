@@ -368,8 +368,8 @@ else:
 # https://github.com/dstufft/django-passwords/
 PASSWORD_MIN_LENGTH = 8
 PASSWORD_COMPLEXITY = {
-    "UPPER":  1,
-    "LOWER":  1,
+    "UPPER": 1,
+    "LOWER": 1,
     "DIGITS": 1
 }
 
