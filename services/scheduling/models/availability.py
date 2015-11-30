@@ -64,8 +64,9 @@ class AvailabilitySlotsManager(models.Manager):
             start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
-                '<start=' + str(start) + '> '
-                + 'should occurr sooner than <end=' + str(end) + '>'
+                '<start=' + str(
+                    start
+                ) + '> should occurr sooner than <end=' + str(end) + '>'
             )
 
         result = []
@@ -184,8 +185,8 @@ class AvailabilitySlotsManager(models.Manager):
             start, end = simulation.OrbitalSimulator.get_simulation_window()
         elif start >= end:
             raise TypeError(
-                '<start=' + str(start) + '> should occur sooner than <end='
-                + str(end) + '>'
+                '<start=' + str(start) + '> should occur sooner than <end=' +
+                str(end) + '>'
             )
 
         if slot.start >= end:

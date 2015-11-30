@@ -16,45 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
-
 from periodically import decorators
 
-from services.common import misc
-from services.configuration.models import tle
-from services.scheduling.models import availability
+from services.configuration.models import tle as tle_models
 
 logger = logging.getLogger('configuration')
-
-
-@decorators.daily()
-def populate_slots():
-    """Periodic task
-    Task to be executed periodically for updating the pass slots with the
-    following ones (3 days in advance). The addition of a new
-    AvailabilitySlot triggers the automatic (through signal) addition of all
-    the associated OperationalSlot; therefore, it is not necessary to update
-    the OperationalSlots table.
-    """
-    logger.info('[DAILY] >>> Populating slots')
-    availability.AvailabilitySlot.objects.propagate_slots()
-    logger.info('> Populated!')
-
-
-@decorators.daily()
-def clean_slots():
-    """Periodic task
-    This task cleans all the old AvailabilitySlots from the database. Since
-    the deletion of a given AvailabilitySlot triggers the deletion of the
-    associated OperationalSlots, it is not necessary to clean the
-    OperationalSlots table afterwards.
-    """
-    logger.info('[DAILY] >>> Cleaning slots')
-    old_slots = availability.AvailabilitySlot.objects.filter(
-        end__lte=misc.get_today_utc()
-    )
-    logger.info('> About to delete ' + str(len(old_slots)) + ' slots.')
-    old_slots.delete()
-    logger.info('> Deleted!')
 
 
 @decorators.daily()
@@ -64,7 +30,7 @@ def update_tle_database():
     key is expired and they did not complete still their registration process.
     """
     logger.info("Updating Celestrak TLE database, daily task execution!")
-    tle.TwoLineElementsManager.load_celestrak()
+    tle_models.TwoLineElementsManager.load_celestrak()
     logger.info('Updated!')
 
 
@@ -75,5 +41,5 @@ def update_polysat_tles():
     database.
     """
     logger.info('Updating Polysat TLE database, every 5 minutes!')
-    tle.TwoLineElementsManager.load_polysat()
+    tle_models.TwoLineElementsManager.load_polysat()
     logger.info('Updated!')
