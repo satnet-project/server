@@ -210,12 +210,6 @@ def deserialize_once_dates(dates):
         du_parser.parse(dates[RULE_ONCE_E_TIME])
     )
 
-    # OLD code for de-serializing 3 elements
-    # return\
-    #    common_serial.deserialize_iso8601_date(dates[RULE_ONCE_DATE]),\
-    #    common_serial.deserialize_iso8601_time(dates[RULE_ONCE_S_TIME]),\
-    #    common_serial.deserialize_iso8601_time(dates[RULE_ONCE_E_TIME])
-
 
 def deserialize_daily_dates(dates):
     """
@@ -224,11 +218,12 @@ def deserialize_daily_dates(dates):
     :return: A 4-tuple containing all the deserialized date parameters (
     initial date, final date, starting daily hour and ending daily hour.
     """
-    return\
-        common_serial.deserialize_iso8601_date(dates[RULE_DAILY_I_DATE]), \
-        common_serial.deserialize_iso8601_date(dates[RULE_DAILY_F_DATE]), \
-        common_serial.deserialize_iso8601_time(dates[RULE_S_TIME]),\
-        common_serial.deserialize_iso8601_time(dates[RULE_E_TIME])
+    return (
+        du_parser.parse(dates[RULE_DAILY_I_DATE]),
+        du_parser.parse(dates[RULE_DAILY_F_DATE]),
+        du_parser.parse(dates[RULE_S_TIME]),
+        du_parser.parse(dates[RULE_E_TIME]),
+    )
 
 
 def deserialize_weekly_dates(dates):

@@ -24,7 +24,6 @@ from django.test.client import RequestFactory
 
 from services.accounts.models import UserProfile
 from services.common import misc, gis
-from services.common import serialization as common_serial
 from services.communications import models as comms_models
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import rules
@@ -346,6 +345,7 @@ def create_jrpc_daily_rule(
         date_f = misc.get_today_utc() + datetime.timedelta(days=366)
 
     now = misc.get_now_utc()
+
     if starting_time is None:
         starting_time = now + datetime.timedelta(minutes=30)
     if ending_time is None:
@@ -355,14 +355,10 @@ def create_jrpc_daily_rule(
         rules.RULE_OP: operation,
         rules.RULE_PERIODICITY: rules.RULE_PERIODICITY_DAILY,
         rules.RULE_DATES: {
-            rules.RULE_DAILY_I_DATE:
-            common_serial.serialize_iso8601_date(date_i),
-            rules.RULE_DAILY_F_DATE:
-            common_serial.serialize_iso8601_date(date_f),
-            rules.RULE_S_TIME:
-            common_serial.serialize_iso8601_time(starting_time),
-            rules.RULE_E_TIME:
-            common_serial.serialize_iso8601_time(ending_time),
+            rules.RULE_DAILY_I_DATE: date_i.isoformat(),
+            rules.RULE_DAILY_F_DATE: date_f.isoformat(),
+            rules.RULE_S_TIME: starting_time.isoformat(),
+            rules.RULE_E_TIME: ending_time.isoformat()
         },
     }
 

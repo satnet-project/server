@@ -545,18 +545,40 @@ class AvailabilityRuleDailyManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
+        localtime = pytz_ref.LocalTimezone()
+        starting_date_tz = localtime.tzname(dates[0])
+        ending_date_tz = localtime.tzname(dates[1])
+
+        if starting_date_tz != ending_date_tz:
+            raise ValueError(
+                'Invalid DAILY rule, dates TZ differ: ' +
+                '( starting_date_tz = ' + starting_date_tz +
+                'ending_date_tz = ' + ending_date_tz + ' )'
+            )
+
+        starting_dt = dates[2].astimezone(pytz.utc)
+        ending_dt = dates[3].astimezone(pytz.utc)
+        diff_dt = ending_dt - starting_dt
+
+        if diff_dt > datetime.timedelta(hours=24):
+            raise ValueError(
+                'Invalid DAILY rule, diff_dt = ' + str(diff_dt) + ' > 24 hours'
+            )
+
+        if ending_dt <= starting_dt:
+            raise ValueError(
+                'Invalid DAILY rule, ending (' + ending_dt.isoformat() + ') ' +
+                '<= starting (' + starting_dt.isoformat() + ')'
+            )
+
         return super(AvailabilityRuleDailyManager, self).create(
             groundstation=groundstation,
             operation=operation,
             periodicity=periodicity,
             starting_date=dates[0],
             ending_date=dates[1],
-            starting_time=datetime.datetime.combine(
-                dates[0], dates[2]
-            ).replace(microsecond=0),
-            ending_time=datetime.datetime.combine(
-                dates[1], dates[3]
-            ).replace(microsecond=0)
+            starting_time=starting_dt,
+            ending_time=ending_dt
         )
 
 
@@ -582,8 +604,9 @@ class AvailabilityRuleDaily(AvailabilityRule):
         """
         Unicode string representation of the contents of this object.
         """
-        return str(self.starting_time.isoformat())\
-            + '>>' + str(self.ending_time.isoformat())
+        return str(self.starting_time.isoformat()) + '>>' + str(
+            self.ending_time.isoformat()
+        )
 
     def __str__(self):
         """

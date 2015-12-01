@@ -72,8 +72,8 @@ class TestMisc(test.TestCase):
         local_dt = datetime.datetime.now(
             pytz.timezone('US/Pacific')
         ).replace(microsecond=0)
-        utc_dt = datetime.datetime.now(
-            pytz.timezone('UTC')
+        utc_dt = datetime.datetime.now(pytz.timezone('UTC')).replace(
+            microsecond=0
         )
 
         if self.__verbose_testing:
@@ -116,12 +116,8 @@ class TestMisc(test.TestCase):
         expected = [
             '+(D):' + utc_i_date.isoformat().split('T')[0] +
             '>>' + utc_e_date.isoformat().split('T')[0] +
-            '_T_' + pytz.utc.localize(datetime.datetime.combine(
-                utc_i_date.date(), utc_s_time.time()
-            ).replace(microsecond=0)).isoformat() +
-            '>>' + pytz.utc.localize(datetime.datetime.combine(
-                utc_e_date.date(), utc_e_time.time()
-            ).replace(microsecond=0)).isoformat()
+            '_T_' + utc_s_time.isoformat() +
+            '>>' + utc_e_time.isoformat()
         ]
 
         self.assertEqual(actual, expected)
@@ -157,16 +153,8 @@ class TestMisc(test.TestCase):
         expected.append(
             '+(D):' + local_i_date.isoformat().split('T')[0] +
             '>>' + local_e_date.isoformat().split('T')[0] +
-            '_T_' + pytz.timezone('US/Pacific').localize(
-                datetime.datetime.combine(
-                    local_i_date.date(), local_s_time.time()
-                )
-            ).replace(microsecond=0).astimezone(pytz.utc).isoformat() +
-            '>>' + pytz.timezone('US/Pacific').localize(
-                datetime.datetime.combine(
-                    local_e_date.date(), local_e_time.time()
-                )
-            ).replace(microsecond=0).astimezone(pytz.utc).isoformat()
+            '_T_' + local_s_time.astimezone(pytz.utc).isoformat() +
+            '>>' + local_e_time.astimezone(pytz.utc).isoformat()
         )
 
         self.assertEqual(actual, expected)

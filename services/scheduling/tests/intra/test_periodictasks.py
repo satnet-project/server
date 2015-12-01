@@ -92,9 +92,14 @@ class TestSlotPropagation(test.TestCase):
             starting_time=r_1_s_time,
             ending_time=r_1_e_time
         )
-        r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id, self.__gs_1_ch_1_id, r_cfg
+
+        print('@@@ r_cfg')
+        misc.print_dictionary(r_cfg)
+        misc.print_list(
+            availability.AvailabilitySlot.objects.all(), name='a_slots'
         )
+
+        r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, r_cfg)
 
         expected_pre = [
             (
@@ -106,6 +111,7 @@ class TestSlotPropagation(test.TestCase):
                 r_1_e_time + datetime.timedelta(days=1),
             ),
         ]
+
         actual_pre = list(
             operational.OperationalSlot.objects.values_list('start', 'end')
         )
