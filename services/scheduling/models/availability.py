@@ -157,14 +157,12 @@ class AvailabilitySlotsManager(models.Manager):
         logger.info('[POPULATE] p_window = ' + str(update_window))
 
         for gs_ch_i in channel_models.GroundStationChannel.objects.filter(
-                enabled=True
+            enabled=True
         ):
 
             logger.info('[POPULATE] (1/2) Channel = ' + str(gs_ch_i))
             slots_i = rule_models.AvailabilityRule.objects\
-                .get_availability_slots(
-                    gs_ch_i, interval=update_window
-                )
+                .get_availability_slots(gs_ch_i, interval=update_window)
 
             logger.info(
                 '[POPULATE] (2/2) New slots = ' + misc.list_2_string(slots_i)
