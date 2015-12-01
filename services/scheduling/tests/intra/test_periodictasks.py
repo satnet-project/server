@@ -21,9 +21,9 @@ import logging
 from django import test
 
 from services.common import misc, helpers as db_tools
-from services.configuration import periodictasks
 from services.configuration.jrpc.views import rules as jrpc_rules_if
 from services.scheduling.models import operational, availability
+from services.scheduling import periodictasks as scheduling_tasks
 
 
 class TestSlotPropagation(test.TestCase):
@@ -74,7 +74,7 @@ class TestSlotPropagation(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_propagate_empty_db:')
 
-        periodictasks.populate_slots()
+        scheduling_tasks.populate_slots()
         self.assertEqual(
             len(availability.AvailabilitySlot.objects.all()),
             0,
@@ -119,7 +119,7 @@ class TestSlotPropagation(test.TestCase):
             actual_pre, expected_pre, 'Wrong OperationalSlots (pre-propagate)'
         )
 
-        periodictasks.populate_slots()
+        scheduling_tasks.populate_slots()
 
         expected_post = [
             (
