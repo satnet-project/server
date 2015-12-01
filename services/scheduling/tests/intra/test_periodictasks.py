@@ -77,7 +77,7 @@ class TestSlotPropagation(test.TestCase):
         scheduling_tasks.populate_slots()
         self.assertEqual(len(availability.AvailabilitySlot.objects.all()), 0)
 
-    def test_propagate_simple(self):
+    def _test_propagate_simple(self):
         """UNIT test: slot propagation
         This test validates the propagation of the slots with a simple set of
         rules.
