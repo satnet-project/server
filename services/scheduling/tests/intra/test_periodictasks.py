@@ -75,13 +75,9 @@ class TestSlotPropagation(test.TestCase):
             print('>>> test_propagate_empty_db:')
 
         scheduling_tasks.populate_slots()
-        self.assertEqual(
-            len(availability.AvailabilitySlot.objects.all()),
-            0,
-            'No slots should have been created!'
-        )
+        self.assertEqual(len(availability.AvailabilitySlot.objects.all()), 0)
 
-    def _propagate_simple(self):
+    def test_propagate_simple(self):
         """UNIT test: slot propagation
         This test validates the propagation of the slots with a simple set of
         rules.
@@ -89,9 +85,8 @@ class TestSlotPropagation(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_propagate_simple:')
 
-        now = misc.get_now_utc()
-        r_1_s_time = now + datetime.timedelta(minutes=10)
-        r_1_e_time = now + datetime.timedelta(hours=5)
+        r_1_s_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
+        r_1_e_time = r_1_s_time + datetime.timedelta(hours=10)
 
         r_cfg = db_tools.create_jrpc_daily_rule(
             starting_time=r_1_s_time,
@@ -103,12 +98,12 @@ class TestSlotPropagation(test.TestCase):
 
         expected_pre = [
             (
-                r_1_s_time + datetime.timedelta(days=1),
-                r_1_e_time + datetime.timedelta(days=1),
+                r_1_s_time,
+                r_1_e_time,
             ),
             (
-                r_1_s_time + datetime.timedelta(days=2),
-                r_1_e_time + datetime.timedelta(days=2),
+                r_1_s_time + datetime.timedelta(days=1),
+                r_1_e_time + datetime.timedelta(days=1),
             ),
         ]
         actual_pre = list(
