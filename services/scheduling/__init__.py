@@ -26,8 +26,3 @@ from services.scheduling.jrpc.views.operational import spacecraft
 from services.scheduling.signals import availability
 from services.scheduling.signals import compatibility
 from services.scheduling.signals import operational
-
-# Code initialization more complex than importing packages for autodiscovery,
-# is carried out within the "ready()" method of the AppConfig class for each
-# of the applications.
-default_app_config = 'services.scheduling.apps.SchedulingConfig'

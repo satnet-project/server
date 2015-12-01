@@ -20,6 +20,8 @@ from django.db.models import signals as django_signals
 
 from services.configuration.models import rules as rule_models
 from services.scheduling.models import availability as availability_models
+from services.scheduling import periodictasks as scheduling_tasks
+from website import settings as sn_settings
 
 
 def rule_updated(rule):
@@ -34,6 +36,17 @@ def rule_updated(rule):
             rule.groundstation
         )
     )
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(django_signals.post_migrate)
+def post_migrate(**kwargs):
+    """
+    Signal that indicates that the database has just been migrated.
+    :param kwargs: Parameters attached to the signal
+    """
+    if not sn_settings.TESTING:
+        scheduling_tasks.populate_slots()
 
 
 # noinspection PyUnusedLocal
