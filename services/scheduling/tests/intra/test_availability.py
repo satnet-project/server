@@ -260,9 +260,9 @@ class TestAvailability(test.TestCase):
             self.__gs
         )
 
-        self.assertEqual(len(a_slots), 2)
+        self.assertEqual(len(a_slots), 3)
         db_a_slots = availability.AvailabilitySlot.objects.all()
-        self.assertEqual(len(db_a_slots), 2)
+        self.assertEqual(len(db_a_slots), 3)
 
         self.assertEquals(
             model_to_dict(
@@ -340,7 +340,7 @@ class TestAvailability(test.TestCase):
             )
             misc.print_list(av_slots, name='AVAILABLE@2')
 
-        expected_slots = 2
+        expected_slots = 3
         self.assertEqual(len(a_slots), expected_slots)
         self.assertEqual(len(av_slots), expected_slots)
 
@@ -368,7 +368,7 @@ class TestAvailability(test.TestCase):
             )
             misc.print_list(av_slots, name='AVAILABLE@3')
 
-        expected_slots = 1
+        expected_slots = 2
         self.assertEqual(len(a_slots), expected_slots)
         self.assertEqual(len(av_slots), expected_slots)
 
@@ -424,8 +424,7 @@ class TestAvailability(test.TestCase):
             )
             misc.print_list(av_slots, name='AVAILABLE@5')
 
-        expected = 1
-
+        expected = 2
         self.assertEqual(len(a_slots), expected)
         self.assertEqual(len(av_slots), expected)
 
@@ -450,7 +449,7 @@ class TestAvailability(test.TestCase):
             )
             misc.print_list(av_slots, name='AVAILABLE@6')
 
-        expected = 2
+        expected = 3
         self.assertEqual(len(a_slots), expected)
         self.assertEqual(len(av_slots), expected)
 
@@ -540,6 +539,10 @@ class TestAvailability(test.TestCase):
                 self.__rule_s_time + datetime.timedelta(days=1),
                 self.__rule_e_time + datetime.timedelta(days=1)
             ),
+            (
+                self.__rule_s_time + datetime.timedelta(days=2),
+                self.__rule_e_time + datetime.timedelta(days=2)
+            )
         ]
 
         if self.__verbose_testing:

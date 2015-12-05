@@ -82,7 +82,8 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         return (
             misc.get_today_utc(),
-            misc.get_today_utc() + datetime.timedelta(days=2)
+            misc.get_today_utc(
+            ) + simulation.OrbitalSimulator.get_window_duration()
         )
 
     @staticmethod
@@ -104,39 +105,6 @@ class AvailabilityRuleManager(django_models.Manager):
                     raise Exception(
                         'Cannot find rule with id = ' + str(rule_id)
                     )
-
-    """
-    @staticmethod
-    def get_applicable_rules(interval):
-        This method finds all applicable rules within the database whose
-        initial_date and ending_date range within the given interval.
-        :param interval: Duration of the interval for matching applicable
-        rules. This is a tuple with the first value being the begin_date for
-        the interval and the second (and last) object being the end_date for
-        the interval.
-        :returns: Two separate query lists.
-        add_slots = []
-        remove_slots = []
-
-        if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
-
-        for c in AvailabilityRule.__subclasses__():
-
-            r_list = c.objects\
-                .filter(availabilityrule_ptr__operation=ADD_SLOTS)\
-                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0])
-            add_slots.append(r_list)
-
-            r_list = c.objects\
-                .filter(availabilityrule_ptr__operation=REMOVE_SLOTS)\
-                .filter(availabilityrule_ptr__starting_date__lt=interval[1])\
-                .filter(availabilityrule_ptr__ending_date__gt=interval[0])
-            remove_slots.append(r_list)
-
-        return add_slots, remove_slots
-    """
 
     @staticmethod
     def get_applicable_rule_values(groundstation, interval=None):
@@ -202,6 +170,13 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
+        print('XXXX 1')
+        misc.print_dictionary(rule_values)
+        print('>>> interval = ' + str(interval))
+        for key, value in rule_values.items():
+            print(key, value)
+        print('XXXX 2')
+
         if rule_values['starting_time'] > interval[1]:
             raise Exception('Not applicable to this interval [FUTURE].')
         if rule_values['ending_time'] < interval[0]:
@@ -241,6 +216,11 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
+
+        print('@@@ generate_available_slots_daily.interval = ' + str(interval))
+        print('@@@  OrbitalSimulator.get_simulation_window = ' + str(
+            simulation.OrbitalSimulator.get_simulation_window()
+        ))
 
         first = True
         r = AvailabilityRuleDaily.objects.get(
@@ -294,33 +274,33 @@ class AvailabilityRuleManager(django_models.Manager):
         return []
 
     @staticmethod
-    def generate_available_slots(rule_values, interval=None):
+    def generate_available_slots(r_values, interval=None):
         """
         This method generates the available slots defined by this rule.
         :param interval: Interval of applicability
-        :param rule_values: The values for the ONCE availability rule
+        :param r_values: The values for the ONCE availability rule
         :return: Initial slots array, initial datetime and final datetime.
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         i_date, f_date = AvailabilityRuleManager.is_applicable(
-            rule_values, interval
+            r_values, interval
         )
 
-        periodicity = rule_values['periodicity']
+        periodicity = r_values['periodicity']
 
         if periodicity == ONCE_PERIODICITY:
             return AvailabilityRuleManager.generate_available_slots_once(
-                rule_values, interval
+                r_values, interval
             )
         if periodicity == DAILY_PERIODICITY:
             return AvailabilityRuleManager.generate_available_slots_daily(
-                rule_values, interval
+                r_values, interval
             )
         if periodicity == WEEKLY_PERIODICITY:
             return AvailabilityRuleManager.generate_available_slots_weekly(
-                i_date, f_date, rule_values, interval
+                i_date, f_date, r_values, interval
             )
 
         raise Exception(
@@ -332,14 +312,18 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method generates the availability slots for this set of rules.
         :param groundstation; Reference to the ground station
-        :param interval: The interval of time during which the slots must be
-                        generated.
+        :param interval: Time interval for slot generation
         """
         if interval is None:
             if satnet_settings.TESTING:
                 interval = AvailabilityRuleManager.create_test_window()
             else:
                 interval = simulation.OrbitalSimulator.get_simulation_window()
+
+        print('### @get_availability_slots.interval = ' + str(interval))
+        print('### @OrbitalSimulator.get_simulation_window = ' + str(
+            simulation.OrbitalSimulator.get_simulation_window()
+        ))
 
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(groundstation, interval=interval)
@@ -367,7 +351,11 @@ class AvailabilityRuleManager(django_models.Manager):
 
         # 2) Sorted and normalized slots can be merged to generated the final
         # availability slots.
-        return slots.merge_slots(add_slots, remove_slots)
+        results = slots.merge_slots(add_slots, remove_slots)
+
+        misc.print_list(results, name='@@@ get_availability_slots.results')
+
+        return results
 
 
 class AvailabilityRule(django_models.Model):

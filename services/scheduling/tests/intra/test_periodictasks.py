@@ -67,7 +67,7 @@ class TestSlotPropagation(test.TestCase):
         )
 
     def test_propagate_empty_db(self):
-        """INTR test: initial slot propagation
+        """INTR test: services.scheduling - initial slot propagation
         This test validates the propagation of the slots throughout the
         database when no rules are available (empty database stability check).
         """
@@ -77,13 +77,15 @@ class TestSlotPropagation(test.TestCase):
         scheduling_tasks.populate_slots()
         self.assertEqual(len(availability.AvailabilitySlot.objects.all()), 0)
 
-    def _test_propagate_simple(self):
-        """UNIT test: slot propagation
+    def test_propagate_simple(self):
+        """INTR test: services.scheduling - slot propagation
         This test validates the propagation of the slots with a simple set of
         rules.
         """
         if self.__verbose_testing:
             print('>>> test_propagate_simple:')
+
+        self.maxDiff = None
 
         r_1_s_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
         r_1_e_time = r_1_s_time + datetime.timedelta(hours=10)
@@ -93,15 +95,37 @@ class TestSlotPropagation(test.TestCase):
             ending_time=r_1_e_time
         )
 
-        print('@@@ r_cfg')
         misc.print_dictionary(r_cfg)
         misc.print_list(
             availability.AvailabilitySlot.objects.all(), name='a_slots'
         )
+        self.assertEquals(list(availability.AvailabilitySlot.objects.all()), [])
 
         r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, r_cfg)
 
-        expected_pre = [
+        x_pre = [
+            (
+                r_1_s_time + datetime.timedelta(days=1),
+                r_1_e_time + datetime.timedelta(days=1),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=2),
+                r_1_e_time + datetime.timedelta(days=2),
+            )
+        ]
+        a_pre = list(
+            availability.AvailabilitySlot.objects.values_list('start', 'end')
+        )
+        self.assertEqual(
+            a_pre, x_pre, 'Wrong OperationalSlots (pre-propagate)'
+        )
+
+        scheduling_tasks.populate_slots()
+        misc.print_list(
+            availability.AvailabilitySlot.objects.all(), name='POST populate'
+        )
+
+        expected_post = [
             (
                 r_1_s_time,
                 r_1_e_time,
@@ -110,30 +134,9 @@ class TestSlotPropagation(test.TestCase):
                 r_1_s_time + datetime.timedelta(days=1),
                 r_1_e_time + datetime.timedelta(days=1),
             ),
-        ]
-
-        actual_pre = list(
-            operational.OperationalSlot.objects.values_list('start', 'end')
-        )
-
-        self.assertEqual(
-            actual_pre, expected_pre, 'Wrong OperationalSlots (pre-propagate)'
-        )
-
-        scheduling_tasks.populate_slots()
-
-        expected_post = [
-            (
-                r_1_s_time + datetime.timedelta(days=1),
-                r_1_e_time + datetime.timedelta(days=1),
-            ),
             (
                 r_1_s_time + datetime.timedelta(days=2),
                 r_1_e_time + datetime.timedelta(days=2),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=3),
-                r_1_e_time + datetime.timedelta(days=3),
             ),
         ]
         actual_post = list(

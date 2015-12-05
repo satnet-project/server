@@ -87,6 +87,36 @@ class TestRulesAvailability(test.TestCase):
 
         jrpc_rules.add_rule(self.__gs_1_id, cfg)
 
+    def test_is_applicable(self):
+        """services.configuration: rule interval applicability
+        Validates the method that checks whether a given rule may or may not
+        generate slots during the given interval.
+        """
+        if self.__verbose_testing:
+            print('>>> test_is_applicable:')
+
+        # 1) +O for today, inside the simulation, outside the propagation
+        s_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
+        e_time = s_time + datetime.timedelta(hours=6)
+        rule_cfg = db_tools.create_jrpc_once_rule(
+            starting_time=s_time, ending_time=e_time
+        )
+        jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
+        s_window = simulation.OrbitalSimulator.get_simulation_window()
+        p_window = simulation.OrbitalSimulator.get_update_window()
+
+        for r in rule_models.AvailabilityRule.objects.all().values():
+            self.assertIsNotNone(
+                rule_models.AvailabilityRuleManager.is_applicable(
+                    r, s_window
+                )
+            )
+            self.assertRaises(
+                Exception,
+                rule_models.AvailabilityRuleManager.is_applicable,
+                r, p_window
+            )
+
     def _test_1_a_slots_daily(self):
         """services.configuration: generate available slots (DAILY rule, 1)
         Validates the generation of slots by a daily rule.
