@@ -66,7 +66,7 @@ class TestRulesAvailability(test.TestCase):
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
 
-    def test_slot_once_time_ranges(self):
+    def _test_slot_once_time_ranges(self):
         """UNIT test: services.configuration - ONCE rule configuration
         """
         if self.__verbose_testing:
@@ -95,31 +95,96 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_is_applicable:')
 
-        # 1) +O for today, inside the simulation, outside the propagation
-        s_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
-        e_time = s_time + datetime.timedelta(hours=6)
-        rule_cfg = db_tools.create_jrpc_once_rule(
-            starting_time=s_time, ending_time=e_time
-        )
-        jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
+        time_0 = misc.get_next_midnight()
         s_window = simulation.OrbitalSimulator.get_simulation_window()
         p_window = simulation.OrbitalSimulator.get_update_window()
 
-        for r in rule_models.AvailabilityRule.objects.all().values():
+        if self.__verbose_testing:
+            print('>>> s_window = ' + str(s_window))
+            print('>>> p_window = ' + str(p_window))
 
-            misc.print_dictionary(r)
-            rule_models.AvailabilityRuleManager.is_applicable(r, s_window)
+        # 1) inside the simulation, outside the propagation
+        s_time = time_0 - datetime.timedelta(hours=12)
+        e_time = s_time + datetime.timedelta(hours=6)
+        r = {'starting_time': s_time, 'ending_time': e_time}
 
-            self.assertIsNotNone(
-                rule_models.AvailabilityRuleManager.is_applicable(
-                    r, s_window
-                )
-            )
-            self.assertRaises(
-                Exception,
-                rule_models.AvailabilityRuleManager.is_applicable,
-                r, p_window
-            )
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
+        )
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
+        )
+
+        # 1) starts before the simulation, ends within it
+        # 1) outside the propagation
+        s_time = time_0 - datetime.timedelta(days=2)
+        e_time = time_0 + datetime.timedelta(hours=6)
+        r = {'starting_time': s_time, 'ending_time': e_time}
+
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
+        )
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
+        )
+
+        # 2) starts within the simulation, ends after it
+        # 2) starts before the propagation, ends within it
+        s_time = time_0 - datetime.timedelta(hours=3)
+        e_time = time_0 + datetime.timedelta(days=2)
+        r = {'starting_time': s_time, 'ending_time': e_time}
+
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
+        )
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
+        )
+
+        # 3) outside the simulation window
+        # 3) starts and ends within the propagation window
+        s_time = time_0 + datetime.timedelta(days=2, hours=1)
+        e_time = time_0 + datetime.timedelta(days=2, hours=6)
+        r = {'starting_time': s_time, 'ending_time': e_time}
+
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
+        )
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
+        )
+
+        # 4) outside the simulation window
+        # 4) starts within the propagation window, ends outside of it
+        s_time = time_0 + datetime.timedelta(days=2, hours=1)
+        e_time = time_0 + datetime.timedelta(days=5, hours=6)
+        r = {'starting_time': s_time, 'ending_time': e_time}
+
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
+        )
+        self.assertIsNotNone(
+            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
+        )
+
+        # 5) outside the simulation window
+        # 5) outside the propagation window
+        s_time = time_0 + datetime.timedelta(days=5)
+        e_time = time_0 + datetime.timedelta(days=6)
+        r = {'starting_time': s_time, 'ending_time': e_time}
+
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
+        )
+        self.assertRaises(
+            Exception,
+            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
+        )
 
     def _test_1_a_slots_daily(self):
         """services.configuration: generate available slots (DAILY rule, 1)
