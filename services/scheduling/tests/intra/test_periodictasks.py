@@ -127,16 +127,16 @@ class TestSlotPropagation(test.TestCase):
 
         expected_post = [
             (
-                r_1_s_time,
-                r_1_e_time,
-            ),
-            (
                 r_1_s_time + datetime.timedelta(days=1),
                 r_1_e_time + datetime.timedelta(days=1),
             ),
             (
                 r_1_s_time + datetime.timedelta(days=2),
                 r_1_e_time + datetime.timedelta(days=2),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=3),
+                r_1_e_time + datetime.timedelta(days=3),
             ),
         ]
         actual_post = list(
