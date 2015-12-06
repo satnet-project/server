@@ -95,7 +95,6 @@ class TestRulesAvailability(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_is_applicable:')
 
-        time_0 = misc.get_next_midnight()
         s_window = simulation.OrbitalSimulator.get_simulation_window()
         p_window = simulation.OrbitalSimulator.get_update_window()
 
@@ -104,8 +103,8 @@ class TestRulesAvailability(test.TestCase):
             print('>>> p_window = ' + str(p_window))
 
         # 1) inside the simulation, outside the propagation
-        s_time = time_0 - datetime.timedelta(hours=12)
-        e_time = s_time + datetime.timedelta(hours=6)
+        s_time = s_window[0] + datetime.timedelta(minutes=1)
+        e_time = s_window[1] - datetime.timedelta(minutes=1)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertIsNotNone(
@@ -118,8 +117,8 @@ class TestRulesAvailability(test.TestCase):
 
         # 1) starts before the simulation, ends within it
         # 1) outside the propagation
-        s_time = time_0 - datetime.timedelta(days=2)
-        e_time = time_0 + datetime.timedelta(hours=6)
+        s_time = s_window[0] - datetime.timedelta(minutes=1)
+        e_time = s_window[1] - datetime.timedelta(minutes=1)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertIsNotNone(
@@ -132,8 +131,8 @@ class TestRulesAvailability(test.TestCase):
 
         # 2) starts within the simulation, ends after it
         # 2) starts before the propagation, ends within it
-        s_time = time_0 - datetime.timedelta(hours=3)
-        e_time = time_0 + datetime.timedelta(days=2)
+        s_time = s_window[0] + datetime.timedelta(minutes=1)
+        e_time = s_window[1] + datetime.timedelta(minutes=1)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertIsNotNone(
@@ -145,8 +144,8 @@ class TestRulesAvailability(test.TestCase):
 
         # 3) outside the simulation window
         # 3) starts and ends within the propagation window
-        s_time = time_0 + datetime.timedelta(days=2, hours=1)
-        e_time = time_0 + datetime.timedelta(days=2, hours=6)
+        s_time = p_window[0] + datetime.timedelta(minutes=1)
+        e_time = p_window[1] - datetime.timedelta(minutes=1)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertRaises(
@@ -159,8 +158,8 @@ class TestRulesAvailability(test.TestCase):
 
         # 4) outside the simulation window
         # 4) starts within the propagation window, ends outside of it
-        s_time = time_0 + datetime.timedelta(days=2, hours=1)
-        e_time = time_0 + datetime.timedelta(days=5, hours=6)
+        s_time = p_window[0] + datetime.timedelta(minutes=1)
+        e_time = p_window[1] + datetime.timedelta(minutes=1)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertRaises(
@@ -173,8 +172,8 @@ class TestRulesAvailability(test.TestCase):
 
         # 5) outside the simulation window
         # 5) outside the propagation window
-        s_time = time_0 + datetime.timedelta(days=5)
-        e_time = time_0 + datetime.timedelta(days=6)
+        s_time = p_window[1] + datetime.timedelta(minutes=1)
+        e_time = p_window[1] + datetime.timedelta(minutes=2)
         r = {'starting_time': s_time, 'ending_time': e_time}
 
         self.assertRaises(
