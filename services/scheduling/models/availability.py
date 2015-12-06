@@ -112,9 +112,6 @@ class AvailabilitySlotsManager(models.Manager):
         tuples of DateTime objects UTC localized.
         """
 
-        print('@@@ update_slots')
-        misc.print_list(slot_list, name='@@@ update_slots.slot_list')
-
         # 1) First, slots that do not appear in the current list of available
         # slots, are removed from the database. If the slot is already found
         # in the database, then it will be removed from the given list of
@@ -124,16 +121,8 @@ class AvailabilitySlotsManager(models.Manager):
         added = []
         removed = []
 
-        misc.print_list(
-            self.filter(groundstation=groundstation),
-            name='@@@ update_slots.filtered'
-        )
-
-        misc.print_list(removed, name='@@@ update_slots.removed @1')
-
         for slot_i in self.filter(groundstation=groundstation):
 
-            print('@@@ update_slots.slot_i = ' + str(slot_i))
             s, e = slot_i.start, slot_i.end
 
             if not (s, e) in slot_list:
@@ -145,21 +134,11 @@ class AvailabilitySlotsManager(models.Manager):
 
                 slot_list.remove((s, e))
 
-        misc.print_list(removed, name='@@@ update_slots.removed @2')
-
         # 2) The remaining slots are added to the database.
         for n_a_slot in slot_list:
 
-            print('@@@ update_slots.n_a_slot = ' + str(n_a_slot))
-            print('@@@ update_slots.n_a_slot[0] = ' + str(n_a_slot[0]))
-            print('@@@ update_slots.n_a_slot[1] = ' + str(n_a_slot[1]))
-
             self.create(groundstation, n_a_slot[0], n_a_slot[1])
             added.append((n_a_slot[0], n_a_slot[1]))
-
-        misc.print_list(self.all(), name='@@@ update_slots.db.all()')
-        misc.print_list(added, name='@@@ update_slots.added')
-        misc.print_list(removed, name='@@@ update_slots.removed @3')
 
         return added, removed
 
@@ -175,15 +154,10 @@ class AvailabilitySlotsManager(models.Manager):
         )
         update_window = simulation.OrbitalSimulator.get_update_window()
         logger.info('[POPULATE] p_window = ' + str(update_window))
-        print('>>> s_window = ' + str(
-            simulation.OrbitalSimulator.get_update_window()
-        ))
-        print('>>> p_window = ' + str(update_window))
 
         for gs_i in segment_models.GroundStation.objects.all():
 
             logger.info('[POPULATE] (1/2) Ground Station = ' + str(gs_i))
-            print('[POPULATE] (1/2) Ground Station = ' + str(gs_i))
 
             slots_i = rule_models.AvailabilityRule.objects\
                 .get_availability_slots(gs_i, interval=update_window)

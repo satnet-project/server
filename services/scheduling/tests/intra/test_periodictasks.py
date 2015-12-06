@@ -85,8 +85,6 @@ class TestSlotPropagation(test.TestCase):
         if self.__verbose_testing:
             print('>>> test_propagate_simple:')
 
-        self.maxDiff = None
-
         r_1_s_time = misc.get_next_midnight() - datetime.timedelta(hours=12)
         r_1_e_time = r_1_s_time + datetime.timedelta(hours=10)
 
@@ -95,10 +93,6 @@ class TestSlotPropagation(test.TestCase):
             ending_time=r_1_e_time
         )
 
-        misc.print_dictionary(r_cfg)
-        misc.print_list(
-            availability.AvailabilitySlot.objects.all(), name='a_slots'
-        )
         self.assertEquals(list(availability.AvailabilitySlot.objects.all()), [])
 
         r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, r_cfg)

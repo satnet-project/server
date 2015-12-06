@@ -170,9 +170,6 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        print('>>> interval = ' + str(interval))
-        misc.print_dictionary(rule_values)
-
         first_time_rule = datetime.datetime.combine(
             rule_values['starting_date'],
             rule_values['starting_time'].timetz()
@@ -181,9 +178,6 @@ class AvailabilityRuleManager(django_models.Manager):
             rule_values['ending_date'],
             rule_values['ending_time'].timetz()
         )
-
-        print('>>> first_time_rule = ' + str(first_time_rule))
-        print('>>> last_time_rule = ' + str(last_time_rule))
 
         if first_time_rule > interval[1]:
             raise Exception('Not applicable to this interval [FUTURE].')
@@ -224,11 +218,6 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
-
-        print('@@@ generate_available_slots_daily.interval = ' + str(interval))
-        print('@@@  OrbitalSimulator.get_simulation_window = ' + str(
-            simulation.OrbitalSimulator.get_simulation_window()
-        ))
 
         first = True
         r = AvailabilityRuleDaily.objects.get(
@@ -328,11 +317,6 @@ class AvailabilityRuleManager(django_models.Manager):
             else:
                 interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        print('### @get_availability_slots.interval = ' + str(interval))
-        print('### @OrbitalSimulator.get_simulation_window = ' + str(
-            simulation.OrbitalSimulator.get_simulation_window()
-        ))
-
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(groundstation, interval=interval)
 
@@ -359,11 +343,7 @@ class AvailabilityRuleManager(django_models.Manager):
 
         # 2) Sorted and normalized slots can be merged to generated the final
         # availability slots.
-        results = slots.merge_slots(add_slots, remove_slots)
-
-        misc.print_list(results, name='@@@ get_availability_slots.results')
-
-        return results
+        return slots.merge_slots(add_slots, remove_slots)
 
 
 class AvailabilityRule(django_models.Model):
