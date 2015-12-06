@@ -170,14 +170,10 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        print('XXXX 1')
-        misc.print_dictionary(rule_values)
-        print('>>> interval = ' + str(interval))
-        for key, value in rule_values.items():
-            print(key, value)
         print('XXXX 2')
+        print('### HELLLLL: ' + str(rule_values.get('starting_time')))
 
-        if rule_values['starting_time'] > interval[1]:
+        if rule_values.get('starting_time') > interval[1]:
             raise Exception('Not applicable to this interval [FUTURE].')
         if rule_values['ending_time'] < interval[0]:
             raise Exception('Not applicable to this interval [PAST].')

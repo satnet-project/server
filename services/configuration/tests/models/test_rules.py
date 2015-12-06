@@ -106,6 +106,10 @@ class TestRulesAvailability(test.TestCase):
         p_window = simulation.OrbitalSimulator.get_update_window()
 
         for r in rule_models.AvailabilityRule.objects.all().values():
+
+            misc.print_dictionary(r)
+            rule_models.AvailabilityRuleManager.is_applicable(r, s_window)
+
             self.assertIsNotNone(
                 rule_models.AvailabilityRuleManager.is_applicable(
                     r, s_window
