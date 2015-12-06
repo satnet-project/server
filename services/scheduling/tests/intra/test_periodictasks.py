@@ -116,14 +116,9 @@ class TestSlotPropagation(test.TestCase):
         a_pre = list(
             availability.AvailabilitySlot.objects.values_list('start', 'end')
         )
-        self.assertEqual(
-            a_pre, x_pre, 'Wrong OperationalSlots (pre-propagate)'
-        )
+        self.assertEqual(a_pre, x_pre)
 
         scheduling_tasks.populate_slots()
-        misc.print_list(
-            availability.AvailabilitySlot.objects.all(), name='POST populate'
-        )
 
         expected_post = [
             (
@@ -140,14 +135,15 @@ class TestSlotPropagation(test.TestCase):
             ),
         ]
         actual_post = list(
-            operational.OperationalSlot.objects.values_list('start', 'end')
+            availability.AvailabilitySlot.objects.values_list('start', 'end')
         )
 
         self.assertEqual(actual_post, expected_post)
+        self.assertTrue(jrpc_rules_if.remove_rule(self.__gs_1_id, r_1_id))
 
-        self.assertTrue(
-            jrpc_rules_if.remove_rule(
-                self.__gs_1_id, self.__gs_1_ch_1_id, r_1_id
-            ),
-            'Could not remove rule with ID = ' + str(r_1_id)
+        self.assertListEqual(
+            list(availability.AvailabilitySlot.objects.all()), []
+        )
+        self.assertListEqual(
+            list(operational.OperationalSlot.objects.all()), []
         )
