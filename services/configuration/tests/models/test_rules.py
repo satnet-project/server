@@ -66,7 +66,7 @@ class TestRulesAvailability(test.TestCase):
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
 
-    def _test_slot_once_time_ranges(self):
+    def test_slot_once_time_ranges(self):
         """UNIT test: services.configuration - ONCE rule configuration
         """
         if self.__verbose_testing:
