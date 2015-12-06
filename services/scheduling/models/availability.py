@@ -175,7 +175,10 @@ class AvailabilitySlotsManager(models.Manager):
         )
         update_window = simulation.OrbitalSimulator.get_update_window()
         logger.info('[POPULATE] p_window = ' + str(update_window))
-        print('[POPULATE] p_window = ' + str(update_window))
+        print('>>> s_window = ' + str(
+            simulation.OrbitalSimulator.get_update_window()
+        ))
+        print('>>> p_window = ' + str(update_window))
 
         for gs_i in segment_models.GroundStation.objects.all():
 

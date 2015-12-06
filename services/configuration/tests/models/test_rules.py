@@ -105,7 +105,12 @@ class TestRulesAvailability(test.TestCase):
         # 1) inside the simulation, outside the propagation
         s_time = s_window[0] + datetime.timedelta(minutes=1)
         e_time = s_window[1] - datetime.timedelta(minutes=1)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertIsNotNone(
             rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
@@ -119,7 +124,12 @@ class TestRulesAvailability(test.TestCase):
         # 1) outside the propagation
         s_time = s_window[0] - datetime.timedelta(minutes=1)
         e_time = s_window[1] - datetime.timedelta(minutes=1)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertIsNotNone(
             rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
@@ -133,7 +143,12 @@ class TestRulesAvailability(test.TestCase):
         # 2) starts before the propagation, ends within it
         s_time = s_window[0] + datetime.timedelta(minutes=1)
         e_time = s_window[1] + datetime.timedelta(minutes=1)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertIsNotNone(
             rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
@@ -146,7 +161,12 @@ class TestRulesAvailability(test.TestCase):
         # 3) starts and ends within the propagation window
         s_time = p_window[0] + datetime.timedelta(minutes=1)
         e_time = p_window[1] - datetime.timedelta(minutes=1)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertRaises(
             Exception,
@@ -160,7 +180,12 @@ class TestRulesAvailability(test.TestCase):
         # 4) starts within the propagation window, ends outside of it
         s_time = p_window[0] + datetime.timedelta(minutes=1)
         e_time = p_window[1] + datetime.timedelta(minutes=1)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertRaises(
             Exception,
@@ -174,7 +199,12 @@ class TestRulesAvailability(test.TestCase):
         # 5) outside the propagation window
         s_time = p_window[1] + datetime.timedelta(minutes=1)
         e_time = p_window[1] + datetime.timedelta(minutes=2)
-        r = {'starting_time': s_time, 'ending_time': e_time}
+        r = {
+            'starting_date': s_time.date(),
+            'ending_date': e_time.date(),
+            'starting_time': s_time,
+            'ending_time': e_time
+        }
 
         self.assertRaises(
             Exception,
