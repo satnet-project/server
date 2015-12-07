@@ -26,3 +26,5 @@ from services.scheduling.jrpc.views.operational import spacecraft
 from services.scheduling.signals import availability
 from services.scheduling.signals import compatibility
 from services.scheduling.signals import operational
+
+default_app_config = 'services.scheduling.apps.SchedulingConfig'

@@ -320,6 +320,18 @@ class AvailabilityRuleManager(django_models.Manager):
         add_rules, remove_rules = AvailabilityRuleManager\
             .get_applicable_rule_values(groundstation, interval=interval)
 
+        logger.info(
+            '>>> @get_availabilit_slots.rules = ' + misc.list_2_string(
+                list(AvailabilityRule.objects.all())
+            ) + '\n' +
+            '>>> @get_availability_slots.add_rules = ' + misc.list_2_string(
+                add_rules
+            ) + '\n' +
+            '>>> @get_availability_slots.remove_rules = ' + misc.list_2_string(
+                remove_rules
+            )
+        )
+
         # 0) We obtain the applicable slots from the database
         add_slots = []
         for r in add_rules:
