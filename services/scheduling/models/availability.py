@@ -18,12 +18,11 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.db import models as django_models
 
 import logging
+logger = logging.getLogger('configuration')
 
 from services.common import misc, simulation
 from services.configuration.models import segments as segment_models
 from services.configuration.models import rules as rule_models
-
-logger = logging.getLogger('configuration')
 
 
 class AvailabilitySlotsManager(django_models.Manager):

@@ -43,5 +43,12 @@ application = get_wsgi_application()
 
 # Load local server definition:
 from services.network.models import server as server_models
-print('>>> Loading local server information...')
+print('>>> @wsgi.py: Loading local server information...')
 server_models.ServerManager().load_local_server()
+
+# Slot propagation
+from services.scheduling.models import availability as availability_models
+from website import settings as sn_settings
+print('>>> @wsgi.py:  Propagate SLOTS...')
+if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
+    availability_models.AvailabilitySlot.objects.propagate_slots()
