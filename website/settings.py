@@ -23,6 +23,7 @@ from .secrets import auth, database, email, pusher
 # Django website for WebServices project.
 DEBUG = True
 TESTING = sys.argv[1:2] == ['test']
+RUNNING_AS_SERVER = sys.argv[1:2] == ['runserver']
 
 ADMINS = [
     ("Ricardo Tubio-Pardavila", "rtubiopa@calpoly.edu"),

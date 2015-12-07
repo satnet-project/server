@@ -36,5 +36,5 @@ class SchedulingConfig(django_apps.AppConfig):
         """
 
         logger.info('>>> Initializing Scheduling Service')
-        if not sn_settings.TESTING:
+        if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
             availability_models.AvailabilitySlot.objects.propagate_slots()
