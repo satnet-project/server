@@ -6,14 +6,7 @@ branches:
 python:
   - '3.4'
 before_install:
-  - 'pip install beautifulsoup4'
-  - 'pip install coverage'
-  - 'pip install coverage-reporter'
-  - 'pip install python-coveralls'
-  - 'pip install lxml'
-  # - 'pip install codacy-coverage'
-  # - 'pip install codecov'
-  # - 'pip install coveralls'
+  - 'pip install -r travis-requirements.txt'
 install:
   - 'pip install -r requirements.txt'
   - './scripts/server-setup.sh -t'
@@ -21,10 +14,7 @@ before_script:
   - "psql -c 'create database satnet_db;' -U postgres"
   - 'python manage.py migrate'
 script:
-  # - 'coverage erase'
+  - 'coverage erase'
   - 'coverage run manage.py test --with-coverage'
 after_success:
-  # - 'codecov'
-  # - "export CODACY_PROJECT_TOKEN='daad0cf71b914bb38396a4efc9c2c490'"
-  # - 'python-codacy-coverage -r coverage.xml'
   - 'coveralls'
