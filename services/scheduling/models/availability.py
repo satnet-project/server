@@ -15,7 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db import models
+from django.db import models as django_models
 
 import logging
 
@@ -26,7 +26,7 @@ from services.configuration.models import rules as rule_models
 logger = logging.getLogger('configuration')
 
 
-class AvailabilitySlotsManager(models.Manager):
+class AvailabilitySlotsManager(django_models.Manager):
     """
     Manager for handling the main operations over the availability slots.
     """
@@ -40,6 +40,23 @@ class AvailabilitySlotsManager(models.Manager):
         :param end Datetime object (UTC localized) with the end of the slot.
         :return A reference to the new object.
         """
+
+        # 1) if there already exists one availability slots for this ground
+        #       station ranging from the same start to the same end, then this
+        #       slot is not added.
+        if self.filter(
+            start=start, end=end, groundstation=groundstation
+        ).exists():
+
+            logger.warn(
+                '@AvailabilitySlotsManager.create(), CONFLICTING SLOT:\n' +
+                '\t * slot already exists GS = ' + str(
+                    groundstation.identifier
+                ) + ', start = <' + start.isoformat() + '>, end = <' +
+                end.isoformat() + '>'
+            )
+            return
+
         return super(AvailabilitySlotsManager, self).create(
             identifier=AvailabilitySlot.create_identifier(
                 groundstation, start
@@ -203,7 +220,7 @@ class AvailabilitySlotsManager(models.Manager):
         return s, e, slot.identifier
 
 
-class AvailabilitySlot(models.Model):
+class AvailabilitySlot(django_models.Model):
     """
     This class models the availability slots for the GroundStations. All of
     them will be stored in this table in the database.
@@ -215,20 +232,20 @@ class AvailabilitySlot(models.Model):
 
     objects = AvailabilitySlotsManager()
 
-    identifier = models.CharField(
+    identifier = django_models.CharField(
         'Unique identifier for this slot',
         max_length=100,
         unique=True
     )
 
-    groundstation = models.ForeignKey(
+    groundstation = django_models.ForeignKey(
         segment_models.GroundStation,
         verbose_name='GroundStation that this slot belongs to',
         default=1
     )
 
-    start = models.DateTimeField('Slot start')
-    end = models.DateTimeField('Slot end')
+    start = django_models.DateTimeField('Slot start')
+    end = django_models.DateTimeField('Slot end')
 
     @staticmethod
     def create_identifier(groundstation, start):

@@ -94,13 +94,19 @@ class AvailabilityRuleManager(django_models.Manager):
         :returns: Specific object that inherits from this rule.
         """
         try:
-            return AvailabilityRuleOnce.objects.get(pk=rule_id)
+            return AvailabilityRuleOnce.objects.get(
+                availabilityrule_ptr_id=rule_id
+            )
         except AvailabilityRuleOnce.DoesNotExist:
             try:
-                return AvailabilityRuleDaily.objects.get(pk=rule_id)
+                return AvailabilityRuleDaily.objects.get(
+                    availabilityrule_ptr_id=rule_id
+                )
             except AvailabilityRuleDaily.DoesNotExist:
                 try:
-                    return AvailabilityRuleWeekly.objects.get(pk=rule_id)
+                    return AvailabilityRuleWeekly.objects.get(
+                        availabilityrule_ptr_id=rule_id
+                    )
                 except AvailabilityRuleWeekly.DoesNotExist:
                     raise Exception(
                         'Cannot find rule with id = ' + str(rule_id)
@@ -322,13 +328,7 @@ class AvailabilityRuleManager(django_models.Manager):
 
         logger.info(
             '>>> @get_availabilit_slots.rules = ' + misc.list_2_string(
-                list(AvailabilityRule.objects.all())
-            ) + '\n' +
-            '>>> @get_availability_slots.add_rules = ' + misc.list_2_string(
-                add_rules
-            ) + '\n' +
-            '>>> @get_availability_slots.remove_rules = ' + misc.list_2_string(
-                remove_rules
+                AvailabilityRule.objects.all().values()
             )
         )
 

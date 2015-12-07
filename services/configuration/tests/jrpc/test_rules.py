@@ -173,11 +173,7 @@ class JRPCRulesTest(test.TestCase):
         rule_id = jrpc_rules.add_rule(self.__gs_1_id, rule_cfg)
         jrpc_rules.remove_rule(self.__gs_1_id, rule_id)
 
-        try:
-            rule = rules.AvailabilityRule.objects.get(id=rule_id)
-            self.fail(
-                'Object should not have been found, rule_id = ' + str(rule.pk)
-            )
-        except rules.AvailabilityRule.DoesNotExist as e:
-            if self.__verbose_testing:
-                print(e.message)
+        self.assertRaises(
+            rules.AvailabilityRule.DoesNotExist,
+            rules.AvailabilityRule.objects.get, id=rule_id
+        )

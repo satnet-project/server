@@ -71,9 +71,11 @@ class TestMisc(test.TestCase):
 
         local_dt = datetime.datetime.now(
             pytz.timezone('US/Pacific')
-        ).replace(microsecond=0)
+        ).replace(
+            hour=0, minute=0, second=0, microsecond=0
+        )
         utc_dt = datetime.datetime.now(pytz.timezone('UTC')).replace(
-            microsecond=0
+            hour=0, minute=0, second=0, microsecond=0
         )
 
         if self.__verbose_testing:

@@ -50,6 +50,9 @@ def once_rule_saved(sender, instance, created, raw, **kwargs):
     :param raw: Raw state of the information in the database
     :param kwargs: Additional parameters
     """
+    if not created or raw:
+        return
+
     rule_updated(instance)
 
 
@@ -67,6 +70,9 @@ def daily_rule_saved(sender, instance, created, raw, **kwargs):
     :param raw: Raw state of the information in the database
     :param kwargs: Additional parameters
     """
+    if not created or raw:
+        return
+
     rule_updated(instance)
 
 
@@ -84,6 +90,9 @@ def weekly_rule_saved(sender, instance, created, raw, **kwargs):
     :param raw: Raw state of the information in the database
     :param kwargs: Additional parameters
     """
+    if not created or raw:
+        return
+
     rule_updated(instance)
 
 
