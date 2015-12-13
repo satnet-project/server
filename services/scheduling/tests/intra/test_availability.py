@@ -72,7 +72,7 @@ class TestAvailability(test.TestCase):
             self.__gs, self.__band, self.__gs_1_ch_1_id
         )
 
-    def test_0_add_slots_no_rules(self):
+    def _test_0_add_slots_no_rules(self):
         """INTR test: services.scheduling - add slots without rules
         This method tests the addition of new availability slots to the
         AvailabilitySlots table in the database, when no rule has still been
@@ -92,7 +92,7 @@ class TestAvailability(test.TestCase):
             'No AvailabilitySlots expected.'
         )
 
-    def test_1a_add_slots_once_rule(self):
+    def _test_1a_add_slots_once_rule(self):
         """INTR test: services.scheduling - add slots w/single ONCE rule (1A)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
@@ -121,7 +121,7 @@ class TestAvailability(test.TestCase):
             }
         )
 
-    def test_1b_add_slots_once_rule(self):
+    def _test_1b_add_slots_once_rule(self):
         """INTR test: services.scheduling - add slots w/single ONCE rule (1B)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
@@ -172,7 +172,7 @@ class TestAvailability(test.TestCase):
         db_a_slots = availability.AvailabilitySlot.objects.all()
         self.assertEquals(len(db_a_slots), 0)
 
-    def test_1c_add_slots_once_rule(self):
+    def _test_1c_add_slots_once_rule(self):
         """INTR test: services.scheduling - add slots w/single ONCE rule (1C)
         This method tests the addition of new availability slots when there
         is only a single applicable ONCE-type rule in the database.
@@ -239,7 +239,7 @@ class TestAvailability(test.TestCase):
             }
         )
 
-    def test_2_generate_slots_daily_rule(self):
+    def _test_2_generate_slots_daily_rule(self):
         """INTR test: services.scheduling - add slots with a DAILY rule (2)
         Tests the generation of slots for a given daily rule.
         """
@@ -282,7 +282,7 @@ class TestAvailability(test.TestCase):
             }
         )
 
-    def test_3_generate_slots_several_rules_1(self):
+    def _test_3_generate_slots_several_rules_1(self):
         """INTR test: services.scheduling - add slots with several rules (3)
         This method tests the addition of new availability slots when there
         are several availability rules in the database.
@@ -491,7 +491,7 @@ class TestAvailability(test.TestCase):
 
         self.__verbose_testing = False
 
-    def test_4_get_availability_slots(self):
+    def _test_4_get_availability_slots(self):
         """INTR test: services.scheduling - availability slot generation (4)
         Validates the method that gathers the AvailabilitySlots that are
         applicable within a defined interval.
@@ -631,3 +631,69 @@ class TestAvailability(test.TestCase):
             end=self.__rule_s_time - datetime.timedelta(hours=1)
         )
         self.assertEqual(a_slots, [])
+
+    def test_california_rule(self):
+        """INTR test: services.scheduling - California rule
+        This test is intended to validate the generation of availability slots
+        whenever an Availability rule whose ending time extends to the
+        following day is added to the system.
+        MISC: this happens pretty usually when you add a rule with the
+        California local timezone that, therefore, gets translated into a
+        rule with an UTC starting date of today and an UTC ending date of
+        tomorrow.
+        """
+        if self.__verbose_testing:
+            print('##### test_california_rule:')
+        self.maxDiff = None
+        import dateutil.parser as du_parser
+
+        s_time = misc.get_next_midnight() - datetime.timedelta(hours=10)
+        e_time = misc.get_next_midnight() + datetime.timedelta(hours=4)
+
+        print('>>> s_time = ' + str(s_time))
+        print('>>> e_time = ' + str(e_time))
+
+        # s_time_Z = s_time.isoformat().split('+')[0] + 'Z'
+        # e_time_Z = e_time.isoformat().split('+')[0] + 'Z'
+        s_time_Z = '2015-12-12T12:00:00.000Z'
+        e_time_Z = '2015-12-13T04:00:00.000Z'
+
+        print('>>> s_time_Z = ' + str(s_time_Z))
+        print('>>> e_time_Z = ' + str(e_time_Z))
+
+        # 1) Single once rule
+        jrpc_rules_if.add_rule(
+            self.__gs_1_id, {
+                jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
+                jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
+                jrpc_serial.RULE_DATES: {
+                    jrpc_serial.RULE_ONCE_S_TIME: s_time_Z,
+                    jrpc_serial.RULE_ONCE_E_TIME: e_time_Z
+                },
+            }
+        )
+
+        misc.print_list(
+            availability.AvailabilitySlot.objects.all(),
+            name='ALL'
+        )
+
+        # 2) Generated Availability Slots
+        self.assertEquals(
+            availability.AvailabilitySlot.objects.values_list(
+                'start', 'end'
+            )[0],
+            (du_parser.parse(s_time_Z), du_parser.parse(e_time_Z))
+        )
+
+        from services.scheduling.jrpc.views import availability as \
+            availability_jrpc
+
+        a_slots = availability_jrpc.gs_get_availability_slots(
+            self.__gs_1_id
+        )
+
+        misc.print_list(
+            a_slots,
+            name='A_SLOTS (JRPC)'
+        )

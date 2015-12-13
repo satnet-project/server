@@ -79,12 +79,10 @@ def remove_rule(groundstation_id, rule_id):
     :param rule_id: Identifier of the rule to be removed.
     :return: 'True' in case the rule could be removed.
     """
-
     rule_models.AvailabilityRule.objects.get(
         pk=rule_id,
         groundstation=segment_models.GroundStation.objects.get(
             identifier=groundstation_id
         )
     ).delete()
-
     return True

@@ -533,6 +533,9 @@ class AvailabilityRuleDailyManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
+
+        print('>>> @models.rules.create.dates = ' + misc.dict_2_string(dates))
+
         localtime = pytz_ref.LocalTimezone()
         starting_date_tz = localtime.tzname(dates[0])
         ending_date_tz = localtime.tzname(dates[1])
