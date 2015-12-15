@@ -163,16 +163,16 @@ class AvailabilityRuleManager(django_models.Manager):
 
         return add_r, remove_r
 
+    """
     @staticmethod
     def is_applicable(rule_values, interval):
-        """
         This method checks whether this rule can generate slots for the given
         interval.
         :param rule_values: Values for this rule as obtained
         :param interval: The interval for the check.
         :returns: In case the interval is applicable, it returns a tuple with
         the initial and final datetime objects.
-        """
+
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
@@ -185,12 +185,23 @@ class AvailabilityRuleManager(django_models.Manager):
             rule_values['ending_time'].timetz()
         )
 
-        if first_time_rule > interval[1]:
-            raise Exception('Not applicable to this interval [FUTURE].')
-        if last_time_rule < interval[0]:
-            raise Exception('Not applicable to this interval [PAST].')
+        if rule_values['starting_date'] > interval[1]:
+            raise Exception(
+                'Not applicable [FUTURE], interval = (' +
+                interval[0].isoformat() + ', ' + interval[1].isoformat() +
+                '), last_time_rule = ' +
+                rule_values['starting_date'].isoformat()
+            )
+        if rule_values['ending_date'] < interval[0]:
+            raise Exception(
+                'Not applicable [PAST], interval = (' +
+                interval[0].isoformat() + ', ' + interval[1].isoformat() +
+                '), last_time_rule = ' +
+                rule_values['ending_date'].isoformat()
+            )
 
         return rule_values['starting_time'], rule_values['ending_time']
+        """
 
     @staticmethod
     def generate_available_slots_once(rule_values, interval=None):
@@ -203,16 +214,27 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
+        print(
+            '>>> onceRules.generate_available_slots,interval = (' +
+            interval[0].isoformat() + ', ' + interval[1].isoformat() +
+            ')'
+        )
+
         r = AvailabilityRuleOnce.objects.get(
             availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
         )
 
-        if r.starting_time < interval[0]:
-            r.starting_time = interval[0]
-        if r.ending_time > interval[1]:
-            r.ending_time = interval[1]
+        slot = slots.cutoff(
+            interval, (r.starting_time, r.ending_time)
+        )
 
-        return [(r.starting_time, r.ending_time)]
+        print(
+            '>>> onceRules.generate_available_slots, slot = (' +
+            slot[0].isoformat() + ', ' + slot[1].isoformat() +
+            ')'
+        )
+
+        return [slot]
 
     @staticmethod
     def generate_available_slots_daily(rule_values, interval=None):
@@ -263,13 +285,11 @@ class AvailabilityRuleManager(django_models.Manager):
 
     # noinspection PyUnusedLocal
     @staticmethod
-    def generate_available_slots_weekly(i_date, f_date, rule_values, interval):
+    def generate_available_slots_weekly(rule_values, interval):
         """
         This method generates the available slots for a weekly rule that
         starts and ends in the given dates, during the specified interval.
         TODO :: implement this weekly method for convenience.
-        :param i_date: Starting date
-        :param f_date: Finish date
         :param interval: Interval of applicability
         :param rule_values: The values for the ONCE availability rule
         """
@@ -287,18 +307,22 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
+        """
+        # noinspection PyBroadException
         try:
-            i_date, f_date = AvailabilityRuleManager.is_applicable(
-                r_values, interval
-            )
+            AvailabilityRuleManager.is_applicable(r_values, interval)
         except Exception:
             logger.warn(
                 '@genearte_available_slots:'
                 'rule not applicable, r_values = ' + str(r_values)
             )
             return []
+        """
 
         periodicity = r_values['periodicity']
+
+        print('>>> @generate_available_slots.r_values = ')
+        misc.print_dictionary(r_values)
 
         if periodicity == ONCE_PERIODICITY:
             return AvailabilityRuleManager.generate_available_slots_once(
@@ -310,7 +334,7 @@ class AvailabilityRuleManager(django_models.Manager):
             )
         if periodicity == WEEKLY_PERIODICITY:
             return AvailabilityRuleManager.generate_available_slots_weekly(
-                i_date, f_date, r_values, interval
+                r_values, interval
             )
 
         raise Exception(
@@ -484,6 +508,11 @@ class AvailabilityRuleOnceManager(django_models.Manager):
                 'Invalid ONCE rule, ending (' + ending_dt.isoformat() + ') ' +
                 '<= starting (' + starting_dt.isoformat() + ')'
             )
+
+        print('>>> onceRule.create.starting_dt = ' + starting_dt.isoformat())
+        print('>>> onceRule.create.ending_dt = ' + ending_dt.isoformat())
+        print('>>> onceRule.create.starting_time = ' + starting_dt.isoformat())
+        print('>>> onceRule.create.ending_time = ' + ending_dt.isoformat())
 
         return super(AvailabilityRuleOnceManager, self).create(
             groundstation=groundstation,

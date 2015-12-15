@@ -21,10 +21,9 @@ import logging
 import pytz
 from django import test
 
-from services.common import misc, simulation
+from services.common import misc
 from services.common import helpers as db_tools
 from services.configuration.jrpc.views import rules as jrpc_rules
-from services.configuration.models import rules as rule_models
 
 
 class TestRulesAvailability(test.TestCase):
@@ -86,11 +85,11 @@ class TestRulesAvailability(test.TestCase):
 
         jrpc_rules.add_rule(self.__gs_1_id, cfg)
 
-    def test_is_applicable(self):
-        """UNIT test: services.configuration: rule interval applicability
-        Validates the method that checks whether a given rule may or may not
-        generate slots during the given interval.
-        """
+    """
+    def _test_is_applicable(self):
+        #UNIT test: services.configuration: rule interval applicability
+        #Validates the method that checks whether a given rule may or may not
+        #generate slots during the given interval.
         if self.__verbose_testing:
             print('>>> test_is_applicable:')
 
@@ -213,3 +212,4 @@ class TestRulesAvailability(test.TestCase):
             Exception,
             rule_models.AvailabilityRule.objects.is_applicable, r, p_window
         )
+    """

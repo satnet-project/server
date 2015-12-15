@@ -20,7 +20,7 @@ from services.common import misc
 
 
 def normalize_slots(slots):
-    """
+    """Slot manipulation library
     This function "normalizes" a list of slots by merging all consecutive or
     overlapping slots into non-overlapping ones. IMPORTANT: the input slots
     array has to be sorted by initial datetime of the slot, this is, for a
@@ -66,7 +66,7 @@ def normalize_slots(slots):
 
 
 def merge_slots(p_slots, m_slots):
-    """
+    """Slot manipulation library
     This function  merges the slots that define the availability of the
     ground station with the slots that define the non-availability of a
     ground station. The result are the actual availability slots.
@@ -148,3 +148,42 @@ def merge_slots(p_slots, m_slots):
                     m_i += 1
 
     return slots
+
+
+def cutoff(interval, slot):
+    """Slot manipulation library
+    This function cuts off the given slot within the given interval. This way,
+    in case the slot starting time happens before the starting of the interval,
+    the slot starting time is cutoff to the starting time of the interval.
+    The same is done with the ending time of the slot. In case the slot ends
+    too early (ends before the interval starts) or starts too late (starts
+    after the interval ends), an exception is raised.
+
+    :param interval: 2-tuple with the datetime objects for the interval
+    :param slot: 2-tuple with the datetime objects for the slot
+    :return: Processed slot with the starting and ending times cutted off
+    """
+    if not slot or not interval:
+        raise ValueError('@cutoff_slot: wrong parameters')
+    if slot[0] > slot[1]:
+        raise ValueError('@cutoff_slot: slot[0] > slot[1]')
+    if interval[0] > interval[1]:
+        raise ValueError('@cutoff_slot: interval[0] > interval[1]')
+
+    # CASE A: discard, too late
+    if slot[1] <= interval[0]:
+        raise ValueError('@cutoff_slot: slot[1] <= interval[0]')
+    # CASE E: discard, too early
+    if slot[0] >= interval[1]:
+        raise ValueError('@cutoff_slot: slot[0] >= interval[1]')
+
+    if slot[0] >= interval[0]:
+        # CASE C: no cutoff is necessary
+        if slot[1] <= interval[1]:
+            return slot
+        else:
+            # CASE D: cutting off the ending time of the slot
+            return slot[0], interval[1]
+
+    # CASE B: cutting off slot's starting time
+    return interval[0], slot[1]
