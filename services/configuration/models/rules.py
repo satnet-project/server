@@ -214,14 +214,19 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
+        r = AvailabilityRuleOnce.objects.get(
+            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
+        )
+
         print(
-            '>>> onceRules.generate_available_slots,interval = (' +
+            '>>> onceRules.generate_available_slots.interval = (' +
             interval[0].isoformat() + ', ' + interval[1].isoformat() +
             ')'
         )
-
-        r = AvailabilityRuleOnce.objects.get(
-            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
+        print(
+            '>>> onceRules.generate_available_slots.r        = (' +
+            r.starting_time.isoformat() + ', ' + r.ending_time.isoformat() +
+            ')'
         )
 
         slot = slots.cutoff(
@@ -229,7 +234,7 @@ class AvailabilityRuleManager(django_models.Manager):
         )
 
         print(
-            '>>> onceRules.generate_available_slots, slot = (' +
+            '>>> onceRules.generate_available_slots.slot     = (' +
             slot[0].isoformat() + ', ' + slot[1].isoformat() +
             ')'
         )
@@ -324,18 +329,21 @@ class AvailabilityRuleManager(django_models.Manager):
         print('>>> @generate_available_slots.r_values = ')
         misc.print_dictionary(r_values)
 
-        if periodicity == ONCE_PERIODICITY:
-            return AvailabilityRuleManager.generate_available_slots_once(
-                r_values, interval
-            )
-        if periodicity == DAILY_PERIODICITY:
-            return AvailabilityRuleManager.generate_available_slots_daily(
-                r_values, interval
-            )
-        if periodicity == WEEKLY_PERIODICITY:
-            return AvailabilityRuleManager.generate_available_slots_weekly(
-                r_values, interval
-            )
+        try:
+            if periodicity == ONCE_PERIODICITY:
+                return AvailabilityRuleManager.generate_available_slots_once(
+                    r_values, interval
+                )
+            if periodicity == DAILY_PERIODICITY:
+                return AvailabilityRuleManager.generate_available_slots_daily(
+                    r_values, interval
+                )
+            if periodicity == WEEKLY_PERIODICITY:
+                return AvailabilityRuleManager.generate_available_slots_weekly(
+                    r_values, interval
+                )
+        except ValueError as ex:
+            logger.warning(ex)
 
         raise Exception(
             'Rule periodicity = <' + periodicity + '> is not supported'
