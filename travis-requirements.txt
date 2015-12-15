@@ -1,6 +1,6 @@
 PyYAML==3.11
 beautifulsoup4==4.4.1
-coverage==4.0.3
+coverage==3.7.1
 coverage-reporter==0.01
 lxml==3.5.0
 python-coveralls==2.5.0

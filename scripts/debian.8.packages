@@ -14,6 +14,8 @@ libproj-dev
 libsnappy-dev
 libsqlite3-dev
 libncurses5-dev
+libxml2-dev
+libxslt1-dev
 openssl
 phppgadmin
 postgresql
