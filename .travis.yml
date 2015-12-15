@@ -18,5 +18,5 @@ script:
   - 'coverage run manage.py test --with-coverage'
 after_success:
   - 'coverage combine'
-  - "coverage report --omit '/home/travis/virtualenv'"
+  - "coverage report --omit '/home/travis/virtualenv/*'"
   - 'coveralls'
