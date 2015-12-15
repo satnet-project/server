@@ -644,22 +644,9 @@ class TestAvailability(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_california_rule:')
-        self.maxDiff = None
-        import dateutil.parser as du_parser
 
         s_time = misc.get_next_midnight() - datetime.timedelta(hours=10)
         e_time = misc.get_next_midnight() + datetime.timedelta(hours=4)
-
-        print('>>> s_time = ' + str(s_time))
-        print('>>> e_time = ' + str(e_time))
-
-        # s_time_Z = s_time.isoformat().split('+')[0] + 'Z'
-        # e_time_Z = e_time.isoformat().split('+')[0] + 'Z'
-        s_time_Z = '2015-12-12T12:00:00.000Z'
-        e_time_Z = '2015-12-13T04:00:00.000Z'
-
-        print('>>> s_time_Z = ' + str(s_time_Z))
-        print('>>> e_time_Z = ' + str(e_time_Z))
 
         # 1) Single once rule
         jrpc_rules_if.add_rule(
@@ -667,35 +654,16 @@ class TestAvailability(test.TestCase):
                 jrpc_serial.RULE_OP: jrpc_serial.RULE_OP_ADD,
                 jrpc_serial.RULE_PERIODICITY: jrpc_serial.RULE_PERIODICITY_ONCE,
                 jrpc_serial.RULE_DATES: {
-                    jrpc_serial.RULE_ONCE_S_TIME: s_time_Z,
-                    jrpc_serial.RULE_ONCE_E_TIME: e_time_Z
+                    jrpc_serial.RULE_ONCE_S_TIME: s_time.isoformat(),
+                    jrpc_serial.RULE_ONCE_E_TIME: e_time.isoformat()
                 },
             }
         )
 
-        misc.print_list(
-            availability.AvailabilitySlot.objects.all(),
-            name='ALL'
-        )
-
         # 2) Generated Availability Slots
-        """
         self.assertEquals(
             availability.AvailabilitySlot.objects.values_list(
                 'start', 'end'
             )[0],
-            (du_parser.parse(s_time_Z), du_parser.parse(e_time_Z))
+            (s_time, e_time)
         )
-
-        from services.scheduling.jrpc.views import availability as \
-            availability_jrpc
-
-        a_slots = availability_jrpc.gs_get_availability_slots(
-            self.__gs_1_id
-        )
-
-        misc.print_list(
-            a_slots,
-            name='A_SLOTS (JRPC)'
-        )
-        """

@@ -17,4 +17,6 @@ script:
   - 'coverage erase'
   - 'coverage run manage.py test --with-coverage'
 after_success:
+  - 'coverage combine'
+  - 'coverage report'
   - 'coveralls'

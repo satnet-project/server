@@ -281,15 +281,22 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method generates the available slots defined by this rule.
         :param interval: Interval of applicability
-        :param r_values: The values for the ONCE availability rule
+        :param r_values: The values for the availability rule
         :return: Initial slots array, initial datetime and final datetime.
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        i_date, f_date = AvailabilityRuleManager.is_applicable(
-            r_values, interval
-        )
+        try:
+            i_date, f_date = AvailabilityRuleManager.is_applicable(
+                r_values, interval
+            )
+        except Exception:
+            logger.warn(
+                '@genearte_available_slots:'
+                'rule not applicable, r_values = ' + str(r_values)
+            )
+            return []
 
         periodicity = r_values['periodicity']
 
