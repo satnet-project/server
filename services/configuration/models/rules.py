@@ -344,6 +344,7 @@ class AvailabilityRuleManager(django_models.Manager):
                 )
         except ValueError as ex:
             logger.warning(ex)
+            return []
 
         raise Exception(
             'Rule periodicity = <' + periodicity + '> is not supported'
