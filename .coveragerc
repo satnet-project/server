@@ -4,3 +4,4 @@ omit =
     */__init__.py
     */migrations/*
     */tests/*
+    services/accounts/*
