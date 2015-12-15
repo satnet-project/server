@@ -73,6 +73,9 @@ def session_closed_handler(sender, instance, **kwargs):
     pass
 
 
+SIGNED_UP_EMAIL_TEMPLATE = 'email/email_welcome'
+
+
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(allauth_signals.user_signed_up)
 def user_signed_up_receiver(request, user, **kwargs):
@@ -124,7 +127,7 @@ def email_confirmed_receiver(email_address, **kwargs):
 
         # Email sent to the administrator to report the new user
         for staff_email_i in auth_models.User.objects.filter(
-                is_staff=True
+            is_staff=True
         ).values_list('email', flat=True):
 
             logger.info(

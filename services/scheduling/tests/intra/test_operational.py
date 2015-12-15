@@ -153,7 +153,7 @@ class OperationalModels(test.TestCase):
             )
 
         self.assertGreaterEqual(
-            len(operational_models.OperationalSlot.objects.all()), 3
+            len(operational_models.OperationalSlot.objects.all()), 2
         )
 
         self.assertTrue(
