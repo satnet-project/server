@@ -212,13 +212,13 @@ def create_band(minimum_frequency=435000000, maximum_frequency=438000000):
 
 
 def create_gs(
-        user_profile=None,
-        identifier='gs-castrelos',
-        callsign='KAKA00',
-        contact_elevation=10,
-        latitude=33.9333,
-        longitude=-118.3880,
-        altitude=20,
+    user_profile=None,
+    identifier='gs-castrelos',
+    callsign='KAKA00',
+    contact_elevation=10,
+    latitude=33.9333,
+    longitude=-118.3880,
+    altitude=20,
 ):
 
     if not user_profile:
