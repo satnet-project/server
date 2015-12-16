@@ -105,6 +105,10 @@ class TestSlotPropagation(test.TestCase):
             (
                 r_1_s_time + datetime.timedelta(days=2),
                 r_1_e_time + datetime.timedelta(days=2),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=3),
+                r_1_e_time + datetime.timedelta(days=3),
             )
         ]
         a_pre = list(
@@ -126,6 +130,10 @@ class TestSlotPropagation(test.TestCase):
             (
                 r_1_s_time + datetime.timedelta(days=3),
                 r_1_e_time + datetime.timedelta(days=3),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=4),
+                r_1_e_time + datetime.timedelta(days=4),
             ),
         ]
         actual_post = list(

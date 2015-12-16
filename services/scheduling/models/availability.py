@@ -110,9 +110,7 @@ class AvailabilitySlotsManager(django_models.Manager):
         for slot_i in slot_list:
 
             self.create(
-                groundstation=groundstation,
-                start=slot_i[0],
-                end=slot_i[1]
+                groundstation=groundstation, start=slot_i[0], end=slot_i[1]
             )
 
     def update_slots(self, groundstation, slot_list):

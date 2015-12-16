@@ -128,6 +128,7 @@ def serialize_weekly_dates(rule, child_rule):
     :return: An object serializable structure
     """
     dates = []
+
     for d in RULE_WEEKLY_WEEKDAYS:
         dates.append({
             RULE_WEEKLY_DATE_DAY: d,
@@ -138,6 +139,7 @@ def serialize_weekly_dates(rule, child_rule):
                 child_rule[d + '_ending_time']
             )
         })
+
     return {
         RULE_DAILY_I_DATE: common_serial.serialize_iso8601_date(
             rule.starting_date

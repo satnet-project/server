@@ -267,7 +267,16 @@ class AvailabilityRuleManager(django_models.Manager):
         ii_time = r.starting_time.timetz()
         ff_time = r.ending_time.timetz()
 
-        while i_day < interval[1]:
+        print(
+            '>>> DailyRule@generate_available_slots.i_day = ' +
+            i_day.isoformat()
+        )
+        print(
+            '>>> DailyRule@generate_available_slots.interval = (' +
+            interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
+        )
+
+        while i_day <= interval[1]:
 
             slot_s = datetime.datetime.combine(i_day, ii_time)
             slot_e = datetime.datetime.combine(i_day, ff_time)
