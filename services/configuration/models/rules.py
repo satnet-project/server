@@ -264,8 +264,8 @@ class AvailabilityRuleManager(django_models.Manager):
         else:
             i_day = interval[0]
 
-        ii_time = r.starting_time.timetz()
-        ff_time = r.ending_time.timetz()
+        slot_s = r.starting_time
+        slot_e = r.ending_time
 
         print(
             '>>> DailyRule@generate_available_slots.i_day = ' +
@@ -276,10 +276,7 @@ class AvailabilityRuleManager(django_models.Manager):
             interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
         )
 
-        while i_day <= interval[1]:
-
-            slot_s = datetime.datetime.combine(i_day, ii_time)
-            slot_e = datetime.datetime.combine(i_day, ff_time)
+        while slot_s < interval[1]:
 
             # We might have to truncate the first slot...
             if first:
@@ -292,8 +289,14 @@ class AvailabilityRuleManager(django_models.Manager):
                 if slot_s <= interval[0]:
                     slot_s = interval[0]
 
+            print(
+                '>>> DailyRule@generate_available_slots.slot = (' +
+                slot_s.isoformat() + ', ' + slot_e.isoformat() + ')'
+            )
+
             result.append((slot_s, slot_e))
-            i_day += datetime.timedelta(days=1)
+            slot_s += datetime.timedelta(days=1)
+            slot_e += datetime.timedelta(days=1)
 
         return result
 
@@ -320,18 +323,6 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
-
-        """
-        # noinspection PyBroadException
-        try:
-            AvailabilityRuleManager.is_applicable(r_values, interval)
-        except Exception:
-            logger.warn(
-                '@genearte_available_slots:'
-                'rule not applicable, r_values = ' + str(r_values)
-            )
-            return []
-        """
 
         periodicity = r_values['periodicity']
 

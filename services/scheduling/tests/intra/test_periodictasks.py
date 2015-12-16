@@ -99,6 +99,33 @@ class TestSlotPropagation(test.TestCase):
 
         x_pre = [
             (
+                r_1_s_time,
+                r_1_e_time,
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=1),
+                r_1_e_time + datetime.timedelta(days=1),
+            ),
+            (
+                r_1_s_time + datetime.timedelta(days=2),
+                r_1_e_time + datetime.timedelta(days=2),
+            )
+        ]
+        a_pre = list(
+            availability.AvailabilitySlot.objects.values_list('start', 'end')
+        )
+        misc.print_list(a_pre, name='PRE Availability Slot List')
+        misc.print_list(x_pre, name='PRE XXX Slot List')
+        self.assertEqual(a_pre, x_pre)
+
+        scheduling_tasks.populate_slots()
+
+        expected_post = [
+            (
+                r_1_s_time,
+                r_1_e_time,
+            ),
+            (
                 r_1_s_time + datetime.timedelta(days=1),
                 r_1_e_time + datetime.timedelta(days=1),
             ),
@@ -110,31 +137,6 @@ class TestSlotPropagation(test.TestCase):
                 r_1_s_time + datetime.timedelta(days=3),
                 r_1_e_time + datetime.timedelta(days=3),
             )
-        ]
-        a_pre = list(
-            availability.AvailabilitySlot.objects.values_list('start', 'end')
-        )
-        self.assertEqual(a_pre, x_pre)
-
-        scheduling_tasks.populate_slots()
-
-        expected_post = [
-            (
-                r_1_s_time + datetime.timedelta(days=1),
-                r_1_e_time + datetime.timedelta(days=1),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=2),
-                r_1_e_time + datetime.timedelta(days=2),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=3),
-                r_1_e_time + datetime.timedelta(days=3),
-            ),
-            (
-                r_1_s_time + datetime.timedelta(days=4),
-                r_1_e_time + datetime.timedelta(days=4),
-            ),
         ]
         actual_post = list(
             availability.AvailabilitySlot.objects.values_list('start', 'end')
