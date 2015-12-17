@@ -246,6 +246,9 @@ class AvailabilityRuleManager(django_models.Manager):
         """
         This method generates the available slots for a daily rule that
         starts and ends in the given dates, during the specified interval.
+        TODO :: improve the generation algorithm in order to avoid generating
+                slots since the start of the rule until the validity of the
+                current interval (can be long)
         :param interval: Interval of applicability
         :param rule_values: The values for the ONCE availability rule
         """
@@ -257,21 +260,11 @@ class AvailabilityRuleManager(django_models.Manager):
             availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
         )
         result = []
-        rule_starting_dt = misc.localize_date_utc(rule_values['starting_date'])
-
-        if rule_starting_dt > interval[0]:
-            i_day = rule_starting_dt
-        else:
-            i_day = interval[0]
 
         slot_s = r.starting_time
         slot_e = r.ending_time
 
-        print(
-            '>>> DailyRule@generate_available_slots.i_day = ' +
-            i_day.isoformat()
-        )
-        print(
+        logger.info(
             '>>> DailyRule@generate_available_slots.interval = (' +
             interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
         )
@@ -283,7 +276,8 @@ class AvailabilityRuleManager(django_models.Manager):
                 first = False
 
                 if slot_e <= interval[0]:
-                    i_day += datetime.timedelta(days=1)
+                    slot_s += datetime.timedelta(days=1)
+                    slot_e += datetime.timedelta(days=1)
                     continue
 
                 if slot_s <= interval[0]:
@@ -326,7 +320,7 @@ class AvailabilityRuleManager(django_models.Manager):
 
         periodicity = r_values['periodicity']
 
-        print('>>> @generate_available_slots.r_values = ')
+        logger.info('>>> @generate_available_slots.r_values = ')
         misc.print_dictionary(r_values)
 
         try:
@@ -370,6 +364,10 @@ class AvailabilityRuleManager(django_models.Manager):
             '>>> @get_availabilit_slots.rules = ' + misc.list_2_string(
                 AvailabilityRule.objects.all().values()
             )
+        )
+        logger.info(
+            '>>> @get_availabilit_slots.interval = (' +
+            interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
         )
 
         # 0) We obtain the applicable slots from the database
