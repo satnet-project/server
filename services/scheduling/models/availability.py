@@ -151,7 +151,7 @@ class AvailabilitySlotsManager(django_models.Manager):
         return added, removed
 
     def propagate_slots(self):
-        """Method for slot population.
+        """Method for slot population
         This method generates the future slots to be populated in the
         database for future operations.
         """

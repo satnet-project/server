@@ -15,8 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from datetime import timedelta as py_timedelta
 from django import test
 
+from services.common import misc as sn_misc
 from services.common import helpers as db_tools
 from services.configuration.models import tle as tle_models
 from services.simulation.models import passes as pass_models
@@ -95,6 +97,45 @@ class TestModels(test.TestCase):
                 groundstation=self.__gs_1
             ).exists(),
             'GroundStation associated pass slots should have been removed'
+        )
+
+    def test_create_passes(self):
+        """UNIT test: services.simulation.models.passes
+        This test validates the creation of an availability slot and the
+        further automatic rejections for the creation of availability slots
+        that match the start and end of this one.
+        """
+
+        slot_s = sn_misc.get_next_midnight()
+        slot_e = slot_s + py_timedelta(days=1)
+
+        self.assertIsNotNone(
+            pass_models.PassSlots.objects.create(
+                spacecraft=self.__sc_1, groundstation=self.__gs_1,
+                start=slot_s, end=slot_e
+            )
+        )
+        self.assertIsNone(
+            pass_models.PassSlots.objects.create(
+                spacecraft=self.__sc_1, groundstation=self.__gs_1,
+                start=slot_s, end=slot_e
+            )
+        )
+
+        slot_s = slot_s + py_timedelta(days=1)
+        slot_e = slot_s + py_timedelta(days=1)
+
+        self.assertIsNotNone(
+            pass_models.PassSlots.objects.create(
+                spacecraft=self.__sc_1, groundstation=self.__gs_1,
+                start=slot_s, end=slot_e
+            )
+        )
+        self.assertIsNone(
+            pass_models.PassSlots.objects.create(
+                spacecraft=self.__sc_1, groundstation=self.__gs_1,
+                start=slot_s, end=slot_e
+            )
         )
 
     def test_firebird(self):
