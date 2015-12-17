@@ -15,11 +15,30 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
+logger = logging.getLogger('scheduling')
+
 from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
 
 from services.configuration.models import rules as rule_models
 from services.scheduling.models import availability as availability_models
+from website import signals as sn_signals
+from website import settings as sn_settings
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(sn_signals.sn_loaded)
+def satnet_loaded(sender, **kwargs):
+    """
+    Signal that indicates that the application has already been loaded and,
+    therefore, the database is ready to be used.
+    :param sender: Any sender is accepted
+    :param kwargs: Additional parameters
+    """
+    logger.info('>>> scheduling@satnet_loaded (SIGNAL):  Propagate SLOTS...')
+    if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
+        availability_models.AvailabilitySlot.objects.propagate_slots()
 
 
 def rule_updated(rule):

@@ -30,7 +30,7 @@ class AvailabilitySlotsManager(django_models.Manager):
     Manager for handling the main operations over the availability slots.
     """
 
-    def create(self, groundstation, start, end):
+    def create(self, groundstation, start, end, **kwargs):
         """
         Creates a new AvailabilitySlot object in the database and associates
         the timestamp for the start of the slot as its identifier.
@@ -54,15 +54,13 @@ class AvailabilitySlotsManager(django_models.Manager):
                 ) + ', start = <' + start.isoformat() + '>, end = <' +
                 end.isoformat() + '>'
             )
-            return
+            return None
 
         return super(AvailabilitySlotsManager, self).create(
             identifier=AvailabilitySlot.create_identifier(
                 groundstation, start
             ),
-            groundstation=groundstation,
-            start=start,
-            end=end
+            groundstation=groundstation, start=start, end=end, **kwargs
         )
 
     def get_applicable(self, groundstation, start=None, end=None):

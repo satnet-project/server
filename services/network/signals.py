@@ -15,13 +15,33 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
+logger = logging.getLogger('network')
+
 from allauth.account import signals as allauth_signals
 from django.db.models import signals as django_signals
 from django import dispatch as django_dispatch
+
 from services.accounts import models as account_models
 from services.configuration.models import segments as segment_models
 from services.network.models import server as server_models
 from services.network.models import clients as client_models
+from website import signals as sn_signals
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(sn_signals.sn_loaded)
+def satnet_loaded(sender, **kwargs):
+    """
+    Signal that indicates that the application has already been loaded and,
+    therefore, the database is ready to be used.
+    :param sender: Any sender is accepted
+    :param kwargs: Additional parameters
+    """
+    logger.info(
+        '>>> network@satnet_loaded (SIGNAL): Loading local server...'
+    )
+    server_models.ServerManager().load_local_server()
 
 
 # noinspection PyUnusedLocal

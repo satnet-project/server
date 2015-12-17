@@ -16,15 +16,33 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
+logger = logging.getLogger('simulation')
+
 from django import dispatch as django_dispatch
 from django.db.models import signals as django_signals
 
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
-from services.simulation.models import groundtracks as groundtrack_models
 from services.simulation import push as simulation_push
+from services.simulation import periodictasks as simulation_tasks
+from services.simulation.models import groundtracks as groundtrack_models
+from website import signals as sn_signals
+from website import settings as sn_settings
 
-logger = logging.getLogger('simulation')
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(sn_signals.sn_loaded)
+def satnet_loaded(sender, **kwargs):
+    """
+    Signal that indicates that the application has already been loaded and,
+    therefore, the database is ready to be used.
+    :param sender: Any sender is accepted
+    :param kwargs: Additional parameters
+    """
+    logger.info('>>> scheduling@satnet_loaded (SIGNAL):  Propagate GTS...')
+    if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
+        simulation_tasks.propagate_groundtracks()
+        simulation_tasks.clean_groundtracks()
 
 
 # noinspection PyUnusedLocal

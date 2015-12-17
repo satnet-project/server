@@ -29,8 +29,7 @@ logger = logging.getLogger('scheduling')
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=compatibility_models.ChannelCompatibility
+    django_signals.post_save, sender=compatibility_models.ChannelCompatibility
 )
 def compatibility_added(sender, instance, created, raw, **kwargs):
     """
@@ -69,8 +68,7 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.pre_delete,
-    sender=compatibility_models.ChannelCompatibility
+    django_signals.pre_delete, sender=compatibility_models.ChannelCompatibility
 )
 def compatibility_deleted(sender, instance, **kwargs):
     """
@@ -106,8 +104,7 @@ def compatibility_deleted(sender, instance, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=availability_models.AvailabilitySlot
+    django_signals.post_save, sender=availability_models.AvailabilitySlot
 )
 def availability_slot_added(sender, instance, created, raw, **kwargs):
     """
@@ -130,8 +127,7 @@ def availability_slot_added(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.pre_delete,
-    sender=availability_models.AvailabilitySlot
+    django_signals.pre_delete, sender=availability_models.AvailabilitySlot
 )
 def availability_slot_deleted(sender, instance, **kwargs):
     """
@@ -149,8 +145,7 @@ def availability_slot_deleted(sender, instance, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=pass_models.PassSlots
+    django_signals.post_save, sender=pass_models.PassSlots
 )
 def pass_slot_added(sender, instance, created, raw, **kwargs):
     """
@@ -171,8 +166,7 @@ def pass_slot_added(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.pre_delete,
-    sender=pass_models.PassSlots
+    django_signals.pre_delete, sender=pass_models.PassSlots
 )
 def pass_slot_deleted(sender, instance, **kwargs):
     """

@@ -15,8 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from datetime import timedelta as py_timedelta
 from django.db import models as django_models
 import logging
+
 from services.common import simulation
 from services.configuration.models import segments as segment_models
 from services.simulation import push as simulation_push
@@ -39,6 +41,45 @@ class PassManager(django_models.Manager):
         """
         self._simulator = simulation.OrbitalSimulator()
         super(PassManager, self).__init__()
+
+    def create(self, spacecraft, groundstation, start, end, **kwargs):
+        """Overriden method
+        Overriden method that creates the provided pass slot in case a similar
+        one does not exist.
+        :param spacecraft: The spacecraft involved in the operational slot
+        :param groundstation: The groundstation for the pass
+        :param start: The start datetime object of the pass
+        :param end: The end datetime object of the pass
+        :param kwargs: Additional parameters
+        :return: A reference to the just created object
+        """
+        s_range = (
+            start - py_timedelta(seconds=30),
+            start + py_timedelta(seconds=30)
+        )
+        e_range = (
+            end - py_timedelta(seconds=30),
+            end + py_timedelta(seconds=30)
+        )
+
+        if self.filter(
+            groundstation=groundstation, spacecraft=spacecraft,
+            start__range=s_range, end__range=e_range
+        ).exists():
+
+            logger.warn(
+                '@PassManager.create(), CONFLICTING SLOT:\n' +
+                '\t * slot already exists GS = ' + str(
+                    groundstation.identifier
+                ) + ', start = <' + start.isoformat() + '>, end = <' +
+                end.isoformat() + '>'
+            )
+            return None
+
+        return super(PassManager, self).create(
+            spacecraft=spacecraft, groundstation=groundstation,
+            start=start, end=end, **kwargs
+        )
 
     def set_spacecraft(self, spacecraft):
         """

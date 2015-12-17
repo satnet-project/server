@@ -12,9 +12,10 @@
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+"""
+__author__ = 'rtubiopa@calpoly.edu'
 
-WSGI config for WebServices project.
-
+"""WSGI config for WebServices project
 This module contains the WSGI application used by Django's development server
 and any production WSGI deployments. It should expose a module-level variable
 named ``application``. Django's ``runserver`` and ``runfcgi`` commands discover
@@ -25,13 +26,13 @@ might make sense to replace the whole Django WSGI application with a custom one
 that later delegates to the Django one. For example, you could introduce WSGI
 middleware here, or combine a Django application with an application of another
 framework.
-
 """
-__author__ = 'rtubiopa@calpoly.edu'
 
+import logging
 import os
 import sys
 
+logger = logging.getLogger('website')
 sys.path.append('/home/rtubio/repositories/satnet-release-1/WebServices')
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 
@@ -41,14 +42,8 @@ os.environ.setdefault("DJANGO_SETTINGS_MODULE", "website.settings")
 from django.core.wsgi import get_wsgi_application
 application = get_wsgi_application()
 
-# Load local server definition:
-from services.network.models import server as server_models
-print('>>> @wsgi.py: Loading local server information...')
-server_models.ServerManager().load_local_server()
-
-# Slot propagation
-from services.scheduling.models import availability as availability_models
-from website import settings as sn_settings
-print('>>> @wsgi.py:  Propagate SLOTS...')
-if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
-    availability_models.AvailabilitySlot.objects.propagate_slots()
+# Once the application is loaded and the database is ready, we notify all the
+# applications so that they can initialize.
+from website import signals as sn_signals
+logger.info('>>> website@wsgi: sending loaded signal')
+sn_signals.sn_loaded.send(sender=application.__class__)
