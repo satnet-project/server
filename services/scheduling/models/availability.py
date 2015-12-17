@@ -15,12 +15,12 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.db import models as django_models
-
 import logging
 logger = logging.getLogger('configuration')
 
-from services.common import misc, simulation
+from django.db import models as django_models
+
+from services.common import misc, simulation, slots as sn_slots
 from services.configuration.models import segments as segment_models
 from services.configuration.models import rules as rule_models
 
@@ -86,14 +86,10 @@ class AvailabilitySlotsManager(django_models.Manager):
 
         for a_i in self.filter(
             groundstation=groundstation
-        ).filter(
-            start__lt=end
-        ).filter(
-            end__gt=start
-        ):
+        ).filter(start__lt=end, end__gt=start):
 
             result.append(
-                AvailabilitySlotsManager.truncate(a_i, start=start, end=end)
+                sn_slots.cutoff((a_i.start, a_i.end), (start, end))
             )
 
         return result
@@ -178,41 +174,6 @@ class AvailabilitySlotsManager(django_models.Manager):
                 '[POPULATE] (2/2) New slots = ' + misc.list_2_string(slots_i)
             )
             self.add_slots(gs_i, slots_i)
-
-    @staticmethod
-    def truncate(slot, start, end):
-        """
-        Static method that truncates the duration of a given AvailabilitySlot
-        to the restrictions of the (start, end) period. This way,
-        the AvailabilitySlot can be utilized within that period.
-        :param slot: The slot to be truncated.
-        :param start: The starting date for the applicability of this slot.
-        :param end: The ending date for the applicability of this slot.
-        """
-        if start is None or end is None:
-            start, end = simulation.OrbitalSimulator.get_simulation_window()
-        elif start >= end:
-            raise TypeError(
-                '<start=' + str(start) + '> should occur sooner than <end=' +
-                str(end) + '>'
-            )
-
-        if slot.start >= end:
-            return None
-        if slot.end <= start:
-            return None
-
-        if slot.start < start:
-            s = start
-        else:
-            s = slot.start
-
-        if slot.end > end:
-            e = end
-        else:
-            e = slot.end
-
-        return s, e, slot.identifier
 
 
 class AvailabilitySlot(django_models.Model):

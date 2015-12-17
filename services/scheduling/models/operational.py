@@ -20,7 +20,7 @@ import logging
 from django.db import models as django_models
 from django.db.models import Q
 
-from services.common import misc
+from services.common import misc, slots as sn_slots
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.simulation.models import passes as pass_models
@@ -101,29 +101,6 @@ class OperationalSlotsManager(django_models.Manager):
             pass_slot=pass_slot,
             availability_slot=availability_slot
         )
-
-    @staticmethod
-    def _truncate_slot(slot, window):
-        """
-        Truncates the given slot to the duration of the given window.
-
-        :param slot: Slot to be truncated (if necessary)
-        :param window: Window used to truncate the slot
-        :return: (start, end) new truncated duration of the slot
-        """
-        # 1) first slot should be truncated
-        if slot.start < window.start:
-            start = window.start
-        else:
-            start = slot.start
-
-        # 2) last slot should be truncated
-        if slot.end > window.end:
-            end = window.end
-        else:
-            end = slot.end
-
-        return start, end
 
     def update_state(
         self, state=STATE_FREE, slots=None
@@ -216,15 +193,14 @@ class OperationalSlotsManager(django_models.Manager):
         #       necessary
         for p in p_slots:
 
-            start, end = OperationalSlotsManager._truncate_slot(
-                p, availability_slot
+            start, end = sn_slots.cutoff(
+                (p.start, p.end),
+                (availability_slot.start, availability_slot.end)
             )
 
             self.create(
                 availability_slot=availability_slot,
-                pass_slot=p,
-                start=start,
-                end=end
+                pass_slot=p, start=start, end=end
             )
 
     def pass_generates_slots(self, pass_slot):
@@ -252,13 +228,11 @@ class OperationalSlotsManager(django_models.Manager):
         #       necessary
         for a in a_slots:
 
-            start, end = OperationalSlotsManager._truncate_slot(a, pass_slot)
+            # start, end = OperationalSlotsManager._truncate_slot(a, pass_slot)
+            start, end = sn_slots.cutoff(a, pass_slot)
 
             self.create(
-                availability_slot=a,
-                pass_slot=pass_slot,
-                start=start,
-                end=end
+                availability_slot=a, pass_slot=pass_slot, start=start, end=end
             )
 
 
