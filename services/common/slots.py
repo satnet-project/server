@@ -15,7 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
+from datetime import datetime as py_datetime, timedelta as py_timedelta
 from services.common import misc
 
 
@@ -94,8 +94,8 @@ def merge_slots(p_slots, m_slots):
         # All slots will be generated from today on, so this will be the
         # "oldest" slot independently of the rest...
         m = (
-            misc.get_today_utc() - datetime.timedelta(days=1),
-            misc.get_today_utc() - datetime.timedelta(days=1)
+            misc.get_today_utc() - py_timedelta(days=1),
+            misc.get_today_utc() - py_timedelta(days=1)
         )
 
     # The algorithm is executed for all the add slots, since negative slots
@@ -170,20 +170,54 @@ def cutoff(interval, slot):
     if interval[0] > interval[1]:
         raise ValueError('@cutoff_slot: interval[0] > interval[1]')
 
+    # backup copy for cutting off and not ruining the original outter objects
+    interval_w = (
+        interval[0] + py_timedelta(days=0), interval[1] + py_timedelta(days=0)
+    )
+    slot_w = (
+        slot[0] + py_timedelta(days=0), slot[1] + py_timedelta(days=0)
+    )
+
     # CASE A: discard, too late
-    if slot[1] <= interval[0]:
+    if slot_w[1] <= interval_w[0]:
         raise ValueError('@cutoff_slot: slot[1] <= interval[0]')
     # CASE E: discard, too early
-    if slot[0] >= interval[1]:
+    if slot_w[0] >= interval_w[1]:
         raise ValueError('@cutoff_slot: slot[0] >= interval[1]')
 
-    if slot[0] >= interval[0]:
+    if slot_w[0] >= interval_w[0]:
         # CASE C: no cutoff is necessary
-        if slot[1] <= interval[1]:
-            return slot
+        if slot_w[1] <= interval_w[1]:
+            return slot_w
         else:
             # CASE D: cutting off the ending time of the slot
-            return slot[0], interval[1]
+            return slot_w[0], interval_w[1]
 
     # CASE B: cutting off slot's starting time
-    return interval[0], slot[1]
+    return interval_w[0], slot_w[1]
+
+
+def position(interval, slot):
+    """Slot manipulation library
+    This function repositions the given slot within the given interval, so that
+    the calculation of the generated slots can start right away.
+
+    :param interval: The interval to reposition the slot within
+    :param slot: The slot to be repositioned
+    :return: The slot repositioned (start, end) might've changed
+    """
+    if not slot or not interval:
+        raise ValueError('@cutoff_slot: wrong parameters')
+    if slot[0] > slot[1]:
+        raise ValueError('@cutoff_slot: slot[0] > slot[1]')
+    if interval[0] > interval[1]:
+        raise ValueError('@cutoff_slot: interval[0] > interval[1]')
+
+    r0_p = py_datetime.combine(interval[0].date(), slot[0].timetz())
+    r1_p = r0_p + (slot[1] - slot[0])
+
+    if r1_p < interval[0]:
+        r0_p += py_timedelta(days=1)
+        r1_p += py_timedelta(days=1)
+
+    return r0_p, r1_p

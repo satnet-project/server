@@ -15,15 +15,16 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
+from datetime import timedelta as py_timedelta
 import logging
-
-import pytz
 from django import test
+from django.db.models import signals as django_signals
 
-from services.common import misc
-from services.common import helpers as db_tools
-from services.configuration.jrpc.views import rules as jrpc_rules
+from services.common import misc as sn_misc
+from services.common import helpers as sn_helpers
+from services.configuration.jrpc.views import rules as rule_jrpc
+from services.configuration.models import rules as rule_models
+from services.scheduling.signals import availability as availability_signals
 
 
 class TestRulesAvailability(test.TestCase):
@@ -43,9 +44,6 @@ class TestRulesAvailability(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-        # noinspection PyUnresolvedReferences
-        from services.scheduling.signals import availability
-
         self.__gs_1_id = 'gs-castrelos'
         self.__gs_1_ch_1_id = 'chan-cas-1'
 
@@ -55,161 +53,303 @@ class TestRulesAvailability(test.TestCase):
         self.__sc_1_ch_3_id = 'xatco-fm-3'
         self.__sc_1_ch_4_id = 'xatco-afsk-1'
 
-        self.__band = db_tools.create_band()
-        self.__test_user_profile = db_tools.create_user_profile()
-        self.__gs = db_tools.create_gs(
+        self.__band = sn_helpers.create_band()
+        self.__test_user_profile = sn_helpers.create_user_profile()
+        self.__gs = sn_helpers.create_gs(
             user_profile=self.__test_user_profile, identifier=self.__gs_1_id,
         )
-        self.__sc = db_tools.create_sc(
+        self.__sc = sn_helpers.create_sc(
             user_profile=self.__test_user_profile, identifier=self.__sc_1_id
         )
 
-    def test_slot_once_time_ranges(self):
-        """UNIT test: services.configuration - ONCE rule configuration
+    def test_generate_slots_daily_rule(self):
+        """UNIT test: services.configuration.models.rules - DAILY slots
+        This test validates that a DAILY rule generates the right amount of
+        slots depending on the interval relation with the start/end moments of
+        the rule itself.
         """
         if self.__verbose_testing:
-            print('>>> test_slot_once_time_ranges:')
+            print('>>> test_generate_slots_once_rule:')
 
-        s_time = misc.get_next_midnight() - datetime.timedelta(hours=3)
-        e_time = s_time + datetime.timedelta(hours=6)
-        tz_la = pytz.timezone('America/Los_Angeles')
-        s_time = s_time.astimezone(tz_la)
-        e_time = e_time.astimezone(tz_la)
-
-        cfg = db_tools.create_jrpc_once_rule(
-            starting_time=s_time, ending_time=e_time
+        #######################################################################
+        # ### XXXX SIGNAL DISCONNECTED
+        django_signals.post_save.disconnect(
+            availability_signals.daily_rule_saved,
+            sender=rule_models.AvailabilityRuleDaily
         )
 
+        #######################################################################
+        # ### 1) rule starts ends interval, no slot the first day
+        rule_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_daily_rule(
+                starting_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=2
+                ),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=3
+                )
+            )
+        )
+
+        rule_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_id
+        ).values()
+
+        interval = (
+            sn_misc.get_next_midnight() + py_timedelta(days=300, hours=4),
+            sn_misc.get_next_midnight() + py_timedelta(days=303)
+        )
+
+        print('>>> interval = ' + str(interval))
+        slots = rule_models.AvailabilityRuleManager\
+            .generate_available_slots_daily(
+                rule_db_values[0], interval=interval
+            )
+        sn_misc.print_list(slots, name='SLOTS')
+
+        expected = [
+            (
+                sn_misc.get_next_midnight() + py_timedelta(days=301, hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(days=301, hours=3)
+            ),
+            (
+                sn_misc.get_next_midnight() + py_timedelta(days=302, hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(days=302, hours=3)
+            ),
+        ]
+
+        sn_misc.print_list(slots, name='EXPECTED')
+
+        self.assertListEqual(slots, expected)
+
+        #######################################################################
+        # ### 2) rule starts before interval, ends within,
+        #           first day slot truncated
+        rule_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_daily_rule(
+                starting_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=2
+                ),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=6
+                )
+            )
+        )
+
+        rule_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_id
+        ).values()
+
+        interval = (
+            sn_misc.get_next_midnight() + py_timedelta(days=300, hours=4),
+            sn_misc.get_next_midnight() + py_timedelta(days=303)
+        )
+
+        print('>>> interval = ' + str(interval))
+        slots = rule_models.AvailabilityRuleManager\
+            .generate_available_slots_daily(
+                rule_db_values[0], interval=interval
+            )
+        sn_misc.print_list(slots, name='SLOTS')
+
+        expected = [
+            (
+                sn_misc.get_next_midnight() + py_timedelta(days=300, hours=4),
+                sn_misc.get_next_midnight() + py_timedelta(days=300, hours=6)
+            ),
+            (
+                sn_misc.get_next_midnight() + py_timedelta(days=301, hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(days=301, hours=6)
+            ),
+            (
+                sn_misc.get_next_midnight() + py_timedelta(days=302, hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(days=302, hours=6)
+            ),
+        ]
+
+        sn_misc.print_list(slots, name='EXPECTED')
+
+        self.assertListEqual(slots, expected)
+
+        #######################################################################
+        # ### XXXX SIGNAL RECONNECTED
+        django_signals.post_save.connect(
+            availability_signals.daily_rule_saved,
+            sender=rule_models.AvailabilityRuleDaily
+        )
+
+    def test_generate_slots_once_rule(self):
+        """UNIT test: services.configuration.models.rules - ONCE slots
+        This test validates that a ONCE rule generates the right amount of
+        slots depending on the interval relation with the start/end moments of
+        the rule itself.
+        """
         if self.__verbose_testing:
-            misc.print_dictionary(cfg)
+            print('>>> test_generate_slots_once_rule:')
 
-        jrpc_rules.add_rule(self.__gs_1_id, cfg)
-
-    """
-    def _test_is_applicable(self):
-        #UNIT test: services.configuration: rule interval applicability
-        #Validates the method that checks whether a given rule may or may not
-        #generate slots during the given interval.
-        if self.__verbose_testing:
-            print('>>> test_is_applicable:')
-
-        s_window = simulation.OrbitalSimulator.get_simulation_window()
-        p_window = simulation.OrbitalSimulator.get_update_window()
-
-        if self.__verbose_testing:
-            print('>>> s_window = ' + str(s_window))
-            print('>>> p_window = ' + str(p_window))
-
-        # 1) inside the simulation, outside the propagation
-        s_time = s_window[0] + datetime.timedelta(minutes=1)
-        e_time = s_window[1] - datetime.timedelta(minutes=1)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
-
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
-        )
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
+        #######################################################################
+        # ### XXXX SIGNAL DISCONNECTED
+        django_signals.post_save.disconnect(
+            availability_signals.once_rule_saved,
+            sender=rule_models.AvailabilityRuleOnce
         )
 
-        # 1) starts before the simulation, ends within it
-        # 1) outside the propagation
-        s_time = s_window[0] - datetime.timedelta(minutes=1)
-        e_time = s_window[1] - datetime.timedelta(minutes=1)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
-
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
+        #######################################################################
+        # ### 1) rule after interval
+        rule_1_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_once_rule(
+                starting_time=sn_misc.get_next_midnight(),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(hours=4)
+            )
         )
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
-        )
+        rule_1_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_1_id
+        ).values()
 
-        # 2) starts within the simulation, ends after it
-        # 2) starts before the propagation, ends within it
-        s_time = s_window[0] + datetime.timedelta(minutes=1)
-        e_time = s_window[1] + datetime.timedelta(minutes=1)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
-
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, s_window)
-        )
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
+        self.assertListEqual(
+            rule_models.AvailabilityRuleManager.generate_available_slots_once(
+                rule_1_db_values[0], (
+                    sn_misc.get_next_midnight() - py_timedelta(hours=12),
+                    sn_misc.get_next_midnight() - py_timedelta(hours=3)
+                )
+            ),
+            []
         )
 
-        # 3) outside the simulation window
-        # 3) starts and ends within the propagation window
-        s_time = p_window[0] + datetime.timedelta(minutes=1)
-        e_time = p_window[1] - datetime.timedelta(minutes=1)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
+        self.assertTrue(rule_jrpc.remove_rule(self.__gs_1_id, rule_1_id))
 
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
-        )
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
-        )
+        #######################################################################
+        # ### 2) rule before interval
 
-        # 4) outside the simulation window
-        # 4) starts within the propagation window, ends outside of it
-        s_time = p_window[0] + datetime.timedelta(minutes=1)
-        e_time = p_window[1] + datetime.timedelta(minutes=1)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
-
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
+        rule_2_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_once_rule(
+                starting_time=sn_misc.get_next_midnight() - py_timedelta(
+                    hours=6
+                ),
+                ending_time=sn_misc.get_next_midnight() - py_timedelta(
+                    hours=4
+                )
+            )
         )
-        self.assertIsNotNone(
-            rule_models.AvailabilityRule.objects.is_applicable(r, p_window)
+        rule_2_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_2_id
+        ).values()
+
+        self.assertListEqual(
+            rule_models.AvailabilityRuleManager.generate_available_slots_once(
+                rule_2_db_values[0], (
+                    sn_misc.get_next_midnight(),
+                    sn_misc.get_next_midnight() + py_timedelta(hours=9)
+                )
+            ),
+            []
         )
 
-        # 5) outside the simulation window
-        # 5) outside the propagation window
-        s_time = p_window[1] + datetime.timedelta(minutes=1)
-        e_time = p_window[1] + datetime.timedelta(minutes=2)
-        r = {
-            'starting_date': s_time.date(),
-            'ending_date': e_time.date(),
-            'starting_time': s_time,
-            'ending_time': e_time
-        }
+        self.assertTrue(rule_jrpc.remove_rule(self.__gs_1_id, rule_2_id))
 
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, s_window
+        #######################################################################
+        # ### 3) rule FULLY inside interval
+
+        rule_3_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_once_rule(
+                starting_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=2
+                ),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=4
+                )
+            )
         )
-        self.assertRaises(
-            Exception,
-            rule_models.AvailabilityRule.objects.is_applicable, r, p_window
+        rule_3_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_3_id
+        ).values()
+
+        self.assertListEqual(
+            rule_models.AvailabilityRuleManager.generate_available_slots_once(
+                rule_3_db_values[0], (
+                    sn_misc.get_next_midnight(),
+                    sn_misc.get_next_midnight() + py_timedelta(hours=9)
+                )
+            ), [(
+                sn_misc.get_next_midnight() + py_timedelta(hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(hours=4)
+            )]
         )
-    """
+
+        self.assertTrue(rule_jrpc.remove_rule(self.__gs_1_id, rule_3_id))
+
+        #######################################################################
+        # ### 4) rule start before the interval
+
+        rule_4_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_once_rule(
+                starting_time=sn_misc.get_next_midnight() - py_timedelta(
+                    hours=1
+                ),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=4
+                )
+            )
+        )
+        rule_4_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_4_id
+        ).values()
+
+        self.assertListEqual(
+            rule_models.AvailabilityRuleManager.generate_available_slots_once(
+                rule_4_db_values[0], (
+                    sn_misc.get_next_midnight(),
+                    sn_misc.get_next_midnight() + py_timedelta(hours=9)
+                )
+            ), [(
+                sn_misc.get_next_midnight(),
+                sn_misc.get_next_midnight() + py_timedelta(hours=4)
+            )]
+        )
+
+        self.assertTrue(rule_jrpc.remove_rule(self.__gs_1_id, rule_4_id))
+
+        #######################################################################
+        # ### 5) rule ends after the interval
+
+        rule_5_id = rule_jrpc.add_rule(
+            self.__gs_1_id,
+            sn_helpers.create_jrpc_once_rule(
+                starting_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=2
+                ),
+                ending_time=sn_misc.get_next_midnight() + py_timedelta(
+                    hours=12
+                )
+            )
+        )
+        rule_5_db_values = rule_models.AvailabilityRule.objects.filter(
+            pk=rule_5_id
+        ).values()
+
+        self.assertListEqual(
+            rule_models.AvailabilityRuleManager.generate_available_slots_once(
+                rule_5_db_values[0], (
+                    sn_misc.get_next_midnight(),
+                    sn_misc.get_next_midnight() + py_timedelta(hours=9)
+                )
+            ), [(
+                sn_misc.get_next_midnight() + py_timedelta(hours=2),
+                sn_misc.get_next_midnight() + py_timedelta(hours=9)
+            )]
+        )
+
+        self.assertTrue(rule_jrpc.remove_rule(self.__gs_1_id, rule_5_id))
+
+        #######################################################################
+        # ### XXXX SIGNAL RECONNECTED
+        django_signals.post_save.connect(
+            availability_signals.once_rule_saved,
+            sender=rule_models.AvailabilityRuleOnce
+        )

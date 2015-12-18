@@ -15,7 +15,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
+from datetime import timedelta as py_timedelta
+from django.core import exceptions as dj_exceptions
 from django.db import models as django_models
 from django.utils import timezone as django_tz
 import logging
@@ -132,6 +133,23 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
+        r_list = list(
+            AvailabilityRule.objects.filter(
+                groundstation=groundstation, operation=ADD_SLOTS,
+                starting_date__lte=interval[1], ending_date__gte=interval[0]
+            ).values()
+        )
+        add_r += r_list
+
+        r_list = list(
+            AvailabilityRule.objects.filter(
+                groundstation=groundstation, operation=REMOVE_SLOTS,
+                starting_date__lte=interval[1], ending_date__gte=interval[0]
+            ).values()
+        )
+        remove_r += r_list
+
+        """
         for c in AvailabilityRule.__subclasses__():
 
             r_list = list(
@@ -140,9 +158,9 @@ class AvailabilityRuleManager(django_models.Manager):
                 ).filter(
                     availabilityrule_ptr__operation=ADD_SLOTS
                 ).filter(
-                    availabilityrule_ptr__starting_date__lte=interval[1].date()
+                    availabilityrule_ptr__starting_date__lte=interval[1]
                 ).filter(
-                    availabilityrule_ptr__ending_date__gte=interval[0].date()
+                    availabilityrule_ptr__ending_date__gte=interval[0]
                 ).values()
             )
             if r_list:
@@ -153,55 +171,16 @@ class AvailabilityRuleManager(django_models.Manager):
                 ).filter(
                     availabilityrule_ptr__operation=REMOVE_SLOTS
                 ).filter(
-                    availabilityrule_ptr__starting_date__lte=interval[1].date()
+                    availabilityrule_ptr__starting_date__lte=interval[1]
                 ).filter(
-                    availabilityrule_ptr__ending_date__gte=interval[0].date()
+                    availabilityrule_ptr__ending_date__gte=interval[0]
                 ).values()
             )
             if r_list:
                 remove_r += r_list
+        """
 
         return add_r, remove_r
-
-    """
-    @staticmethod
-    def is_applicable(rule_values, interval):
-        This method checks whether this rule can generate slots for the given
-        interval.
-        :param rule_values: Values for this rule as obtained
-        :param interval: The interval for the check.
-        :returns: In case the interval is applicable, it returns a tuple with
-        the initial and final datetime objects.
-
-        if interval is None:
-            interval = simulation.OrbitalSimulator.get_simulation_window()
-
-        first_time_rule = datetime.datetime.combine(
-            rule_values['starting_date'],
-            rule_values['starting_time'].timetz()
-        )
-        last_time_rule = datetime.datetime.combine(
-            rule_values['ending_date'],
-            rule_values['ending_time'].timetz()
-        )
-
-        if rule_values['starting_date'] > interval[1]:
-            raise Exception(
-                'Not applicable [FUTURE], interval = (' +
-                interval[0].isoformat() + ', ' + interval[1].isoformat() +
-                '), last_time_rule = ' +
-                rule_values['starting_date'].isoformat()
-            )
-        if rule_values['ending_date'] < interval[0]:
-            raise Exception(
-                'Not applicable [PAST], interval = (' +
-                interval[0].isoformat() + ', ' + interval[1].isoformat() +
-                '), last_time_rule = ' +
-                rule_values['ending_date'].isoformat()
-            )
-
-        return rule_values['starting_time'], rule_values['ending_time']
-        """
 
     @staticmethod
     def generate_available_slots_once(rule_values, interval=None):
@@ -214,30 +193,27 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        r = AvailabilityRuleOnce.objects.get(
-            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
-        )
+        try:
+            r = AvailabilityRuleOnce.objects.get(
+                availabilityrule_ptr_id=rule_values['id']
+            )
+        except dj_exceptions.ObjectDoesNotExist as ex:
+            logger.warning(
+                '>>> Child rule does not exist, returning no slots, ex = ' +
+                str(ex)
+            )
+            return []
 
-        print(
-            '>>> onceRules.generate_available_slots.interval = (' +
-            interval[0].isoformat() + ', ' + interval[1].isoformat() +
-            ')'
-        )
-        print(
-            '>>> onceRules.generate_available_slots.r        = (' +
-            r.starting_time.isoformat() + ', ' + r.ending_time.isoformat() +
-            ')'
-        )
-
-        slot = slots.cutoff(
-            interval, (r.starting_time, r.ending_time)
-        )
-
-        print(
-            '>>> onceRules.generate_available_slots.slot     = (' +
-            slot[0].isoformat() + ', ' + slot[1].isoformat() +
-            ')'
-        )
+        try:
+            slot = slots.cutoff(
+                interval, (r.starting_time, r.ending_time)
+            )
+        except ValueError as ex:
+            logger.warning(
+                '>>> onceRules.generate_available_slots, no slots generated, '
+                'ex = ' + str(ex)
+            )
+            return []
 
         return [slot]
 
@@ -255,42 +231,48 @@ class AvailabilityRuleManager(django_models.Manager):
         if interval is None:
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
-        first = True
-        r = AvailabilityRuleDaily.objects.get(
-            availabilityrule_ptr=rule_values['availabilityrule_ptr_id']
-        )
+        try:
+            r = AvailabilityRuleDaily.objects.get(
+                availabilityrule_ptr_id=rule_values['id']
+            )
+        except dj_exceptions.ObjectDoesNotExist as ex:
+            logger.warning(
+                '>>> Child rule does not exist, returning no slots, ex = ' +
+                str(ex)
+            )
+            return []
+
         result = []
+        slot_i = slots.position(interval, (r.starting_time, r.ending_time))
 
-        slot_s = r.starting_time
-        slot_e = r.ending_time
-
-        logger.info(
-            '>>> DailyRule@generate_available_slots.interval = (' +
-            interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
+        print(
+            '>>> @generate.interval = ' +
+            interval[0].isoformat() + ', ' + interval[1].isoformat()
+        )
+        print(
+            '>>> @generate.slot_i   = ' +
+            slot_i[0].isoformat() + ', ' + slot_i[1].isoformat()
         )
 
-        while slot_s < interval[1]:
-
-            # We might have to truncate the first slot...
-            if first:
-                first = False
-
-                if slot_e <= interval[0]:
-                    slot_s += datetime.timedelta(days=1)
-                    slot_e += datetime.timedelta(days=1)
-                    continue
-
-                if slot_s <= interval[0]:
-                    slot_s = interval[0]
+        while slot_i[0] < interval[1]:
 
             print(
-                '>>> DailyRule@generate_available_slots.slot = (' +
-                slot_s.isoformat() + ', ' + slot_e.isoformat() + ')'
+                '>>> @generate.WHILE.slot_i = ' +
+                slot_i[0].isoformat() + ', ' + slot_i[1].isoformat()
             )
 
-            result.append((slot_s, slot_e))
-            slot_s += datetime.timedelta(days=1)
-            slot_e += datetime.timedelta(days=1)
+            slot = slots.cutoff(interval, slot_i)
+
+            print(
+                '>>> @generate.WHILE.slot   = ' +
+                slot[0].isoformat() + ', ' + slot[1].isoformat()
+            )
+
+            result.append((slot[0], slot[1]))
+            slot_i = (
+                slot_i[0] + py_timedelta(days=1),
+                slot_i[1] + py_timedelta(days=1)
+            )
 
         return result
 
@@ -321,7 +303,7 @@ class AvailabilityRuleManager(django_models.Manager):
         periodicity = r_values['periodicity']
 
         logger.info('>>> @generate_available_slots.r_values = ')
-        misc.print_dictionary(r_values)
+        # misc.print_dictionary(r_values)
 
         try:
             if periodicity == ONCE_PERIODICITY:
@@ -516,11 +498,6 @@ class AvailabilityRuleOnceManager(django_models.Manager):
                 '<= starting (' + starting_dt.isoformat() + ')'
             )
 
-        print('>>> onceRule.create.starting_dt = ' + starting_dt.isoformat())
-        print('>>> onceRule.create.ending_dt = ' + ending_dt.isoformat())
-        print('>>> onceRule.create.starting_time = ' + starting_dt.isoformat())
-        print('>>> onceRule.create.ending_time = ' + ending_dt.isoformat())
-
         return super(AvailabilityRuleOnceManager, self).create(
             groundstation=groundstation,
             operation=operation,
@@ -576,9 +553,6 @@ class AvailabilityRuleDailyManager(django_models.Manager):
         :param periodicity: periodicity for the rule (once, daily, weekly)
         :param dates: applicability dates for the rule
         """
-
-        print('>>> @models.rules.create.dates = ' + misc.dict_2_string(dates))
-
         localtime = pytz_ref.LocalTimezone()
         starting_date_tz = localtime.tzname(dates[0])
         ending_date_tz = localtime.tzname(dates[1])
@@ -594,7 +568,7 @@ class AvailabilityRuleDailyManager(django_models.Manager):
         ending_dt = dates[3].astimezone(pytz.utc)
         diff_dt = ending_dt - starting_dt
 
-        if diff_dt > datetime.timedelta(hours=24):
+        if diff_dt > py_timedelta(hours=24):
             raise ValueError(
                 'Invalid DAILY rule, diff_dt = ' + str(diff_dt) + ' > 24 hours'
             )
