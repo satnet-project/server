@@ -72,8 +72,6 @@ def once_rule_saved(sender, instance, created, raw, **kwargs):
     if not created or raw:
         return
 
-    print('XXXX once_rule_saved')
-
     rule_updated(instance)
 
 

@@ -17,7 +17,6 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 from periodically import decorators
-
 from services.configuration.models import tle as tle_models
 
 logger = logging.getLogger('configuration')
@@ -31,15 +30,4 @@ def update_tle_database():
     """
     logger.info("Updating Celestrak TLE database, daily task execution!")
     tle_models.TwoLineElementsManager.load_celestrak()
-    logger.info('Updated!')
-
-
-@decorators.every(minutes=5)
-def update_polysat_tles():
-    """Periodic task
-    Task to be executed periodically for updating the TLEs from Polysat
-    database.
-    """
-    logger.info('Updating Polysat TLE database, every 5 minutes!')
-    tle_models.TwoLineElementsManager.load_polysat()
     logger.info('Updated!')
