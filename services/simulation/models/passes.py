@@ -199,12 +199,16 @@ class PassManager(django_models.Manager):
         interval = simulation.OrbitalSimulator.get_update_window()
 
         for gs in segment_models.GroundStation.objects.all():
+            logger.info('>>> @passes.propagate, gs = ' + str(gs.identifier))
             self._simulator.set_groundstation(gs)
 
             for sc in segment_models.Spacecraft.objects.all():
+                logger.info('>>> @passes.propagate, sc = ' + str(sc.identifier))
                 if not self.is_duplicated(interval, gs, sc):
                     self.set_spacecraft(sc)
                     all_slots += self._calculate_passes(sc, gs, interval)
+                else:
+                    logger.info('>>> @passes.propagate, DUPLICATED')
 
         if all_slots:
             simulation_push.SimulationPush.trigger_passes_updated_event()

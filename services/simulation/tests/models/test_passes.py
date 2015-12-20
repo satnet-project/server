@@ -169,3 +169,12 @@ class TestModels(test.TestCase):
             longitude=self.__gs_uvigo_lng,
             contact_elevation=self.__gs_uvigo_e
         )
+
+    def test_passes_reboot(self):
+        """UNIT test: services.simulation.models - passes generation REBOOT
+        This test validates that subsequent attempts to generate passes do not
+        succeed in case that for the given update window, the passes had
+        already been generated.
+        """
+
+        pass_models.PassSlots.objects.propagate()
