@@ -46,10 +46,14 @@ def clean_groundtracks():
     logger.info('>>> Cleaning groundtracks')
 
     try:
-        gt_models.GroundTrack.objects.filter(
-            timestamp__lt=misc.get_now_utc()
+
+        no_deleted = gt_models.GroundTrack.objects.filter(
+            timestamp__lte=misc.get_now_utc()
         ).delete()
+        logger.debug('>>> tasks@clean_passes.filtered = ' + str(no_deleted))
+
     except Exception as ex:
+
         logger.exception('>>> Exception cleaning groundtracks, ex = ' + str(ex))
         return
 
@@ -81,14 +85,13 @@ def clean_passes(threshold=misc.get_now_utc()):
 
     try:
 
-        logger.debug(
-            '>>> tasks@clean_passes.filtered = ' +
-            str(pass_models.PassSlots.objects.filter(end__lt=threshold).count())
-        )
-
-        pass_models.PassSlots.objects.filter(end__lt=threshold).delete()
+        no_deleted = pass_models.PassSlots.objects.filter(
+            end__lte=threshold
+        ).delete()
+        logger.debug('>>> tasks@clean_passes.filtered = ' + str(no_deleted))
 
     except Exception as ex:
+
         logger.exception('>>>  Exception cleaning passes, ex = ' + str(ex))
         return
 
