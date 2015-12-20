@@ -33,7 +33,10 @@ def get_groundtrack(spacecraft_id):
     :param spacecraft_id: Identifier of the spacecraft.
     :return: Array of objects containing { timestamp, lat, lng }.
     """
-    sc = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)
     return groundtracks.SimulationSerializer().serialize_groundtrack(
-        simulation_models.GroundTrack.objects.get(spacecraft=sc)
+        simulation_models.GroundTrack.objects.get(
+            spacecraft=segment_models.Spacecraft.objects.get(
+                identifier=spacecraft_id
+            )
+        )
     )
