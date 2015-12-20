@@ -149,37 +149,6 @@ class AvailabilityRuleManager(django_models.Manager):
         )
         remove_r += r_list
 
-        """
-        for c in AvailabilityRule.__subclasses__():
-
-            r_list = list(
-                c.objects.filter(
-                    availabilityrule_ptr__groundstation=groundstation
-                ).filter(
-                    availabilityrule_ptr__operation=ADD_SLOTS
-                ).filter(
-                    availabilityrule_ptr__starting_date__lte=interval[1]
-                ).filter(
-                    availabilityrule_ptr__ending_date__gte=interval[0]
-                ).values()
-            )
-            if r_list:
-                add_r += r_list
-            r_list = list(
-                c.objects.filter(
-                    availabilityrule_ptr__groundstation=groundstation
-                ).filter(
-                    availabilityrule_ptr__operation=REMOVE_SLOTS
-                ).filter(
-                    availabilityrule_ptr__starting_date__lte=interval[1]
-                ).filter(
-                    availabilityrule_ptr__ending_date__gte=interval[0]
-                ).values()
-            )
-            if r_list:
-                remove_r += r_list
-        """
-
         return add_r, remove_r
 
     @staticmethod
@@ -245,30 +214,11 @@ class AvailabilityRuleManager(django_models.Manager):
         result = []
         slot_i = slots.position(interval, (r.starting_time, r.ending_time))
 
-        print(
-            '>>> @generate.interval = ' +
-            interval[0].isoformat() + ', ' + interval[1].isoformat()
-        )
-        print(
-            '>>> @generate.slot_i   = ' +
-            slot_i[0].isoformat() + ', ' + slot_i[1].isoformat()
-        )
-
         while slot_i[0] < interval[1]:
 
-            print(
-                '>>> @generate.WHILE.slot_i = ' +
-                slot_i[0].isoformat() + ', ' + slot_i[1].isoformat()
-            )
-
             slot = slots.cutoff(interval, slot_i)
-
-            print(
-                '>>> @generate.WHILE.slot   = ' +
-                slot[0].isoformat() + ', ' + slot[1].isoformat()
-            )
-
             result.append((slot[0], slot[1]))
+
             slot_i = (
                 slot_i[0] + py_timedelta(days=1),
                 slot_i[1] + py_timedelta(days=1)
@@ -301,9 +251,6 @@ class AvailabilityRuleManager(django_models.Manager):
             interval = simulation.OrbitalSimulator.get_simulation_window()
 
         periodicity = r_values['periodicity']
-
-        logger.info('>>> @generate_available_slots.r_values = ')
-        # misc.print_dictionary(r_values)
 
         try:
             if periodicity == ONCE_PERIODICITY:

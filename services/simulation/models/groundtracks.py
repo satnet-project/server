@@ -15,6 +15,7 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import bisect
 import datetime
 import logging
 from django.db import models
@@ -93,6 +94,24 @@ class GroundTrackManager(models.Manager):
         la_l = groundtrack.latitude
         lo_l = groundtrack.longitude
 
+        # If the list is not empty, we have to check whether the new simulated
+        # points are already included in the list. The latter condition is met
+        # whenever the last element of the already stored list is not smaller
+        # than the first element of the new groundtrack points (both list are
+        # sored in terms of timestamps).
+        if ts_l and not(ts_l[-1] < new_ts[0]):
+
+            # With the bisect algorithm (dichotomy) we find the position of the
+            # first element that is bigger than the given timestamp, that is,
+            # the position of the new timestamp array that can be appended to
+            # the existing groundtrack.
+            position = bisect.bisect_left(new_ts, ts_l[-1])
+
+            # The arrays are corrected in consequence
+            new_ts = new_ts[position:]
+            new_lat = new_lat[position:]
+            new_lng = new_lng[position:]
+
         groundtrack.timestamp = ts_l + new_ts
         groundtrack.latitude = la_l + new_lat
         groundtrack.longitude = lo_l + new_lng
@@ -133,7 +152,9 @@ class GroundTrackManager(models.Manager):
         os = simulator.OrbitalSimulator()
         (start, end) = os.get_update_window()
 
-        logger.info('window = (' + str(start) + ', ' + str(end) + ')')
+        logger.info(
+            '>>> @propagate.window = (' + str(start) + ', ' + str(end) + ')'
+        )
 
         for gt in self.all():
 

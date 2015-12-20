@@ -101,12 +101,10 @@ class TestRulesAvailability(test.TestCase):
             sn_misc.get_next_midnight() + py_timedelta(days=303)
         )
 
-        print('>>> interval = ' + str(interval))
         slots = rule_models.AvailabilityRuleManager\
             .generate_available_slots_daily(
                 rule_db_values[0], interval=interval
             )
-        sn_misc.print_list(slots, name='SLOTS')
 
         expected = [
             (
@@ -118,8 +116,6 @@ class TestRulesAvailability(test.TestCase):
                 sn_misc.get_next_midnight() + py_timedelta(days=302, hours=3)
             ),
         ]
-
-        sn_misc.print_list(slots, name='EXPECTED')
 
         self.assertListEqual(slots, expected)
 
@@ -147,12 +143,10 @@ class TestRulesAvailability(test.TestCase):
             sn_misc.get_next_midnight() + py_timedelta(days=303)
         )
 
-        print('>>> interval = ' + str(interval))
         slots = rule_models.AvailabilityRuleManager\
             .generate_available_slots_daily(
                 rule_db_values[0], interval=interval
             )
-        sn_misc.print_list(slots, name='SLOTS')
 
         expected = [
             (
@@ -168,8 +162,6 @@ class TestRulesAvailability(test.TestCase):
                 sn_misc.get_next_midnight() + py_timedelta(days=302, hours=6)
             ),
         ]
-
-        sn_misc.print_list(slots, name='EXPECTED')
 
         self.assertListEqual(slots, expected)
 

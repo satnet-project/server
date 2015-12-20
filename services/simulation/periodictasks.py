@@ -29,7 +29,6 @@ def propagate_groundtracks():
     """Periodic groundtracks propagation
     """
     logger.info('>>> Populating groundtracks')
-
     try:
         gt_models.GroundTrack.objects.propagate()
     except Exception as ex:
@@ -43,14 +42,12 @@ def clean_groundtracks():
     """Periodic groundtracks cleanup
     """
     logger.info('>>> Cleaning groundtracks')
-
     try:
         gt_models.GroundTrack.objects.filter(
             timestamp__lt=misc.get_utc_timestamp(misc.get_now_utc())
         ).delete()
     except Exception as ex:
         logger.warning('>>> Exception cleaning groundtracks, ex = ' + str(ex))
-
     logger.info('>>> DONE cleaning groundtracks')
 
 
@@ -71,12 +68,10 @@ def clean_passes():
     """Periodic groundtracks cleanup
     """
     logger.info('>>> Cleaning passes')
-
     try:
         pass_models.PassSlots.objects.filter(
             end__lt=misc.get_utc_timestamp(misc.get_now_utc())
         ).delete()
     except Exception as ex:
         logger.warning('>>>  Exception cleaning passes, ex = ' + str(ex))
-
     logger.info('>>> DONE cleaning passes')
