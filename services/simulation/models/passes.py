@@ -19,7 +19,7 @@ from datetime import timedelta as py_timedelta
 from django.db import models as django_models
 import logging
 
-from services.common import simulation
+from services.common import simulation, misc as sn_misc, slots as sn_slots
 from services.configuration.models import segments as segment_models
 from services.simulation import push as simulation_push
 
@@ -190,23 +190,37 @@ class PassManager(django_models.Manager):
         else:
             return False
 
-    def propagate(self):
+    def propagate(self, interval=None):
         """Manager method
         Propagates the pass slots for all the registered groundstation and
         spacecraft pairs.
+        @param interval: (default=None), interval for the propagation
         """
+        if not interval:
+            interval = simulation.OrbitalSimulator.get_update_window()
+
         all_slots = []
-        interval = simulation.OrbitalSimulator.get_update_window()
+
+        logger.info(
+            '>>> @passes.propagate.window = ' + sn_slots.string(interval)
+        )
 
         for gs in segment_models.GroundStation.objects.all():
             logger.info('>>> @passes.propagate, gs = ' + str(gs.identifier))
             self._simulator.set_groundstation(gs)
 
             for sc in segment_models.Spacecraft.objects.all():
-                logger.info('>>> @passes.propagate, sc = ' + str(sc.identifier))
+                logger.info(
+                    '>>> @passes.propagate, sc = ' + str(sc.identifier)
+                )
                 if not self.is_duplicated(interval, gs, sc):
                     self.set_spacecraft(sc)
                     all_slots += self._calculate_passes(sc, gs, interval)
+                    logger.info(
+                        sn_misc.list_2_string(
+                            all_slots, name='@passes.propagate.all_slots'
+                        )
+                    )
                 else:
                     logger.info('>>> @passes.propagate, DUPLICATED')
 

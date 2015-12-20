@@ -17,6 +17,8 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from datetime import timedelta as py_timedelta
 from django import test
+import logging
+logger = logging.getLogger('simulation')
 
 from services.common import misc as sn_misc
 from services.common import helpers as db_tools
@@ -38,16 +40,14 @@ class TestModels(test.TestCase):
 
         self.__gs_1_id = 'gs-uvigo'
         self.__gs_1 = db_tools.create_gs(
-            user_profile=self.__user,
-            identifier=self.__gs_1_id
+            user_profile=self.__user, identifier=self.__gs_1_id
         )
 
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'CANX-2'
         self.__sc_1 = db_tools.create_sc(
             user_profile=self.__user,
-            identifier=self.__sc_1_id,
-            tle_id=self.__sc_1_tle_id,
+            identifier=self.__sc_1_id, tle_id=self.__sc_1_tle_id,
         )
 
     def test_pass_models(self):
@@ -177,4 +177,33 @@ class TestModels(test.TestCase):
         already been generated.
         """
 
+        # 1) consecutive propagations should not be permitted
+        logger.debug('#### FIRST PART OF THE TEST, CURRENT INTERVAL')
+
         pass_models.PassSlots.objects.propagate()
+        sc_passes_n_1 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        pass_models.PassSlots.objects.propagate()
+        sc_passes_n_2 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        self.assertEquals(sc_passes_n_1, sc_passes_n_2)
+
+        # 2) now, we change the interval of application for avoiding reboots
+        logger.debug('#### SECOND PART OF THE TEST, FUTURE INTERVAL')
+
+        interval = (
+            sn_misc.get_next_midnight() + py_timedelta(days=30),
+            sn_misc.get_next_midnight() + py_timedelta(days=33)
+        )
+        pass_models.PassSlots.objects.propagate(interval=interval)
+        sc_passes_n_3 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        self.assertGreater(sc_passes_n_3, sc_passes_n_2)
+        pass_models.PassSlots.objects.propagate(interval=interval)
+        sc_passes_n_4 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        self.assertEquals(sc_passes_n_4, sc_passes_n_3)

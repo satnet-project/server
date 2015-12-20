@@ -47,7 +47,7 @@ def clean_groundtracks():
 
     try:
         gt_models.GroundTrack.objects.filter(
-            timestamp__lt=misc.get_utc_timestamp(misc.get_now_utc())
+            timestamp__lt=misc.get_now_utc()
         ).delete()
     except Exception as ex:
         logger.exception('>>> Exception cleaning groundtracks, ex = ' + str(ex))
@@ -72,19 +72,22 @@ def propagate_passes():
 
 
 @decorators.daily()
-def clean_passes():
+def clean_passes(threshold=misc.get_now_utc()):
     """Periodic groundtracks cleanup
+    Cleans the outdated passes from the database.
+    @param threshold:
     """
-    logger.info('>>> Cleaning passes')
-
-    logger.info('>>> end_lt = ' + str(
-        misc.get_utc_timestamp(misc.get_now_utc()))
-    )
+    logger.info('>>> Cleaning passes, threshold = ' + str(threshold))
 
     try:
-        pass_models.PassSlots.objects.filter(
-            end__lt=misc.get_utc_timestamp(misc.get_now_utc())
-        ).delete()
+
+        logger.debug(
+            '>>> tasks@clean_passes.filtered = ' +
+            str(pass_models.PassSlots.objects.filter(end__lt=threshold).count())
+        )
+
+        pass_models.PassSlots.objects.filter(end__lt=threshold).delete()
+
     except Exception as ex:
         logger.exception('>>>  Exception cleaning passes, ex = ' + str(ex))
         return

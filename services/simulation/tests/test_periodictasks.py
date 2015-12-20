@@ -17,13 +17,16 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import logging
 
+from datetime import timedelta as py_timedelta
 from django import test
 
+from services.common import misc as sn_misc
 from services.common import simulation as simulator
 from services.common import helpers as db_tools
 from services.configuration.models import segments as segment_models
 from services.simulation.models import groundtracks as groundtrack_models
 from services.simulation.models import passes as pass_models
+from services.simulation import periodictasks as pass_tasks
 
 
 class PeriodicSimulationTest(test.TestCase):
@@ -32,7 +35,7 @@ class PeriodicSimulationTest(test.TestCase):
     """
 
     def setUp(self):
-        """Test setup.
+        """Test setup
         This method populates the database with some information to be used
         only for this test.
         """
@@ -42,8 +45,23 @@ class PeriodicSimulationTest(test.TestCase):
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
+        self.__user = db_tools.create_user_profile()
+        self.__request_1 = db_tools.create_request(user_profile=self.__user)
+
+        self.__gs_1_id = 'gs-uvigo'
+        self.__gs_1 = db_tools.create_gs(
+            user_profile=self.__user, identifier=self.__gs_1_id
+        )
+
+        self.__sc_1_id = 'xatcobeo-sc'
+        self.__sc_1_tle_id = 'CANX-2'
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user,
+            identifier=self.__sc_1_id, tle_id=self.__sc_1_tle_id,
+        )
+
     def test_simulation_error(self):
-        """UNIT test: Error test
+        """UNIT test: services.common.simulation - simulation ERROR test
         Validates the fail mode for the simulator.
         """
         sim = simulator.OrbitalSimulator()
@@ -58,7 +76,7 @@ class PeriodicSimulationTest(test.TestCase):
             pass
 
     def test_propagate_groundtracks(self):
-        """UNIT test: Periodic task test (propagate groundtracks)
+        """UNIT test: services.simulation.periodictasks.propagate()
         Test that validates the periodical propagation of the groundtracks. It
         uses the spacecraft created when the database was initialized some
         time ago at the beginning of the test.
@@ -82,26 +100,36 @@ class PeriodicSimulationTest(test.TestCase):
             'Final and initial GroundTracks should have different lengths'
         )
 
-    def test_propagate_passes(self):
-        """UNIT test: Periodic task test (propagate passes)
-        Test that validates the periodical propagation of the pass slots.
+    def test_passes_clean(self):
+        """UNIT test: services.simulation.models = passes generation CLEAN UP
         """
-        pass_models.PassSlots.objects.propagate()
-
-        self.assertEqual(
-            len(pass_models.PassSlots.objects.all()), 0, 'No pass slots'
-        )
-
-        db_tools.create_gs()
-        initial_p_slots = len(pass_models.PassSlots.objects.all())
-        self.assertNotEqual(
-            initial_p_slots, 0, 'There should be some pass slots available'
-        )
 
         pass_models.PassSlots.objects.propagate()
-        propagated_p_slots = len(pass_models.PassSlots.objects.all())
+        sc_passes_n_1 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
 
-        self.assertNotEqual(
-            propagated_p_slots, initial_p_slots,
-            'Propagation should have added more pass slots'
+        pass_tasks.clean_passes()
+        sc_passes_n_2 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+
+        self.assertEquals(sc_passes_n_1, sc_passes_n_2)
+
+        interval_2 = (
+            sn_misc.get_next_midnight() + py_timedelta(days=5),
+            sn_misc.get_next_midnight() + py_timedelta(days=6)
         )
+        pass_models.PassSlots.objects.propagate(interval=interval_2)
+        sc_passes_n_3 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        self.assertGreater(sc_passes_n_3, sc_passes_n_2)
+
+        pass_tasks.clean_passes(
+            threshold=sn_misc.get_next_midnight() + py_timedelta(days=10)
+        )
+        sc_passes_n_4 = pass_models.PassSlots.objects.filter(
+            spacecraft=self.__sc_1
+        ).count()
+        self.assertEquals(sc_passes_n_4, 0)
