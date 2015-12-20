@@ -44,8 +44,7 @@ def satnet_loaded(sender, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=segment_models.GroundStation
+    django_signals.post_save, sender=segment_models.GroundStation
 )
 def groundstation_created(sender, instance, created, raw, **kwargs):
     """Signal handler (post_save)
@@ -66,8 +65,7 @@ def groundstation_created(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=segment_models.GroundStation
+    django_signals.post_save, sender=segment_models.GroundStation
 )
 def groundstation_updated(
     sender, instance, created, raw, update_fields, **kwargs
@@ -95,8 +93,7 @@ def groundstation_updated(
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.pre_delete,
-    sender=segment_models.Spacecraft
+    django_signals.pre_delete, sender=segment_models.Spacecraft
 )
 def groundstation_deleted(sender, instance, **kwargs):
     """Signal Handler (post_save).
@@ -112,8 +109,7 @@ def groundstation_deleted(sender, instance, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=segment_models.Spacecraft
+    django_signals.post_save, sender=segment_models.Spacecraft
 )
 def spacecraft_created(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
@@ -134,8 +130,7 @@ def spacecraft_created(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.post_save,
-    sender=segment_models.Spacecraft
+    django_signals.post_save, sender=segment_models.Spacecraft
 )
 def spacecraft_updated(sender, instance, created, raw, **kwargs):
     """Signal Handler (post_save).
@@ -157,8 +152,7 @@ def spacecraft_updated(sender, instance, created, raw, **kwargs):
 
 # noinspection PyUnusedLocal
 @django_dispatch.receiver(
-    django_signals.pre_delete,
-    sender=segment_models.Spacecraft
+    django_signals.pre_delete, sender=segment_models.Spacecraft
 )
 def spacecraft_deleted(sender, instance, **kwargs):
     """Signal Handler (post_save).

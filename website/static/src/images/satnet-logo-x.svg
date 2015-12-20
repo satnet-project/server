@@ -91,7 +91,7 @@
      inkscape:zoom="1.01875"
      inkscape:cx="300"
      inkscape:cy="400"
-     inkscape:window-x="1"
+     inkscape:window-x="2"
      inkscape:window-y="27"
      inkscape:window-maximized="0"
      inkscape:current-layer="surface924855" />
@@ -100,7 +100,9 @@
      transform="translate(-0.35329428,407)">
     <g
        id="g5408"
-       transform="matrix(1.0313747,0,0,1.0121186,-28.909591,13.48206)">
+       transform="matrix(1.0313747,0,0,1.0121186,-28.909591,13.48206)"
+       inkscape:export-xdpi="150"
+       inkscape:export-ydpi="150">
       <path
          sodipodi:nodetypes="cssc"
          inkscape:export-ydpi="150"
@@ -144,7 +146,10 @@
     </g>
     <g
        id="g5391"
-       transform="matrix(1.0313747,0,0,1.0121186,-30.529419,30.967494)">
+       transform="matrix(1.0313747,0,0,1.0121186,-30.529419,30.967494)"
+       inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/g5408.ico.png"
+       inkscape:export-xdpi="150"
+       inkscape:export-ydpi="150">
       <path
          inkscape:export-ydpi="150"
          inkscape:export-xdpi="150"
@@ -172,7 +177,10 @@
     </g>
     <g
        id="g5401"
-       transform="matrix(0.97889421,0,0,0.96102601,-6.7579267,28.126532)">
+       transform="matrix(0.97889421,0,0,0.96102601,-6.7579267,28.126532)"
+       inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/g5408.ico.png"
+       inkscape:export-xdpi="150"
+       inkscape:export-ydpi="150">
       <g
          id="g5396">
         <path
@@ -211,7 +219,10 @@
     </g>
     <g
        id="g5415"
-       transform="translate(16.490798,14.920245)">
+       transform="translate(16.490798,14.920245)"
+       inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/g5408.ico.png"
+       inkscape:export-xdpi="150"
+       inkscape:export-ydpi="150">
       <path
          inkscape:export-ydpi="150"
          inkscape:export-xdpi="150"
@@ -250,7 +261,10 @@
     </g>
     <g
        id="g5424"
-       transform="translate(-13.349693,-29.055214)">
+       transform="translate(-13.349693,-29.055214)"
+       inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/g5408.ico.png"
+       inkscape:export-xdpi="150"
+       inkscape:export-ydpi="150">
       <path
          inkscape:export-ydpi="150"
          inkscape:export-xdpi="150"

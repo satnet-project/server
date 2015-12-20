@@ -164,24 +164,47 @@ class PassManager(django_models.Manager):
         simulation_push.SimulationPush.trigger_passes_updated_event()
         return all_slots
 
+    def is_duplicated(self, interval, groundstation, spacecraft):
+        """Manager method
+        Checks whether the on-going propagation of the passes is a duplicated
+        one in the sense that the system has reloaded within the propagation.
+        This situation has to be avoided since the generated slot passes will
+        be duplicated. This check is done in a pair sc/gs basis so that in case
+        the slots where not propagated for this given pair, they do have to get
+        propagated now.
+
+        :param interval: Interval for the propagation of the slots
+        :param groundstation: Groundstation object
+        :param spacecraft: Spacecraft object
+        :return: 'True' in case this interval has already been propagated.
+        """
+        last_pass = self.filter(
+            groundstation=groundstation, spacecraft=spacecraft
+        ).latest('start')
+
+        if not last_pass:
+            return False
+
+        if last_pass.end > interval[0]:
+            return True
+        else:
+            return False
+
     def propagate(self):
         """Manager method
         Propagates the pass slots for all the registered groundstation and
         spacecraft pairs.
         """
         all_slots = []
-        window = simulation.OrbitalSimulator.get_update_window()
+        interval = simulation.OrbitalSimulator.get_update_window()
 
-        for groundstation in segment_models.GroundStation.objects.all():
+        for gs in segment_models.GroundStation.objects.all():
+            self._simulator.set_groundstation(gs)
 
-            self._simulator.set_groundstation(groundstation)
-
-            for spacecraft in segment_models.Spacecraft.objects.all():
-
-                self.set_spacecraft(spacecraft)
-                all_slots += self._calculate_passes(
-                    spacecraft, groundstation, window
-                )
+            for sc in segment_models.Spacecraft.objects.all():
+                if not self.is_duplicated(interval, gs, sc):
+                    self.set_spacecraft(sc)
+                    all_slots += self._calculate_passes(sc, gs, interval)
 
         if all_slots:
             simulation_push.SimulationPush.trigger_passes_updated_event()
