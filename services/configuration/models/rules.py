@@ -290,13 +290,13 @@ class AvailabilityRuleManager(django_models.Manager):
             .get_applicable_rule_values(groundstation, interval=interval)
 
         logger.info(
-            '>>> @get_availabilit_slots.rules = ' + misc.list_2_string(
-                AvailabilityRule.objects.all().values()
+            misc.list_2_string(
+                AvailabilityRule.objects.all().values(),
+                name='@get_availabilit_slots.rules'
             )
         )
         logger.info(
-            '>>> @get_availabilit_slots.interval = (' +
-            interval[0].isoformat() + ', ' + interval[1].isoformat() + ')'
+            '>>> @get_availabilit_slots.interval = ' + slots.string(interval)
         )
 
         # 0) We obtain the applicable slots from the database

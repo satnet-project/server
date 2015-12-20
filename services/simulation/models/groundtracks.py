@@ -159,7 +159,7 @@ class GroundTrackManager(models.Manager):
         for gt in self.all():
 
             if gt.timestamp:
-                logger.info('gt.len (BEFORE) = ' + str(gt))
+                logger.info('gt.len (BEFORE) = ' + str(len(gt.timestamp)))
             else:
                 logger.info('gt.len is empty')
 
@@ -179,15 +179,16 @@ class GroundTrackManager(models.Manager):
                 gt.save()
 
                 if gt:
-                    logger.info('gt.len (AFTER) = ' + str(gt))
+                    logger.info('gt.len (AFTER) = ' + str(len(gt.timestamp)))
                 else:
                     logger.info('[@propagate_groundtracks] gt is None')
 
             except Exception as ex:
 
-                logger.warning(
-                    'Error while propagating groundtrack = ' + str(gt) +
-                    'ex = ' + str(ex)
+                logger.exception(
+                    'Error propagating groundtrack = ' + str(len(
+                        gt.timestamp
+                    )) + 'ex = ' + str(ex)
                 )
 
 
@@ -237,3 +238,9 @@ class GroundTrack(models.Model):
             result += ts
 
         return result
+
+    def __str__(self):
+        """To String
+        :return: Human readable string of the object
+        """
+        return self.__unicode__()

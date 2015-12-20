@@ -29,10 +29,12 @@ def propagate_groundtracks():
     """Periodic groundtracks propagation
     """
     logger.info('>>> Populating groundtracks')
+
     try:
         gt_models.GroundTrack.objects.propagate()
     except Exception as ex:
         logger.warning('>>> Exception populating groundtracks, ex = ' + str(ex))
+        return
 
     logger.info('>>> DONE propagating groundtracks')
 
@@ -42,12 +44,15 @@ def clean_groundtracks():
     """Periodic groundtracks cleanup
     """
     logger.info('>>> Cleaning groundtracks')
+
     try:
         gt_models.GroundTrack.objects.filter(
             timestamp__lt=misc.get_utc_timestamp(misc.get_now_utc())
         ).delete()
     except Exception as ex:
-        logger.warning('>>> Exception cleaning groundtracks, ex = ' + str(ex))
+        logger.exception('>>> Exception cleaning groundtracks, ex = ' + str(ex))
+        return
+
     logger.info('>>> DONE cleaning groundtracks')
 
 
@@ -56,10 +61,13 @@ def propagate_passes():
     """Periodic groundtracks propagation
     """
     logger.info('>>> Propagating passes')
+
     try:
         pass_models.PassSlots.objects.propagate()
     except Exception as ex:
         logger.warning('>>> Exception propagating passes, ex = ' + str(ex))
+        return
+
     logger.info('>>> DONE propagating groundtracks')
 
 
@@ -68,10 +76,17 @@ def clean_passes():
     """Periodic groundtracks cleanup
     """
     logger.info('>>> Cleaning passes')
+
+    logger.info('>>> end_lt = ' + str(
+        misc.get_utc_timestamp(misc.get_now_utc()))
+    )
+
     try:
         pass_models.PassSlots.objects.filter(
             end__lt=misc.get_utc_timestamp(misc.get_now_utc())
         ).delete()
     except Exception as ex:
-        logger.warning('>>>  Exception cleaning passes, ex = ' + str(ex))
+        logger.exception('>>>  Exception cleaning passes, ex = ' + str(ex))
+        return
+
     logger.info('>>> DONE cleaning passes')

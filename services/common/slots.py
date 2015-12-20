@@ -221,3 +221,13 @@ def position(interval, slot):
         r1_p += py_timedelta(days=1)
 
     return r0_p, r1_p
+
+
+def string(slot):
+    """Slot manipulation library
+    This function prints a slot into a human readable string and returns it.
+
+    :param slot: The slot to be print
+    :return: A human readable string
+    """
+    return '(' + slot[0].isoformat() + ', ' + slot[1].isoformat() + ')'

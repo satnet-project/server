@@ -42,7 +42,6 @@ def satnet_loaded(sender, **kwargs):
     logger.info('>>> scheduling@satnet_loaded (SIGNAL):  Propagate GTS...')
     if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
         simulation_tasks.propagate_groundtracks()
-        simulation_tasks.clean_groundtracks()
 
 
 # noinspection PyUnusedLocal

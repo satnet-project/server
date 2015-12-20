@@ -183,7 +183,9 @@ class PassManager(django_models.Manager):
                     spacecraft, groundstation, window
                 )
 
-        simulation_push.SimulationPush.trigger_passes_updated_event()
+        if all_slots:
+            simulation_push.SimulationPush.trigger_passes_updated_event()
+
         return all_slots
 
     def remove_pass_slots_sc(self, spacecraft):

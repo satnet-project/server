@@ -37,10 +37,9 @@ def satnet_loaded(sender, **kwargs):
     :param sender: Any sender is accepted
     :param kwargs: Additional parameters
     """
-    logger.info('>>> scheduling@satnet_loaded (SIGNAL):  Propagate PASSES...')
+    logger.info('>>> simulation@satnet_loaded (SIGNAL):  Propagate PASSES...')
     if not sn_settings.TESTING and sn_settings.RUNNING_AS_SERVER:
         simulation_tasks.propagate_passes()
-        simulation_tasks.clean_passes()
 
 
 # noinspection PyUnusedLocal
@@ -52,7 +51,7 @@ def groundstation_created(sender, instance, created, raw, **kwargs):
     """Signal handler (post_save)
     Generates the pass slots associated with this groundstation.
     :param sender: Reference to the sender
-    :param instance: Reference to the GroundStation object whose creation/update
+    :param instance: Reference to the GroundStation object whose change
                     triggered the execution of this handler
     :param created: Flag that indicates that this object has just been created
     :param raw: Flag that indicates whether the database is stable or not

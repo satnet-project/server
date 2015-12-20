@@ -156,23 +156,27 @@ class AvailabilitySlotsManager(django_models.Manager):
         database for future operations.
         """
         logger.info(
-            '[POPULATE] s_window = ' + str(
+            '>>>@propagate_slots.s_window = ' +
+            sn_slots.string(
                 simulation.OrbitalSimulator.get_simulation_window()
             )
         )
         update_window = simulation.OrbitalSimulator.get_update_window()
-        logger.info('[POPULATE] p_window = ' + str(update_window))
+        logger.info('>>>@propagate_slots.p_window = ' + sn_slots.string(
+            update_window
+        ))
 
         for gs_i in segment_models.GroundStation.objects.all():
 
-            logger.info('[POPULATE] (1/2) Ground Station = ' + str(gs_i))
+            logger.info('>>>@propagate_slots.groundstation = ' + str(gs_i))
 
             slots_i = rule_models.AvailabilityRule.objects\
                 .get_availability_slots(gs_i, interval=update_window)
 
             logger.info(
-                '[POPULATE] (2/2) New slots = ' + misc.list_2_string(slots_i)
+                misc.list_2_string(slots_i, name='@propagate_slots.new_slots')
             )
+
             self.add_slots(gs_i, slots_i)
 
 

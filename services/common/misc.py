@@ -92,15 +92,15 @@ def print_list(l, name=None, output=sys.stdout):
         print(str(l_i), file=output)
 
 
-def list_2_string(l, list_name='List'):
+def list_2_string(l, name='List'):
     """
     Function that prints the given list of elements into a string object.
     :param l: The list to be printed in the string
-    :param list_name: The name for this list
+    :param name: The name for this list
     :return: String object with the list printed within
     """
     buff = io.StringIO()
-    print_list(l, name=list_name, output=buff)
+    print_list(l, name=name, output=buff)
     return buff.getvalue()
 
 
