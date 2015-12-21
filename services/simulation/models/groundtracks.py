@@ -113,6 +113,47 @@ class GroundTrackManager(models.Manager):
 
         return timestamps, latitudes, longitudes
 
+    def delete_older(self, threshold=misc.get_now_utc()):
+        """Filtering order
+        This method implements the filtering for groundtrack timestamps older
+        than the given threshold.
+
+        TODO :: get rid of djorm_pgarray
+
+        :param threshold: Threshold for the filter
+        :return: Number of elements deleted from the database
+        """
+        no_deleted = 0
+
+        for gt in self.all():
+
+            logger.info(
+                '>>> @groundtracks.delete_older, gt.sc = ' +
+                str(gt.spacecraft.identifier)
+            )
+
+            if not gt.timestamp:
+                logger.info(
+                    '>>> @groundtracks.delete_older, EMPTY GT'
+                )
+                continue
+
+            index = bisect.bisect_left(gt.timestamp, threshold.timestamp())
+
+            ts_l = gt.timestamp
+            la_l = gt.latitude
+            lo_l = gt.longitude
+
+            gt.timestamp = ts_l[index:]
+            gt.latitude = la_l[index:]
+            gt.longitude = lo_l[index:]
+
+            gt.save()
+
+            no_deleted += index
+
+        return no_deleted
+
     def propagate(
         self,
         interval=simulation.OrbitalSimulator.get_update_window(),

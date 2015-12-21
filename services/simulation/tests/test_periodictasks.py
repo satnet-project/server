@@ -26,7 +26,7 @@ from services.common import helpers as db_tools
 from services.configuration.models import segments as segment_models
 from services.simulation.models import groundtracks as groundtrack_models
 from services.simulation.models import passes as pass_models
-from services.simulation import periodictasks as pass_tasks
+from services.simulation import periodictasks as simulation_tasks
 
 
 class PeriodicSimulationTest(test.TestCase):
@@ -101,7 +101,7 @@ class PeriodicSimulationTest(test.TestCase):
         )
 
     def test_passes_clean(self):
-        """UNIT test: services.simulation.models = passes generation CLEAN UP 1
+        """UNIT test: services.simulation.models = passes CLEAN UP
         """
 
         pass_models.PassSlots.objects.propagate()
@@ -109,7 +109,7 @@ class PeriodicSimulationTest(test.TestCase):
             spacecraft=self.__sc_1
         ).count()
 
-        pass_tasks.clean_passes()
+        simulation_tasks.clean_passes()
         sc_passes_n_2 = pass_models.PassSlots.objects.filter(
             spacecraft=self.__sc_1
         ).count()
@@ -126,10 +126,52 @@ class PeriodicSimulationTest(test.TestCase):
         ).count()
         self.assertGreater(sc_passes_n_3, sc_passes_n_2)
 
-        pass_tasks.clean_passes(
+        simulation_tasks.clean_passes(
             threshold=sn_misc.get_next_midnight() + py_timedelta(days=10)
         )
         sc_passes_n_4 = pass_models.PassSlots.objects.filter(
             spacecraft=self.__sc_1
         ).count()
         self.assertEquals(sc_passes_n_4, 0)
+
+    def test_groundtracks_clean(self):
+        """UNIT test: services.simulation.models = groundtracks CLEAN UP
+        """
+
+        groundtrack_models.GroundTrack.objects.propagate()
+        sc_gts_n_1 = len(
+            groundtrack_models.GroundTrack.objects.get(
+                spacecraft=self.__sc_1
+            ).timestamp
+        )
+
+        simulation_tasks.clean_passes()
+        sc_gts_n_2 = len(
+            groundtrack_models.GroundTrack.objects.get(
+                spacecraft=self.__sc_1
+            ).timestamp
+        )
+
+        self.assertEquals(sc_gts_n_1, sc_gts_n_2)
+
+        interval_2 = (
+            sn_misc.get_next_midnight() + py_timedelta(days=5),
+            sn_misc.get_next_midnight() + py_timedelta(days=6)
+        )
+        groundtrack_models.GroundTrack.objects.propagate(interval=interval_2)
+        sc_gts_n_3 = len(
+            groundtrack_models.GroundTrack.objects.get(
+                spacecraft=self.__sc_1
+            ).timestamp
+        )
+        self.assertGreater(sc_gts_n_3, sc_gts_n_2)
+
+        simulation_tasks.clean_groundtracks(
+            threshold=sn_misc.get_next_midnight() + py_timedelta(days=10)
+        )
+        sc_gts_n_4 = len(
+            groundtrack_models.GroundTrack.objects.get(
+                spacecraft=self.__sc_1
+            ).timestamp
+        )
+        self.assertEquals(sc_gts_n_4, 0)

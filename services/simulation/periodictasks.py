@@ -40,15 +40,16 @@ def propagate_groundtracks():
 
 
 @decorators.daily()
-def clean_groundtracks():
+def clean_groundtracks(threshold=misc.get_now_utc()):
     """Periodic groundtracks cleanup
+    @param threshold: datetime threshold to clean the old groundtracks
     """
     logger.info('>>> Cleaning groundtracks')
 
     try:
 
-        no_deleted = gt_models.GroundTrack.objects.filter(
-            timestamp__lte=misc.get_now_utc()
+        no_deleted = gt_models.GroundTrack.objects.delete_older(
+            threshold
         ).delete()
         logger.debug('>>> tasks@clean_passes.filtered = ' + str(no_deleted))
 
@@ -79,7 +80,7 @@ def propagate_passes():
 def clean_passes(threshold=misc.get_now_utc()):
     """Periodic groundtracks cleanup
     Cleans the outdated passes from the database.
-    @param threshold:
+    @param threshold: datetime threshold to clean the old passes
     """
     logger.info('>>> Cleaning passes, threshold = ' + str(threshold))
 
