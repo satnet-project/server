@@ -101,7 +101,7 @@ class PeriodicSimulationTest(test.TestCase):
         )
 
     def test_passes_clean(self):
-        """UNIT test: services.simulation.models = passes generation CLEAN UP
+        """UNIT test: services.simulation.models = passes generation CLEAN UP 1
         """
 
         pass_models.PassSlots.objects.propagate()

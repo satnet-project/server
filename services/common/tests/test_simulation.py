@@ -107,13 +107,13 @@ class TestSimulation(TestCase):
             print('>>> test_calculate_groundtrack:')
 
         step = timedelta(minutes=1)
-        (start, end) = self.__simulator.get_simulation_window()
+        interval = self.__simulator.get_simulation_window()
 
         groundtrack = self.__simulator.calculate_groundtrack(
             tle_models.TwoLineElement.objects.get(
                 identifier=self.__sc_1_tle_id
             ),
-            start=start, end=end, timestep=step
+            interval=interval, timestep=step
         )
 
         if self.__verbose_testing:
@@ -124,7 +124,7 @@ class TestSimulation(TestCase):
                 )
 
         e_n_points = int(math.ceil(
-            (end - start).total_seconds() / step.total_seconds()
+            (interval[1] - interval[0]).total_seconds() / step.total_seconds()
         ))
         self.assertEqual(
             e_n_points, len(groundtrack),

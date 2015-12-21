@@ -15,9 +15,13 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from datetime import timedelta as py_timedelta
 from django import test
+import logging
+logger = logging.getLogger('simulation')
 
-from services.common import helpers as db_tools
+from services.common import helpers as sn_helpers
+from services.common import misc as sn_misc
 from services.simulation.models import groundtracks as groundtrack_models
 
 
@@ -30,18 +34,18 @@ class GroundTrackTests(test.TestCase):
         """
         self.__verbose_testing = False
 
-        self.__user = db_tools.create_user_profile()
-        self.__request_1 = db_tools.create_request(user_profile=self.__user)
+        self.__user = sn_helpers.create_user_profile()
+        self.__request_1 = sn_helpers.create_request(user_profile=self.__user)
 
         self.__gs_1_id = 'gs-uvigo'
-        self.__gs_1 = db_tools.create_gs(
+        self.__gs_1 = sn_helpers.create_gs(
             user_profile=self.__user,
             identifier=self.__gs_1_id
         )
 
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'CANX-2'
-        self.__sc_1 = db_tools.create_sc(
+        self.__sc_1 = sn_helpers.create_sc(
             user_profile=self.__user,
             identifier=self.__sc_1_id,
             tle_id=self.__sc_1_tle_id,
@@ -92,3 +96,40 @@ class GroundTrackTests(test.TestCase):
         self.assertEquals(r_gt.timestamp, x_gt['timestamp'])
         self.assertEquals(r_gt.latitude, x_gt['latitude'])
         self.assertEquals(r_gt.longitude, x_gt['longitude'])
+
+    def test_groundtracks_reboot(self):
+        """UNIT test: services.simulation.models - gts generation REBOOT
+        """
+
+        # 1) consecutive propagations should not be permitted
+        logger.debug('#### FIRST PART OF THE TEST, CURRENT INTERVAL')
+
+        groundtrack_models.GroundTrack.objects.propagate()
+        sc_gts_n_1 = len(groundtrack_models.GroundTrack.objects.get(
+            spacecraft=self.__sc_1
+        ).timestamp)
+        groundtrack_models.GroundTrack.objects.propagate()
+        sc_gts_n_2 = len(groundtrack_models.GroundTrack.objects.get(
+            spacecraft=self.__sc_1
+        ).timestamp)
+        self.assertEquals(sc_gts_n_1, sc_gts_n_2)
+
+        # 2) now, we change the interval of application for avoiding reboots
+        logger.debug('#### SECOND PART OF THE TEST, FUTURE INTERVAL')
+
+        interval = (
+            sn_misc.get_next_midnight() + py_timedelta(days=3),
+            sn_misc.get_next_midnight() + py_timedelta(days=4)
+        )
+
+        groundtrack_models.GroundTrack.objects.propagate(interval=interval)
+        sc_gts_n_3 = len(groundtrack_models.GroundTrack.objects.get(
+            spacecraft=self.__sc_1
+        ).timestamp)
+        self.assertGreater(sc_gts_n_3, sc_gts_n_2)
+
+        groundtrack_models.GroundTrack.objects.propagate(interval=interval)
+        sc_gts_n_4 = len(groundtrack_models.GroundTrack.objects.get(
+            spacecraft=self.__sc_1
+        ).timestamp)
+        self.assertEquals(sc_gts_n_4, sc_gts_n_3)

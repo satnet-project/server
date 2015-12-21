@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import datetime
+from datetime import timedelta as py_td
 import ephem
 import logging
 import numpy
@@ -355,21 +356,21 @@ class OrbitalSimulator(object):
 
     def calculate_groundtrack(
         self, spacecraft_tle,
-        start=None, end=None, timestep=datetime.timedelta(seconds=10)
+        interval=None,
+        timestep=py_td(seconds=20)
     ):
         """
         Calculates the GroundTrack for the spacecraft with the given tle object.
-        :param spacecraft_tle:
-        :param start: starting datetime for the simulation.
-        :param end: ending datetime for the simulation.
+        :param spacecraft_tle: TLE for the spacecraft
+        :param interval: simulation interval
         :param timestep: time ellapsed for the calculation of two subsequent
-                            points in the ground track.
+                            points in the ground track
         :return: Array where each element is { timestamp, latitude, longitude }.
                     The first timestamp is "start" and the last one is
                     "start+floor(duration/timestamp)*timestamp".
         """
-        if (start is None) or (end is None):
-            (start, end) = self.get_simulation_window()
+        if not interval:
+            interval = OrbitalSimulator.get_simulation_window()
 
         if self._test_mode:
             if self._fail_test:
@@ -378,9 +379,9 @@ class OrbitalSimulator(object):
         self.set_spacecraft(spacecraft_tle)
 
         groundtrack = []
-        date_i = start
+        date_i = interval[0]
 
-        while date_i < end:
+        while date_i < interval[1]:
 
             self._body.compute(date_i)
 
@@ -409,3 +410,6 @@ class OrbitalSimulator(object):
             + '\n* elevation = ' + str(self._observer.elevation)\
             + '\n* horizon = ' + str(self._observer.horizon)\
             + '\n* date = ' + str(self._observer.date)
+
+    def __str__(self):
+        return self.__unicode__()

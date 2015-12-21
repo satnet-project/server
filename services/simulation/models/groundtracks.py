@@ -16,15 +16,16 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import bisect
-import datetime
+from datetime import datetime as py_dt
+from datetime import timedelta as py_td
 import logging
+logger = logging.getLogger('simulation')
 from django.db import models
 from djorm_pgarray import fields as pgarray_fields
-from services.common import simulation as simulator, misc
+
+from services.common import simulation, misc, slots as sn_slots
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
-
-logger = logging.getLogger('simulation')
 
 
 class GroundTrackManager(models.Manager):
@@ -41,42 +42,13 @@ class GroundTrackManager(models.Manager):
         :param spacecraft: Reference to the Spacecraft object.
         :return: Reference to the newly created object.
         """
-        gt = simulator.OrbitalSimulator().calculate_groundtrack(spacecraft.tle)
+        gt = simulation.OrbitalSimulator().calculate_groundtrack(spacecraft.tle)
         ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(gt)
 
         return super(GroundTrackManager, self).create(
             timestamp=ts, latitude=lat, longitude=lng,
             spacecraft=spacecraft, tle=spacecraft.tle
         )
-
-    @staticmethod
-    def remove_old(groundtrack):
-        """
-        Removes the old points of the groundtrack that are not applicable
-        anymore. The results are not saved to the database.
-        :param groundtrack: The groundtrack to be updated.
-        :return: The updated groundtrack object.
-        """
-        now_ts = misc.get_utc_timestamp(
-            misc.get_now_utc() + datetime.timedelta(seconds=1)
-        )
-
-        ts_l = groundtrack.timestamp
-        la_l = groundtrack.latitude
-        lo_l = groundtrack.longitude
-        _2_remove = 0
-
-        for ts in ts_l:
-            if ts <= now_ts:
-                _2_remove = ts_l.index(ts) + 1
-            else:
-                break
-
-        groundtrack.timestamp = ts_l[_2_remove:]
-        groundtrack.latitude = la_l[_2_remove:]
-        groundtrack.longitude = lo_l[_2_remove:]
-
-        return groundtrack
 
     @staticmethod
     def append_new(groundtrack, new_ts, new_lat, new_lng):
@@ -135,53 +107,69 @@ class GroundTrackManager(models.Manager):
 
         for point in groundtrack:
 
-            timestamps.append(
-                misc.get_utc_timestamp(point['timestamp'])
-            )
+            timestamps.append(point['timestamp'].timestamp())
             latitudes.append(point['latitude'])
             longitudes.append(point['longitude'])
 
         return timestamps, latitudes, longitudes
 
-    def propagate(self):
+    def propagate(
+        self,
+        interval=simulation.OrbitalSimulator.get_update_window(),
+        threshold=py_td(days=1)
+    ):
         """
         This method propagates the points for the GroundTracks along the
         update window. This propagation should be done after the new TLE's
         had been received.
-        """
-        os = simulator.OrbitalSimulator()
-        (start, end) = os.get_update_window()
 
+        @param interval: interval for the propagation
+        @param threshold: timedelta interval during which no GT is propagated
+        """
         logger.info(
-            '>>> @propagate.window = (' + str(start) + ', ' + str(end) + ')'
+            '>>> @groundtracks.propagate.interval = ' + sn_slots.string(
+                interval
+            )
         )
 
         for gt in self.all():
 
             if gt.timestamp:
-                logger.info('gt.len (BEFORE) = ' + str(len(gt.timestamp)))
+
+                logger.info(
+                    '>>> @groundtracks.propagate.gt.len (BEFORE) = ' +
+                    str(len(gt.timestamp))
+                )
+
+                dt_ts = misc.localize_date_utc(py_dt.fromtimestamp(
+                    gt.timestamp[-1]
+                ))
+
+                diff = py_td(seconds=abs((dt_ts - interval[0]).total_seconds()))
+
+                if diff < threshold:
+                    logger.info('>>> @groundtracks.propagate, THRESHOLD')
+                    continue
+
             else:
                 logger.info('gt.len is empty')
 
-            # 1) remove old groundtrack points
-            gt = GroundTrackManager.remove_old(gt)
-
             try:
 
-                # 2) new groundtrack points
-                new_gt = os.calculate_groundtrack(
-                    spacecraft_tle=gt.tle, start=start, end=end
+                new_gt = simulation.OrbitalSimulator().calculate_groundtrack(
+                    spacecraft_tle=gt.tle, interval=interval
                 )
                 ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(new_gt)
-                # 3) create and store updated groundtrack
                 gt = GroundTrackManager.append_new(gt, ts, lat, lng)
-                # 4) the updated groundtrack is saved to the database.
                 gt.save()
 
                 if gt:
-                    logger.info('gt.len (AFTER) = ' + str(len(gt.timestamp)))
+                    logger.info(
+                        '>>> @groundtracks.propagate.gt.len (AFTER) = ' +
+                        str(len(gt.timestamp))
+                    )
                 else:
-                    logger.info('[@propagate_groundtracks] gt is None')
+                    logger.info('>>> @groundtracks.propagate.gt is None')
 
             except Exception as ex:
 

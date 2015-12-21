@@ -190,15 +190,15 @@ class PassManager(django_models.Manager):
         else:
             return False
 
-    def propagate(self, interval=None):
+    def propagate(
+        self, interval=simulation.OrbitalSimulator.get_update_window()
+    ):
         """Manager method
         Propagates the pass slots for all the registered groundstation and
         spacecraft pairs.
-        @param interval: (default=None), interval for the propagation
-        """
-        if not interval:
-            interval = simulation.OrbitalSimulator.get_update_window()
 
+        @param interval: interval for the propagation
+        """
         all_slots = []
 
         logger.info(
