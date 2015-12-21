@@ -42,21 +42,25 @@
 
 </head>
 <body>
-    
+
+<!--
     <div id='logo'>
     </div>
+-->
 
     <div id='content'>
 
 {% block content %}
 {% endblock %}
 
+        <!--
 {% block content_footer %}
     <br/>
     <p><span style="font-style: italic;">
         ( back <a class='link' href="{% url 'index' %}">Home</a>? )
     </span></p>
 {% endblock %}
+    -->
 
 {% block license_footer %}
 
@@ -76,11 +80,12 @@
 
     </div>
 
+    <!--
     <div id='toolbar'>
 
         <div id='toolbar_header'>
-            <embed height='125px' width='200px'
-                   src="{% static 'images/logo.svg' %}">
+            <embed width='100%'
+                   src="{% static 'images/satnet-logo-x.png' %}">
             </embed>
             <br/><br/>
         </div>
@@ -120,6 +125,7 @@
         </div>
 
     </div>
+    -->
 
 </body>
 

@@ -367,9 +367,7 @@ body {
   font-weight: 400;
   text-align: justify;
   line-height: 175%;
-  margin-top: 50px;
-  margin-left: 250px;
-  margin-right: 5%; }
+  margin: 5%; }
 
 #logo {
   float: left;

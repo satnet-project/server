@@ -80,10 +80,9 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-sass');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
-    // register one or more task lists (you should ALWAYS have a "default" task list)
-    // this would be run by typing "grunt test" on the command line
+
     grunt.registerTask('test', ['sass']);
-    // the default task can be run just by typing "grunt" on the command line
+
     grunt.registerTask('default', ['sass', 'cssmin', 'copy']);
 
 };
