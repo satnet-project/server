@@ -31,6 +31,7 @@
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' />
 
+	<script src="//localhost:36000/livereload.js"></script>
 
     <style type='text/css'>
         .mark-div { border: 1px dashed white; }
@@ -43,89 +44,71 @@
 </head>
 <body>
 
-<!--
-    <div id='logo'>
-    </div>
--->
+<div class="sn-header-wrap">
+<div class="sn-header">
 
-    <div id='content'>
+<div class="sn-header-content">
+
+	<embed class="sn-header-logo"
+			src="{% static 'images/satnet-logo-x-bw.svg' %}">
+    </embed>
+
+<div class="sn-header-menu sn-ribbon">
+
+{% block toolbar_menu %}
+{% if request.user.is_authenticated %}
+
+    <div class="sn-header-button">
+    	<a class="sn-link" href="{% url 'account_logout' %}">
+        	({% trans 'log out' %})
+    	</a>
+    </div>
+
+    <div class="sn-header-button">
+        <a id="button_staff" class="sn-link" style='font-size:65%;'
+            href="{% url 'user_profile' %}">{{ request.user.username }}
+            <b>
+			{% if request.user.is_staff %}
+            	({% trans 'STAFF' %})
+			{% else %}
+            	({% trans 'USER' %})
+			{% endif %}
+        	</b>
+	    </a>
+	</div>
+
+{% else %}
+
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'account_login' %}">access</a>
+	</div>
+
+{% endif %}
+{% endblock %}
+
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'index' %}">home</a>
+	</div>
+
+</div>
+
+	<div class="sn-header-content-overlay"></div>
+
+</div>
+
+{% block toolbar_submenu %}
+{% endblock %}
+
+</div>
+
+</div>
+
+    <div class="sn-content">
 
 {% block content %}
 {% endblock %}
 
-        <!--
-{% block content_footer %}
-    <br/>
-    <p><span style="font-style: italic;">
-        ( back <a class='link' href="{% url 'index' %}">Home</a>? )
-    </span></p>
-{% endblock %}
-    -->
-
-{% block license_footer %}
-
-<div class='license-footer'>
-<div style="text-align: center;">
-<br/>
-<hr/>
-<a rel="license"
-    href="http://creativecommons.org/licenses/by-sa/3.0/deed.en_US">
-    <embed width='75px'
-           src="{% static 'images/cc-3.0-by-sa-ICON.svg' %}" ></embed>
-</a>
-</div>
-</div>
-
-{% endblock %}
-
-    </div>
-
-    <!--
-    <div id='toolbar'>
-
-        <div id='toolbar_header'>
-            <embed width='100%'
-                   src="{% static 'images/satnet-logo-x.png' %}">
-            </embed>
-            <br/><br/>
-        </div>
-
-        <div id='toolbar_login'>
-
-{% block toolbar_login %}
-
-            <div>
-                <a class='toolbar_button' href="{% url 'account_login' %}" >
-                    {% trans 'Access' %}
-                </a>
-            </div>
-            
-{% endblock %}
-                    
-        </div>
-
-        <div id='toolbar_content'>
-{% block toolbar_content %}
-            
-            <div>
-                <a class='toolbar_button' href="{% url 'index' %}" >
-                    {% trans 'Home' %}
-                </a>
-            </div>
-            
-{% endblock %}
-        </div>
-
-        <div id='toolbar_extra'>
-{% block toolbar_extra %}
-{% endblock %}
-        </div>
-
-        <div id='toolbar_footer'>
-        </div>
-
-    </div>
-    -->
+	</div>
 
 </body>
 

@@ -25,7 +25,27 @@
 
 {% endblock %}
 
-{% block content_footer %}
+{% block toolbar_submenu %}
+<div class="sn-header-submenu">
+
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'pending' %}">pending</a>
+   	</div>
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'inactive' %}">inactive</a>
+    </div>
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'verified' %}">verified</a>
+	</div>
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'blocked' %}">blocked</a>
+	</div>
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'leop_management' %}">leop</a>
+	</div>
+
+</div>
+
 {% endblock %}
 
 {% block toolbar_content %}
@@ -33,39 +53,6 @@
 {% if request.user.is_authenticated %}
 {% if request.user.is_staff %}
 
-    <hr />
-    <div><a id='button_pending' class='toolbar_button'
-            href="{% url 'index' %}">
-        Help
-    </a></div>
-
-    <hr />
-
-    <div><a id='button_pending' class='toolbar_button'
-            href="{% url 'pending' %}">
-        Pending
-    </a></div>
-    <div><a id='button_inactive' class='toolbar_button'
-            href="{% url 'inactive' %}">
-        Inactive
-    </a></div>
-    <div><a id='button_verified' class='toolbar_button'
-            href="{% url 'verified' %}">
-        Verified
-    </a></div>
-    <div><a id='button_blocked' class='toolbar_button'
-            href="{% url 'blocked' %}">
-        Blocked
-    </a></div>
-
-    <hr />
-
-    <div><a id='button_cluster' class='toolbar_button'
-            href="{% url 'leop_management' %}">
-        LEOP
-    </a></div>
-
-    <hr />
 
 {% endif %}
 {% endif %}

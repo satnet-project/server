@@ -60,6 +60,13 @@ module.exports = function (grunt) {
             }
         },
         watch: {
+	    	options: {
+      			livereload: 36000,
+	    	},
+	    	html: {
+	    		files: ['../templates/**/*.html'],
+	    		tasks: ['copy']
+	    	},
             sass: {
                 files: ['src/css/sass/*.scss'],
                 tasks: ['sass']

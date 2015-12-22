@@ -399,7 +399,6 @@ class OrbitalSimulator(object):
         return groundtrack
 
     def __unicode__(self):
-
         return '# ### Body (Spacecraft): ' + str(self._body)\
                + '\n* l0 = ' + self._tle.identifier\
                + '\n* l1 = ' + self._tle.first_line\
