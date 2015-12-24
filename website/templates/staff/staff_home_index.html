@@ -27,30 +27,17 @@ design, may require. In case any kind of problem appears that was not taken
 into account in the original design, a set of external tools is provided for
 performing <b>exceptional maintenance operations</b> on the system.
 </p>
+<br/>
 
-<h2>Regular Maintenance Operations</h2>
 
-<h3>User Management Operations</h3>
+<div class="sn-card">
+	<div>
+		<div class="sn-card-content">
 
+			<i class="fa fa-user sn-card-icon"></i>
+			<span class="sn-card-title">User Management</span>
 <p>
-These operations permit the management of user accounts in accordance to their
-lifecycle. This lifecycle is graphically defined in the figure on the right, in
-which a given user account passes through the different states that are 
-permitted within this system.
-</p>
-
-<center>
-<figure style='float:right;'>
-
-    <br/><br/>
-    <embed class='__embeded_svg' width='375px' src="{% static 'images/satnet-UserManagement.svg' %}"></embed>
-    <br/><br/>
-    <figcaption style='font-weight:bold;'>User Account Lifecycle</figcaption>
-    <br/><br/>
-</figure>
-</center>
-
-<p>
+These operations permit the management of user accounts in accordance to the following lifecycle:
 <ol>
     <li>Users are initially <b>unregistered</b>.</li>
     <li>In order to access to the system, they need to create an account in the
@@ -80,23 +67,37 @@ permitted within this system.
 </ol>
 </p>
 
-<h2>Exceptional Maintenance Operations</h2>
+		</div>
+	</div>
+</div>
 
-<p>Since <i>exception</i> operations, by definitions, cannot be defined 
-beforehand, this section simply presents the set of tools available for dealing 
-with these issues.
+<div class="sn-card">
+	<div>
+		<div class="sn-card-content">
+			<i class="fa fa-wrench sn-card-icon"></i>
+			<span class="sn-card-title">Advanced Tools</span>
 
-These tools can only be accessed within the same network of the server node.
+<p>
+
+Since <i>exception</i> operations, by definitions, cannot be defined beforehand, this section simply presents the set of tools available for dealing with these issues. These tools can only be accessed within the same network of the server node.
 
 <ul>
-    <li>
-        <a class='link' href="{% url 'admin:index' %}">Django Admin</a>
-        , an external Django application manager.
-    </li>
-    <li>
-        <a class='link' href="{% url 'phppgadmin' %}">PhpPgAdmin</a>
-        an external database management tool.
-    </li>
+    <li>Django Admin, which is an external Django application manager;</li>
+    <li>PhpPgAdmin, an external database management tool;</li>
 </ul>
+
+The links below redirect the user to the applications installed within this server.
+
 </p>
+
+		</div>
+    	<div class="sn-card-action">
+    		<a href="{% url 'admin:index' %}">(django admin)</a>
+    	</div>
+      	<div class="sn-card-action">
+    		<a href="{% url 'phppgadmin' %}">(phppgadmin)</a>
+    	</div>
+
+	</div>
+</div>
 

@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.conf import urls
 from django.contrib import admin
 from django.contrib.auth import decorators
+from django.views.generic import TemplateView
 from django.views.generic.base import RedirectView
 from services.accounts import views as account_views
 from website import views as website_views
@@ -34,6 +35,11 @@ urlpatterns = urls.patterns(
         r'^$',
         account_views.redirect_login,
         name='index'
+    ),
+    urls.url(
+    	r'^contribute/$',
+    	TemplateView.as_view(template_name='contrib.html'),
+    	name='contrib'
     ),
     # ### Command and Control Interface
     urls.url(

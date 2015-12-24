@@ -16,13 +16,14 @@
 
 a.link {
   cursor: pointer;
-  color: #0F3E62;
+  color: orange;
   font-weight: bold;
   border-radius: 5px;
   padding: 0.75em;
 }
 
-a.link:link, a.link:visited {
+//a.link:link,
+a.link:visited {
   text-decoration: none;
 }
 

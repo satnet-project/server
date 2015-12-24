@@ -30,6 +30,7 @@
 
     <script src='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js'></script>
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css' />
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" />
 
 	<script src="//localhost:36000/livereload.js"></script>
 
@@ -49,54 +50,95 @@
 
 <div class="sn-header-content">
 
-	<embed class="sn-header-logo"
-			src="{% static 'images/satnet-logo-x-bw.svg' %}">
-    </embed>
+	<img class="sn-header-logo"
+			src="{% static 'images/satnet-logo-white.png' %}">
+    </img>
 
-<div class="sn-header-menu sn-ribbon">
+	<!--
+	<img class="sn-header-pic"
+			src="{% static 'images/antenna-block.png' %}">
+    </img>
+    -->
 
-{% block toolbar_menu %}
+	<div class="sn-header-menu">
+
+		<svg width="100%" height="100%" viewBox="-100 0 400 900"
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlns:xlink="http://www.w3.org/1999/xlink">
+
+			<path d="M275 0 c -150 225, -150 675, 0 900"
+				fill="transparent"
+				stroke="white" stroke-width="15" stroke-linecap="butt"/>
+
+			<circle cx="185" cy="225" r="30" fill="white"/>
+			<circle cx="185" cy="225" r="15" fill="orange"/>
+
+			<circle cx="163" cy="450" r="30" fill="white"/>
+			<circle cx="163" cy="450" r="15" fill="orange"/>
+
+			<circle cx="185" cy="675" r="30" fill="white"/>
+			<circle cx="185" cy="675" r="15" fill="orange"/>
+
+{% block menu %}
 {% if request.user.is_authenticated %}
 
-    <div class="sn-header-button">
-    	<a class="sn-link" href="{% url 'account_logout' %}">
-        	({% trans 'log out' %})
-    	</a>
-    </div>
+			<a xlink:href="{% url 'index' %}">
+				<text class="sn-svg-button" x="-85" y="470">home</text>
+			</a>
+			<a xlink:href="{% url 'account_logout' %}">
+				<text class="sn-svg-button" x="-85" y="240">logout</text>
+			</a>
+			<a xlink:href="{% url 'user_profile' %}">
+				<text class="sn-svg-button" x="-105" y="700">profile</text>
+			</a>
 
-    <div class="sn-header-button">
+{% else %}
+
+			<a xlink:href="{% url 'index' %}">
+				<text class="sn-svg-button" x="-25" y="470">info</text>
+			</a>
+			<a xlink:href="{% url 'account_login' %}">
+				<text class="sn-svg-button" x="-85" y="240">access</text>
+			</a>
+			<a xlink:href="{% url 'contrib' %}">
+				<text class="sn-svg-button" x="-105" y="700">contrib</text>
+			</a>
+
+{% endif %}
+{% endblock %}
+
+		</svg>
+
+	</div>
+
+	<div class="sn-header-content-overlay"></div>
+
+</div>
+
+{% block toolbar %}
+{% if request.user.is_authenticated %}
+
+    <div class="sn-header-toolbar">
         <a id="button_staff" class="sn-link" style='font-size:65%;'
             href="{% url 'user_profile' %}">{{ request.user.username }}
             <b>
-			{% if request.user.is_staff %}
-            	({% trans 'STAFF' %})
-			{% else %}
-            	({% trans 'USER' %})
-			{% endif %}
+			{% if request.user.is_staff %}(staff){% else %}(user){% endif %}
         	</b>
 	    </a>
 	</div>
 
 {% else %}
 
-	<div class="sn-header-button">
-		<a class="sn-link" href="{% url 'account_login' %}">access</a>
-	</div>
-
 {% endif %}
+
 {% endblock %}
 
-	<div class="sn-header-button">
-		<a class="sn-link" href="{% url 'index' %}">home</a>
-	</div>
-
-</div>
-
-	<div class="sn-header-content-overlay"></div>
-
-</div>
-
 {% block toolbar_submenu %}
+{% if request.user.is_authenticated %}
+{% else %}
+{% endif %}
+
 {% endblock %}
 
 </div>
@@ -107,6 +149,8 @@
 
 {% block content %}
 {% endblock %}
+
+		<div class="sn-card-clear"></div>
 
 	</div>
 

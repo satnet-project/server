@@ -17,6 +17,12 @@
 @import 'tables';
 @import 'toolbar';
 @import 'launch';
+@import 'cards';
+
+$min_web_width: 600px;
+$max_web_width: 1000px;
+$content_width: 95%;
+$header_height: 300px;
 
 body {
 	font-family: "Ubuntu", "Bitstream Vera Sans", "DejaVu Sans", "Tahoma";
@@ -26,13 +32,63 @@ body {
 	background-image: url('images/grey-bg-stripes.jpg');
 }
 
+.sn-header-wrap {
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.sn-header {
+	position: relative;
+    margin: 0 auto 0 auto;
+    width: $content_width;
+    max-width: $max_web_width;
+    height: $header_height;
+    background-color: $cool_gray;
+}
+
 .sn-content {
-	margin: 0 auto;
-	padding: 525px 20px 20px 20px;
-    width: 85%;
-    max-width: 1280px;
-    height: 1000px;
+	position: relative;
+	top: $header_height;
+	margin: 45px auto 0  auto;
+	padding: 25px;
+    width: $content_width;
+    max-width: $max_web_width;
+    min-height: 300px;
 	background-color: white;
+}
+
+.sn-header-content {
+	float: left;
+	width: 100%;
+	height: 100%;
+}
+
+.sn-header-content-overlay {
+	opacity: 0.5;
+	height: 100%;
+    //background-image: url('images/spider-net.png');
+	//background-size: cover;
+    //background-repeat: no-repeat;
+}
+
+.sn-header-logo {
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	height: 90%;
+	opacity: 1.0;
+	z-index: 2000;
+}
+
+.sn-header-pic {
+	position: absolute;
+	top: 0px;
+	left: 300px;
+	width: 200px;
+	height: 100%;
+	opacity: 1.0;
+	z-index: 2000;
 }
 
 h1 {
@@ -57,82 +113,58 @@ form p input, form p select, form p span {
 }
 
 .sn-link {
-	color: currentcolor;
-}
-
-.sn-header-wrap {
-    position: fixed;
-    top: 0;
-    height: 500px;
-    width: 100%;
-}
-
-.sn-header {
-	position: relative;
-    width: 85%;
-    max-width: 1280px;
-    height: 500px;
-    margin: 0 auto 0 auto;
+	color: orange;
 }
 
 .sn-header-menu {
 	position: absolute;
-	bottom: 0; right: 0;
-	width: 100%;
-    background-color: $cool_blue;
-    height: 35px;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    opacity: 1.0;
-    z-index: 1000;
+	top: 5%;
+	right: 5px;
+	width: 100px;
+	height: 90%;
+    z-index: 2000;
 }
 
-.sn-header-content {
-	float: left;
-	width: 100%;
-	height: 100%;
-}
-
-.sn-header-content-overlay {
-	opacity: 1.0;
-	width: 100%;
-	height: 100%;
-    background-image: url('images/iss-bg-1.jpg');
-	background-size: cover;
-    background-repeat: no-repeat;
-}
-
-.sn-header-logo {
+.sn-header-toolbar {
 	position: absolute;
-	//top: -50px;
-	//left: -35px;
-	bottom: -50px;
-	right: 45px;
-	height: 390px;
+	bottom: 0px;
+	right: 100px;
+	background-color: $vl-gray;
+	color: $cool_blue;
+	padding: 2px;
+	width: 150px;
+	height: 2em;
+	text-align: center;
+}
+
+.sn-header-submenu {
+	position: absolute;
+	bottom: -30px;
+	right: 5%;
+	width: 75%;
+    background-color: $cool_green;
+    height: 30px;
+    z-index: 2001;
 }
 
 .sn-header-button {
 	float: right;
-	height: 40px;
-	margin: 0 20px;
-	color: white;
-	font-weight: bold;
 	font-size: 95%;
-	text-align: center;
-	padding: 5px 0;
-}
-
-.sn-header-submenu {
-	float: left;
-	width: 100%;
-    background-color: #98BDDA;
-    height: 30px;
-    border-top-left-radius: 1px;
-    border-top-right-radius: 1px;
-    opacity: 0.95;
+	font-weight: bold;
+	color: white;
+	margin: 3px 15px;
 }
 
 .secondaryAction {
 	color: $cool_blue !important;
+}
+
+.sn-svg-button {
+	font-size: 475%;
+	fill: white;
+}
+.sn-svg-button:hover {
+	opacity: 0.5;
+	cursor: pointer;
 }
 
