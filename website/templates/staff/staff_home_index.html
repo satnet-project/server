@@ -37,7 +37,10 @@ performing <b>exceptional maintenance operations</b> on the system.
 			<i class="fa fa-user sn-card-icon"></i>
 			<span class="sn-card-title">User Management</span>
 <p>
-These operations permit the management of user accounts in accordance to the following lifecycle:
+    These operations permit the management of user accounts in accordance to
+    the following lifecycle:
+</p>
+
 <ol>
     <li>Users are initially <b>unregistered</b>.</li>
     <li>In order to access to the system, they need to create an account in the
@@ -45,12 +48,15 @@ These operations permit the management of user accounts in accordance to the fol
         staff user.</li>
     <li>When a user makes a registration of a given email address in the
         system, the server automatically sends a verification email to the
-        user.</li>
-    <ul>
-        <li>The link provided expires after 4 days. If it was not used, the
-            still existing but <i>inactive</i> account will be deleted by
-            the system maintenance periodic task.</li>
-    </ul>
+        user.
+        <ul>
+            <li>
+                The link provided expires after 4 days. If it was not used, the
+                still existing but <i>inactive</i> account will be deleted by
+                the system maintenance periodic task.
+            </li>
+        </ul>
+    </li>
     <li>After the user confirms its email address, all staff for the site are
         notified through email and must accept the new user before it gets
         access to the system:
@@ -65,7 +71,6 @@ These operations permit the management of user accounts in accordance to the fol
     through email.</li>
     <li>Accepted users can be either blocked or deleted, as required.</li>
 </ol>
-</p>
 
 		</div>
 	</div>
@@ -77,18 +82,27 @@ These operations permit the management of user accounts in accordance to the fol
 			<i class="fa fa-wrench sn-card-icon"></i>
 			<span class="sn-card-title">Advanced Tools</span>
 
-<p>
+            <p>
+                Since <i>exception</i> operations, by definitions, cannot be
+                defined beforehand, this section simply presents the set of
+                tools available for dealing with these issues. These tools
+                can only be accessed within the same network of the server node.
+            </p>
 
-Since <i>exception</i> operations, by definitions, cannot be defined beforehand, this section simply presents the set of tools available for dealing with these issues. These tools can only be accessed within the same network of the server node.
+            <ul>
+                <li>
+                    Django Admin, which is an external Django application
+                    manager;
+                </li>
+                <li>
+                    PhpPgAdmin, an external database management tool;
+                </li>
+            </ul>
 
-<ul>
-    <li>Django Admin, which is an external Django application manager;</li>
-    <li>PhpPgAdmin, an external database management tool;</li>
-</ul>
-
-The links below redirect the user to the applications installed within this server.
-
-</p>
+            <p>
+                The links below redirect the user to the applications
+                installed within this server.
+            </p>
 
 		</div>
     	<div class="sn-card-action">

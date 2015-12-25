@@ -5,12 +5,15 @@
 
 {% if request.user.is_authenticated %}
 
-    <link rel="stylesheet" type="text/css" href="{% static 'session_security/style.css'%}"></link>
+    <link rel="stylesheet" type="text/css"
+          href="{% static 'session_security/style.css'%}"/>
 
     {# Include the template that actually contains the modal dialog #}
     {% include 'session_security/dialog.html' %}
 
-    <script type="text/javascript" src="{% static 'session_security/script.js'%}"/>
+    <script type="text/javascript"
+            src="{% static 'session_security/script.js'%}">
+    </script>
     <script type="text/javascript">
         var sessionSecurity = new yourlabs.SessionSecurity({
             pingUrl: '{% url 'session_security_ping' %}',

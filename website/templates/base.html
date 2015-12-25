@@ -17,8 +17,6 @@
 {% load i18n %}
 {% load staticfiles %}
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 
 <head>
@@ -51,14 +49,7 @@
 <div class="sn-header-content">
 
 	<img class="sn-header-logo"
-			src="{% static 'images/satnet-logo-white.png' %}">
-    </img>
-
-	<!--
-	<img class="sn-header-pic"
-			src="{% static 'images/antenna-block.png' %}">
-    </img>
-    -->
+         src="{% static 'images/satnet-logo-white.png' %}"/>
 
 	<div class="sn-header-menu">
 
@@ -69,16 +60,17 @@
 
 			<path d="M275 0 c -150 225, -150 675, 0 900"
 				fill="transparent"
-				stroke="white" stroke-width="15" stroke-linecap="butt"/>
+				stroke="white" stroke-width="15" stroke-linecap="butt">
+            </path>
 
-			<circle cx="185" cy="225" r="30" fill="white"/>
-			<circle cx="185" cy="225" r="15" fill="orange"/>
+			<circle cx="185" cy="225" r="30" fill="white"></circle>
+			<circle cx="185" cy="225" r="15" fill="orange"></circle>
 
-			<circle cx="163" cy="450" r="30" fill="white"/>
-			<circle cx="163" cy="450" r="15" fill="orange"/>
+			<circle cx="163" cy="450" r="30" fill="white"></circle>
+			<circle cx="163" cy="450" r="15" fill="orange"></circle>
 
-			<circle cx="185" cy="675" r="30" fill="white"/>
-			<circle cx="185" cy="675" r="15" fill="orange"/>
+			<circle cx="185" cy="675" r="30" fill="white"></circle>
+			<circle cx="185" cy="675" r="15" fill="orange"></circle>
 
 {% block menu %}
 {% if request.user.is_authenticated %}

@@ -37,9 +37,9 @@ urlpatterns = urls.patterns(
         name='index'
     ),
     urls.url(
-    	r'^contribute/$',
-    	TemplateView.as_view(template_name='contrib.html'),
-    	name='contrib'
+        r'^contribute/$',
+        TemplateView.as_view(template_name='contrib.html'),
+        name='contrib'
     ),
     # ### Command and Control Interface
     urls.url(
