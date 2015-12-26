@@ -30,6 +30,7 @@ from website import settings as satnet_settings
 def get_sc_passes(spacecraft_id, groundstations):
     """JRPC method
     Returns the passes of a given spacecraft over the specified groundstations.
+
     :param spacecraft_id: Identifier of the spacecraft
     :param groundstations: List of groundstation identifiers
     :return: JSON-like serializable list with the pass slots for ech
@@ -38,14 +39,20 @@ def get_sc_passes(spacecraft_id, groundstations):
     slots = {}
     spacecraft = segment_models.Spacecraft.objects.get(identifier=spacecraft_id)
 
+    if not groundstations or len(groundstations) == 0:
+
+        groundstations = segment_models.GroundStation.objects.all().values_list(
+            'id', flat=True
+        )
+
     for groundstation_id in groundstations:
 
-        groundstation = segment_models.GroundStation.objects.get(
-            identifier=groundstation_id
+        slots[groundstation_id] = pass_serializer.serialize_pass_slots(
+            pass_models.PassSlots.objects.filter(
+                spacecraft=spacecraft,
+                groundstation__identifier=groundstation_id
+            )
         )
-        gs_slots = pass_models.PassSlots.objects\
-            .filter(spacecraft=spacecraft, groundstation=groundstation)
-        slots[groundstation_id] = pass_serializer.serialize_pass_slots(gs_slots)
 
     return slots
 
@@ -58,6 +65,7 @@ def get_sc_passes(spacecraft_id, groundstations):
 def get_gs_passes(groundstation_id, spacecraft):
     """JRPC method
     Returns the passes of the given Spacecraft over this GroundStation.
+
     :param groundstation_id: Identifier of the groundstation
     :param spacecraft: List of spacecraft identifiers
     :return: JSON-like serializable list with the pass slots for each
@@ -68,13 +76,19 @@ def get_gs_passes(groundstation_id, spacecraft):
         identifier=groundstation_id
     )
 
+    if not spacecraft or len(spacecraft) == 0:
+
+        spacecraft = segment_models.Spacecraft.objects.all().values_list(
+            'identifier', flat=True
+        )
+
     for spacecraft_id in spacecraft:
 
-        spacecraft = segment_models.Spacecraft.objects.get(
-            identifier=spacecraft_id
+        slots[spacecraft_id] = pass_serializer.serialize_pass_slots(
+            pass_models.PassSlots.objects.filter(
+                spacecraft__identifier=spacecraft_id,
+                groundstation=groundstation
+            )
         )
-        sc_slots = pass_models.PassSlots.objects\
-            .filter(spacecraft=spacecraft, groundstation=groundstation)
-        slots[spacecraft_id] = pass_serializer.serialize_pass_slots(sc_slots)
 
     return slots

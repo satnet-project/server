@@ -20,8 +20,7 @@ import logging
 from django import test
 
 from services.common import helpers as db_tools
-from services.configuration.jrpc.serializers import rules as \
-    segment_serializers
+from services.configuration.jrpc.serializers import segments as segment_serial
 from services.configuration.jrpc.views.segments import groundstations as gs_jrpc
 from services.configuration.jrpc.views.segments import spacecraft as sc_jrpc
 from services.configuration.models import segments as segment_models
@@ -64,37 +63,36 @@ class JRPCPassesTest(test.TestCase):
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
-    def _test_sc_passes(self):
+    def test_sc_passes(self):
         """JRPC Unit Test
         Validates the generation of the passes for a given spacecraft.
         """
 
         # 1) Basic test, inexistent spacecraft and no groundstation available
-        try:
-            pass_views.get_sc_passes(self.__sc_id, [])
-            self.fail('Wrong spacecraft ID must throw an exception')
-        except segment_models.Spacecraft.DoesNotExist:
-            pass
+        self.assertRaises(
+            segment_models.Spacecraft.DoesNotExist,
+            pass_views.get_sc_passes, self.__sc_id, []
+        )
 
-        self.assertEqual(
+        self.assertEquals(
             sc_jrpc.create(
                 self.__sc_id, self.__sc_callsign, self.__sc_tle_1_id,
                 **{'request': self.__request}
             ),
-            {segment_serializers.SC_ID_K: self.__sc_id},
+            {segment_serial.SC_ID_K: self.__sc_id},
             'Should have returned the spacecraft identifier'
         )
-        self.assertEqual(
-            pass_views.get_sc_passes(self.__sc_id, []), [],
-            'No passes, an array should be returned empty'
+        self.assertEquals(
+            pass_views.get_sc_passes(self.__sc_id, []), {},
+            'No passes, an array should have been returned empty'
         )
 
         # 2) TLE change, no pass slots since no ground stations are available
         sc_cfg = {
-            segment_serializers.SC_CALLSIGN_K: self.__sc_callsign,
-            segment_serializers.SC_TLE_ID_K: self.__sc_tle_2_id
+            segment_serial.SC_CALLSIGN_K: self.__sc_callsign,
+            segment_serial.SC_TLE_ID_K: self.__sc_tle_2_id
         }
-        self.assertEqual(
+        self.assertEquals(
             sc_jrpc.set_configuration(self.__sc_id, sc_cfg),
             self.__sc_id,
             'Should have returned spacecrafts identifier'
@@ -105,38 +103,78 @@ class JRPCPassesTest(test.TestCase):
         self.assertTrue(
             sc_jrpc.delete(self.__sc_id), 'Should have removed the spacecraft'
         )
-        self.assertEqual(
+        self.assertEquals(
             len(pass_models.PassSlots.objects.all()), 0, 'No slot available'
         )
 
         # 4) Ground station addition: should create slots for already-added
         # satellites for general testing purposes (check website.tests)
-        self.assertEqual(
+        self.assertEquals(
             gs_jrpc.create(
                 self.__gs_id, self.__gs_callsign, self.__gs_elevation,
                 self.__gs_latitude, self.__gs_longitude,
                 **{'request': self.__request}
             ),
-            {segment_serializers.GS_ID_K: self.__gs_id},
+            {segment_serial.GS_ID_K: self.__gs_id},
             'Should have returned groundstastions identifier'
         )
-        self.assertNotEqual(
-            len(pass_views.get_sc_passes(self.__test_sc_id)),
+        self.assertNotEquals(
+            len(pass_views.get_sc_passes(self.__test_sc_id, [])),
             0,
             'Slots should have been added for the sc, id = ' + self.__test_sc_id
         )
 
         # 5) the creation of a new spacecraft should add more slots
-        self.assertEqual(
+        self.assertEquals(
             sc_jrpc.create(
                 self.__sc_id, self.__sc_callsign, self.__sc_tle_1_id,
                 **{'request': self.__request}
             ),
-            {segment_serializers.SC_ID_K: self.__sc_id},
+            {segment_serial.SC_ID_K: self.__sc_id},
             'Should have returned the spacecraft identifier'
         )
-        self.assertNotEqual(
-            len(pass_views.get_sc_passes(self.__sc_id)),
+        self.assertNotEquals(
+            len(pass_views.get_sc_passes(self.__sc_id, [])),
             0,
             'Slots should have been added for the sc, id = ' + self.__sc_id
+        )
+
+    def test_gs_passes(self):
+        """JRPC Unit Test
+        Validates the generation of the passes for a given Ground Station.
+        """
+
+        # 1) Basic test, inexistent spacecraft and no groundstation available
+        self.assertRaises(
+            segment_models.GroundStation.DoesNotExist,
+            pass_views.get_gs_passes, self.__gs_id, []
+        )
+
+        # 2) Ground station addition: should create slots for already-added
+        # satellites for general testing purposes (check website.tests)
+        self.assertEquals(
+            gs_jrpc.create(
+                self.__gs_id, self.__gs_callsign, self.__gs_elevation,
+                self.__gs_latitude, self.__gs_longitude,
+                **{'request': self.__request}
+            ),
+            {segment_serial.GS_ID_K: self.__gs_id},
+            'Should have returned groundstastions identifier'
+        )
+        self.assertRaises(
+            segment_models.GroundStation.DoesNotExist,
+            pass_views.get_gs_passes, self.__sc_id, [self.__sc_id]
+        )
+
+        # 3) Create spacecraft, slots available
+        self.assertEquals(
+            sc_jrpc.create(
+                self.__sc_id, self.__sc_callsign, self.__sc_tle_1_id,
+                **{'request': self.__request}
+            ),
+            {segment_serial.SC_ID_K: self.__sc_id},
+            'Should have returned the spacecraft identifier'
+        )
+        self.assertNotEquals(
+            len(pass_views.get_gs_passes(self.__gs_id, [self.__sc_id])), 0
         )
