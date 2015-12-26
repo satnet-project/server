@@ -25,13 +25,14 @@ class SimulationSerializer(object):
     """
 
     _DECIMATION_RATE = 1
-    _PERIOD = datetime.timedelta(hours=12)
+    _PERIOD = datetime.timedelta(hours=8)
 
     TIMESTAMP_K = 'timestamp'
     LATITUDE_K = 'latitude'
     LONGITUDE_K = 'longitude'
 
-    def serialize_groundtrack(self, groundtrack):
+    @staticmethod
+    def serialize_groundtrack(groundtrack):
         """JSON-RPC method.
         JSON remotelly invokable method that returns the estimated groundtrack
         for a given spacecraft.
@@ -43,15 +44,21 @@ class SimulationSerializer(object):
         index = 0
         gt_length = len(groundtrack.timestamp)
         start_date = misc.get_now_utc()
-        end_date = start_date + self._PERIOD
-        start_ts = misc.get_utc_timestamp(start_date)
-        end_ts = misc.get_utc_timestamp(end_date)
+        end_date = start_date + SimulationSerializer._PERIOD
+        start_ts = start_date.timestamp()
+        end_ts = end_date.timestamp()
+
+        print('>>> @serialize_groundtrack.start_ts = ' + str(start_ts))
+        print('>>> @serialize_groundtrack.end_ts = ' + str(end_ts))
 
         while index < gt_length:
 
             ts_i = groundtrack.timestamp[index]
 
+            # print('>>> @serialize_groundtrack.ts_i = ' + str(ts_i))
+
             if ts_i > end_ts:
+                print('>>> @serialize_groundtrack, BREAK')
                 break
 
             if ts_i > start_ts:
@@ -65,6 +72,6 @@ class SimulationSerializer(object):
                     ]
                 })
 
-            index += self._DECIMATION_RATE
+            index += SimulationSerializer._DECIMATION_RATE
 
         return result

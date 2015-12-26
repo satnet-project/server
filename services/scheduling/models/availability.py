@@ -216,8 +216,10 @@ class AvailabilitySlot(django_models.Model):
         :param start: Starting time for the availability slot
         :return: Unicode string with the identifier
         """
-        return groundstation.identifier + AvailabilitySlot.ID_FIELDS_SEPARATOR\
-            + str(misc.get_utc_timestamp(start))
+        return groundstation.identifier +\
+            AvailabilitySlot.ID_FIELDS_SEPARATOR + str(
+                misc.get_utc_timestamp(start)
+            )
 
     def __str__(self):
         """

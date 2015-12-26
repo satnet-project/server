@@ -107,10 +107,11 @@ def get_region(latitude, longitude):
                     region_found = True
 
     except IndexError as ex:
-        logger.warn(
+        logger.exception(
             'IndexError thrown, region information not consistent for' +
             ': (lat = ' + str(latitude) + ', lng = ' + str(longitude) + ')' +
-            ', ex = ' + str(ex)
+            ', ex = ' + str(ex),
+            ex
         )
         # country_found and region_found flags should do the job
         pass

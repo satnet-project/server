@@ -179,7 +179,8 @@ class GroundTrackManager(models.Manager):
 
                 logger.info(
                     '>>> @groundtracks.propagate.gt.len (BEFORE) = ' +
-                    str(len(gt.timestamp))
+                    str(len(gt.timestamp)) + ', gt.timestamp[-1] = ' +
+                    str(gt.timestamp[-1])
                 )
 
                 dt_ts = misc.localize_date_utc(py_dt.fromtimestamp(
@@ -249,8 +250,7 @@ class GroundTrack(models.Model):
         verbose_name='Longitude for the points of the GroundTrack'
     )
     timestamp = pgarray_fields.BigIntegerArrayField(
-        verbose_name='UTC time at which the spacecraft is going to pass over '
-                     'this point'
+        verbose_name='UTC time at which the spacecraft is going to pass over'
     )
 
     def __unicode__(self):

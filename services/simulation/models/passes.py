@@ -111,21 +111,20 @@ class PassManager(django_models.Manager):
             for s in slots:
 
                 self.create(
-                    spacecraft=spacecraft,
-                    groundstation=groundstation,
-                    start=s[0],
-                    end=s[1]
+                    spacecraft=spacecraft, groundstation=groundstation,
+                    start=s[0], end=s[1]
                 )
 
             all_slots += slots
 
         except Exception as ex:
 
-            logger.warning(
+            logger.exception(
                 'Error while creating pass slots, context = ' +
                 'sc.id = ' + str(spacecraft.identifier) + '\n' +
                 'tle.id = ' + str(spacecraft.tle.identifier) + '\n' +
-                'ex = ' + str(ex)
+                'ex = ' + str(ex),
+                ex
             )
 
         return all_slots

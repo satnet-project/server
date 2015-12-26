@@ -228,8 +228,9 @@ class OperationalSlotsManager(django_models.Manager):
         #       necessary
         for a in a_slots:
 
-            # start, end = OperationalSlotsManager._truncate_slot(a, pass_slot)
-            start, end = sn_slots.cutoff(a, pass_slot)
+            start, end = sn_slots.cutoff(
+                (a.start, a.end), (pass_slot.start, pass_slot.end)
+            )
 
             self.create(
                 availability_slot=a, pass_slot=pass_slot, start=start, end=end

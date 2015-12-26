@@ -33,7 +33,9 @@ def propagate_groundtracks():
     try:
         gt_models.GroundTrack.objects.propagate()
     except Exception as ex:
-        logger.warning('>>> Exception populating groundtracks, ex = ' + str(ex))
+        logger.exception(
+            '>>> Exception populating groundtracks, ex = ' + str(ex), ex
+        )
         return
 
     logger.info('>>> DONE propagating groundtracks')
@@ -55,7 +57,9 @@ def clean_groundtracks(threshold=misc.get_now_utc()):
 
     except Exception as ex:
 
-        logger.exception('>>> Exception cleaning groundtracks, ex = ' + str(ex))
+        logger.exception(
+            '>>> Exception cleaning groundtracks, ex = ' + str(ex), ex
+        )
         return
 
     logger.info('>>> DONE cleaning groundtracks')
@@ -70,7 +74,7 @@ def propagate_passes():
     try:
         pass_models.PassSlots.objects.propagate()
     except Exception as ex:
-        logger.warning('>>> Exception propagating passes, ex = ' + str(ex))
+        logger.warning('>>> Exception propagating passes, ex = ' + str(ex), ex)
         return
 
     logger.info('>>> DONE propagating groundtracks')
@@ -93,7 +97,7 @@ def clean_passes(threshold=misc.get_now_utc()):
 
     except Exception as ex:
 
-        logger.exception('>>>  Exception cleaning passes, ex = ' + str(ex))
+        logger.exception('>>>  Exception cleaning passes, ex = ' + str(ex), ex)
         return
 
     logger.info('>>> DONE cleaning passes')
