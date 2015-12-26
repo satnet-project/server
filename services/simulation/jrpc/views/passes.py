@@ -42,7 +42,7 @@ def get_sc_passes(spacecraft_id, groundstations):
     if not groundstations or len(groundstations) == 0:
 
         groundstations = segment_models.GroundStation.objects.all().values_list(
-            'id', flat=True
+            'identifier', flat=True
         )
 
     for groundstation_id in groundstations:
