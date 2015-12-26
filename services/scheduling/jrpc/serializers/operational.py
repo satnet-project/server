@@ -23,15 +23,14 @@ from services.common import serialization as common_serializers
 from services.configuration.models import segments as segment_models
 from services.configuration.jrpc.serializers import \
     segments as segment_serializers
+from services.scheduling.jrpc.serializers import availability as \
+    availability_serializers
 from services.scheduling.models import operational as operational_models
 
 logger = logging.getLogger('scheduling')
 
 
 SLOTS_K = 'slots'
-SLOT_IDENTIFIER_K = 'identifier'
-DATE_START_K = 'date_start'
-DATE_END_K = 'date_end'
 STATE_K = 'state'
 
 
@@ -84,10 +83,10 @@ def serialize_slot(slot):
     :return: JSON-like structure with the data serialized
     """
     return {
-        SLOT_IDENTIFIER_K: slot.identifier,
+        availability_serializers.SLOT_IDENTIFIER_K: slot.identifier,
         STATE_K: slot.state,
-        DATE_START_K: slot.start.isoformat(),
-        DATE_END_K: slot.end.isoformat()
+        availability_serializers.DATE_START_K: slot.start.isoformat(),
+        availability_serializers.DATE_END_K: slot.end.isoformat()
     }
 
 

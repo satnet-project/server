@@ -15,10 +15,10 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.configuration.jrpc.serializers import segments as segment_serial
-
-SLOT_START_K = 'slot_start'
-SLOT_END_K = 'slot_end'
+from services.configuration.jrpc.serializers import segments as \
+    segment_serializers
+from services.scheduling.jrpc.serializers import availability as \
+    availability_serializers
 
 
 # noinspection PyUnusedLocal
@@ -36,10 +36,10 @@ def serialize_pass_slots(pass_slots, by_gs=True):
     for s in pass_slots:
 
         serial_array.append({
-            segment_serial.SC_ID_K: s.spacecraft.identifier,
-            segment_serial.GS_ID_K: s.groundstation.identifier,
-            SLOT_START_K: s.start.isoformat(),
-            SLOT_END_K: s.end.isoformat()
+            segment_serializers.SC_ID_K: s.spacecraft.identifier,
+            segment_serializers.GS_ID_K: s.groundstation.identifier,
+            availability_serializers.DATE_START_K: s.start.isoformat(),
+            availability_serializers.DATE_END_K: s.end.isoformat()
         })
 
     return serial_array

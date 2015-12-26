@@ -15,8 +15,9 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from services.scheduling.jrpc.serializers import operational as \
-    operational_serial
+SLOT_IDENTIFIER_K = 'identifier'
+DATE_START_K = 'date_start'
+DATE_END_K = 'date_end'
 
 
 def serialize_slots(slots):
@@ -30,9 +31,9 @@ def serialize_slots(slots):
     for s in slots:
 
         s_slots.append({
-            operational_serial.SLOT_IDENTIFIER_K: s.identifier,
-            operational_serial.DATE_START_K: s.start.isoformat(),
-            operational_serial.DATE_END_K: s.end.isoformat()
+            SLOT_IDENTIFIER_K: s.identifier,
+            DATE_START_K: s.start.isoformat(),
+            DATE_END_K: s.end.isoformat()
         })
 
     return s_slots
