@@ -83,7 +83,7 @@ body {
 
 .sn-header-pic {
 	position: absolute;
-	top: 0px;
+	top: 0;
 	left: 300px;
 	width: 200px;
 	height: 100%;
@@ -127,7 +127,7 @@ form p input, form p select, form p span {
 
 .sn-header-toolbar {
 	position: absolute;
-	bottom: 0px;
+	bottom: 0;
 	right: 100px;
 	background-color: $vl-gray;
 	color: $cool_blue;
