@@ -139,7 +139,7 @@ function select_band(component_id, band) {
     var select = document.getElementById(component_id);
     for ( var i = 0, l = select.options.length, o; i < l; i++ ) {
         o = select.options[i];
-        if (o.text == band) {o.selected = true; break;}
+        if (o.text === band) {o.selected = true; break;}
     }
 }
 
@@ -151,9 +151,9 @@ function select_options(component_id, selections, toString) {
         for ( var j = 0, s; j < selections.length; j++ ) {
             s = selections[j];
             if ( toString )
-                { if ( s.toString(10) == o.text ) { o.selected = true; } }
+                { if ( s.toString(10) === o.text ) { o.selected = true; } }
             else
-                { if ( s == o.text ) { o.selected = true; } }
+                { if ( s === o.text ) { o.selected = true; } }
         }
     }
 }
@@ -162,7 +162,7 @@ function set_option_value(select_id, option_value) {
     var select = document.getElementById(select_id);
     var options = select.getElementsByTagName('option');
     for ( var i = 0; i < options.length; i++ ) {
-        if ( options[i].value == option_value )
+        if ( options[i].value === option_value )
             { select.options[i].selected=true; break; }
     }
 }
@@ -171,7 +171,7 @@ function select_option_per_value(select_id, option) {
     var options = document.getElementById(select_id)
                             .getElementsByTagName('option');
     for ( var i = 0, l = options.length, o; i < l; i++ ) {
-        if ( options[i].value == option )
+        if ( options[i].value === option )
             { options[i].selected = true; break; }
     }
 }
@@ -253,7 +253,7 @@ function validate_textarea(textarea_id, regex) {
         e.style.fontWeight = 'bolder';
         return;
     }
-    if (matches.length == 1) {
+    if (matches.length === 1) {
         e.style.color = 'green';
         e.style.fontWeight = '';
     }
