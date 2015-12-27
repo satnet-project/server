@@ -259,7 +259,7 @@ function validate_textarea(textarea_id, regex) {
     }
 }
 
-function supressEnterKey() { return ( event.keyCode || event.which ) != 13; }
+function supressEnterKey() { return ( event.keyCode || event.which ) !== 13; }
 
 /*
 /////////////////////////////////////////////////////////////////////////////
