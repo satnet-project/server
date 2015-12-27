@@ -52,7 +52,7 @@
     function __verifyUser()
     {
     
-        if ( __DEBUG__ ) console.log("__verifyUser");
+        if ( __DEBUG__ ) { console.log("__verifyUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
@@ -64,7 +64,7 @@
     function __blockUser()
     {
     
-        if ( __DEBUG__ ) console.log("__blockUser");
+        if ( __DEBUG__ ) { console.log("__blockUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
 
@@ -76,7 +76,7 @@
     function __unblockUser()
     {
     
-        if ( __DEBUG__ ) console.log("__unblockUser");
+        if ( __DEBUG__ ) { console.log("__unblockUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
 
@@ -88,7 +88,7 @@
     function __deleteUser()
     {
     
-        if ( __DEBUG__ ) console.log("__deleteUser");
+        if ( __DEBUG__ ) { console.log("__deleteUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
@@ -100,7 +100,7 @@
     function __activateUser()
     {
     
-        if ( __DEBUG__ ) console.log("__activateUser");
+        if ( __DEBUG__ ) { console.log("__activateUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
@@ -112,7 +112,7 @@
     function __deactivateUser()
     {
     
-        if ( __DEBUG__ ) console.log("__deactivateUser");
+        if ( __DEBUG__ ) { console.log("__deactivateUser"); }
         if ( user_list.length === 0 )
             { show_error("No users selected."); return; }
         
@@ -124,7 +124,7 @@
     function __undoOperation()
     {
     
-        if ( __DEBUG__ ) console.log("__undoOperation");
+        if ( __DEBUG__ ) { console.log("__undoOperation"); }
         
         var array = $(this).prop("id").split("_");
         var user_id = array[1];
@@ -195,9 +195,10 @@
             var b = "u_" + u;           // undo button selector
             var h = "h_" + u;           // hidden field
             
-            if ( __DEBUG__ )
+            if ( __DEBUG__ ) {
                 console.log(">>> op = " + operation + ", id = " + u +
                                 ", n = " + n + ", c = " + c + ", b = " + b );
+            }
             
             // set operation
             $( "#" + h ).attr("value", operation);
@@ -212,9 +213,8 @@
             
         }
     
-        if ( __DEBUG__ )
-            console.log("### user_list = " + user_list );
-    
+        if ( __DEBUG__ ) { console.log("### user_list = " + user_list ); }
+
     }
     
     function undo_operation(user)
@@ -224,9 +224,10 @@
         var c = "c_" + user;       // checkbox selector
         var b = "u_" + user;       // undo button selector
             
-        if ( __DEBUG__ )
-                console.log(">>> undo, id = " + user +
-                                ", n = " + n + ", c = " + c + ", b = " + b );
+        if ( __DEBUG__ ) {
+       		console.log(">>> undo, id = " + user +
+                        ", n = " + n + ", c = " + c + ", b = " + b );
+        }
             
         // set operation and change CSS class
         $( "#" + n ).attr("op", "").attr("class", "")
@@ -241,7 +242,7 @@
     function show_error(msg)
     {
     
-        if ( __DEBUG__ ) console.log(msg);
+        if ( __DEBUG__ ) { console.log(msg); }
         
     }
 
