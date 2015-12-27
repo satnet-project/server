@@ -399,7 +399,7 @@ div#toolbar a.toolbar_button:hover {
   right: 5px;
   font-size: 600%;
   color: #9e9e9e;
-  text-align: centered; }
+  text-align: center; }
 
 .sn-card-content {
   border-bottom: 1px solid orange; }
