@@ -113,8 +113,6 @@ def get_region(latitude, longitude):
             ', ex = ' + str(ex),
             ex
         )
-        # country_found and region_found flags should do the job
-        pass
 
     if not country_found and not region_found:
         raise Exception('Could not find country and region information.')
