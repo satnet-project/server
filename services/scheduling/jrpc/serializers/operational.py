@@ -178,11 +178,11 @@ def serialize_gs_operational_slots(groundstation_id):
             .objects.get(identifier=groundstation_id)
     ):
 
-        insert_slot(
-            slots,
-            slot.pass_slot.groundstation.identifier,
-            slot.pass_slot.spacecraft.identifier,
-            slot
+        if slot.pass_slot.spacecraft.identifier not in slots:
+            slots[slot.pass_slot.spacecraft.identifier] = []
+
+        slots[slot.pass_slot.spacecraft.identifier].append(
+            serialize_slot(slot)
         )
 
     return slots

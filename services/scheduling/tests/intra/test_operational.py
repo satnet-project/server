@@ -31,6 +31,7 @@ from services.configuration.jrpc.views.channels import \
 from services.configuration.models import rules as rule_models
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import operational as operational_models
+from services.simulation.models import passes as pass_models
 
 
 class OperationalModels(test.TestCase):
@@ -45,6 +46,15 @@ class OperationalModels(test.TestCase):
         if not self.__verbose_testing:
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
+
+        self.__rule_1_cfg = db_tools.create_jrpc_daily_rule(
+            starting_time=misc.localize_time_utc(datetime.time(
+                hour=8, minute=0, second=0
+            )),
+            ending_time=misc.localize_time_utc(datetime.time(
+                hour=23, minute=55, second=0
+            ))
+        )
 
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
@@ -87,11 +97,6 @@ class OperationalModels(test.TestCase):
 
         self.__band = db_tools.create_band()
         self.__user_profile = db_tools.create_user_profile()
-        self.__sc_1 = db_tools.create_sc(
-            user_profile=self.__user_profile,
-            identifier=self.__sc_1_id,
-            tle_id=self.__sc_1_tle_id,
-        )
         self.__gs_1 = db_tools.create_gs(
             user_profile=self.__user_profile, identifier=self.__gs_1_id,
         )
@@ -111,6 +116,12 @@ class OperationalModels(test.TestCase):
         if self.__verbose_testing:
             print('##### test_add_slots: no rules')
 
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user_profile,
+            identifier=self.__sc_1_id,
+            tle_id=self.__sc_1_tle_id,
+        )
+
         self.assertTrue(
             jrpc_gs_ch_if.gs_channel_create(
                 groundstation_id=self.__gs_1_id,
@@ -120,17 +131,7 @@ class OperationalModels(test.TestCase):
             'Channel should have been created!'
         )
 
-        r_1_id = jrpc_rules_if.add_rule(
-            self.__gs_1_id,
-            db_tools.create_jrpc_daily_rule(
-                starting_time=misc.localize_time_utc(datetime.time(
-                    hour=8, minute=0, second=0
-                )),
-                ending_time=misc.localize_time_utc(datetime.time(
-                    hour=23, minute=55, second=0
-                ))
-            )
-        )
+        r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, self.__rule_1_cfg)
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
 
         self.assertTrue(
@@ -209,3 +210,52 @@ class OperationalModels(test.TestCase):
             ).values_list('state')
         )
         self.assertEqual(actual, expected)
+
+    def test_2_no_compatibility_no_slots(self):
+        """INTR test: no compatible channels, no slots
+
+        (INITIAL): 1 GS, no channels, no rules
+        (1A - STEP) : +SC
+        (1B - STEP) : +rule
+        (1C - CHECK): no operational slots
+        """
+        self.assertEquals(
+            pass_models.PassSlots.objects.filter(
+                spacecraft__identifier=self.__sc_1_id
+            ).count(),
+            0
+        )
+
+        misc.print_list(
+            pass_models.PassSlots.objects.all(), name='PASS SLOTS ALL'
+        )
+        misc.print_list(
+            pass_models.PassSlots.objects.filter(
+                spacecraft__identifier=self.__sc_1_id
+            ),
+            name='PASS SLOTS SC'
+        )
+
+        r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, self.__rule_1_cfg)
+        self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
+
+        misc.print_list(
+            availability_models.AvailabilitySlot.objects.filter(
+                groundstation__identifier=self.__gs_1_id
+            ),
+            name='AAAA SLOTS GS'
+        )
+
+        self.assertEquals(
+            len(operational_models.OperationalSlot.objects.all()), 0
+        )
+
+        self.__sc_1 = db_tools.create_sc(
+            user_profile=self.__user_profile,
+            identifier=self.__sc_1_id,
+            tle_id=self.__sc_1_tle_id,
+        )
+
+        self.assertEquals(
+            len(operational_models.OperationalSlot.objects.all()), 0
+        )

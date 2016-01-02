@@ -15,12 +15,15 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+import logging
 import rpc4django
 
 from services.scheduling.models import operational
 from services.scheduling.jrpc.serializers import operational as \
     scheduling_serializers
 from website import settings as satnet_settings
+
+logger = logging.getLogger('scheduling')
 
 
 @rpc4django.rpcmethod(

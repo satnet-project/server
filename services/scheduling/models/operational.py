@@ -173,6 +173,7 @@ class OperationalSlotsManager(django_models.Manager):
         #   (a) are compatible with the GroundStation whose rules update
         #       provoked the generation of this Availability slot,
         #   (b) occur within the applicability range of the Availability slot
+
         p_slots = pass_models.PassSlots.objects.filter(
             groundstation=availability_slot.groundstation,
             spacecraft__in=[
@@ -191,6 +192,7 @@ class OperationalSlotsManager(django_models.Manager):
         # 2) we filter the pass slots that are applicable to the window of this
         #       availability slot; truncating the first and the last one if
         #       necessary
+
         for p in p_slots:
 
             start, end = sn_slots.cutoff(
@@ -210,6 +212,15 @@ class OperationalSlotsManager(django_models.Manager):
 
         :param pass_slot: reference to the Pass slot
         """
+
+        # 0) Check compatibility... if not compatible, no slot
+        if not compatibility_models.ChannelCompatibility.objects.filter(
+            groundstation=pass_slot.groundstation,
+            spacecraft=pass_slot.spacecraft
+        ).exists():
+
+            logger.warn('No compatibility for pass slot = ' + str(pass_slot))
+            return
 
         # 1) Availability slots for all the spacecraft that:
         #   (a) are owned by the GroundStation over which the Spacecraft passes,

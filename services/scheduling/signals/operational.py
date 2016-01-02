@@ -48,7 +48,8 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
     if compatibility_models.ChannelCompatibility.objects.exclude(
         pk=instance.pk
     ).filter(
-        groundstation=instance.groundstation, spacecraft=instance.spacecraft
+        groundstation=instance.groundstation,
+        spacecraft=instance.spacecraft
     ).count() != 0:
 
         logger.info('Compatibility object created but it is a duplicate')
@@ -57,6 +58,7 @@ def compatibility_added(sender, instance, created, raw, **kwargs):
     for a_slot in availability_models.AvailabilitySlot.objects.filter(
         groundstation=instance.groundstation
     ):
+
         operational_models.OperationalSlot.objects.availability_generates_slots(
             a_slot
         )
