@@ -226,25 +226,8 @@ class OperationalModels(test.TestCase):
             0
         )
 
-        misc.print_list(
-            pass_models.PassSlots.objects.all(), name='PASS SLOTS ALL'
-        )
-        misc.print_list(
-            pass_models.PassSlots.objects.filter(
-                spacecraft__identifier=self.__sc_1_id
-            ),
-            name='PASS SLOTS SC'
-        )
-
         r_1_id = jrpc_rules_if.add_rule(self.__gs_1_id, self.__rule_1_cfg)
         self.assertIsNot(r_1_id, 0, 'Rule should have been added!')
-
-        misc.print_list(
-            availability_models.AvailabilitySlot.objects.filter(
-                groundstation__identifier=self.__gs_1_id
-            ),
-            name='AAAA SLOTS GS'
-        )
 
         self.assertEquals(
             len(operational_models.OperationalSlot.objects.all()), 0
