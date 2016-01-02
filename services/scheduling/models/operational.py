@@ -247,6 +247,30 @@ class OperationalSlotsManager(django_models.Manager):
                 availability_slot=a, pass_slot=pass_slot, start=start, end=end
             )
 
+    def compatibility_generates_slots(self, compatibility):
+        """
+        Method that generates the operational slots whenever a compatibility
+        object is added to the table.
+
+        :param compatibility: The added compatibilty object
+        """
+
+        if compatibility_models.ChannelCompatibility.objects.exclude(
+            pk=compatibility.pk
+        ).filter(
+            groundstation=compatibility.groundstation,
+            spacecraft=compatibility.spacecraft
+        ).count() != 0:
+
+            logger.info('Compatibility object created but it is a duplicate')
+            return
+
+        for a_slot in availability_models.AvailabilitySlot.objects.filter(
+            groundstation=compatibility.groundstation
+        ):
+
+            self.availability_generates_slots(a_slot)
+
 
 class OperationalSlot(django_models.Model):
     """
