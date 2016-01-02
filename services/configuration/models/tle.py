@@ -146,6 +146,7 @@ class TwoLineElement(models.Model):
     """
     class Meta:
         app_label = 'configuration'
+        ordering = ['identifier']
 
     MAX_TLE_ID_LEN = 24
     MAX_TLE_LINE_LEN = 69
