@@ -196,8 +196,8 @@ class OperationalSlotsManager(django_models.Manager):
         for p in p_slots:
 
             start, end = sn_slots.cutoff(
-                (p.start, p.end),
-                (availability_slot.start, availability_slot.end)
+                (availability_slot.start, availability_slot.end),
+                (p.start, p.end)
             )
 
             self.create(
