@@ -43,6 +43,8 @@
 </head>
 <body>
 
+	{% block sn_header %}
+
 <div class="sn-header-wrap">
 <div class="sn-header">
 
@@ -137,6 +139,8 @@
 
 </div>
 
+	{% endblock %}
+
     <div class="sn-content">
 
 {% block content %}
@@ -145,6 +149,9 @@
 		<div class="sn-card-clear"></div>
 
 	</div>
+
+{% block sn_content %}
+{% endblock %}
 
 </body>
 

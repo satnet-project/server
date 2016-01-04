@@ -18,81 +18,75 @@
 {% load i18n %}
 {% load staticfiles %}
 
-{% block app_head %}
-    <link rel='stylesheet' href="{% static 'satnet-ng.min.css' %}" />
-    <script type='text/javascript' src="{% static 'satnet-ng.js'%}"></script>
-    <script type='text/javascript' src="{% static 'satnet-ng-tpls.js'%}"></script>
-{% endblock %}
-
-{% block content %}
-
+{% block sn_content %}
 {% verbatim %}
-<div ng-app='satnet-ui'>
 
-    <div ng-controller='MapController' ng-init="init()" >
-        <leaflet id='mainMap'
-            center='center' markers='markers' layers='layers' paths='paths'
-            style='position: absolute; top: 0; left: 0; width: 100%; height: 100%;'>
-        </leaflet>
+    <div class="m-app-loading" ng-animate-children>
+        <div class="animated-container">
+            <div class="messaging">
+                <h2>Operations Interface</h2>
+                <h2>(loading)</h2>
+                <i class="fa fa-spinner faa-spin animated loading-spinner"></i>
+            </div>
+        </div>
     </div>
 
-<div class='left-menu'>
+    <operations-app></operations-app>
 
-    <div class='btn-group my-exit-btn-grp' ng-controller="ExitMenuCtrl">
-        <button type='button' class='btn btn-primary my-exit-btn'
-                onclick="location.href='/'"  ng-click="home()">
-            <a style="color: white;">(exit)</a>
-        </button>
-    </div>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
+    <!-- Non-ng Libraries -->
+    <script src="https://js.pusher.com/2.2/pusher.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment-with-locales.min.js"></script>
+    <script src="//brcdn.org/OmTUh8rqSlGFAcPR3AcpZl6N80.js"></script>
+    <!-- Angular Framework -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-aria.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.3.15/angular-cookies.js"></script>
+    <script src="https://cdn.rawgit.com/nmccready/angular-simple-logger/master/dist/angular-simple-logger.min.js"></script>
+    <!-- Angular Loading Bar -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.7.1/loading-bar.min.css" type="text/css" media="all" />
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/angular-loading-bar/0.7.1/loading-bar.min.js"></script>
+    <!-- Angular Leaflet -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.5/leaflet.js"></script>
+    <script src="https://cdn.rawgit.com/joergdietrich/Leaflet.Terminator/master/L.Terminator.js"></script>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.label/master/dist/leaflet.label.css" />
+    <script src="https://cdn.rawgit.com/Leaflet/Leaflet.label/master/dist/leaflet.label.js"></script>
+    <!-- -->
+    <link rel="stylesheet" href="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/master/dist/MarkerCluster.css" />
+    <script src="https://cdn.rawgit.com/Leaflet/Leaflet.markercluster/master/dist/leaflet.markercluster.js"></script>
+    <script src="https://cdn.rawgit.com/ewoken/Leaflet.MovingMarker/master/MovingMarker.js"></script>
+    <script src="https://cdn.rawgit.com/henrythasler/Leaflet.Geodesic/master/Leaflet.Geodesic.min.js"></script>
+    <script src="http://localhost:8081/angular-leaflet-directive-0.88.js"></script>
+    <!-- Angular Moment -->
+    <script src="https://cdn.jsdelivr.net/angular.moment/latest/angular-moment.min.js"></script>
+    <!-- Angular Pusher -->
+    <script src="https://cdn.jsdelivr.net/angular.pusher/latest/pusher-angular.min.js"></script>
+    <!-- Angular Material -->
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.3/angular-material.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/angular_material/0.8.3/angular-material.js"></script>
+    <!-- Angular JSON-RPC -->
+    <script src="https://cdn.rawgit.com/ajsd/angular-uuid/master/uuid.min.js"></script>
+    <script src="https://cdn.rawgit.com/ajsd/angular-jsonrpc/master/build/jsonrpc.js"></script>
+    <!-- Angular Remote Validate -->
+    <script src="https://cdn.rawgit.com/webadvanced/ng-remote-validate/master/release/ngRemoteValidate.0.6.1.min.js"></script>
 
-    <!-- Single button -->
-    <div class='btn-group my-gs-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="GSMenuCtrl">
-        <button type='button'
-                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
-                ng-click="refreshGSList()">
-            <p>Ground Stations</p><span class='caret'></span>
-        </button>
-        <ul class='dropdown-menu' role='menu'>
-            <li ng-repeat="g in gsIds">
-                <a class='my-menu-item' href='#'
-                   ng-click="editGroundStation(g)">{{ g }}</a>
-            </li>
-            <li class='divider'></li>
-            <li>
-                <a href='#' ng-click="addGroundStation()">(+) ground station</a>
-            </li>
-        </ul>
-    </div>
-    <div class='btn-group my-sc-btn-grp' is-open="status.isopen" dropdown
-            ng-controller="SCMenuCtrl">
-        <button type='button'
-                class='btn btn-primary dropdown-toggle my-dd-btn my-btn-250px'
-                ng-click="refreshSCList()">
-            <p>Spacecraft</p><span class='caret'></span>
-        </button>
-        <ul class='dropdown-menu' role='menu'>
-            <li ng-repeat="s in scIds">
-                <a class='my-menu-item' href='#'
-                   ng-click="editSpacecraft(s)">{{ s }}</a>
-            </li>
-            <li class='divider'></li>
-            <li>
-                <a href='#' ng-click="addSpacecraft()">(+) spacecraft</a>
-            </li>
-        </ul>
-    </div>
+    <!-- Google Charts -->
+    <script type="text/javascript" src="https://www.google.com/jsapi?autoload={'modules':[{'name':'visualization','version':'1','packages':['timeline']}]}"></script>
 
-</div>
+    <script src="https://cdn.rawgit.com/satnet-project/satnet-ng/master/lib/jsonrpc.js"></script>
+    <script src="https://rawgit.com/satnet-project/satnet-ng/master/dist/satnet-ng-operations.js"></script>
+    <script src="https://rawgit.com/satnet-project/satnet-ng/master/dist/satnet-ng-operations-tpls.js"></script>
 
-<log-notifier></log-notifier>
+    <script>
+        window.setTimeout(
+            function () {
+                angular.bootstrap(document, ['snOperationsDirective']);
+            }, 500
+        );
+    </script>
 
-</div>
 {% endverbatim %}
-
-{% endblock %}
-
-{% block content_footer %}
-{% endblock %}
-{% block license_footer %}
 {% endblock %}

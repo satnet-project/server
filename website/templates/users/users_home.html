@@ -23,23 +23,25 @@
 {% block content_footer %}
 {% endblock %}
 
-{% block toolbar_content %}
+{% block toolbar_submenu %}
 {% if request.user.is_authenticated %}
-    <hr />
-    <!--<div id='button_divx'>-->
-    <div>
-        <a id='button_operations'
-           class='toolbar_button' href="{% url 'operations_interface' %}">
-            Operations
+
+<div class="sn-header-submenu">
+
+	<div class="sn-header-button">
+		<a class="sn-link" href="{% url 'operations_interface' %}">
+            operations
         </a>
-    </div>
-    <!--<div id='button_divx'>-->
+   	</div>
+
+</div>
+    <!--<div id='button_divx'>
     <div>
         <a id='button_messages'
            class='toolbar_button' href="{% url 'comms_passive_messages' %}">
             Passive
         </a>
     </div>
+    -->
 {% endif %}
 {% endblock %}
-
