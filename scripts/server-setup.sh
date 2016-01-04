@@ -102,8 +102,6 @@ __satnet_apache_ssl_conf='/etc/apache2/mods-available/ssl.conf'
 __satnet_apache_conf='/etc/apache2/sites-available/satnet_tls.conf'
 __apache_user='www-data'
 __apache_group='www-data'
-__apache_redirect_url='https://localhost:8443'
-__apache_server_name='localhost'
 __apache_server_admin='satnet.calpoly@gmail.com'
 __apache_server_ports='/etc/apache2/ports.conf'
 __apache_server_certificates_dir='/etc/apache2/certificates'
@@ -117,6 +115,10 @@ __phppgadmin_apache_enabled='/etc/apache2/conf-enabled/phppgadmin'
 # ### This function configures the apache2 server.
 configure_apache()
 {
+
+    try ask_visible 'server fqdn'
+    __apache_server_name=$__INPUT_STRING
+    __apache_redirect_url="https://$__apache_server_name"
 
     #__webservices_python_env_dir="$webservices_dir/.venv/lib/python3
     # .4/site-packages"
