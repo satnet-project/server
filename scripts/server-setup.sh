@@ -118,17 +118,9 @@ __phppgadmin_apache_enabled='/etc/apache2/conf-enabled/phppgadmin'
 configure_apache()
 {
 
-    __webservices_python_env_dir="$webservices_dir/.venv/lib/python2.7/site-packages"
-
-    [[ $branch_name == 'development_3k' ]] && {
-        echo ">>> branch: development_3k"
-        # virtualenv --python=python3 $webservices_venv_dir
-        __webservices_python_env_dir="$webservices_dir/.venv/lib/python3.4/site-packages"
-        echo ">>> __webservices_python_env_dir = $__webservices_python_env_dir"
-    } || {
-        echo ">>> branch: NON dev_3k"
-        # virtualenv $webservices_venv_dir
-    }
+    #__webservices_python_env_dir="$webservices_dir/.venv/lib/python3
+    # .4/site-packages"
+    __webservices_python_env_dir=$( find $webservices_dir -type d -name 'site-packages' )
 
     # ### For Debian Jessie (8), the file configuration for PHPPGADMIN has been
     # moved to '/etc/apache2/conf-available/phppgadmin.conf'
@@ -403,11 +395,7 @@ configure_root()
 
     [[ -f "$webservices_venv_activate" ]] && rm -Rf $webservices_venv_dir
 
-    [[ $branch_name == 'development_3k' ]] && {
-        try virtualenv --python=python3 $webservices_venv_dir
-    } || {
-        try virtualenv $webservices_venv_dir
-    }
+    virtualenv --python=python3 $webservices_venv_dir
 
     [[ ! -f "$webservices_venv_activate" ]] && {
         echo 'Virtual environment activation failed... exiting!'
