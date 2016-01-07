@@ -350,6 +350,11 @@ create_secrets()
     echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
     echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
 
+    # ### SATNET specific settings
+    echo "# These are site specific settings" > $webservices_secrets_server
+    echo "JRPC_LOGIN_REQUIRED = False" >> $webservices_secrets_server
+    echo "JRPC_PERMISSIONS = False" >> $webservices_secrets_server
+
 }
 
 __secret_key_file='secret.key'
@@ -543,6 +548,7 @@ webservices_secrets_auth="$webservices_secrets_dir/auth.py"
 webservices_secrets_database="$webservices_secrets_dir/database.py"
 webservices_secrets_email="$webservices_secrets_dir/email.py"
 webservices_secrets_pusher="$webservices_secrets_dir/pusher.py"
+webservices_secrets_server="$webservices_secrets_dir/server.py"
 webservices_venv_dir="$webservices_dir/.venv"
 webservices_venv_activate="$webservices_venv_dir/bin/activate"
 webservices_manage_py="$webservices_dir/manage.py"
