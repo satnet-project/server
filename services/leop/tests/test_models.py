@@ -42,10 +42,8 @@ class TestLaunchModels(test.TestCase):
         self.__ufo_1_id = 1
         self.__ufo_1_cs = 'UFOXXXS'
 
-        self.__tle_l1 = '1 27844U 03031E   15007.47529781  .00000328' \
-            '  00000-0  16930-3 0  1108'
-        self.__tle_l2 = '2 27844  98.6976  18.3001 0010316  50.6742 ' \
-            '104.9393 14.21678727597601'
+        self.__tle_l1 = db_tools.ISS_TLE[0]
+        self.__tle_l2 = db_tools.ISS_TLE[1]
         self.__launch = db_tools.create_launch(identifier=self.__launch_id)
 
         if not self.__verbose_testing:

@@ -67,13 +67,8 @@ class TestLaunchViews(test.TestCase):
         )
         self.__request_2 = db_tools.create_request(user_profile=self.__admin)
 
-        self.__leop_tle_l1 =\
-            '1 27844U 03031E   15007.47529781  ' +\
-            '.00000328  00000-0  16930-3 0  1108'
-        self.__leop_tle_l2 =\
-            '2 27844  98.6976  18.3001 0010316  ' +\
-            '50.6742 104.9393 14.21678727597601'
-
+        self.__leop_tle_l1 = db_tools.ISS_TLE[0]
+        self.__leop_tle_l2 = db_tools.ISS_TLE[1]
         self.__leop_id = 'leop_cluster_4testing'
         self.__leop_date = pytz.utc.localize(datetime.datetime.today())
         self.__leop = db_tools.create_launch(
@@ -95,12 +90,8 @@ class TestLaunchViews(test.TestCase):
         self.__ufo_tle_l1 = self.__leop_tle_l1
         self.__ufo_tle_l2 = self.__leop_tle_l2
 
-        self.__leop_2_tle_l1 =\
-            '1 36799U 10035E   15011.25448421  .00004255  ' +\
-            '00000-0  47713-3 0  8407'
-        self.__leop_2_tle_l2 =\
-            '2 36799  98.0147 109.9908 0013178   6.5991  ' +\
-            '46.1472 14.87298023243626'
+        self.__leop_2_tle_l1 = db_tools.TIANGONG_TLE[0]
+        self.__leop_2_tle_l2 = db_tools.TIANGONG_TLE[1]
 
         if not self.__verbose_testing:
             logging.getLogger('leop').setLevel(level=logging.CRITICAL)

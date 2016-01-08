@@ -32,16 +32,23 @@ class SpacecraftManager(models.Manager):
     contents of the SpacecraftConfiguration database models.
     """
 
-    def create(self, tle_id, **kwargs):
+    def create(self, tle_id, username=None, **kwargs):
         """
         Overriden "create" that receives an identifier for a TLE, gets the
         correspondent TLE object from within the CELESTRAK TLE database and
         associates it with this new Spacecraft.
+
         :param tle_id: Identifier of the TLE to be associated with this
-                        spacecraft.
-        :param kwargs: Arguments to be used for this spacecraft object.
+                        spacecraft
+        :param username: Name of the user this Spacecraft belongs to
+        :param kwargs: Arguments to be used for this spacecraft object
         :return: Spacecraft object reference.
         """
+        if username is not None:
+            user = account_models.UserProfile.objects.get(username=username)
+            if user is None:
+                raise Exception('User <' + username + '> could not be found.')
+
         tle = None
 
         if tle_id:
