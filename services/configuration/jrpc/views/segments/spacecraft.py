@@ -72,6 +72,7 @@ def create(identifier, callsign, tle_id, **kwargs):
 
     sc = segments.Spacecraft.objects.create(
         tle_id,
+        username=username,
         user=user,
         identifier=identifier,
         callsign=callsign
