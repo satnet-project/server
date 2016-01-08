@@ -242,6 +242,11 @@ def get_user(
     Returns the username of the user within a given HTTP request object. It
     takes into account all the permission policies implemented by the server.
 
+    #### TODO # For some reason, the user object returned is a
+    <SimpleLazyObject> that cannot be directly assigned as the owner of any
+    segment and, within the create method for Spacecraft and Ground Station,
+    they duplicate half the functionality of this method here.
+
     :param http_request: The HTTP request object
     :param permissions_flag: Flag with whether the permissions should be used
     :param test_username: Flag with the test username
