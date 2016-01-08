@@ -66,17 +66,23 @@ def create(identifier, callsign, tle_id, **kwargs):
     :param kwargs: Additional JRPC parameters dictionary
     """
 
-    user, username = account_models.get_user(
-        http_request=kwargs.get('request', None)
-    )
+    try:
 
-    sc = segments.Spacecraft.objects.create(
-        tle_id,
-        username=username,
-        user=user,
-        identifier=identifier,
-        callsign=callsign
-    )
+        user, username = account_models.get_user(
+            http_request=kwargs.get('request', None)
+        )
+
+        sc = segments.Spacecraft.objects.create(
+            tle_id,
+            username=username,
+            identifier=identifier,
+            callsign=callsign
+        )
+
+    except Exception as ex:
+
+        logger.exception(ex)
+        raise ex
 
     return {
         segment_serializers.SC_ID_K: str(sc.identifier)

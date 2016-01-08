@@ -32,7 +32,7 @@ class SpacecraftManager(models.Manager):
     contents of the SpacecraftConfiguration database models.
     """
 
-    def create(self, tle_id, username=None, **kwargs):
+    def create(self, tle_id, username=None, user=None, **kwargs):
         """
         Overriden "create" that receives an identifier for a TLE, gets the
         correspondent TLE object from within the CELESTRAK TLE database and
@@ -41,6 +41,7 @@ class SpacecraftManager(models.Manager):
         :param tle_id: Identifier of the TLE to be associated with this
                         spacecraft
         :param username: Name of the user this Spacecraft belongs to
+        :param user: The user object that this Spacecraft belongs to
         :param kwargs: Arguments to be used for this spacecraft object
         :return: Spacecraft object reference.
         """
@@ -55,7 +56,7 @@ class SpacecraftManager(models.Manager):
             tle = tle_models.TwoLineElement.objects.get(identifier=tle_id)
 
         return super(SpacecraftManager, self).create(
-            tle=tle, **kwargs
+            tle=tle, user=user, **kwargs
         )
 
 
