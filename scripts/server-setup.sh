@@ -387,6 +387,11 @@ create_travis_secrets()
     echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
     echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
 
+    # ### SATNET specific settings
+    echo "# These are site specific settings" > $webservices_secrets_server
+    echo "JRPC_LOGIN_REQUIRED = False" >> $webservices_secrets_server
+    echo "JRPC_PERMISSIONS = False" >> $webservices_secrets_server
+
 }
 
 # ### Method that configures a given root with the virtualenvirment required,
