@@ -561,8 +561,7 @@ webservices_static_dir="$webservices_public_html_dir/static"
 ################################################################################
 # ### Main execution loop
 __command_lib_sh="$script_path/command-lib.sh"
-
-# source ./command-lib.sh
+source $__command_lib_sh
 
 echo ">>> The script installer is going to be executed within the following autodetected environment:"
 echo "    * branch_name = $branch_name"
