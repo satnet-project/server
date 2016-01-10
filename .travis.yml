@@ -2,7 +2,7 @@ language: 'python'
 sudo: false
 branches:
   only:
-    - development_3k
+    - master
 python:
   - '3.4'
 before_install:
