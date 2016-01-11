@@ -52,7 +52,6 @@ class mock__OrbitalSimulator(object):
     ):
 
         half = (end - start).seconds / 2
-
         return [
             (
                 start + datetime.timedelta(seconds=half),
