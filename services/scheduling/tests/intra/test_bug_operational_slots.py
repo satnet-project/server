@@ -170,7 +170,9 @@ class OperationalSlotsBugTest(test.TestCase):
             spacecraft__identifier=self.__sc_1_id,
             start__gte=sn_misc.get_now_utc()
         )
-        p_slots_applicable = p_slots_applicable_objs.values_list('start', 'end')
+        p_slots_applicable = p_slots_applicable_objs.values_list(
+            'start', 'end'
+        )
 
         self.assertGreaterEqual(len(p_slots_2), len(p_slots_applicable))
 
