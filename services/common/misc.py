@@ -105,7 +105,7 @@ def list_2_string(l, name='List'):
 
 
 def print_dictionary(
-    d, nested_level=0, output=sys.stdout, spacing='   ', separator=None
+    d, nested_level=0, output=sys.stdout, spacing='   ', separator=None,
 ):
     """
     Function that recursively prints a dict and all its nested dictionaries.

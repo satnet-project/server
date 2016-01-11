@@ -25,6 +25,8 @@ from services.common import misc as sn_misc
 from services.simulation.models import passes as pass_models
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import operational as operational_models
+from services.scheduling.jrpc.views.operational import groundstations as \
+    gs_ops_rpc
 
 
 class OperationalSlotsBugTest(test.TestCase):
@@ -180,5 +182,14 @@ class OperationalSlotsBugTest(test.TestCase):
             pass_slot__in=p_slots_applicable_objs,
             state=operational_models.STATE_FREE
         ).values_list('start', 'end')
-
         self.assertCountEqual(p_slots_applicable, o_slots_1)
+
+        # CHECK E: RPC interface should return an equivalent set of slots:
+        o_slots_gs = gs_ops_rpc.get_operational_slots(self.__gs_1_id)
+        self.assertEqual(len(o_slots_gs[self.__sc_1_id]), len(o_slots_1))
+
+        if self.__verbose_testing:
+            sn_misc.print_list(o_slots_1, name='o_slots_1')
+            sn_misc.print_list(
+                o_slots_gs[self.__sc_1_id], name='o_slots-' + self.__gs_1_id
+            )
