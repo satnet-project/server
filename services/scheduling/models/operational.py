@@ -20,7 +20,7 @@ import logging
 from django.db import models as django_models
 from django.db.models import Q
 
-from services.common import misc, slots as sn_slots
+from services.common import misc as sn_misc, slots as sn_slots
 from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.simulation.models import passes as pass_models
@@ -78,7 +78,7 @@ class OperationalSlotsManager(django_models.Manager):
             ) + OperationalSlot.ID_FIELDS_SEPARATOR + str(
                 spacecraft.identifier
             ) + OperationalSlot.ID_FIELDS_SEPARATOR + str(
-                misc.get_utc_timestamp(start)
+                sn_misc.get_utc_timestamp(start)
             )
 
     def create(self, pass_slot, availability_slot, start, end):
@@ -168,13 +168,18 @@ class OperationalSlotsManager(django_models.Manager):
 
         :param availability_slot: reference to the Availability object
         """
+        logger.info(
+            '>>> @availability_generates_slots.availability_slot = ' + str(
+                availability_slot
+            )
+        )
 
         # 1) Pass slots for all the spacecraft that:
         #   (a) are compatible with the GroundStation whose rules update
         #       provoked the generation of this Availability slot,
         #   (b) occur within the applicability range of the Availability slot
 
-        p_slots = pass_models.PassSlots.objects.filter(
+        compatible_p_slots = pass_models.PassSlots.objects.filter(
             groundstation=availability_slot.groundstation,
             spacecraft__in=[
                 c.spacecraft for c in
@@ -182,10 +187,22 @@ class OperationalSlotsManager(django_models.Manager):
                     groundstation=availability_slot.groundstation
                 )
             ]
-        ).filter(
+        )
+
+        p_slots = compatible_p_slots.filter(
             OperationalSlotsManager._slots_query(
                 availability_slot.start,
                 availability_slot.end
+            )
+        )
+
+        logger.info(
+            '>>> @availability_generates_slots.compatible_p_slots = ' +
+            sn_misc.list_2_string(compatible_p_slots)
+        )
+        logger.info(
+            '>>> @availability_generates_slots.p = ' + sn_misc.list_2_string(
+                p_slots
             )
         )
 
