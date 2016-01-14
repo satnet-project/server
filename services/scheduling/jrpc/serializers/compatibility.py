@@ -16,8 +16,9 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.forms.models import model_to_dict
-from preserialize.serialize import serialize
 
+from services.configuration.jrpc.serializers import channels as \
+    channel_serializers
 from services.configuration.jrpc.serializers import segments as \
     segment_serializers
 
@@ -39,42 +40,9 @@ def serialize_gs_ch_compatibility_tuples(gs_ch_list):
 
     for t in gs_ch_list:
 
-        gs_serial = model_to_dict(t[0], fields=['identifier'])
-        gs_ch_serial = serialize(
-            t[1],
-            camelcase=True,
-            exclude=['id', 'groundstation'],
-            related={
-                'band': {
-                    'fields': [
-                        'IARU_allocation_minimum_frequency',
-                        'IARU_allocation_maximum_frequency',
-                        'uplink',
-                        'downlink'
-                    ],
-                    'aliases': {
-                        'min_freq': 'IARU_allocation_minimum_frequency',
-                        'max_freq': 'IARU_allocation_maximum_frequency'
-                    }
-                },
-                'modulations': {
-                    'fields': ['modulation']
-                },
-                'bandwidths': {
-                    'fields': ['bandwidth']
-                },
-                'bitrates': {
-                    'fields': ['bitrate']
-                },
-                'polarizations': {
-                    'fields': ['polarization']
-                }
-            }
-        )
-
         result.append({
-            GS_OBJECT_K: gs_serial,
-            GS_CHANNEL_OBJECT_K: gs_ch_serial
+            GS_OBJECT_K: model_to_dict(t[0], fields=['identifier']),
+            GS_CHANNEL_OBJECT_K: channel_serializers.serialize_gs_channel(t[1])
         })
 
     return result
@@ -87,21 +55,10 @@ def serialize_sc_ch_compatibility(spacecraft_ch, compatibility):
     :param compatibility: compatibility tuples (gs, gs_ch)
     :return: object with the {sc_ch, [(gs, gs_ch)]}
     """
-
-    sc_ch_serial = serialize(
-        spacecraft_ch,
-        camelcase=True,
-        exclude=['id', 'spacecraft'],
-        related={
-            'modulation': {'fields': ['modulation']},
-            'bandwidth': {'fields': ['bandwidth']},
-            'bitrate': {'fields': ['bitrate']},
-            'polarization': {'fields': ['polarization']}
-        }
-    )
-
     return {
-        SC_CHANNEL_OBJECT_K: sc_ch_serial,
+        SC_CHANNEL_OBJECT_K: channel_serializers.serialize_sc_channel(
+            spacecraft_ch
+        ),
         COMPATIBILITY_OBJECT_K: compatibility
     }
 
@@ -120,3 +77,26 @@ def serialize_sc_compatibility(spacecraft, compatibility):
         segment_serializers.SC_ID_K: spacecraft.identifier,
         COMPATIBILITY_OBJECT_K: compatibility
     }
+
+
+def serialize_segment_compatibility(compatibility):
+    """JSON serializer
+    Serializes the list of compatibility objects provided, returning the
+    simple identifiers of the compatible channels.
+    :param compatibility: List with the compatible channels.
+    :return: List with the provided compatible channels
+    """
+    results = []
+
+    for c in compatibility:
+
+        results.append({
+            SC_CHANNEL_OBJECT_K: channel_serializers.serialize_sc_channel(
+                c.spacecraft_channel
+            ),
+            GS_CHANNEL_OBJECT_K: channel_serializers.serialize_gs_channel(
+                c.groundstation_channel
+            )
+        })
+
+    return results

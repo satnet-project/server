@@ -49,12 +49,34 @@ def get_compatiblility(spacecraft_ch):
     for c in compatible_tuples:
         print(c)
 
-    serialized_result = compatibility_serializers\
-        .serialize_gs_ch_compatibility_tuples(
-            compatible_tuples
-        )
+    return compatibility_serializers.serialize_gs_ch_compatibility_tuples(
+        compatible_tuples
+    )
 
-    return serialized_result
+
+@rpcmethod(
+    name="scheduling.segment.compatibility",
+    signature=['String', 'String'],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def segment_get_compatibility(spacecraft_id, groundstation_id):
+    """JRPC method
+    This method returns a list with the tuples containing the compatible
+    channels for the requested Spacecraft and Ground Station.
+    :param spacecraft_id: Identifier of the spacecraft
+    :param groundstation_id: Identifier of the groundstation
+    :return: List with tuples (sc_channel_id, gs_channel_id)
+    """
+    return compatibility_serializers.serialize_segment_compatibility(
+        compatibility_models.ChannelCompatibility.objects.filter(
+            spacecraft=segment_models.Spacecraft.objects.get(
+                identifier=spacecraft_id
+            ),
+            groundstation=segment_models.GroundStation.objects.get(
+                identifier=groundstation_id
+            )
+        )
+    )
 
 
 @rpcmethod(

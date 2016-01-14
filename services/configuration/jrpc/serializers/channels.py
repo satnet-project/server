@@ -16,6 +16,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+from preserialize.serialize import serialize
+
 from services.configuration.models import bands as band_models
 
 
@@ -198,4 +200,66 @@ def deserialize_gs_channel_parameters(configuration):
         configuration[BAND_K],
         configuration[AUTOMATED_K],
         mod_l, bps_l, bws_l, pol_l
+    )
+
+
+def serialize_sc_channel(sc_channel, exclude_fields=None):
+    """JSON serializer
+    Serializes the given spacecraft channel.
+    :param sc_channel: The Spacecraft channel object to be serialized
+    :param exclude_fields: List of fields to be excluded from the object
+    :return: JSON serialization
+    """
+    if not exclude_fields:
+        exclude_fields = ['id', 'spacecraft']
+
+    return serialize(
+        sc_channel, camelcase=True, exclude=exclude_fields,
+        related={
+            'modulation': {'fields': ['modulation']},
+            'bandwidth': {'fields': ['bandwidth']},
+            'bitrate': {'fields': ['bitrate']},
+            'polarization': {'fields': ['polarization']}
+        }
+    )
+
+
+def serialize_gs_channel(gs_channel, exclude_fields=None):
+    """JSON serializer
+    Serializes the given groundstation channel.
+    :param gs_channel: The Ground Station channel object to be serialized
+    :param exclude_fields: List of fields to be excluded from the object
+    :return: JSON serialization
+    """
+    if not exclude_fields:
+        exclude_fields = ['id', 'groundstation']
+
+    return serialize(
+        gs_channel, camelcase=True, exclude=exclude_fields,
+        related={
+            'band': {
+                'fields': [
+                    'IARU_allocation_minimum_frequency',
+                    'IARU_allocation_maximum_frequency',
+                    'uplink',
+                    'downlink'
+                ],
+                'aliases': {
+                    'min_freq': 'IARU_allocation_minimum_frequency',
+                    'max_freq': 'IARU_allocation_maximum_frequency'
+                }
+            },
+            'modulations': {
+                'fields': ['modulation']
+            },
+            'bandwidths': {
+                'fields': ['bandwidth']
+            },
+            'bitrates': {
+                'fields': ['bitrate']
+            },
+            'polarizations': {
+                'fields': ['polarization']
+            }
+        }
     )
