@@ -44,7 +44,7 @@ def list_groundstations(**kwargs):
         http_request=kwargs.get('request', None)
     )
     # 2) only the ground stations that belong to the incoming user are returned
-    gs_objects = segment_models.GroundStation.objects.filter(user=user).all()
+    gs_objects = segment_models.GroundStation.objects.all()
     return [str(g.identifier) for g in gs_objects]
 
 

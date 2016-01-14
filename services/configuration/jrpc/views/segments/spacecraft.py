@@ -45,7 +45,7 @@ def list_spacecraft(**kwargs):
         http_request=kwargs.get('request', None)
     )
     # 2) only the ground stations that belong to the incoming user are returned
-    spacecraft = segments.Spacecraft.objects.filter(user=user).all()
+    spacecraft = segments.Spacecraft.objects.all()
     return [str(s.identifier) for s in spacecraft]
 
 

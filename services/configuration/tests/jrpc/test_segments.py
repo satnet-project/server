@@ -185,7 +185,9 @@ class JRPCSegmentsTest(test.TestCase):
             print('>>> TEST (test_sc_list)')
         sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
         self.assertCountEqual(
-            sc_list, [self.__sc_1_id, self.__sc_2_id], 'Wrong SC identifiers'
+            sc_list, [
+                'sc-canx-2', self.__sc_1_id, self.__sc_2_id
+            ]
         )
 
     def test_sc_create(self):

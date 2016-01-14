@@ -16,6 +16,8 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
+USER_K = 'username'
+
 # ### JSON keys for encoding/decoding information related to any segment
 SEGMENT_ID_K = 'segment_id'
 
@@ -43,6 +45,7 @@ def serialize_sc_configuration(sc):
         SC_ID_K: sc.identifier,
         SC_CALLSIGN_K: sc.callsign,
         SC_TLE_ID_K: sc.tle.identifier,
+        USER_K: sc.user.username
     }
 
 
@@ -78,7 +81,8 @@ def serialize_gs_configuration(gs):
         GS_CALLSIGN_K: gs.callsign,
         GS_ELEVATION_K: gs.contact_elevation,
         GS_LATLON_K: [gs.latitude, gs.longitude],
-        GS_ALTITUDE_K: gs.altitude
+        GS_ALTITUDE_K: gs.altitude,
+        USER_K: gs.user.username
     }
 
 
