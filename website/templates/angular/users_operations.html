@@ -19,6 +19,11 @@
 {% load staticfiles %}
 
 {% block sn_content %}
+
+<script type="text/javascript">
+   var username = "{{ request.user.username }}";
+</script>
+
 {% verbatim %}
 
     <div class="m-app-loading" ng-animate-children>
