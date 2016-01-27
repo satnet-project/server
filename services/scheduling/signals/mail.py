@@ -1,0 +1,59 @@
+"""
+   Copyright 2013, 2014 Ricardo Tubio-Pardavila
+
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+"""
+__author__ = 'rtubiopa@calpoly.edu'
+
+import logging
+logger = logging.getLogger('scheduling')
+
+from django.core.mail import EmailMessage
+from django.http import HttpResponse
+from django.template import Context
+from django.template.loader import render_to_string
+
+
+def send_slot_request(
+    username, groundstation_id, spacecraft_id,
+    template="services/scheduling/templates/slot-request.txt"
+):
+    """sevices.scheduling
+    Sends an email with the information about the given slot request.
+    :param groundstation_id: Identifier of the ground station
+    :param spacecraft_id: Identifier of the spacecraft
+    :param template: TXT template for the email
+    """
+    ctx = Context({
+        'slot_request': {
+            'username': username,
+            'groundstation_id': groundstation_id,
+            'spacecraft_id': spacecraft_id
+        }
+    })
+
+    subject, from_email, to = 'Slot Operation Request',\
+                              'from@example.com', \
+                              'to@example.com'
+
+    message = render_to_string(template, ctx)
+    EmailMessage(subject, message, to=to, from_email=from_email).send()
+
+    return HttpResponse('email_one')
+
+
+# noinspection PyUnusedLocal
+def operational_slot_saved(sender, instance, created, raw, **kwargs):
+    """services.scheduling
+    """
+    pass

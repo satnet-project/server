@@ -1,0 +1,11 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}
+
+User {{ slot_request.user }} has requested using your {{ slot_request.gs.id }}
+to operate the spacecraft {{ slot_request.sc.id }}.
+
+Please deny or confirm this request.
+
+{% endblocktrans %}{% endautoescape %}

@@ -109,6 +109,10 @@ class PushService(object):
         :param event_name: Name of the event
         :param data: Data associated to this event
         """
+        if not satnet_cfg:
+            logger.warn('Pusher disabled, ignoring notification')
+            return
+
         if channel_name not in PushService.SATNET_CHANNELS:
             raise Exception(
                 'Channel does not exist, name = ' + str(channel_name)
