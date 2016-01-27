@@ -177,9 +177,15 @@ class PassManager(django_models.Manager):
         :param spacecraft: Spacecraft object
         :return: 'True' in case this interval has already been propagated.
         """
-        last_pass = self.filter(
-            groundstation=groundstation, spacecraft=spacecraft
-        ).latest('start')
+        last_pass = None
+
+        try:
+            last_pass = self.filter(
+                groundstation=groundstation, spacecraft=spacecraft
+            ).latest('start')
+        except PassSlots.DoesNotExist:
+            logger.info('>>> No slots found, skipping')
+            return
 
         if not last_pass:
             return False
