@@ -20,7 +20,7 @@ from services.network.jrpc import views as net_jrpc
 
 
 class JRPCTest(django_test.TestCase):
-    """JRPC unit tests
+    """JRPC test: services.network.keep_alive
     Class with the tests that validate the JRPC methods for this service.
     """
 

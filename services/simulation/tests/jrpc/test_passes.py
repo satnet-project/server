@@ -64,7 +64,7 @@ class JRPCPassesTest(test.TestCase):
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)
 
     def test_sc_passes(self):
-        """JRPC Unit Test
+        """JRPC test: services.simulation.sc.passes
         Validates the generation of the passes for a given spacecraft.
         """
 
@@ -140,7 +140,7 @@ class JRPCPassesTest(test.TestCase):
         )
 
     def test_gs_passes(self):
-        """JRPC Unit Test
+        """JRPC test: services.simulation.gs.passes
         Validates the generation of the passes for a given Ground Station.
         """
 

@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.db.models import signals as django_signals
 from django import dispatch as django_dispatch
 import logging
+from website import settings as satnet_cfg
 from services.simulation import push as simulation_push
 from services.simulation.models import passes as pass_models
 
@@ -42,7 +43,8 @@ def passes_updated(sender, instance, created, raw, **kwargs):
     if raw:
         return
 
-    simulation_push.SimulationPush.trigger_passes_updated_event()
+    if satnet_cfg.USE_PUSHER:
+        simulation_push.SimulationPush.trigger_passes_updated_event()
 
 
 # noinspection PyUnusedLocal
@@ -58,4 +60,5 @@ def passes_removed(sender, instance, **kwargs):
                     triggered the execution of this handler.
     :param kwargs: Additional arguments.
     """
-    simulation_push.SimulationPush.trigger_passes_updated_event()
+    if satnet_cfg.USE_PUSHER:
+        simulation_push.SimulationPush.trigger_passes_updated_event()

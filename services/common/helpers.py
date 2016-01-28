@@ -113,14 +113,23 @@ MESSAGE__2_TEST = 'ogAAAABErEarAAAAAESsRwoAAAAARKxHaAAAAABErEfGAA' \
                   'RKxJngAAAABErEn8AAAAAESsSloAAAAARKxKuQAAAABEtQ' \
                   'kRAAAAAES1CXkAAAAARLUJ4QAAAABEtQpKAAAAAES1CrJD' \
                   'JhD9RLULGkN2IZtEtQuCQ0j6M0S1C'
-MESSAGE_BASE64 = base64.b64encode(
-    bytes(
-        'Base64 is a group of similar binary-to-text encoding schemes '
-        'that represent binary data in an ASCII string format by '
-        'translating it into a radix-64 representation. The term Base64 '
-        'originates from a specific MIME content transfer encoding.',
-        'UTF-8')
-)
+
+"""
+MESSAGE_BASE64 = b'Base64 is a group of similar binary-to-text encoding ' \
+                 b'schemes that represent binary data in an ASCII string ' \
+                 b'format '\
+                 b'by translating it into a radix-64 representation. The term '\
+                 b'Base64 '\
+                 b'originates from a specific MIME content transfer encoding.'
+"""
+
+MESSAGE_BASE64 = base64.b64encode(bytes(
+    'Base64 is a group of similar binary-to-text encoding schemes that '
+    'represent binary data in an ASCII string format by translating it into a '
+    'radix-64 representation. The term Base64 originates from a specific MIME '
+    'content transfer encoding.',
+    'UTF-8'
+))
 
 
 def create_message(groundstation, message=MESSAGE__1_TEST):

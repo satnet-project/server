@@ -42,7 +42,7 @@ def serialize_message(message):
     return {
         launch_serializers.JRPC_K_GS_ID: message.groundstation.identifier,
         JRPC_K_TS: message.groundstation_timestamp,
-        JRPC_K_MESSAGE: message.message
+        JRPC_K_MESSAGE: message.message.decode('utf-8')
     }
 
 
