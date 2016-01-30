@@ -136,19 +136,12 @@ class TestSimulation(TestCase):
     def test_passes(self):
         """UNIT test: services.common.simualtion.passes
         """
-
-        self.__tle_fb_id = 'FirebirdTEST'
-        self.__tle_fb_l1 = '1 99991U          15030.59770833 -.00001217  ' \
-                           '00000-0 -76033-4 0 00007'
-        self.__tle_fb_l2 = '2 99991 099.0667 036.7936 0148154 343.1198 ' \
-                           '145.4319 15.00731498000018'
-
         self.__tle_fb = tle_models.TwoLineElement.objects.create(
             'testingsource',
-            self.__tle_fb_id, self.__tle_fb_l1, self.__tle_fb_l2
+            db_tools.ISS_TLE_ID, db_tools.ISS_TLE[0], db_tools.ISS_TLE[1]
         )
         self.__sc_fb = db_tools.create_sc(
-            user_profile=self.__test_user_profile, tle_id=self.__tle_fb_id
+            user_profile=self.__test_user_profile, tle_id=db_tools.ISS_TLE_ID
         )
 
         self.__gs_uvigo_id = 'uvigo-gs'

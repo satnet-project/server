@@ -25,20 +25,21 @@ from django.template.loader import render_to_string
 
 
 def send_slot_request(
-    username, groundstation_id, spacecraft_id,
+    groundstation, spacecraft,
     template="services/scheduling/templates/slot-request.txt"
 ):
     """sevices.scheduling
     Sends an email with the information about the given slot request.
-    :param groundstation_id: Identifier of the ground station
-    :param spacecraft_id: Identifier of the spacecraft
+
+    :param groundstation: Reference to DB's Ground Station object
+    :param spacecraft: Reference to DB's Spacecraft object
     :param template: TXT template for the email
     """
     ctx = Context({
         'slot_request': {
-            'username': username,
-            'groundstation_id': groundstation_id,
-            'spacecraft_id': spacecraft_id
+            'username': spacecraft.user.username,
+            'groundstation_id': groundstation.user.username,
+            'spacecraft_id': spacecraft.identifier
         }
     })
 

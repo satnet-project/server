@@ -152,6 +152,7 @@ def create_local_server():
 
     server_models.Server.objects.load_local_server()
 
+ISS_TLE_ID = 'ISS (ZARYA)'
 ISS_TLE = [
     '1 25544U 98067A   16007.60119943  .00006067  00000-0  94765-4 0  9991',
     '2 25544  51.6421 143.8872 0008530  12.1082  99.2147 15.55287271979846'
