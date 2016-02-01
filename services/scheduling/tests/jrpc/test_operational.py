@@ -21,7 +21,6 @@ import logging
 from django import test as django_test
 
 from services.common import misc as common_misc
-from services.common import serialization as common_serializers
 from services.scheduling.jrpc.views.operational import slots as scheduling_slots
 
 
@@ -50,21 +49,19 @@ class JRPCBookingProcessTest(django_test.TestCase):
         if self.__verbose_testing:
             print('##### test_1_test_slot')
 
-        # s_time = common_misc.get_now_utc(no_microseconds=True)
-        # e_time = s_time + datetime.timedelta(hours=2)
+        s_time = common_misc.get_now_utc(no_microseconds=True)
+        e_time = s_time + datetime.timedelta(hours=2)
+
+        if self.__verbose_testing:
+            print('s_time = ' + str(s_time.isoformat()))
+            print('e_time = ' + str(e_time.isoformat()))
 
         self.assertEquals(
             scheduling_slots.get_slot(self.__test_slot_id), {
                 'state': 'TEST',
                 'gs_username': 'test-gs-user',
                 'sc_username': 'test-sc-user',
-                'starting_time':
-                    common_serializers.serialize_iso8601_date(
-                        common_misc.get_now_utc()
-                    ),
-                'ending_time':
-                    common_serializers.serialize_iso8601_date(
-                        common_misc.get_now_utc() + datetime.timedelta(hours=2)
-                    ),
+                'starting_time': s_time.isoformat(),
+                'ending_time': e_time.isoformat()
             }
         )

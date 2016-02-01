@@ -47,8 +47,8 @@ def serialize_test_slot_information():
         STATE_K: 'TEST',
         'gs_username': 'test-gs-user',
         'sc_username': 'test-sc-user',
-        'starting_time': common_serializers.serialize_iso8601_date(s_time),
-        'ending_time': common_serializers.serialize_iso8601_date(e_time),
+        'starting_time': s_time.isoformat(),
+        'ending_time': e_time.isoformat(),
     }
 
 
