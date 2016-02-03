@@ -38,8 +38,8 @@ class JRPCSegmentsTest(test.TestCase):
         of the user.
         """
         expected_ll = {
-            'longitude': '-120.455299',
-            'latitude': '35.347099'
+            'longitude': '-120.4553',
+            'latitude': '35.3471'
         }
 
         ll = configuration_ajax.user_geoip(request=self.__http_request)

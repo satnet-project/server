@@ -57,9 +57,6 @@ class JRPCBookingProcessTest(test.TestCase):
 
         operational.OperationalSlot.objects.set_debug()
 
-        # noinspection PyUnresolvedReferences
-        from services.scheduling.signals import availability
-
         self.__sc_1_id = 'xatcobeo-sc'
         self.__sc_1_tle_id = 'HUMSAT-D'
         self.__sc_1_ch_1_id = 'xatcobeo-fm'
@@ -156,9 +153,15 @@ class JRPCBookingProcessTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_1_booking')
-        operational.OperationalSlot.objects.reset_ids_counter()
+        # operational.OperationalSlot.objects.set_debug()
+        # operational.OperationalSlot.objects.reset_ids_counter()
 
-        selection_1 = [1, 2, 3]
+        selection_1 = [
+            int(x.identifier) for x in
+            operational.OperationalSlot.objects.filter(
+                state=operational.STATE_FREE
+            ).order_by('id')[:3]
+        ]
 
         # 0) Spacecraft operators selected a set of slots...
         sc_s_slots = jrpc_sc_scheduling.select_slots(

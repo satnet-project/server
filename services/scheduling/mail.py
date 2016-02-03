@@ -51,10 +51,3 @@ def send_slot_request(
     EmailMessage(subject, message, to=to, from_email=from_email).send()
 
     return HttpResponse('email_one')
-
-
-# noinspection PyUnusedLocal
-def operational_slot_saved(sender, instance, created, raw, **kwargs):
-    """services.scheduling
-    """
-    pass
