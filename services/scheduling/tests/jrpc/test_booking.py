@@ -153,8 +153,6 @@ class JRPCBookingProcessTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('##### test_1_booking')
-        # operational.OperationalSlot.objects.set_debug()
-        # operational.OperationalSlot.objects.reset_ids_counter()
 
         selection_1 = [
             int(x.identifier) for x in

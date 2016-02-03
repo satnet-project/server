@@ -120,5 +120,5 @@ class PushService(object):
             '>, data = <' + str(data) + '>'
         )
 
-        if not satnet_cfg.TESTING:
+        if satnet_cfg.USE_PUSHER and not satnet_cfg.TESTING:
             self._service.trigger(channel_name, event_name, data)

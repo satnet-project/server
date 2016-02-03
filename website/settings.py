@@ -389,6 +389,7 @@ RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 JRPC_LOGIN_REQUIRED = server.JRPC_LOGIN_REQUIRED
 JRPC_PERMISSIONS = server.JRPC_PERMISSIONS
 
+# ### Flag that allows disabling the usage of the PUSHER services specifically
 USE_PUSHER = False
 
 # ### Username used during tests
