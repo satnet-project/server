@@ -148,7 +148,7 @@ def cancel_reservations(groundstation_id, slot_identifiers):
         raise Exception('No valid <slot_identifiers> provided.')
 
     changed_slots = operational.OperationalSlot.objects.update_state(
-        state=operational.STATE_CANCELED,
+        state=operational.STATE_FREE,
         slots=slots
     )
 

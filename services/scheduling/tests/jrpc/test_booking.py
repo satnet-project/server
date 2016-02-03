@@ -125,24 +125,23 @@ class JRPCBookingProcessTest(test.TestCase):
             ), True, 'Channel should have been created!'
         )
 
-        self.__date_i = misc.get_today_utc() + datetime.timedelta(days=1)
-        self.__date_f = misc.get_today_utc() + datetime.timedelta(days=366)
-
-        self.__date_now = misc.get_now_utc()
-        self.__date_s_time = self.__date_now + datetime.timedelta(minutes=30)
-        self.__date_e_time = self.__date_now + datetime.timedelta(minutes=45)
-
-        jrpc_rules.add_rule(
+        # 4) we add a daily rule 12 hours, 00:00:01am to 11:59:59pm UTC
+        #       all pass slots should became operational slots.
+        self.__rule_1 = jrpc_rules.add_rule(
             self.__gs_1_id,
             db_tools.create_jrpc_daily_rule(
-                date_i=self.__date_i,
-                date_f=self.__date_f,
-                starting_time=self.__date_s_time,
-                ending_time=self.__date_e_time
+                date_i=misc.get_today_utc(),
+                date_f=misc.get_today_utc() + datetime.timedelta(days=50),
+                starting_time=misc.get_next_midnight() + datetime.timedelta(
+                    seconds=1
+                ),
+                ending_time=misc.get_next_midnight() + datetime.timedelta(
+                    hours=23, minutes=59, seconds=59
+                )
             )
         )
 
-    def _test_1_booking(self):
+    def test_1_booking(self):
         """Basic booking test.
 
         This test should validate the basic booking process of remote
@@ -159,73 +158,82 @@ class JRPCBookingProcessTest(test.TestCase):
             print('##### test_1_booking')
         operational.OperationalSlot.objects.reset_ids_counter()
 
+        selection_1 = [1, 2, 3]
+
+        # 0) Spacecraft operators selected a set of slots...
         sc_s_slots = jrpc_sc_scheduling.select_slots(
-            self.__sc_1_id, [1, 2, 3]
+            self.__sc_1_id, selection_1
         )
-        db_tools.create_identifier_list(sc_s_slots)
+        self.assertEqual(
+            [int(x['identifier']) for x in sc_s_slots], selection_1
+        )
 
         # 1) GroundStation operators confirm the selected slots...
         gs_c_slots = jrpc_gs_scheduling.confirm_selections(
-            self.__gs_1_id, [1, 2, 3]
+            self.__gs_1_id, selection_1
         )
         self.assertEqual(
-            len(gs_c_slots), 2, 'Confirmed slots should be 2, selected = ' +
-            misc.list_2_string(gs_c_slots)
+            [int(x['identifier']) for x in gs_c_slots], selection_1
         )
 
         # 5) GroundStation operators cancel the selected slots...
-        jrpc_gs_scheduling.cancel_reservations(
-            self.__gs_1_id, [1, 2, 3]
-        )
-        # TODO assert this cancel
-
-        # 6) No canceled Operational Slots
+        jrpc_gs_scheduling.cancel_reservations(self.__gs_1_id, selection_1)
+        # 5.a) No canceled Operational Slots
         self.assertEqual(
-            len(
-                operational.OperationalSlot.objects.filter(
+            [
+                x.identifier
+                for x in operational.OperationalSlot.objects.filter(
                     state=operational.STATE_CANCELED
                 )
-            ),
-            0,
-            'No slots should be kept as canceled, '
-            'operational.OperationalSlot.filter('
-            'state=operational.STATE_CANCELED) = ' + misc.list_2_string(
-                operational.OperationalSlot.objects.filter(
-                    state=operational.STATE_CANCELED
+            ],
+            []
+        )
+        # 5.b) No selected Operational Slots
+        self.assertEqual(
+            [
+                x.identifier
+                for x in operational.OperationalSlot.objects.filter(
+                    state=operational.STATE_SELECTED
                 )
-            )
+            ],
+            []
         )
 
         # 7) SpacecraftOperator retries the selection...
+        sc_s_slots = jrpc_sc_scheduling.select_slots(
+            self.__sc_1_id, selection_1
+        )
         self.assertEqual(
-            len(jrpc_sc_scheduling.select_slots(self.__sc_1_id, [1, 2, 3])),
-            2,
-            '2 slots must have been selected.'
+            [int(x['identifier']) for x in sc_s_slots], selection_1
         )
 
         # 8) GroundStation operator denies the selection...
         gs_d_slots = jrpc_gs_scheduling.deny_selections(
-            self.__gs_1_id, [1, 2, 3]
+            self.__gs_1_id, selection_1
         )
         self.assertEqual(
-            len(gs_d_slots), 2, 'Denied slots should be 3, selected = ' +
-            misc.list_2_string(gs_d_slots)
+            [int(x['identifier']) for x in gs_d_slots], selection_1
         )
 
+        # 5.a) No canceled Operational Slots
         self.assertEqual(
-            len(
-                operational.OperationalSlot.objects.filter(
-                    state=operational.STATE_DENIED
+            [
+                x.identifier
+                for x in operational.OperationalSlot.objects.filter(
+                    state=operational.STATE_CANCELED
                 )
-            ),
-            0,
-            'No slots should be kept as canceled, '
-            'operational.OperationalSlot.filter('
-            'state=operational.STATE_DENIED) = ' + misc.list_2_string(
-                operational.OperationalSlot.objects.filter(
-                    state=operational.STATE_DENIED
+            ],
+            []
+        )
+        # 5.b) No selected Operational Slots
+        self.assertEqual(
+            [
+                x.identifier
+                for x in operational.OperationalSlot.objects.filter(
+                    state=operational.STATE_SELECTED
                 )
-            )
+            ],
+            []
         )
 
         # ### clean up sc/gs
