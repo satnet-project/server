@@ -30,8 +30,8 @@ install_packages()
 
     [[ $linux_dist == 'Debian' ]] && {
 
-        yell '>>> Activating <contrib> and <non-free> repositories...'
-        try sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
+        echo '>>> Activating <contrib> and <non-free> repositories...'
+        sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
 
         [[ $debian_version -eq '7' ]] && {
             echo '>>> Debian 7 detected, activating backports...'
@@ -533,6 +533,9 @@ linux_dist=$( cat /etc/issue.net | cut -d' ' -f1 )
         linux_packages="$script_path/debian.$debian_version.packages"
     }
     [[ $debian_version -eq '8' ]] && {
+        linux_packages="$script_path/debian.$debian_version.packages"
+    }
+    [[ $debian_version -eq '9' ]] && {
         linux_packages="$script_path/debian.$debian_version.packages"
     }
 
