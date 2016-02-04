@@ -42,8 +42,12 @@ class UserProfileManager(models.Manager):
         """
         profile = self.create(
             username=account_utils.generate_random_username(),
-            first_name='Anonymous', last_name='User', is_active=True,
-            anonymous=True, country='US', organization='SATNET'
+            first_name='Anonymous',
+            last_name='User',
+            is_active=True,
+            anonymous=True,
+            country='US',
+            organization='SATNET'
         )
         profile.set_unusable_password()
         profile.save()

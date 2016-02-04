@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import rpc4django
 
+from services.scheduling import mail as slot_mail
 from services.scheduling.models import operational as operational_models
 from services.scheduling.jrpc.serializers import operational as \
     scheduling_serializers
@@ -73,6 +74,14 @@ def select_slots(spacecraft_id, slot_identifiers):
     changed_slots = operational_models.OperationalSlot.objects.update_state(
         state=operational_models.STATE_SELECTED, slots=slots
     )
+
+    for s in slots:
+
+        slot_mail.send_slot_mail(
+            s.pass_slot.groundstation,
+            s.pass_slot.spacecraft,
+            to=[s.pass_slot.groundstation.user.email]
+        )
 
     return scheduling_serializers.serialize_slots(changed_slots)
 

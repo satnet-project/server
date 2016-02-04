@@ -3,9 +3,10 @@
 {% autoescape off %}
 {% blocktrans with current_site.name as site_name %}
 
-User {{ slot_request.user }} has requested using your {{ slot_request.gs.id }}
-to operate the spacecraft {{ slot_request.sc.id }}.
+This is an automated message from the SatNet network.
 
-Please deny or confirm this request.
+User <{{ username }}> has requested using your <{{ groundstation }}> groundstation to operate the <{{ spacecraft }}> spacecraft.
+
+Please deny or confirm this request through the online interface.
 
 {% endblocktrans %}{% endautoescape %}

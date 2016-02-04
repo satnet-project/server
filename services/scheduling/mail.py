@@ -18,36 +18,43 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 logger = logging.getLogger('scheduling')
 
+from django.contrib.auth import models as auth_models
 from django.core.mail import EmailMessage
-from django.http import HttpResponse
 from django.template import Context
 from django.template.loader import render_to_string
 
 
-def send_slot_request(
+def send_slot_mail(
     groundstation, spacecraft,
-    template="services/scheduling/templates/slot-request.txt"
+    to=None,
+    subject="Slots Requested",
+    subject_tag='[satnet]',
+    template="slot-request.txt"
 ):
     """sevices.scheduling
     Sends an email with the information about the given slot request.
 
     :param groundstation: Reference to DB's Ground Station object
     :param spacecraft: Reference to DB's Spacecraft object
+    :param to: String with the mail destination
+    :param subject: Subject for the email
+    :param subject_tag: Tag to be added before the given subject
     :param template: TXT template for the email
     """
+    if not to:
+        raise ValueError('Must specified a destination for the mail')
+
     ctx = Context({
-        'slot_request': {
-            'username': spacecraft.user.username,
-            'groundstation_id': groundstation.user.username,
-            'spacecraft_id': spacecraft.identifier
-        }
+        'username': spacecraft.user.username,
+        'groundstation': groundstation.identifier,
+        'spacecraft': spacecraft.identifier
     })
 
-    subject, from_email, to = 'Slot Operation Request',\
-                              'from@example.com', \
-                              'to@example.com'
+    if not subject:
+        subject = 'Slot Reservation'
 
-    message = render_to_string(template, ctx)
+    subject = subject_tag + ' ' + subject
+    from_email = auth_models.User.objects.get(is_superuser=True).email
+
+    message = render_to_string(template, context_instance=ctx)
     EmailMessage(subject, message, to=to, from_email=from_email).send()
-
-    return HttpResponse('email_one')
