@@ -1,0 +1,12 @@
+{% load account %}
+{% load i18n %}
+{% autoescape off %}
+{% blocktrans with current_site.name as site_name %}
+
+This is an automated message from the SatNet network.
+
+User <{{ username }}> has accepted your request to use the facilities at the <{{ groundstation }}> groundstation in order to operate the <{{ spacecraft }}> spacecraft.
+
+No further actions are required.
+
+{% endblocktrans %}{% endautoescape %}

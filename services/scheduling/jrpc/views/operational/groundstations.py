@@ -18,6 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 import logging
 import rpc4django
 
+from services.scheduling import mail as slot_mail
 from services.scheduling.models import operational
 from services.scheduling.jrpc.serializers import operational as \
     scheduling_serializers
@@ -76,6 +77,14 @@ def confirm_selections(groundstation_id, slot_identifiers):
         state=operational.STATE_RESERVED,
         slots=slots
     )
+
+    for s in slots:
+
+        slot_mail.send_gs_accepted_mail(
+            s.pass_slot.groundstation,
+            s.pass_slot.spacecraft,
+            to=[s.pass_slot.spacecraft.user.email]
+        )
 
     return scheduling_serializers.serialize_slots(changed_slots)
 
@@ -151,5 +160,13 @@ def cancel_reservations(groundstation_id, slot_identifiers):
         state=operational.STATE_FREE,
         slots=slots
     )
+
+    for s in slots:
+
+        slot_mail.send_gs_denied_mail(
+            s.pass_slot.groundstation,
+            s.pass_slot.spacecraft,
+            to=[s.pass_slot.spacecraft.user.email]
+        )
 
     return scheduling_serializers.serialize_slots(changed_slots)

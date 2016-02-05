@@ -117,6 +117,14 @@ def cancel_selections(spacecraft_id, slot_identifiers):
         state=operational_models.STATE_FREE, slots=slots
     )
 
+    for s in slots:
+
+        slot_mail.send_sc_canceled_mail(
+            s.pass_slot.groundstation,
+            s.pass_slot.spacecraft,
+            to=[s.pass_slot.groundstation.user.email]
+        )
+
     return scheduling_serializers.serialize_slots(changed_slots)
 
 

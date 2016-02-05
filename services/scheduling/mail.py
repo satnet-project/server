@@ -24,6 +24,72 @@ from django.template import Context
 from django.template.loader import render_to_string
 
 
+def send_gs_accepted_mail(
+    groundstation, spacecraft,
+    to=None,
+    subject="Slot Request Accepted",
+    template="slot-gs-accepted.txt"
+):
+    """services.scheduling
+    Sends an email to the owner of the Spacecraft in order to notify that
+    a given slot request has been accepted by the Spacecraft owner.
+
+    :param groundstation: Ground station object
+    :param spacecraft: Spacecraft object
+    :param to: Destination email
+    :param subject: Subject for the email
+    :param template: Template with the text for the email
+    """
+    send_slot_mail(
+        groundstation, spacecraft, to=to,
+        subject=subject, template=template
+    )
+
+
+def send_gs_denied_mail(
+    groundstation, spacecraft,
+    to=None,
+    subject="Slot Request Denied",
+    template="slot-gs-denied.txt"
+):
+    """services.scheduling
+    Sends an email to the owner of the Spacecraft in order to notify that
+    a given slot request has been canceled by the Spacecraft owner.
+
+    :param groundstation: Ground station object
+    :param spacecraft: Spacecraft object
+    :param to: Destination email
+    :param subject: Subject for the email
+    :param template: Template with the text for the email
+    """
+    send_slot_mail(
+        groundstation, spacecraft, to=to,
+        subject=subject, template=template
+    )
+
+
+def send_sc_canceled_mail(
+    groundstation, spacecraft,
+    to=None,
+    subject="Slot Request Canceled",
+    template="slot-sc-canceled.txt"
+):
+    """services.scheduling
+    Sends an email to the owner of the Ground Station in order to notify that
+    a given slot request has been canceled by the Spacecraft owner.
+
+    :param groundstation: Ground station object
+    :param spacecraft: Spacecraft object
+    :param to: Destination email
+    :param subject: Subject for the email
+    :param template: Template with the text for the email
+    """
+    send_slot_mail(
+        groundstation, spacecraft, to=to,
+        subject=subject, template=template
+    )
+
+
 def send_slot_mail(
     groundstation, spacecraft,
     to=None,
