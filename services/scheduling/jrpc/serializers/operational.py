@@ -150,14 +150,16 @@ def serialize_sc_operational_slots(spacecraft_id):
     slots = {}
 
     for slot in operational_models.OperationalSlot.objects.filter(
-        pass_slot__spacecraft__identifier=spacecraft_id
+        pass_slot__spacecraft=segment_models.Spacecraft.objects.get(
+            identifier=spacecraft_id
+        )
     ):
 
-        insert_slot(
-            slots,
-            slot.pass_slot.spacecraft.identifier,
-            slot.pass_slot.groundstation.identifier,
-            slot
+        if slot.pass_slot.groundstation.identifier not in slots:
+            slots[slot.pass_slot.groundstation.identifier] = []
+
+        slots[slot.pass_slot.groundstation.identifier].append(
+            serialize_slot(slot)
         )
 
     return slots
@@ -174,8 +176,9 @@ def serialize_gs_operational_slots(groundstation_id):
     slots = {}
 
     for slot in operational_models.OperationalSlot.objects.filter(
-        pass_slot__groundstation=segment_models.GroundStation
-            .objects.get(identifier=groundstation_id)
+        pass_slot__groundstation=segment_models.GroundStation.objects.get(
+            identifier=groundstation_id
+        )
     ):
 
         if slot.pass_slot.spacecraft.identifier not in slots:
