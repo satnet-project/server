@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from rpc4django import rpcmethod
 import socket
+from services.accounts import models as account_models
 from services.common import gis
 from website import settings as satnet_settings
 
@@ -53,3 +54,21 @@ def hostname_geoip(hostname):
           ', @(' + str(lat) + ', ' + str(lng) + ')')
 
     return {'latitude': lat, 'longitude': lng}
+
+
+@rpcmethod(
+    name='network.user',
+    signature=[],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def current_user(**kwargs):
+    """JRPC method
+    Retrieves the username for the currently logged user
+    :param kwargs: Necessary to access to the HTTP request object
+    :return: String with the name of the currently logged user
+    """
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
+
+    return username
