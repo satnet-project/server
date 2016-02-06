@@ -29,10 +29,8 @@ def keep_alive():
     """Push event
     Keep alive event that prevents remote sessions to automatically expire.
     """
-    logger.info('Keep alive...')
     satnet_push.PushService().trigger_event(
         satnet_push.PushService.NETWORK_EVENTS_CHANNEL,
         satnet_push.PushService.KEEP_ALIVE,
         {'alive': True}
     )
-    logger.info('keep alive sent!')
