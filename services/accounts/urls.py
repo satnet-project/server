@@ -17,6 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 from django.conf import urls
 from django.contrib.auth import decorators
+from django.views.generic import TemplateView
 
 from services.accounts import ajax, views
 
@@ -26,6 +27,12 @@ urlpatterns = urls.patterns(
         r'^login_ok/$',
         views.redirect_home,
         name='login_ok'
+    ),
+    # ### Email confirmed
+    urls.url(
+        r'^mail_confirmed/$',
+        TemplateView.as_view(template_name='mail_confirmed.html'),
+        name='mail_confirmed'
     ),
     # ### Staff specific views
     urls.url(
