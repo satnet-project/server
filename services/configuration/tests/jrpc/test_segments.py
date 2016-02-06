@@ -171,9 +171,54 @@ class JRPCSegmentsTest(test.TestCase):
         """
         if self.__verbose_testing:
             print('>>> TEST (test_gs_list)')
-        gs_list = jrpc_gs.list_groundstations(request=self.__http_request)
-        self.assertCountEqual(
-            gs_list, [self.__gs_1_id, self.__gs_2_id], 'Wrong GS identifiers'
+        self.assertListEqual(
+            jrpc_gs.list_groundstations(request=self.__http_request), [
+                self.__gs_1_id, self.__gs_2_id
+            ]
+        )
+
+    def test_gs_list_mine(self):
+        """JRPC test: configuration.gs.list.mine
+        This test validates the list of GroundStation objects
+        returned through the JRPC method.
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_list_mine)')
+
+        self.assertListEqual(
+            jrpc_gs.list_groundstations_mine(request=self.__http_request), [
+                self.__gs_1_id, self.__gs_2_id
+            ]
+        )
+
+        user_profile_2 = db_tools.create_user_profile(
+            username='fake222'
+        )
+        request_2 = db_tools.create_request(user_profile=user_profile_2)
+        self.assertListEqual(
+            jrpc_gs.list_groundstations_mine(request=request_2), []
+        )
+
+    def test_gs_list_others(self):
+        """JRPC test: configuration.gs.list.others
+        This test validates the list of GroundStation objects
+        returned through the JRPC method.
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_list_others)')
+
+        self.assertListEqual(
+            jrpc_gs.list_groundstations_others(request=self.__http_request), []
+        )
+
+        user_profile_2 = db_tools.create_user_profile(
+            username='fake222'
+        )
+        request_2 = db_tools.create_request(user_profile=user_profile_2)
+        self.assertListEqual(
+            jrpc_gs.list_groundstations_others(request=request_2), [
+                self.__gs_1_id, self.__gs_2_id
+            ]
         )
 
     def test_sc_list(self):
@@ -186,6 +231,52 @@ class JRPCSegmentsTest(test.TestCase):
         sc_list = jrpc_sc.list_spacecraft(request=self.__http_request)
         self.assertCountEqual(
             sc_list, [
+                'sc-canx-2', self.__sc_1_id, self.__sc_2_id
+            ]
+        )
+
+    def test_sc_list_mine(self):
+        """JRPC test: configuration.sc.list.mine
+        This test validates the list of SpacecraftConfiguration objects
+        returned through the JRPC method.
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_list_mine)')
+
+        self.assertEquals(
+            jrpc_sc.list_spacecraft_mine(request=self.__http_request), [
+                self.__sc_1_id, self.__sc_2_id
+            ]
+        )
+
+        user_profile_2 = db_tools.create_user_profile(
+            username='fake222'
+        )
+        request_2 = db_tools.create_request(user_profile=user_profile_2)
+        self.assertListEqual(
+            jrpc_sc.list_spacecraft_mine(request=request_2), []
+        )
+
+    def test_sc_list_others(self):
+        """JRPC test: configuration.sc.list.others
+        This test validates the list of SpacecraftConfiguration objects
+        returned through the JRPC method.
+        """
+        if self.__verbose_testing:
+            print('>>> TEST (test_sc_list_others)')
+
+        self.assertEquals(
+            jrpc_sc.list_spacecraft_others(request=self.__http_request), [
+                'sc-canx-2'
+            ]
+        )
+
+        user_profile_2 = db_tools.create_user_profile(
+            username='fake222'
+        )
+        request_2 = db_tools.create_request(user_profile=user_profile_2)
+        self.assertListEqual(
+            jrpc_sc.list_spacecraft_others(request=request_2), [
                 'sc-canx-2', self.__sc_1_id, self.__sc_2_id
             ]
         )

@@ -27,6 +27,56 @@ logger = logging.getLogger('configuration')
 
 
 @rpcmethod(
+    name='configuration.gs.list.mine',
+    signature=[],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def list_groundstations_mine(**kwargs):
+    """JRPC test: configuration.gs.list.mine
+    Creates a list with the identifiers of the groundstation that belong to the
+    user that is making the remote call.
+
+    :param kwargs: Additional JRPC parameters dictionary
+    :return:
+    """
+    # 1) user must be obtained from the request
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
+    # 2) only the ground stations that belong to the incoming user are returned
+    return [
+        str(s.identifier) for s in segment_models.GroundStation.objects.filter(
+            user=user
+        )
+    ]
+
+
+@rpcmethod(
+    name='configuration.sc.list.others',
+    signature=[],
+    login_required=satnet_settings.JRPC_LOGIN_REQUIRED
+)
+def list_groundstations_others(**kwargs):
+    """JRPC test: configuration.gs.list.mine
+    Creates a list with the identifiers of the groundstations that belong to the
+    user that is making the remote call.
+
+    :param kwargs: Additional JRPC parameters dictionary
+    :return:
+    """
+    # 1) user must be obtained from the request
+    user, username = account_models.get_user(
+        http_request=kwargs.get('request', None)
+    )
+    # 2) only the groundstations that belong to the incoming user are excluded
+    return [
+        str(s.identifier) for s in segment_models.GroundStation.objects.exclude(
+            user=user
+        )
+    ]
+
+
+@rpcmethod(
     name='configuration.gs.list',
     signature=[],
     login_required=satnet_settings.JRPC_LOGIN_REQUIRED
@@ -38,14 +88,9 @@ def list_groundstations(**kwargs):
 
     :param kwargs: Additional JRPC parameters dictionary
     """
-
-    # 1) user must be obtained from the request
-    user, username = account_models.get_user(
-        http_request=kwargs.get('request', None)
-    )
-    # 2) only the ground stations that belong to the incoming user are returned
-    gs_objects = segment_models.GroundStation.objects.all()
-    return [str(g.identifier) for g in gs_objects]
+    return [
+        str(g.identifier) for g in segment_models.GroundStation.objects.all()
+    ]
 
 
 @rpcmethod(
