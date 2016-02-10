@@ -1,16 +1,9 @@
 FROM debian
-RUN apt-get update  
+RUN apt-get update && apt-get install git-core -y
 
-#WORKDIR /server/scripts
-#ADD server-setup.sh /server-setup.sh
-#RUN chmod 0755 /server-setup.sh
-# Define default command.
-#CMD ["ls"]
-
-#RUN cd /server/scripts
-ADD /scripts/server-setup.sh server-setup.sh
-RUN chmod 0755  server-setup.sh
-RUN pwd
-RUN ls
-RUN /server-setup.sh -a
-#RUN cd /home ; ls
+RUN mkdir server
+WORKDIR /server
+COPY . /server
+WORKDIR  /server/scripts
+RUN chmod +x  server-setup.sh
+RUN ./server-setup.sh -a
