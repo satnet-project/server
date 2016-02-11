@@ -18,14 +18,16 @@ __author__ = 'rtubiopa@calpoly.edu'
 import bisect
 from datetime import datetime as py_dt
 from datetime import timedelta as py_td
-import logging
-logger = logging.getLogger('simulation')
 from django.db import models
-from djorm_pgarray import fields as pgarray_fields
+import logging
+import json
+# from djorm_pgarray import fields as pgarray_fields
 
 from services.common import simulation, misc, slots as sn_slots
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
+
+logger = logging.getLogger('simulation')
 
 
 class GroundTrackManager(models.Manager):
@@ -33,6 +35,8 @@ class GroundTrackManager(models.Manager):
     Manager for the GroundTracks that handles the creation, update and deletion
     process of these objects from the database.
     """
+
+    MAX_LLT_LENGTH = 10000000
 
     def create(self, spacecraft):
         """
@@ -62,9 +66,13 @@ class GroundTrackManager(models.Manager):
         :param new_lng: The new longitudes to be appended
         :return: The updated groundtrack object
         """
-        ts_l = groundtrack.timestamp
-        la_l = groundtrack.latitude
-        lo_l = groundtrack.longitude
+        # ts_l = groundtrack.timestamp
+        # la_l = groundtrack.latitude
+        # lo_l = groundtrack.longitude
+
+        ts_l = json.loads(groundtrack.timestamp)
+        la_l = json.loads(groundtrack.latitude)
+        lo_l = json.loads(groundtrack.longitude)
 
         # If the list is not empty, we have to check whether the new simulated
         # points are already included in the list. The latter condition is met
@@ -84,9 +92,13 @@ class GroundTrackManager(models.Manager):
             new_lat = new_lat[position:]
             new_lng = new_lng[position:]
 
-        groundtrack.timestamp = ts_l + new_ts
-        groundtrack.latitude = la_l + new_lat
-        groundtrack.longitude = lo_l + new_lng
+        # groundtrack.timestamp = ts_l + new_ts
+        # groundtrack.latitude = la_l + new_lat
+        # groundtrack.longitude = lo_l + new_lng
+
+        groundtrack.timestamp = json.dumps(ts_l + new_ts)
+        groundtrack.latitude = json.dumps(la_l + new_lat)
+        groundtrack.longitude = json.dumps(lo_l + new_lng)
 
         return groundtrack
 
@@ -243,6 +255,23 @@ class GroundTrack(models.Model):
         verbose_name='Reference to the TLE object used for this GroundTrack'
     )
 
+    latitude = models.TextField(
+        default='',
+        max_length=GroundTrackManager.MAX_LLT_LENGTH,
+        verbose_name='List of latitudes in a comma separated value'
+    )
+    longitude = models.TextField(
+        default='',
+        max_length=GroundTrackManager.MAX_LLT_LENGTH,
+        verbose_name='List of longitudes in a comma separated value'
+    )
+    timestamp = models.TextField(
+        default='',
+        max_length=GroundTrackManager.MAX_LLT_LENGTH,
+        verbose_name='List of timestamps in a comma separated value'
+    )
+
+    """
     latitude = pgarray_fields.FloatArrayField(
         verbose_name='Latitude for the points of the GroundTrack'
     )
@@ -252,6 +281,7 @@ class GroundTrack(models.Model):
     timestamp = pgarray_fields.BigIntegerArrayField(
         verbose_name='UTC time at which the spacecraft is going to pass over'
     )
+    """
 
     def __unicode__(self):
         """Unicode

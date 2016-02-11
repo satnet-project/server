@@ -151,10 +151,6 @@ TEMPLATE_DIRS = (
     os.path.join(
         os.path.dirname(__file__),
         '..', 'services', 'communications', 'templates'
-    ),
-    os.path.join(
-        os.path.dirname(__file__),
-        '..', 'services', 'leop', 'templates'
     )
 )
 
@@ -187,7 +183,6 @@ INSTALLED_APPS = (
     'services.scheduling',
     'services.communications',
     'services.simulation',
-    'services.leop',
     'services.network',
 
     # ### django-admin
@@ -272,11 +267,6 @@ LOGGING = {
             'propagate': True,
         },
         'communications': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True,
-        },
-        'leop': {
             'handlers': ['console'],
             'level': 'DEBUG',
             'propagate': True,
@@ -409,7 +399,6 @@ NOSE_ARGS = [
     'services.common,'
     'services.communications,'
     'services.configuration,'
-    'services.leop,'
     'services.network,'
     'services.scheduling,'
     'services.simulation'

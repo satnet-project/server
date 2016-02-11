@@ -88,7 +88,6 @@ class SatnetTestRunner(nose_runner.NoseTestSuiteRunner):
             logging.getLogger('common').setLevel(level=logging.CRITICAL)
             logging.getLogger('communications').setLevel(level=logging.CRITICAL)
             logging.getLogger('configuration').setLevel(level=logging.CRITICAL)
-            logging.getLogger('leop').setLevel(level=logging.CRITICAL)
             logging.getLogger('network').setLevel(level=logging.CRITICAL)
             logging.getLogger('scheduling').setLevel(level=logging.CRITICAL)
             logging.getLogger('simulation').setLevel(level=logging.CRITICAL)

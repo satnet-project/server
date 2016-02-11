@@ -28,20 +28,3 @@ def redirect_operations(request):
     return django_response.TemplateResponse(
         request, 'angular/users_operations.html'
     )
-
-
-def redirect_leop(request, identifier):
-    """Redirect method
-    Redirects staff either to the LEOP interface or to the login page.
-
-    :param request: HTTP request
-    :param identifier: Identifier for the LEOP
-    """
-    user_profile = accounts_backend.authenticate_anonymous(request)
-    return django_response.TemplateResponse(
-        request, 'angular/staff_leop.html',
-        {
-            'leop_id': identifier,
-            'is_anonymous': user_profile.anonymous
-        }
-    )

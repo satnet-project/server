@@ -48,15 +48,6 @@ urlpatterns = urls.patterns(
         name='operations_interface'
     ),
     urls.url(
-        r'^leop_staff/(?P<identifier>\w+)$',
-        website_views.redirect_leop,
-        name='leop_access'
-    ),
-    urls.url(
-        r'^leop/',
-        urls.include('services.leop.urls')
-    ),
-    urls.url(
         r'^communications/',
         urls.include('services.communications.urls')
     ),

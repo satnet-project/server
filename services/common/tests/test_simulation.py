@@ -136,12 +136,9 @@ class TestSimulation(TestCase):
     def test_passes(self):
         """UNIT test: services.common.simualtion.passes
         """
-
-        self.__tle_fb_id = 'FirebirdTEST'
-        self.__tle_fb_l1 = '1 99991U          15030.59770833 -.00001217  ' \
-                           '00000-0 -76033-4 0 00007'
-        self.__tle_fb_l2 = '2 99991 099.0667 036.7936 0148154 343.1198 ' \
-                           '145.4319 15.00731498000018'
+        self.__tle_fb_id = 'MySpace X'
+        self.__tle_fb_l1 = '1 32790U 08021H   16040.85160480  .00000970  00000-0  11355-3 0  9999'
+        self.__tle_fb_l2 = '2 32790  97.6150  79.0769 0014081   9.0580 351.0888 14.87164120421504'
 
         self.__tle_fb = tle_models.TwoLineElement.objects.create(
             'testingsource',

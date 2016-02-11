@@ -27,7 +27,6 @@ from services.common import misc, gis
 from services.communications import models as comms_models
 from services.configuration.models import bands, channels, segments, tle
 from services.configuration.jrpc.serializers import rules
-from services.leop.models import launch as leop_models
 from services.network.models import server as server_models
 
 
@@ -142,31 +141,6 @@ def create_message(groundstation, message=MESSAGE__1_TEST):
 def create_local_server():
 
     server_models.Server.objects.load_local_server()
-
-
-def create_launch(
-    username='admin-cluster-1',
-    admin=None,
-    identifier='cluster-1',
-    tle_l1='1 27844U 03031E   15007.47529781  .00000328  00000-0  16930-3 0'
-           '  1108',
-    tle_l2='2 27844  98.6976  18.3001 0010316  50.6742 104.9393'
-           ' 14.21678727597601',
-    date=None
-):
-
-    try:
-        if not admin:
-            admin = create_user_profile(username=username)
-    except IntegrityError:
-        admin = UserProfile.objects.get(username=username)
-
-    if not date:
-        date = datetime.datetime.today()
-
-    return leop_models.Launch.objects.create(
-        admin, identifier, date, tle_l1, tle_l2
-    )
 
 
 def init_available():

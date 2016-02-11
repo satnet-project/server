@@ -31,7 +31,7 @@ class PassiveMessages(list_views.ListView):
 
     def get_queryset(self):
         """QuerySet handler.
-        Returns the set of LEOP spacecraft that are owned by the current user
+        Returns the set of passive spacecraft that are owned by the current user
         making the requests.
         """
         # noinspection PyUnresolvedReferences

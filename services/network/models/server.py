@@ -136,13 +136,13 @@ class Server(django_models.Model):
         validators=[validators.RegexValidator(
             regex='^[a-zA-Z0-9.\-_]*$',
             message="Alphanumeric or '.-_' required",
-            code='invalid_leop_identifier'
+            code='invalid_server_identifier'
         )]
     )
 
     groundstations = django_models.ManyToManyField(
         segment_models.GroundStation,
-        verbose_name='LEOP ground stations',
+        verbose_name='Ground stations',
     )
 
     ip_address = django_models.IPAddressField(
