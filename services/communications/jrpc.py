@@ -16,6 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 import base64
+import logging
 import rpc4django
 
 from services.common import misc
@@ -23,6 +24,8 @@ from services.communications import models as comm_models
 from services.configuration.models import segments as segment_models
 from services.scheduling.models import operational as operational_models
 from website import settings as satnet_settings
+
+logger = logging.getLogger('communications')
 
 
 @rpc4django.rpcmethod(
@@ -45,6 +48,11 @@ def store_message(slot_id, upwards, forwarded, timestamp, message):
     """
     if message is None:
         raise Exception('No message included')
+
+    # TODO Create operational slot for adding testing slots
+    if slot_id < 0:
+        logger.warn('TEST: Message received for slot -1, discarding...')
+        return slot_id
 
     operational_slot = operational_models.OperationalSlot.objects.get(
         identifier=slot_id
