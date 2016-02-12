@@ -330,7 +330,7 @@ class OperationalSlot(django_models.Model):
     pass_slot = django_models.ForeignKey(
         pass_models.PassSlots,
         verbose_name='Pass slots related with this OperationalSlot',
-        default=1
+        null=True
     )
 
     start = django_models.DateTimeField('Slot start')

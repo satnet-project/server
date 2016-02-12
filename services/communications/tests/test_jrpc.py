@@ -259,7 +259,7 @@ class TestPassiveCommunications(TestCase):
         )
 
     def test_store_message_testing_slot(self):
-        """JRPC test: services.communications.store_message (3)
+        """JRPC test: services.communications.storeMessage (3)
 
         Unit test that validates the storage of messages when referred to the
         operational slot -1, which does not exist. This method is necessary for
