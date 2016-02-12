@@ -230,10 +230,23 @@ configure_apache()
     sudo service apache2 reload
 }
 
-__pgsql_batch='/tmp/__pgsql_batch'
-__pgsql_user='postgres'
 django_db='satnet_db'
 django_db_user='satnet'
+configure_mysql()
+{
+
+    # ### 1) Create database:
+    [[ ! $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]] && {
+        echo ">>>> Database db = $django_db already exists, removing..."
+        sudo -u postgres dropdb $django_db
+    }
+
+    # CREATE DATABASE <dbname> CHARACTER SET utf8;
+
+}
+
+__pgsql_batch='/tmp/__pgsql_batch'
+__pgsql_user='postgres'
 # ### Configures a PostgreSQL server with a database for the SATNET system.
 configure_postgresql()
 {
@@ -540,7 +553,7 @@ webservices_secrets_dir="$webservices_dir/website/secrets"
 webservices_requirements_txt="$webservices_dir/requirements.txt"
 webservices_secrets_init="$webservices_secrets_dir/__init__.py"
 webservices_secrets_auth="$webservices_secrets_dir/auth.py"
-webservices_secrets_database="$webservices_secrets_dir/database.py"
+webservices_secrets_database="$webservices_secrets_dir/database.cnf"
 webservices_secrets_email="$webservices_secrets_dir/email.py"
 webservices_secrets_pusher="$webservices_secrets_dir/pusher.py"
 webservices_venv_dir="$webservices_dir/.venv"

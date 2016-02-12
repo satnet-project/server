@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import os
 import sys
-from .secrets import auth, database, email, pusher
+from .secrets import auth, email, pusher
 
 
 # Django website for WebServices project.
@@ -30,7 +30,14 @@ ADMINS = [
 ]
 MANAGERS = ADMINS
 
-DATABASES = database.DATABASES
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'OPTIONS': {
+            'read_default_file': '.website/secrets/database.cnf',
+        },
+    }
+}
 
 BASE_DIR = os.path.join(
     os.path.dirname(__file__), '..'

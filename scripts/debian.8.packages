@@ -18,9 +18,7 @@ libxml2-dev
 libxslt1-dev
 openssl
 phppgadmin
-postgresql
-postgresql-contrib
-postgresql-server-dev-all
+mysql-server
 python
 python-dev
 python-pip
@@ -30,4 +28,3 @@ python3-dev
 ruby
 rubygems-integration
 yui-compressor
-libsnappy-dev
