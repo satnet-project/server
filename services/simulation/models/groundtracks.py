@@ -21,11 +21,11 @@ from datetime import timedelta as py_td
 from django.db import models
 import logging
 import json
-# from djorm_pgarray import fields as pgarray_fields
 
 from services.common import simulation, misc, slots as sn_slots
 from services.configuration.models import segments as segment_models
 from services.configuration.models import tle as tle_models
+
 
 logger = logging.getLogger('simulation')
 
@@ -53,54 +53,6 @@ class GroundTrackManager(models.Manager):
             timestamp=ts, latitude=lat, longitude=lng,
             spacecraft=spacecraft, tle=spacecraft.tle
         )
-
-    @staticmethod
-    def append_new(groundtrack, new_ts, new_lat, new_lng):
-        """
-        Appends the new points to the existing groundtrack. It does not save
-        the results in the database.
-
-        :param groundtrack: The groundtrack to be updated.
-        :param new_ts: The new timestamps to be appended
-        :param new_lat: The new latitudes to be appended
-        :param new_lng: The new longitudes to be appended
-        :return: The updated groundtrack object
-        """
-        # ts_l = groundtrack.timestamp
-        # la_l = groundtrack.latitude
-        # lo_l = groundtrack.longitude
-
-        ts_l = json.loads(groundtrack.timestamp)
-        la_l = json.loads(groundtrack.latitude)
-        lo_l = json.loads(groundtrack.longitude)
-
-        # If the list is not empty, we have to check whether the new simulated
-        # points are already included in the list. The latter condition is met
-        # whenever the last element of the already stored list is not smaller
-        # than the first element of the new groundtrack points (both list are
-        # sored in terms of timestamps).
-        if ts_l and not(ts_l[-1] < new_ts[0]):
-
-            # With the bisect algorithm (dichotomy) we find the position of the
-            # first element that is bigger than the given timestamp, that is,
-            # the position of the new timestamp array that can be appended to
-            # the existing groundtrack.
-            position = bisect.bisect_left(new_ts, ts_l[-1])
-
-            # The arrays are corrected in consequence
-            new_ts = new_ts[position:]
-            new_lat = new_lat[position:]
-            new_lng = new_lng[position:]
-
-        # groundtrack.timestamp = ts_l + new_ts
-        # groundtrack.latitude = la_l + new_lat
-        # groundtrack.longitude = lo_l + new_lng
-
-        groundtrack.timestamp = json.dumps(ts_l + new_ts)
-        groundtrack.latitude = json.dumps(la_l + new_lat)
-        groundtrack.longitude = json.dumps(lo_l + new_lng)
-
-        return groundtrack
 
     @staticmethod
     def groundtrack_to_dbarray(groundtrack):
@@ -139,29 +91,20 @@ class GroundTrackManager(models.Manager):
 
         for gt in self.all():
 
+            ts_l, la_l, lo_l = gt.read()
+
             logger.info(
-                '>>> @groundtracks.delete_older, gt.sc = ' +
-                str(gt.spacecraft.identifier)
+                '>>> @groundtracks.delete_older, gt.sc = ' + str(
+                    gt.spacecraft.identifier
+                )
             )
 
-            if not gt.timestamp:
-                logger.info(
-                    '>>> @groundtracks.delete_older, EMPTY GT'
-                )
+            if not ts_l:
+                logger.info('>>> @groundtracks.delete_older, EMPTY GT')
                 continue
 
-            index = bisect.bisect_left(gt.timestamp, threshold.timestamp())
-
-            ts_l = gt.timestamp
-            la_l = gt.latitude
-            lo_l = gt.longitude
-
-            gt.timestamp = ts_l[index:]
-            gt.latitude = la_l[index:]
-            gt.longitude = lo_l[index:]
-
-            gt.save()
-
+            index = bisect.bisect_left(ts_l, threshold.timestamp())
+            gt.write(ts_l[index:], la_l[index:], lo_l[index:])
             no_deleted += index
 
         return no_deleted
@@ -187,26 +130,24 @@ class GroundTrackManager(models.Manager):
 
         for gt in self.all():
 
-            if gt.timestamp:
+            ts_l, la_l, lo_l = gt.read()
 
-                logger.info(
-                    '>>> @groundtracks.propagate.gt.len (BEFORE) = ' +
-                    str(len(gt.timestamp)) + ', gt.timestamp[-1] = ' +
-                    str(gt.timestamp[-1])
+            logger.info(
+                '>>> @groundtracks.propagate, gt.sc = ' + str(
+                    gt.spacecraft.identifier
                 )
+            )
 
-                dt_ts = misc.localize_date_utc(py_dt.fromtimestamp(
-                    gt.timestamp[-1]
-                ))
+            if not ts_l:
+                logger.info('>>> @groundtracks.propagate, EMPTY GT')
+                continue
 
-                diff = py_td(seconds=abs((dt_ts - interval[0]).total_seconds()))
+            dt_ts = misc.localize_date_utc(py_dt.fromtimestamp(ts_l[-1]))
+            diff = py_td(seconds=abs((dt_ts - interval[0]).total_seconds()))
 
-                if diff < threshold:
-                    logger.info('>>> @groundtracks.propagate, THRESHOLD')
-                    continue
-
-            else:
-                logger.info('gt.len is empty')
+            if diff < threshold:
+                logger.info('>>> @groundtracks.propagate, THRESHOLD')
+                continue
 
             try:
 
@@ -214,24 +155,12 @@ class GroundTrackManager(models.Manager):
                     spacecraft_tle=gt.tle, interval=interval
                 )
                 ts, lat, lng = GroundTrackManager.groundtrack_to_dbarray(new_gt)
-                gt = GroundTrackManager.append_new(gt, ts, lat, lng)
-                gt.save()
-
-                if gt:
-                    logger.info(
-                        '>>> @groundtracks.propagate.gt.len (AFTER) = ' +
-                        str(len(gt.timestamp))
-                    )
-                else:
-                    logger.info('>>> @groundtracks.propagate.gt is None')
+                gt.append(ts, lat, lng)
 
             except Exception as ex:
-
-                logger.exception(
-                    'Error propagating groundtrack = ' + str(len(
-                        gt.timestamp
-                    )) + 'ex = ' + str(ex)
-                )
+                logger.exception('Error propagating groundtrack, ex = ' + str(
+                    ex
+                ))
 
 
 class GroundTrack(models.Model):
@@ -271,17 +200,71 @@ class GroundTrack(models.Model):
         verbose_name='List of timestamps in a comma separated value'
     )
 
-    """
-    latitude = pgarray_fields.FloatArrayField(
-        verbose_name='Latitude for the points of the GroundTrack'
-    )
-    longitude = pgarray_fields.FloatArrayField(
-        verbose_name='Longitude for the points of the GroundTrack'
-    )
-    timestamp = pgarray_fields.BigIntegerArrayField(
-        verbose_name='UTC time at which the spacecraft is going to pass over'
-    )
-    """
+    def append(self, timestamps, latitudes, longitudes):
+        """
+        Appends the new points to the existing groundtrack. It does not save
+        the results in the database.
+
+        :param timestamps: The new timestamps to be appended
+        :param latitudes: The new latitudes to be appended
+        :param longitudes: The new longitudes to be appended
+        :return: The updated groundtrack object
+        """
+        tss, las, lns = self.read()
+
+        # If the list is not empty, we have to check whether the new simulated
+        # points are already included in the list. The latter condition is met
+        # whenever the last element of the already stored list is not smaller
+        # than the first element of the new groundtrack points (both list are
+        # sored in terms of timestamps).
+        if tss and not(tss[-1] < timestamps[0]):
+
+            # With the bisect algorithm (dichotomy) we find the position of the
+            # first element that is bigger than the given timestamp, that is,
+            # the position of the new timestamp array that can be appended to
+            # the existing groundtrack.
+            position = bisect.bisect_left(timestamps, tss[-1])
+
+            # The arrays are corrected in consequence
+            timestamps = timestamps[position:]
+            latitudes = latitudes[position:]
+            longitudes = longitudes[position:]
+
+        self.write(tss + timestamps, las + latitudes, lns + longitudes)
+
+    def read(self):
+        """
+        Returns the groundtrack as a tuple of float arrays.
+        :return: 3-tuple of float arrays, (timestamp, latitude, longitud)
+        """
+        return (
+            json.loads(self.timestamp),
+            json.loads(self.latitude),
+            json.loads(self.longitude)
+        )
+
+    def write(self, timestamps, latitudes, longitudes):
+        """
+        Writes the given arrays of floats into the database as GroundTrack
+        objects. It uses "json.dumps()" to dump it out as a string in a
+        TextField within the database object.
+
+        :param timestamps: Array of floats
+        :param latitudes: Array of floats
+        :param longitudes: Array of floats
+        """
+        self.timestamp = json.dumps(timestamps)
+        self.latitude = json.dumps(latitudes)
+        self.longitude = json.dumps(longitudes)
+        self.save()
+
+    def len(self):
+        """
+        Returns the length of the groundtrack - just a convenience method.
+        :return: Number of points of the groundtrack
+        """
+        tss, las, lns = self.read()
+        return len(tss)
 
     def __unicode__(self):
         """Unicode

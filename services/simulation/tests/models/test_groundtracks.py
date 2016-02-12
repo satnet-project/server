@@ -51,51 +51,72 @@ class GroundTrackTests(test.TestCase):
             tle_id=self.__sc_1_tle_id,
         )
 
-    def test_append_new_nominal(self):
-        """services.simulation.models.groundtracks: test append_new (NOMINAL)
+    def test_read_write(self):
+        """services.simulation.models.groundtracks: read + write
         """
         gt = groundtrack_models.GroundTrack.objects.get(spacecraft=self.__sc_1)
 
-        new_ts = [gt.timestamp[-1] + 1, gt.timestamp[-1] + 2]
-        new_lat = [gt.latitude[-1] + 1, gt.latitude[-1] + 2]
-        new_lng = [gt.longitude[-1] + 1, gt.longitude[-1] + 2]
+        ts, la, lo = gt.read()
+        ts[1] = 0
+        la[1] = 0
+        lo[1] = 0
+        gt.write(ts, la, lo)
+        ts2, la2, lo2 = gt.read()
+        self.assertEquals(ts, ts2)
+        self.assertEquals(la, la2)
+        self.assertEquals(lo, lo2)
+
+        gt.write(ts2[2:], la2[2:], lo2[2:])
+        ts3, la3, lo3 = gt.read()
+        self.assertEquals(ts[2:], ts3)
+        self.assertEquals(la[2:], la3)
+        self.assertEquals(lo[2:], lo3)
+
+    def test_append_new_nominal(self):
+        """services.simulation.models.groundtracks: append (NOMINAL)
+        """
+        gt = groundtrack_models.GroundTrack.objects.get(spacecraft=self.__sc_1)
+        tss, las, lns = gt.read()
+
+        new_ts = [tss[-1] + 1, tss[-1] + 2]
+        new_lat = [las[-1] + 1, las[-1] + 2]
+        new_lng = [lns[-1] + 1, lns[-1] + 2]
 
         x_gt = {
-            'timestamp': gt.timestamp + new_ts,
-            'latitude': gt.latitude + new_lat,
-            'longitude': gt.longitude + new_lng
+            'timestamp': tss + new_ts,
+            'latitude': las + new_lat,
+            'longitude': lns + new_lng
         }
 
-        r_gt = groundtrack_models.GroundTrackManager.append_new(
-            gt, new_ts, new_lat, new_lng
-        )
+        gt.append(new_ts, new_lat, new_lng)
+        r_tss, r_las, r_lns = gt.read()
 
-        self.assertEquals(r_gt.timestamp, x_gt['timestamp'])
-        self.assertEquals(r_gt.latitude, x_gt['latitude'])
-        self.assertEquals(r_gt.longitude, x_gt['longitude'])
+        self.assertEquals(r_tss, x_gt['timestamp'])
+        self.assertEquals(r_las, x_gt['latitude'])
+        self.assertEquals(r_lns, x_gt['longitude'])
 
     def test_append_new_overlap(self):
         """services.simulation.models.groundtracks: test append_new (OVERLAP)
         """
         gt = groundtrack_models.GroundTrack.objects.get(spacecraft=self.__sc_1)
+        tss, las, lns = gt.read()
 
-        new_ts = [gt.timestamp[-1] - 1, gt.timestamp[-1] + 1]
-        new_lat = [gt.latitude[-1] + 1, gt.latitude[-1] + 2]
-        new_lng = [gt.longitude[-1] + 1, gt.longitude[-1] + 2]
+        new_ts = [tss[-1] - 1, tss[-1] + 1]
+        new_lat = [las[-1] + 1, las[-1] + 2]
+        new_lng = [lns[-1] + 1, lns[-1] + 2]
 
         x_gt = {
-            'timestamp': gt.timestamp + [gt.timestamp[-1] + 1],
-            'latitude': gt.latitude + [gt.latitude[-1] + 2],
-            'longitude': gt.longitude + [gt.longitude[-1] + 2]
+            'timestamp': tss + [tss[-1] + 1],
+            'latitude': las + [las[-1] + 2],
+            'longitude': lns + [lns[-1] + 2]
         }
 
-        r_gt = groundtrack_models.GroundTrackManager.append_new(
-            gt, new_ts, new_lat, new_lng
-        )
+        gt.append(new_ts, new_lat, new_lng)
+        r_tss, r_las, r_lns = gt.read()
 
-        self.assertEquals(r_gt.timestamp, x_gt['timestamp'])
-        self.assertEquals(r_gt.latitude, x_gt['latitude'])
-        self.assertEquals(r_gt.longitude, x_gt['longitude'])
+        self.assertEquals(r_tss, x_gt['timestamp'])
+        self.assertEquals(r_las, x_gt['latitude'])
+        self.assertEquals(r_lns, x_gt['longitude'])
 
     def test_groundtracks_reboot(self):
         """UNIT test: services.simulation.models - gts generation REBOOT
@@ -105,13 +126,15 @@ class GroundTrackTests(test.TestCase):
         logger.debug('#### FIRST PART OF THE TEST, CURRENT INTERVAL')
 
         groundtrack_models.GroundTrack.objects.propagate()
-        sc_gts_n_1 = len(groundtrack_models.GroundTrack.objects.get(
+
+        sc_gts_n_1 = groundtrack_models.GroundTrack.objects.get(
             spacecraft=self.__sc_1
-        ).timestamp)
+        ).len()
         groundtrack_models.GroundTrack.objects.propagate()
-        sc_gts_n_2 = len(groundtrack_models.GroundTrack.objects.get(
+
+        sc_gts_n_2 = groundtrack_models.GroundTrack.objects.get(
             spacecraft=self.__sc_1
-        ).timestamp)
+        ).len()
         self.assertEquals(sc_gts_n_1, sc_gts_n_2)
 
         # 2) now, we change the interval of application for avoiding reboots
@@ -123,13 +146,13 @@ class GroundTrackTests(test.TestCase):
         )
 
         groundtrack_models.GroundTrack.objects.propagate(interval=interval)
-        sc_gts_n_3 = len(groundtrack_models.GroundTrack.objects.get(
+        sc_gts_n_3 = groundtrack_models.GroundTrack.objects.get(
             spacecraft=self.__sc_1
-        ).timestamp)
+        ).len()
         self.assertGreater(sc_gts_n_3, sc_gts_n_2)
 
         groundtrack_models.GroundTrack.objects.propagate(interval=interval)
-        sc_gts_n_4 = len(groundtrack_models.GroundTrack.objects.get(
+        sc_gts_n_4 = groundtrack_models.GroundTrack.objects.get(
             spacecraft=self.__sc_1
-        ).timestamp)
+        ).len()
         self.assertEquals(sc_gts_n_4, sc_gts_n_3)

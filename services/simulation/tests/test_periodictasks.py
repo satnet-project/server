@@ -169,9 +169,7 @@ class PeriodicSimulationTest(test.TestCase):
         simulation_tasks.clean_groundtracks(
             threshold=sn_misc.get_next_midnight() + py_timedelta(days=10)
         )
-        sc_gts_n_4 = len(
-            groundtrack_models.GroundTrack.objects.get(
-                spacecraft=self.__sc_1
-            ).timestamp
-        )
+        sc_gts_n_4 = groundtrack_models.GroundTrack.objects.get(
+            spacecraft=self.__sc_1
+        ).len()
         self.assertEquals(sc_gts_n_4, 0)

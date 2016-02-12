@@ -42,34 +42,26 @@ class SimulationSerializer(object):
         """
         result = []
         index = 0
-        gt_length = len(groundtrack.timestamp)
+        ts_l, la_l, lo_l = groundtrack.read()
+        gt_length = len(ts_l)
+
         start_date = misc.get_now_utc()
         end_date = start_date + SimulationSerializer._PERIOD
         start_ts = start_date.timestamp()
         end_ts = end_date.timestamp()
 
-        print('>>> @serialize_groundtrack.start_ts = ' + str(start_ts))
-        print('>>> @serialize_groundtrack.end_ts = ' + str(end_ts))
-
         while index < gt_length:
 
-            ts_i = groundtrack.timestamp[index]
-
-            # print('>>> @serialize_groundtrack.ts_i = ' + str(ts_i))
+            ts_i = ts_l[index]
 
             if ts_i > end_ts:
-                print('>>> @serialize_groundtrack, BREAK')
                 break
 
             if ts_i > start_ts:
                 result.append({
                     SimulationSerializer.TIMESTAMP_K: ts_i,
-                    SimulationSerializer.LATITUDE_K: groundtrack.latitude[
-                        index
-                    ],
-                    SimulationSerializer.LONGITUDE_K: groundtrack.longitude[
-                        index
-                    ]
+                    SimulationSerializer.LATITUDE_K: la_l[index],
+                    SimulationSerializer.LONGITUDE_K: lo_l[index]
                 })
 
             index += SimulationSerializer._DECIMATION_RATE
