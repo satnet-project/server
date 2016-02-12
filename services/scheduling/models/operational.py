@@ -27,6 +27,8 @@ from services.simulation.models import passes as pass_models
 
 logger = logging.getLogger('scheduling')
 
+TEST_O_SLOT_ID = 'Test, SLOT -1'
+
 # Possible states for the slots.
 STATE_FREE = str('FREE')
 STATE_SELECTED = str('SELECTED')
@@ -80,6 +82,17 @@ class OperationalSlotsManager(django_models.Manager):
             ) + OperationalSlot.ID_FIELDS_SEPARATOR + str(
                 sn_misc.get_utc_timestamp(start)
             )
+
+    def create_test_slot(self):
+        """
+        Creates a new OperationalSlot in the database.
+
+        :return: The just created object in the database
+        """
+        today = sn_misc.get_today_utc()
+        return super(OperationalSlotsManager, self).create(
+            identifier=TEST_O_SLOT_ID, start=today, end=today
+        )
 
     def create(self, pass_slot, availability_slot, start, end):
         """

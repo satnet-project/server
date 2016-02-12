@@ -16,10 +16,16 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 from django.db import models
+import logging
+
 from services.common import misc
 from services.configuration.models import segments as segment_models
 from services.configuration.models import channels as channel_models
+from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
+
+
+logger = logging.getLogger('communications')
 
 
 class PassiveMessage(models.Model):
@@ -76,6 +82,36 @@ class MessageManager(models.Manager):
     database.
     """
 
+    @staticmethod
+    def get_channels(operational_slot):
+        """
+        This function returns a tuple with the ground station and the
+        spacecraft channels involved in the communication.
+
+        :param operational_slot: Reference to the operational slot
+        :return: Tuple with the references to the GS and SC channels
+        """
+        if operational_slot.identifier == operational_models.TEST_O_SLOT_ID:
+            return None, None
+
+        try:
+
+            channels = compatibility_models.ChannelCompatibility.objects\
+                .filter(
+                    spacecraft=operational_slot.pass_slot.spacecraft,
+                    groundstation=operational_slot.pass_slot.groundstation
+                )[0]
+            return (
+                channels.groundstation_channel, channels.spacecraft_channel
+            )
+
+        except compatibility_models.ChannelCompatibility.DoesNotExist:
+
+            raise ValueError(
+                'No compatible channels found, discarding message for slot =' +
+                str(operational_slot.identifier)
+            )
+
     def create(
         self, operational_slot, upwards, forwarded, tx_timestamp, message
     ):
@@ -84,6 +120,11 @@ class MessageManager(models.Manager):
         the current UTC timestamp as the timestamp of the moment at which this
         message was received in the server.
 
+        # TODO The protocol should invoke the function for storing the message
+        #       within the database including the channels involved in the
+        #       communication, which will definitely allow supporting multiple
+        #       channels.
+
         :param operational_slot: The referenced slot
         :param upwards: Flag indicating the direction of the message
         :param forwarded: Flag indicating whether the message was forwarded
@@ -91,13 +132,12 @@ class MessageManager(models.Manager):
                                 received at the GroundStation
         :param message: Binary message to be stored in the database
         """
-        gs_channel = operational_slot.groundstation_channel,
-        sc_channel = operational_slot.spacecraft_channel
+        channels = MessageManager.get_channels(operational_slot)
 
         return super(MessageManager, self).create(
             operational_slot=operational_slot,
-            groundstation_channel=gs_channel,
-            spacecraft_channel=sc_channel,
+            groundstation_channel=channels[0],
+            spacecraft_channel=channels[1],
             upwards=upwards,
             forwarded=forwarded,            
             reception_timestamp=misc.get_utc_timestamp(),
@@ -122,10 +162,12 @@ class Message(models.Model):
 
     groundstation_channel = models.ForeignKey(
         channel_models.GroundStationChannel,
+        null=True,
         verbose_name='GroundStation channel that tx/rx this message'
     )
     spacecraft_channel = models.ForeignKey(
         channel_models.SpacecraftChannel,
+        null=True,
         verbose_name='Spacecraft channel that tx/rx this message'
     )
 
@@ -145,4 +187,7 @@ class Message(models.Model):
         'Timestamp at which this message was forwarded to the receiver'
     )
 
-    message = models.BinaryField('Message raw data')
+    message = models.CharField(
+        'Message raw data in base64',
+        max_length=4000
+    )

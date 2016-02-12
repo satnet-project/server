@@ -23,8 +23,27 @@ from services.scheduling.models import availability as availability_models
 from services.scheduling.models import compatibility as compatibility_models
 from services.scheduling.models import operational as operational_models
 from services.simulation.models import passes as pass_models
+from website import signals as sn_signals
 
 logger = logging.getLogger('scheduling')
+
+
+# noinspection PyUnusedLocal
+@django_dispatch.receiver(sn_signals.sn_loaded)
+def satnet_loaded(sender, **kwargs):
+    """SIGNAL
+    Creates the operational slot for the slot -1, only to be used for testing
+    purposes.
+
+    :param sender: any sender is accepted
+    :param kwargs: Additional parameters
+    """
+    try:
+        operational_models.OperationalSlot.objects.get(
+            identifier=operational_models.TEST_O_SLOT_ID
+        )
+    except operational_models.OperationalSlot.DoesNotExist:
+        operational_models.OperationalSlot.objects.create_test_slot()
 
 
 # noinspection PyUnusedLocal

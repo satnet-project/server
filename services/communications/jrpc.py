@@ -28,6 +28,9 @@ from website import settings as satnet_settings
 logger = logging.getLogger('communications')
 
 
+TEST_SLOT_ID = '-1'
+
+
 @rpc4django.rpcmethod(
     name='communications.storeMessage',
     signature=['String', 'boolean', 'boolean', 'int', 'String'],
@@ -49,14 +52,17 @@ def store_message(slot_id, upwards, forwarded, timestamp, message):
     if message is None:
         raise Exception('No message included')
 
-    # TODO Create operational slot for adding testing slots
-    if slot_id < 0:
-        logger.warn('TEST: Message received for slot -1, discarding...')
-        return slot_id
+    operational_slot = None
 
-    operational_slot = operational_models.OperationalSlot.objects.get(
-        identifier=slot_id
-    )
+    if slot_id == TEST_SLOT_ID:
+        logger.warn('TEST: Message received for slot -1, discarding...')
+        operational_slot = operational_models.OperationalSlot.objects.get(
+            identifier=operational_models.TEST_O_SLOT_ID
+        )
+    else:
+        operational_slot = operational_models.OperationalSlot.objects.get(
+            identifier=slot_id
+        )
 
     # Tries to decode the message in BASE64, if wrong, an exception is thrown.
     # Otherwise, this is just a check for the message, the message will be
