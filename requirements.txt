@@ -14,7 +14,6 @@ django-periodically==0.3.0
 django-preserialize==1.1.0
 django-session-security==2.2.4
 django-user-sessions==1.2.0
-djorm-pgarray==1.2
 ephem==3.7.6.0
 idna==2.0
 ndg-httpsclient==0.4.0
