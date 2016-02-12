@@ -324,7 +324,7 @@ class OperationalSlot(django_models.Model):
     availability_slot = django_models.ForeignKey(
         availability_models.AvailabilitySlot,
         verbose_name='Availability slot related with this OperationalSlot',
-        default=1
+        null=True
     )
 
     pass_slot = django_models.ForeignKey(

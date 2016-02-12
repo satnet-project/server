@@ -2,6 +2,7 @@
 __v_env/
 .32venv/
 .venv
+.denv
 .idea
 .env
 test.kml
