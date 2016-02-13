@@ -8,6 +8,7 @@ __v_env/
 test.kml
 coverage.xml
 public_html/
+website/secrets
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -40,7 +41,6 @@ pip-delete-this-directory.txt
 .coverage
 .cache
 nosetests.xml
-coverage.xml
 
 # Translations
 *.mo

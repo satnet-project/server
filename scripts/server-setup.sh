@@ -201,7 +201,7 @@ configure_apache()
     echo '' | sudo tee -a $__satnet_apache_conf
     echo '</VirtualHost>' | sudo tee -a $__satnet_apache_conf
 
-    sudo sed -i -e 's/allow from 127/# allow from 127/g' -e 's/# allow from all/allow from all/g' $__phppgadmin_apache_config
+    # sudo sed -i -e 's/allow from 127/# allow from 127/g' -e 's/# allow from all/allow from all/g' $__phppgadmin_apache_config
     # ### Extra login security can be disabled for local access only by
     # uncommenting the following <sed> command. This permits the access to
     # <phppgadmin> by using <root> or <postgres>.
@@ -313,7 +313,7 @@ create_secrets()
 
     echo 'DATABASES = {' > $webservices_secrets_database
     echo "    'default': {" >> $webservices_secrets_database
-    echo "        'ENGINE': 'django.db.backends.postgresql_psycopg2'," >> $webservices_secrets_database
+    echo "        'ENGINE': 'django.db.backends.mysql'," >> $webservices_secrets_database
     echo "        'NAME': '$django_db'," >> $webservices_secrets_database
     echo "        'USER': '$django_db_user'," >> $webservices_secrets_database
     echo "        'PASSWORD': '$django_db_password'," >> $webservices_secrets_database
@@ -553,7 +553,7 @@ webservices_secrets_dir="$webservices_dir/website/secrets"
 webservices_requirements_txt="$webservices_dir/requirements.txt"
 webservices_secrets_init="$webservices_secrets_dir/__init__.py"
 webservices_secrets_auth="$webservices_secrets_dir/auth.py"
-webservices_secrets_database="$webservices_secrets_dir/database.cnf"
+webservices_secrets_database="$webservices_secrets_dir/database.py"
 webservices_secrets_email="$webservices_secrets_dir/email.py"
 webservices_secrets_pusher="$webservices_secrets_dir/pusher.py"
 webservices_venv_dir="$webservices_dir/.venv"

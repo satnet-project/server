@@ -17,7 +17,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 
 import os
 import sys
-from .secrets import auth, email, pusher
+from .secrets import auth, database, email, pusher
 
 
 # Django website for WebServices project.
@@ -30,27 +30,7 @@ ADMINS = [
 ]
 MANAGERS = ADMINS
 
-#    echo "'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#    echo "'NAME': '$django_db',"
-#    echo "'USER': '$django_db_user',"
-#    echo "'PASSWORD': '$django_db_password',
-#    echo "'HOST': 'localhost',"
-#    echo "'PORT': '',"
-
-#        'OPTIONS': {
-#            'read_default_file': './website/secrets/database.cnf',
-#        },
-
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'satnet',
-        'USER': 'satnet',
-        'PASSWORD': '_36201Satnet',
-        'PORT': ''
-    }
-}
+DATABASES = database.DATABASES
 
 BASE_DIR = os.path.join(
     os.path.dirname(__file__), '..'
