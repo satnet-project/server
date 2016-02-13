@@ -16,7 +16,7 @@
    id="svg2"
    inkscape:version="0.48.5 r10040"
    sodipodi:docname="satnet-logo-white.svg"
-   inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/satnet-logo-x-bw.png"
+   inkscape:export-filename="/home/rtubio/repositories/satnet/server/website/static/src/images/satnet-logo-white.png"
    inkscape:export-xdpi="387.64001"
    inkscape:export-ydpi="387.64001">
   <metadata
@@ -89,7 +89,7 @@
      id="namedview41"
      showgrid="false"
      inkscape:zoom="1.01875"
-     inkscape:cx="158.06347"
+     inkscape:cx="160.02666"
      inkscape:cy="400"
      inkscape:window-x="979"
      inkscape:window-y="27"
@@ -144,7 +144,7 @@
        inkscape:export-ydpi="150"><textPath
          xlink:href="#path35"
          id="textPath3058"
-         style="font-size:14.48532391px;fill:#ffffff">uvigo - calpoly - inpe - 2016</textPath></text>
+         style="font-size:14.48532391px;fill:#ffffff">uvigo - calpoly - unibo - inpe</textPath></text>
     <path
        style="fill:none;stroke:#ffffff;stroke-width:1.69079006;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
        d="m 325.91994,-294.38072 c 8.33953,34.27978 -4.16976,59.98963 -25.01855,98.55438"
