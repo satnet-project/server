@@ -235,22 +235,24 @@ django_db='satnet'
 django_test_db='test_satnet'
 django_db_user='satnet'
 __mysql_batch='/tmp/mysqlbatch'
+
+
+DB_SHOW_Q="SHOW DATABASES;"
+DB_CREATE_Q="CREATE DATABASE $django_db CHARACTER SET utf8;"
+DB_DROP_Q="DROP DATABASE IF EXISTS $django_db;"
+DB_TEST_DROP_Q="DROP DATABASE IF EXISTS $django_test_db;"
+USER_EXISTS_Q="SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$django_db_user');"
+USER_CREATE_Q="CREATE USER '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
+USER_DROP0_Q="GRANT USAGE ON $django_db.* TO '$django_db_user'@'localhost';"
+USER_DROP_Q="DROP USER '$django_db_user'@'localhost';"
+USER_PASS0_Q="SET old_passwords = 0;"
+USER_PRIV_Q="GRANT ALL ON $django_db.* TO '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
+USER_PRIV_ALL_Q="GRANT ALL PRIVILEGES ON $django_db.* TO '$django_db_user'@'localhost' WITH GRANT OPTION;"
+USER_PRIV_TEST_Q="GRANT ALL PRIVILEGES ON $django_test_db.* TO '$django_db_user'@'localhost';"
+USER_FLUSHPRIV_Q="FLUSH PRIVILEGES;"
+
 configure_mysql()
 {
-
-    DB_SHOW_Q="SHOW DATABASES;"
-    DB_CREATE_Q="CREATE DATABASE $django_db CHARACTER SET utf8;"
-    DB_DROP_Q="DROP DATABASE IF EXISTS $django_db;"
-    DB_TEST_DROP_Q="DROP DATABASE IF EXISTS $django_test_db;"
-    USER_EXISTS_Q="SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$django_db_user');"
-    USER_CREATE_Q="CREATE USER '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
-    USER_DROP0_Q="GRANT USAGE ON $django_db.* TO '$django_db_user'@'localhost';"
-    USER_DROP_Q="DROP USER '$django_db_user'@'localhost';"
-    USER_PASS0_Q="SET old_passwords = 0;"
-    USER_PRIV_Q="GRANT ALL ON $django_db.* TO '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
-    USER_PRIV_ALL_Q="GRANT ALL PRIVILEGES ON $django_db.* TO '$django_db_user'@'localhost' WITH GRANT OPTION;"
-    USER_PRIV_TEST_Q="GRANT ALL PRIVILEGES ON $django_test_db.* TO '$django_db_user'@'localhost';"
-    USER_FLUSHPRIV_Q="FLUSH PRIVILEGES;"
 
     echo '' > $__mysql_batch
     echo "$DB_TEST_DROP_Q" >> $__mysql_batch
@@ -278,57 +280,19 @@ configure_mysql()
 
 }
 
-__pgsql_batch='/tmp/__pgsql_batch'
-__pgsql_user='postgres'
-# ### Configures a PostgreSQL server with a database for the SATNET system.
-configure_postgresql()
-{
-
-    # ### Uncomment the following lines if you want to reset default user's
-    # password.
-    #echo 'User <postgres> grants access through <phppgadmin>'
-    #echo 'Configure password for user <postgres>.'
-    #echo "\password postgres" > $__pgsql_batch
-    #sudo -u postgres psql -f $__pgsql_batch
-
-    # ### 1) Create database:
-
-    [[ ! $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]] && {
-        echo ">>>> Database db = $django_db already exists, removing..."
-        try sudo -u postgres dropdb $django_db
-    }
-
-    echo ">>>> Creating postgres database, name = <$django_db>"
-    try sudo -u postgres createdb $django_db
-
-    # ### 2) Create user for accessing the database:
-
-    [[ $( sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$django_db_user'" ) -eq 1 ]] && {
-        echo ">>>> Postgres user = <$django_db_user> already exists, removing..."
-        try sudo -u postgres dropuser $django_db_user
-    }
-
-    echo ">>>> Creating postgres user = <$django_db_user>"
-
-    # ### ##################################################################
-    # ### PATCH: originally the next command was executed as shown in the line below, with a password prompt
-    # sudo -u postgres createuser -r -l -S -E -P -d $django_db_user
-    try sudo -u postgres createuser -r -l -S -E -d $django_db_user
-    try ask_password
-    django_db_password=$__PASSWORD
-    # ### ##################################################################
-
-    try sudo -u postgres psql -U postgres -d postgres -c "alter user $django_db_user with password '$__PASSWORD';"
-    echo "GRANT ALL PRIVILEGES ON DATABASE $django_db TO $django_db_user;" > $__pgsql_batch
-    try sudo -u postgres psql -f $__pgsql_batch
-
-}
-
 # ### Deletes all the database configuration required for the SATNET system.
-remove_postgresql()
+remove_mysql()
 {
-    sudo -u postgres dropdb $django_db
-    sudo -u postgres dropuser $django_db_user
+
+    echo '' > $__mysql_batch
+
+    echo "$DB_DROP_Q" >> $__mysql_batch
+    echo "$USER_DROP0_Q" >> $__mysql_batch
+    echo "$USER_DROP_Q" >> $__mysql_batch
+
+    echo ">>> Enter now the password for root within the database:"
+    mysql -u root --password < $__mysql_batch
+
 }
 
 
@@ -629,13 +593,13 @@ fi
 
 sudo apt-get install aptitude
 
-while getopts ":abcikmprstovx" opt; do
+while getopts ":abikmprstovx" opt; do
     case $opt in
         a)
             clear && echo '>>>>>>> Installing OS native packages...'
             install_packages
             clear && echo '>>>>>>> Configuring PostgreSQL...'
-            configure_postgresql
+            configure_mysql
             clear && echo '>>>>>>> Configuring Crontab...'
             configure_crontab
             clear && echo '>>>>>>> Configuring Root...'
@@ -652,14 +616,8 @@ while getopts ":abcikmprstovx" opt; do
             echo 'DONE'
             exit 1
             ;;
-        c)
-            clear && echo 'Creating self-signed certificates...'
-            create_self_signed_cert
-            echo 'DONE'
-            exit 1;
-            ;;
         i)
-            clear && echo '>>>>>>> Installing OS native packages...'
+            clear && echo 'Installing OS native packages...'
             install_packages
             echo 'DONE'
             ;;
@@ -669,19 +627,13 @@ while getopts ":abcikmprstovx" opt; do
             echo 'DONE'
             ;;
         m)
-            clear && echo '>>>>>>> Configuring MySQL...'
+            clear && echo 'Configuring MySQL...'
             configure_mysql
             echo 'DONE'
             ;;
-        p)
-            clear && echo 'Configuring PostgreSQL...'
-            configure_postgresql
-            echo 'DONE'
-            exit 1
-            ;;
         r)
-            echo 'Removing PostgreSQL...'
-            remove_postgresql
+            echo 'Removing MySQL...'
+            remove_mysql
             echo 'DONE'
             exit 1;
             ;;
