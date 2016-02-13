@@ -13,6 +13,7 @@ libpq-dev
 libproj-dev
 libsnappy-dev
 libsqlite3-dev
+libmysqlclient-dev
 libncurses5-dev
 libxml2-dev
 libxslt1-dev

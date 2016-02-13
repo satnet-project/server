@@ -228,20 +228,49 @@ configure_apache()
     sudo a2dissite default
     sudo a2dissite default-ssl
     sudo service apache2 reload
+
 }
 
-django_db='satnet_db'
+django_db='satnet'
+django_test_db='test_satnet'
 django_db_user='satnet'
+__mysql_batch='/tmp/mysqlbatch'
 configure_mysql()
 {
 
-    # ### 1) Create database:
-    [[ ! $( sudo -u postgres psql -l | grep $django_db | wc -l ) -eq 0 ]] && {
-        echo ">>>> Database db = $django_db already exists, removing..."
-        sudo -u postgres dropdb $django_db
-    }
+    DB_SHOW_Q="SHOW DATABASES;"
+    DB_CREATE_Q="CREATE DATABASE $django_db CHARACTER SET utf8;"
+    DB_DROP_Q="DROP DATABASE IF EXISTS $django_db;"
+    DB_TEST_DROP_Q="DROP DATABASE IF EXISTS $django_test_db;"
+    USER_EXISTS_Q="SELECT EXISTS(SELECT 1 FROM mysql.user WHERE user = '$django_db_user');"
+    USER_CREATE_Q="CREATE USER '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
+    USER_DROP0_Q="GRANT USAGE ON $django_db.* TO '$django_db_user'@'localhost';"
+    USER_DROP_Q="DROP USER '$django_db_user'@'localhost';"
+    USER_PASS0_Q="SET old_passwords = 0;"
+    USER_PRIV_Q="GRANT ALL ON $django_db.* TO '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
+    USER_FLUSHPRIV_Q="FLUSH PRIVILEGES;"
 
-    # CREATE DATABASE <dbname> CHARACTER SET utf8;
+    echo '' > $__mysql_batch
+    echo "$DB_TEST_DROP_Q" >> $__mysql_batch
+    echo "$DB_DROP_Q" >> $__mysql_batch
+    echo "$DB_CREATE_Q" >> $__mysql_batch
+    echo "$USER_DROP0_Q" >> $__mysql_batch
+    echo "$USER_DROP_Q" >> $__mysql_batch
+
+    echo '>>> Enter the password for the new MySQL user:'
+    echo "$USER_PRIV_Q" >> $__mysql_batch
+    echo "$USER_PASS0_Q" >> $__mysql_batch
+
+    ask_password
+    django_db_password=$__PASSWORD
+    USER_PASS1_Q="SET PASSWORD FOR '$django_db_user'@'localhost' = PASSWORD('$django_db_password');"
+
+    echo "$USER_PASS1_Q" >> $__mysql_batch
+    echo "$USER_FLUSHPRIV_Q" >> $__mysql_batch
+    echo "$DB_SHOW_Q" >> $__mysql_batch
+
+    echo ">>> Enter now the password for root within the database:"
+    mysql -u root --password < $__mysql_batch
 
 }
 
@@ -538,6 +567,9 @@ linux_dist=$( cat /etc/issue.net | cut -d' ' -f1 )
     [[ $debian_version -eq '8' ]] && {
         linux_packages="$script_path/debian.$debian_version.packages"
     }
+    [[ $debian_version -eq 'stretch/sid' ]] || [[ $debian_version -eq '9' ]] && {
+        linux_packages="$script_path/debian.8.packages"
+    }
 
 }
 
@@ -593,7 +625,7 @@ fi
 
 sudo apt-get install aptitude
 
-while getopts ":abcikprstovx" opt; do
+while getopts ":abcikmprstovx" opt; do
     case $opt in
         a)
             clear && echo '>>>>>>> Installing OS native packages...'
@@ -630,6 +662,11 @@ while getopts ":abcikprstovx" opt; do
         k)
             clear && echo 'Creating keys and certificates for Apache...'
             create_apache_keys
+            echo 'DONE'
+            ;;
+        m)
+            clear && echo '>>>>>>> Configuring MySQL...'
+            configure_mysql
             echo 'DONE'
             ;;
         p)
