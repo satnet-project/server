@@ -18,7 +18,7 @@ libncurses5-dev
 libxml2-dev
 libxslt1-dev
 openssl
-phppgadmin
+phpmyadmin
 mysql-server
 python
 python-dev

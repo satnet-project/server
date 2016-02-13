@@ -248,6 +248,8 @@ configure_mysql()
     USER_DROP_Q="DROP USER '$django_db_user'@'localhost';"
     USER_PASS0_Q="SET old_passwords = 0;"
     USER_PRIV_Q="GRANT ALL ON $django_db.* TO '$django_db_user'@'localhost' IDENTIFIED WITH mysql_native_password;"
+    USER_PRIV_ALL_Q="GRANT ALL PRIVILEGES ON $django_db.* TO '$django_db_user'@'localhost' WITH GRANT OPTION;"
+    USER_PRIV_TEST_Q="GRANT ALL PRIVILEGES ON $django_test_db.* TO '$django_db_user'@'localhost';"
     USER_FLUSHPRIV_Q="FLUSH PRIVILEGES;"
 
     echo '' > $__mysql_batch
@@ -266,6 +268,8 @@ configure_mysql()
     USER_PASS1_Q="SET PASSWORD FOR '$django_db_user'@'localhost' = PASSWORD('$django_db_password');"
 
     echo "$USER_PASS1_Q" >> $__mysql_batch
+    echo "$USER_PRIV_ALL_Q" >> $__mysql_batch
+    echo "$USER_PRIV_TEST_Q" >> $__mysql_batch
     echo "$USER_FLUSHPRIV_Q" >> $__mysql_batch
     echo "$DB_SHOW_Q" >> $__mysql_batch
 
