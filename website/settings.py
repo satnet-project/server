@@ -372,7 +372,7 @@ PASSWORD_COMPLEXITY = {
 APPEND_SLASH = False
 
 # XMLRequest Header formatted in JSON
-RPC4DJANGO_RESTRICT_OOTB_AUTH = False
+# RPC4DJANGO_RESTRICT_OOTB_AUTH = False
 
 # ### SATNET specific settings
 JRPC_LOGIN_REQUIRED = False
