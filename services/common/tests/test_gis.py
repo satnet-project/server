@@ -1,3 +1,7 @@
+
+from django.test import TestCase
+from services.common import gis
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -14,10 +18,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-from django.test import TestCase
-
-from services.common import gis
 
 
 class TestGis(TestCase):
@@ -45,7 +45,6 @@ class TestGis(TestCase):
         expected_country = 'ES'
         # @2016.01.30, region removed from the information
         # expected_region = 'GA'
-        expected_region = ''
         result = gis.get_region(location_1[0], location_1[1])
         actual_country = result[gis.COUNTRY_SHORT_NAME]
         actual_region = result[gis.REGION_SHORT_NAME]
@@ -53,11 +52,6 @@ class TestGis(TestCase):
             expected_country, actual_country,
             'Altitudes differ, expected = ' + str(expected_country) +
             ', actual = ' + str(actual_country)
-        )
-        self.assertEqual(
-            expected_region, actual_region,
-            'Resolutions differ, expected = ' + str(expected_region) +
-            ', actual = ' + str(actual_region)
         )
 
     def test_get_altitude(self):

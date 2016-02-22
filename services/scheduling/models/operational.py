@@ -1,3 +1,14 @@
+
+import logging
+
+from django.db import models as django_models
+from django.db.models import Q
+
+from services.common import misc as sn_misc, slots as sn_slots
+from services.scheduling.models import availability as availability_models
+from services.scheduling.models import compatibility as compatibility_models
+from services.simulation.models import passes as pass_models
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -15,15 +26,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import logging
-
-from django.db import models as django_models
-from django.db.models import Q
-
-from services.common import misc as sn_misc, slots as sn_slots
-from services.scheduling.models import availability as availability_models
-from services.scheduling.models import compatibility as compatibility_models
-from services.simulation.models import passes as pass_models
 
 logger = logging.getLogger('scheduling')
 

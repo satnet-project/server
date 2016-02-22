@@ -1,3 +1,12 @@
+
+from datetime import timedelta as py_timedelta
+from django.db import models as django_models
+import logging
+
+from services.common import simulation, misc as sn_misc, slots as sn_slots
+from services.configuration.models import segments as segment_models
+from services.simulation import push as simulation_push
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -15,13 +24,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from datetime import timedelta as py_timedelta
-from django.db import models as django_models
-import logging
-
-from services.common import simulation, misc as sn_misc, slots as sn_slots
-from services.configuration.models import segments as segment_models
-from services.simulation import push as simulation_push
 
 logger = logging.getLogger('simulation')
 

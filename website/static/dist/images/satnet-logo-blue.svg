@@ -89,7 +89,7 @@
      id="namedview41"
      showgrid="false"
      inkscape:zoom="1.01875"
-     inkscape:cx="193.78981"
+     inkscape:cx="195.753"
      inkscape:cy="400"
      inkscape:window-x="379"
      inkscape:window-y="27"
@@ -143,7 +143,7 @@
        inkscape:export-ydpi="150" />
     <text
        xml:space="preserve"
-       style="font-size:28.79999923999999822px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0f3e62;stroke:none;stroke-opacity:1;font-family:Sans;fill-opacity:1"
+       style="font-size:28.79999924px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#0f3e62;fill-opacity:1;stroke:none;font-family:Sans"
        id="text3054"
        sodipodi:linespacing="125%"
        transform="matrix(0.95897754,0,0,1.0056844,9.264956,-7.8304381)"
@@ -152,7 +152,7 @@
        inkscape:export-ydpi="150"><textPath
          xlink:href="#path35"
          id="textPath3058"
-         style="font-size:14.48532390999999997px;fill:#0f3e62;stroke:none;stroke-opacity:1;fill-opacity:1">uvigo - calpoly - inpe - 2016</textPath></text>
+         style="font-size:14.48532391px;fill:#0f3e62;fill-opacity:1;stroke:none">uvigo - calpoly - unibo - inpe</textPath></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1.69079006000000009;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:10;stroke-opacity:1"
        d="m 325.91994,-294.38072 c 8.33953,34.27978 -4.16976,59.98963 -25.01855,98.55438"

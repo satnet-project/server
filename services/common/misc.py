@@ -1,3 +1,15 @@
+
+import datetime
+from django.contrib.sites import models as site_models
+import io
+import json
+import logging
+import pytz
+import sys
+import unicodedata
+import urllib.request
+import socket
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -14,18 +26,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import datetime
-from django.contrib.sites import models as site_models
-import io
-import json
-import logging
-import pytz
-import sys
-import unicodedata
-import urllib.request
-import socket
-
 
 logger = logging.getLogger('common')
 
@@ -176,6 +176,28 @@ def get_now_utc(no_microseconds=True):
         )
     else:
         return pytz.utc.localize(datetime.datetime.utcnow())
+
+
+def get_utc_window(center=None, duration=None, no_microseconds=True):
+    """X minutes window
+    Function that returns a time window (start, end tuple) centered at the
+    current instant and with a length of as many minutes as specified as a
+    parameter. By default, the lenght is 10 minutes and the center of the
+    window is the execution instant.
+
+    Args:
+        center: datetime.datetime object that defines the center of the window
+        duration: datetime.timedelta object with the duration of the window
+        no_microseconds: flag that indicates whether the microseconds should
+                            be included in the window tuple or not
+    Returns: (start, end) tuple that defines the window
+    """
+    if not center:
+        center = get_now_utc(no_microseconds=no_microseconds)
+    if not duration:
+        duration = datetime.timedelta(minutes=5)
+
+    return center - duration, center + duration
 
 
 def get_now_hour_utc(no_microseconds=True):

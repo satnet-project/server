@@ -1,3 +1,22 @@
+
+import datetime
+import logging
+from django import test
+
+from services.common import misc, helpers as db_tools
+from services.configuration.jrpc.serializers import channels as \
+    channel_serializers
+from services.configuration.jrpc.views import rules as jrpc_rules
+from services.configuration.jrpc.views.channels import \
+    groundstations as jrpc_gs_chs
+from services.configuration.jrpc.views.channels import \
+    spacecraft as jrpc_sc_chs
+from services.scheduling.jrpc.views.operational import \
+    groundstations as jrpc_gs_scheduling
+from services.scheduling.jrpc.views.operational import \
+    spacecraft as jrpc_sc_scheduling
+from services.scheduling.models import operational
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -14,25 +33,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import datetime
-import logging
-
-from django import test
-
-from services.common import misc, helpers as db_tools
-from services.configuration.jrpc.serializers import channels as \
-    channel_serializers
-from services.configuration.jrpc.views import rules as jrpc_rules
-from services.configuration.jrpc.views.channels import \
-    groundstations as jrpc_gs_chs
-from services.configuration.jrpc.views.channels import \
-    spacecraft as jrpc_sc_chs
-from services.scheduling.jrpc.views.operational import \
-    groundstations as jrpc_gs_scheduling
-from services.scheduling.jrpc.views.operational import \
-    spacecraft as jrpc_sc_scheduling
-from services.scheduling.models import operational
 
 
 class JRPCBookingProcessTest(test.TestCase):

@@ -1,3 +1,15 @@
+
+import datetime
+import logging
+
+from services.common import misc as common_misc
+from services.configuration.models import segments as segment_models
+from services.configuration.jrpc.serializers import \
+    segments as segment_serializers
+from services.scheduling.jrpc.serializers import availability as \
+    availability_serializers
+from services.scheduling.models import operational as operational_models
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -15,17 +27,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-import datetime
-import logging
-
-from services.common import misc as common_misc
-from services.common import serialization as common_serializers
-from services.configuration.models import segments as segment_models
-from services.configuration.jrpc.serializers import \
-    segments as segment_serializers
-from services.scheduling.jrpc.serializers import availability as \
-    availability_serializers
-from services.scheduling.models import operational as operational_models
 
 logger = logging.getLogger('scheduling')
 
@@ -45,8 +46,8 @@ def serialize_test_slot_information():
 
     return {
         STATE_K: 'TEST',
-        'gs_username': 'test-gs-user',
-        'sc_username': 'test-sc-user',
+        'gs_username': 'diego.nodar@humsat.org',
+        'sc_username': 'alberto.gonzalez@humsat.org',
         'starting_time': s_time.isoformat(),
         'ending_time': e_time.isoformat(),
     }
@@ -58,6 +59,9 @@ def serialize_slot_information(slot):
     :param slot: Operational slot object
     :return: JSON-like structure with the information of the operational slot
     """
+    if not slot:
+        return {}
+
     return {
         STATE_K: slot.state,
         'gs_username':
@@ -65,14 +69,8 @@ def serialize_slot_information(slot):
             .username,
         'sc_username':
             slot.spacecraft_channel.spacecraft_set.all()[0].user.username,
-        'starting_time':
-            common_serializers.serialize_iso8601_date(
-                slot.availability_slot.start
-            ),
-        'ending_time':
-            common_serializers.serialize_iso8601_date(
-                slot.availability_slot.end
-            ),
+        'starting_time': slot.availability_slot.start.isoformat(),
+        'ending_time': slot.availability_slot.end.isoformat()
     }
 
 
@@ -82,6 +80,9 @@ def serialize_slot(slot):
     :param slot: Slot to be serialized
     :return: JSON-like structure with the data serialized
     """
+    if not slot:
+        return {}
+
     return {
         availability_serializers.SLOT_IDENTIFIER_K: slot.identifier,
         STATE_K: slot.state,

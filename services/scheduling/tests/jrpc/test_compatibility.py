@@ -1,3 +1,11 @@
+
+import logging
+
+from django import test
+
+from services.common import helpers as db_tools
+from services.scheduling.jrpc.views import compatibility as compatibility_jrpc
+
 """
    Copyright 2015 Ricardo Tubio-Pardavila
 
@@ -14,13 +22,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import logging
-
-from django import test
-
-from services.common import helpers as db_tools
-from services.scheduling.jrpc.views import compatibility as compatibility_jrpc
 
 
 class TestCompatibilityViews(test.TestCase):
@@ -80,11 +81,7 @@ class TestCompatibilityViews(test.TestCase):
             self.__sc_1_id, self.__sc_1_ch_1_id
         )
 
-        self.assertEquals(
-            c[0]['GroundStation']['identifier'],
-            self.__gs_1_id,
-            'Wrong GS id!'
-        )
+        self.assertEquals(c[0]['GroundStation']['identifier'], self.__gs_1_id)
 
     def test_sc_get_compatible(self):
         """JRPC test: configuration.sc.getCompatible
@@ -95,10 +92,8 @@ class TestCompatibilityViews(test.TestCase):
         r = compatibility_jrpc.sc_get_compatible(self.__sc_1_id)
 
         self.assertEquals(
-            r['spacecraft_id'], self.__sc_1_id, 'Wrong SC id!'
+            r['spacecraft_id'], self.__sc_1_id
         )
         self.assertEquals(
-            r['Compatibility'][0]['ScChannel']['identifier'],
-            'gmsk-sc-1',
-            "Wrong structure!"
+            r['Compatibility'][0]['ScChannel']['identifier'], 'gmsk-sc-1',
         )

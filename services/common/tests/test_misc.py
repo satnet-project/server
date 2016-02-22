@@ -1,3 +1,15 @@
+
+import datetime
+import logging
+
+import pytz
+from django import test
+
+from services.common import misc, simulation, helpers as db_tools
+from services.configuration.jrpc.views import rules as jrpc_rules_if
+from services.configuration.models import rules
+from services.scheduling.models import availability
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -14,17 +26,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import datetime
-import logging
-
-import pytz
-from django import test
-
-from services.common import misc, simulation, helpers as db_tools
-from services.configuration.jrpc.views import rules as jrpc_rules_if
-from services.configuration.models import rules
-from services.scheduling.models import availability
 
 
 class TestMisc(test.TestCase):
@@ -171,7 +172,6 @@ class TestMisc(test.TestCase):
         """UNIT test: services.common.misc.get_fqdn
         This test validates the function that gets the current hostname.
         """
-        self.__verbose_testing = False
         if self.__verbose_testing:
             print('>>> test_get_fqdn:')
 
@@ -179,3 +179,16 @@ class TestMisc(test.TestCase):
         if self.__verbose_testing:
             print('fqdn = ' + str(hn) + ', ip = ' + str(ip))
         self.__verbose_testing = False
+
+    def test_get_utc_window(self):
+        """UNIT test: services.common.misc.get_utc_window
+        """
+        if self.__verbose_testing:
+            print('>>> test_get_utc_window:')
+
+        c = misc.get_next_midnight()
+        d = datetime.timedelta(minutes=3)
+
+        self.assertEquals(
+            misc.get_utc_window(center=c, duration=d), (c - d, c + d)
+        )

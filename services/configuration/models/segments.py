@@ -1,3 +1,12 @@
+
+from django.core import validators
+from django.db import models
+from django_countries import fields
+import logging
+from services.accounts import models as account_models
+from services.common import gis
+from services.configuration.models import tle as tle_models
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -15,13 +24,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import validators
-from django.db import models
-from django_countries import fields
-import logging
-from services.accounts import models as account_models
-from services.common import gis
-from services.configuration.models import tle as tle_models
 
 logger = logging.getLogger('models.segments')
 
