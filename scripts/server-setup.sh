@@ -416,12 +416,13 @@ configure_root()
 
     clear && echo '>>>>> Activating virtual environment...'
     cd $webservices_dir
-    try source $webservices_venv_activate
+    source $webservices_venv_activate
 
-    try pip install -r "$webservices_requirements_txt"
-    try pip install autobahn[asyncio,accelerate,compress,serialization]
-    try python manage.py syncdb
-    try python manage.py collectstatic
+    pip install -r "$webservices_requirements_txt"
+    # pip install autobahn[asyncio,accelerate,compress,serialization]
+
+    python manage.py syncdb
+    python manage.py collectstatic
 
     deactivate
     cd $script_path
@@ -598,7 +599,7 @@ while getopts ":abikmprstovx" opt; do
         a)
             clear && echo '>>>>>>> Installing OS native packages...'
             install_packages
-            clear && echo '>>>>>>> Configuring PostgreSQL...'
+            clear && echo '>>>>>>> Configuring MySQL...'
             configure_mysql
             clear && echo '>>>>>>> Configuring Crontab...'
             configure_crontab
