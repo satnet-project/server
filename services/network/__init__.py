@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 # Signals
-from services.network import signals
+# from services.network import signals
 
 # JRPC methods
-from services.network.jrpc import views
+# from services.network.jrpc import views

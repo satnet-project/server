@@ -171,7 +171,7 @@ INSTALLED_APPS = (
     'allauth',
     'allauth.account',
     'session_security',
-    'periodically',
+    # 'periodically',
     'rpc4django',
     'django_extensions',
     'datetimewidget',
@@ -217,7 +217,7 @@ LOGGING = {
         },
         'null': {
             'level': 'DEBUG',
-            'class': 'django.utils.log.NullHandler',
+            'class': 'logging.NullHandler',
         },
     },
     'loggers': {

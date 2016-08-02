@@ -16,13 +16,13 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 # Necessary to import this module here for rpc4django to detect the RPC methods.
-from services.scheduling.jrpc.views import availability
-from services.scheduling.jrpc.views import compatibility
-from services.scheduling.jrpc.views.operational import groundstations
-from services.scheduling.jrpc.views.operational import slots
-from services.scheduling.jrpc.views.operational import spacecraft
+# from services.scheduling.jrpc.views import availability
+# from services.scheduling.jrpc.views import compatibility
+# from services.scheduling.jrpc.views.operational import groundstations
+# from services.scheduling.jrpc.views.operational import slots
+# from services.scheduling.jrpc.views.operational import spacecraft
 
 # Import signal receivers
-from services.scheduling.signals import availability
-from services.scheduling.signals import compatibility
-from services.scheduling.signals import operational
+# from services.scheduling.signals import availability
+# from services.scheduling.signals import compatibility
+# from services.scheduling.signals import operational

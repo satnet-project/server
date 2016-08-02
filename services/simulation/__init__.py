@@ -16,7 +16,7 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 # Necessary for RPC4Django to detect the RPC methods.
-from services.simulation.jrpc.views import groundtracks, passes
+# from services.simulation.jrpc.views import groundtracks, passes
 
 # Signals
-from services.simulation.signals import groundtracks, passes, push
+# from services.simulation.signals import groundtracks, passes, push

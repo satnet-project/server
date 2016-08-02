@@ -31,9 +31,9 @@ install_packages()
     [[ $linux_dist == 'Debian' ]] && {
 
         yell '>>> Activating <contrib> and <non-free> repositories...'
-        try sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
+        sudo sed -i -e 's/ main *$/ main contrib non-free/g' $etc_apt_sources
 
-        [[ $debian_version -eq '7' ]] && {
+        [[ $debian_version == '7' ]] && {
             echo '>>> Debian 7 detected, activating backports...'
             [[ -z $( cat $etc_apt_sources | grep 'wheezy-backports' ) ]] && {
                 echo $backports | sudo tee -a $etc_apt_sources
@@ -42,12 +42,13 @@ install_packages()
                 echo '>>> Backports already activated, press any key to continue...'
             }
         }
+
     }
 
-    try sudo aptitude update && sudo aptitude dist-upgrade -y
-    try sudo aptitude install $( cat "$linux_packages" ) -y
-    try sudo aptitude clean
-    try sudo pip install virtualenvwrapper
+    sudo aptitude update && sudo aptitude dist-upgrade -y
+    sudo aptitude install $( cat "$linux_packages" ) -y
+    sudo aptitude clean
+    sudo pip install virtualenvwrapper
 
     # ### ######################################################################
     # ### PATCHED: no longer required since JS dependencies are managed from
@@ -215,7 +216,7 @@ configure_apache()
 
     create_apache_keys
 
-    [[ $debian_version -eq '7' ]] && {
+    [[ $debian_version == '7' ]] && {
         sudo a2dismod gnutls # gnutls for apache not included in Jessie
     }
 
@@ -235,7 +236,6 @@ django_db='satnet'
 django_test_db='test_satnet'
 django_db_user='satnet'
 __mysql_batch='/tmp/mysqlbatch'
-
 
 DB_SHOW_Q="SHOW DATABASES;"
 DB_CREATE_Q="CREATE DATABASE $django_db CHARACTER SET utf8;"
@@ -275,6 +275,9 @@ configure_mysql()
     echo "$USER_FLUSHPRIV_Q" >> $__mysql_batch
     echo "$DB_SHOW_Q" >> $__mysql_batch
 
+    echo ">>> mysql batch script:"
+    cat $__mysql_batch
+
     echo ">>> Enter now the password for root within the database:"
     mysql -u root --password < $__mysql_batch
 
@@ -293,6 +296,53 @@ remove_mysql()
     echo ">>> Enter now the password for root within the database:"
     mysql -u root --password < $__mysql_batch
 
+}
+
+
+create_secrets_mail_backend()
+{
+
+    echo ">>> Generating email configuration file..."
+    echo ">>> $webservices_secrets_email should be updated with the correct email account information."
+
+    echo ">>> Notifications TLS SMTP server account information:"
+    ask_visible 'server URL'
+    smtp_url=$__INPUT_STRING
+    ask_visible 'server port'
+    smtp_port=$__INPUT_STRING
+    ask_visible 'username'
+    smtp_email=$__INPUT_STRING
+    ask_password
+    smtp_password=$__PASSWORD
+
+    echo "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
+    
+    # ##########################################################################
+    # ### PATCHED: SMTP FOR GMAIL
+    #echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
+    #echo "EMAIL_PORT = 587" >> $webservices_secrets_email
+    #echo "EMAIL_HOST_USER = 'XXXXXX@gmail.com'" >> $webservices_secrets_email
+    #echo "EMAIL_HOST_PASSWORD = 'XXXXXXXX'" >> $webservices_secrets_email
+    # ##########################################################################
+
+    echo "EMAIL_HOST = '$smtp_url'" >> $webservices_secrets_email
+    echo "EMAIL_PORT = $smtp_port" >> $webservices_secrets_email
+    echo "EMAIL_HOST_USER = '$smtp_email'" >> $webservices_secrets_email
+    echo "EMAIL_HOST_PASSWORD = '$smtp_password'" >> $webservices_secrets_email
+
+    echo "EMAIL_USE_TLS = True" >> $webservices_secrets_email
+    echo "#EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
+}
+
+
+create_secrets_pusher()
+{
+    echo ">>> Generating pusher.com configuration file..."
+    echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
+
+    echo "PUSHER_APP_ID = '12345'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+    echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
 }
 
 
@@ -322,43 +372,17 @@ create_secrets()
     echo "    }" >> $webservices_secrets_database
     echo "}" >> $webservices_secrets_database
 
-    echo ">>> Generating email configuration file..."
-    echo ">>> $webservices_secrets_email should be updated with the correct email account information."
+    [[ -e $webservices_secrets_email ]] && {
+        echo ">>> Mail configuration found, skipping... "
+    } || {
+        create_secrets_mail_backend
+    }
 
-    echo ">>> Notifications TLS SMTP server account information:"
-    try ask_visible 'server URL'
-    smtp_url=$__INPUT_STRING
-    try ask_visible 'server port'
-    smtp_port=$__INPUT_STRING
-    try ask_visible 'username'
-    smtp_email=$__INPUT_STRING
-    try ask_password
-    smtp_password=$__PASSWORD
-
-    echo "EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'" > $webservices_secrets_email
-    
-    # ##########################################################################
-    # ### PATCHED: SMTP FOR GMAIL
-    #echo "EMAIL_HOST = 'smtp.gmail.com'" >> $webservices_secrets_email
-    #echo "EMAIL_PORT = 587" >> $webservices_secrets_email
-    #echo "EMAIL_HOST_USER = 'XXXXXX@gmail.com'" >> $webservices_secrets_email
-    #echo "EMAIL_HOST_PASSWORD = 'XXXXXXXX'" >> $webservices_secrets_email
-    # ##########################################################################
-
-    echo "EMAIL_HOST = '$smtp_url'" >> $webservices_secrets_email
-    echo "EMAIL_PORT = $smtp_port" >> $webservices_secrets_email
-    echo "EMAIL_HOST_USER = '$smtp_email'" >> $webservices_secrets_email
-    echo "EMAIL_HOST_PASSWORD = '$smtp_password'" >> $webservices_secrets_email
-
-    echo "EMAIL_USE_TLS = True" >> $webservices_secrets_email
-    echo "#EMAIL_FILE_PATH = 'tmp/email-messages/'" >> $webservices_secrets_email
-
-    echo ">>> Generating pusher.com configuration file..."
-    echo ">>> $webservices_secrets_pusher should be updated with the correct pusher.com account information."
-
-    echo "PUSHER_APP_ID = '12345'" >> $webservices_secrets_pusher
-    echo "PUSHER_APP_KEY = '07897sdfa09df78a'" >> $webservices_secrets_pusher
-    echo "PUSHER_APP_SECRET = '07897sdfa09df78a'" >> $webservices_secrets_pusher
+    [[ -e $webservices_secrets_pusher ]] && {
+        echo ">>> Pusher configuration found, skipping... "
+    } || {
+        create_secrets_pusher
+    }
 
 }
 
@@ -399,7 +423,9 @@ create_travis_secrets()
 configure_root()
 {
 
-    [[ -d "$webservices_secrets_dir" ]] && rm -Rf $webservices_secrets_dir
+    # TODO :: there should be an optional argument to purge previous
+    #           configuration files during the installation process
+    # [[ -d "$webservices_secrets_dir" ]] && rm -Rf $webservices_secrets_dir
     create_secrets
 
     mkdir -p $webservices_logs_dir
@@ -419,9 +445,12 @@ configure_root()
     source $webservices_venv_activate
 
     pip install -r "$webservices_requirements_txt"
+
+    # TODO :: incorporate autobahn within requirements.txt
     # pip install autobahn[asyncio,accelerate,compress,serialization]
 
-    python manage.py syncdb
+    # OLD, Django < 1.9 :: python manage.py syncdb
+    python manage.py migrate
     python manage.py collectstatic
 
     deactivate
@@ -508,11 +537,12 @@ usage()
     echo "Usage: $0 [-b] #Install Node.js and Bower (from GitHub)"
     echo "Usage: $0 [-c] #Create and install self-signed certificates"
     echo "Usage: $0 [-i] #Install Debian packages <root>"
-    echo "Usage: $0 [-p] #Configures PostgreSQL"
-    echo "Usage: $0 [-r] #Removes specific PostgreSQL configuration for SATNET."
+    echo "Usage: $0 [-m] #Configures MySQL"
+    echo "Usage: $0 [-r] #Removes specific MySQL configuration for SATNET."
     echo "Usage: $0 [-s] #Creates the <secrets> module with initial values."
     echo "Usage: $0 [-t] #Creates the <secrets> module with the cfg for TRAVIS."
-    echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
+    # TODO :: remove all references to django-periodically
+    # echo "Usage: $0 [-o] #Configures Crontab for django-periodically"
     echo "Usage: $0 [-v] #Configure virtualenv"
     echo "Usage: $0 [-x] #Configures Apache web server"
 
@@ -530,14 +560,15 @@ linux_dist=$( cat /etc/issue.net | cut -d' ' -f1 )
 [[ $linux_dist == 'Debian' ]] && {
 
     debian_version=$( cat /etc/issue.net | cut -d' ' -f3 )
-    [[ $debian_version -eq '7' ]] && {
+
+    [[ $debian_version == '7' ]] && {
         linux_packages="$script_path/debian.$debian_version.packages"
     }
-    [[ $debian_version -eq '8' ]] && {
+    [[ $debian_version == '8' ]] && {
         linux_packages="$script_path/debian.$debian_version.packages"
     }
-    [[ $debian_version -eq 'stretch/sid' ]] || [[ $debian_version -eq '9' ]] && {
-        linux_packages="$script_path/debian.8.packages"
+    [[ $debian_version == 'stretch/sid' ]] || [[ $debian_version -eq '9' ]] && {
+        linux_packages="$script_path/debian.9.packages"
     }
 
 }

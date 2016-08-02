@@ -16,11 +16,11 @@
 __author__ = 'rtubiopa@calpoly.edu'
 
 # RPC4django RPC methods automatic detection
-from services.configuration.jrpc.views import bands, rules, tle
-from services.configuration.jrpc.views.channels import groundstations
-from services.configuration.jrpc.views.channels import spacecraft
-from services.configuration.jrpc.views.segments import groundstations
-from services.configuration.jrpc.views.segments import spacecraft
+# from services.configuration.jrpc.views import bands, rules, tle
+# from services.configuration.jrpc.views.channels import groundstations
+# from services.configuration.jrpc.views.channels import spacecraft
+# from services.configuration.jrpc.views.segments import groundstations
+# from services.configuration.jrpc.views.segments import spacecraft
 
 # It is also necessary to import the signals
-from services.configuration.signals import push, tle
+# from services.configuration.signals import push, tle
