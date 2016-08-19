@@ -361,6 +361,12 @@ create_secrets()
     echo '>>> Generating database access configuration file...'
     echo ">>> $webservices_secrets_database should be updated in case the user/password for the database change."
 
+    [[ -z "$django_db_password" ]] && {
+        echo ">>> DB password for user = <$django_db_user>"
+        ask_password
+        django_db_password=$__PASSWORD
+    }
+
     echo 'DATABASES = {' > $webservices_secrets_database
     echo "    'default': {" >> $webservices_secrets_database
     echo "        'ENGINE': 'django.db.backends.mysql'," >> $webservices_secrets_database

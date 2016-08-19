@@ -20,8 +20,7 @@ from django.contrib.auth import decorators
 
 from services.accounts import ajax, views
 
-urlpatterns = urls.patterns(
-    '',
+urlpatterns = [
     urls.url(
         r'^login_ok/$',
         views.redirect_home,
@@ -70,4 +69,4 @@ urlpatterns = urls.patterns(
         ajax.user_verification,
         name='ajax_user_verification'
     ),
-)
+]

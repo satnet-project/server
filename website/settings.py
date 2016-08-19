@@ -1,3 +1,9 @@
+
+import os
+import sys
+from .secrets import auth, database, email, pusher
+
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -14,10 +20,6 @@
    limitations under the License.
 """
 __author__ = 'rtubiopa@calpoly.edu'
-
-import os
-import sys
-from .secrets import auth, database, email, pusher
 
 
 # Django website for WebServices project.
@@ -100,9 +102,9 @@ SECRET_KEY = auth.SECRET_KEY
 # super user already available in the database.
 
 if TESTING:
-    from django.db.models import signals
-    from . import utils
-    signals.post_syncdb.connect(utils.test_create_admin)
+   from django.db.models import signals
+   from . import utils
+   signals.post_migrate.connect(utils.test_create_admin)
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (

@@ -18,8 +18,7 @@ __author__ = 'rtubiopa@calpoly.edu'
 from django.conf import urls
 from services.configuration.ajax import views
 
-urlpatterns = urls.patterns(
-    '',
+urlpatterns = [
     urls.url(
         r'^groundstations/valid_id$', views.groundstation_valid_id,
         name='ajax-cfg-gs-valid-id'
@@ -35,4 +34,4 @@ urlpatterns = urls.patterns(
         r'^hostname/geoip$', views.hostname_geoip,
         name='ajax-cfg-hostname-geoip'
     )
-)
+]

@@ -1,3 +1,12 @@
+
+from django.core import validators
+from django.db import models as django_models
+import logging
+from services.accounts import models as account_models
+from services.common import gis, misc
+from services.configuration.models import segments as segment_models
+
+
 """
    Copyright 2013, 2014 Ricardo Tubio-Pardavila
 
@@ -15,12 +24,6 @@
 """
 __author__ = 'rtubiopa@calpoly.edu'
 
-from django.core import validators
-from django.db import models as django_models
-import logging
-from services.accounts import models as account_models
-from services.common import gis, misc
-from services.configuration.models import segments as segment_models
 
 logger = logging.getLogger('network')
 

@@ -25,8 +25,7 @@ from website import views as website_views
 
 admin.autodiscover()
 
-urlpatterns = urls.patterns(
-    '',
+urlpatterns = [
 
     # ### ######################################################################
     # ### ################################################## OVERRIDEN MAIN URLS
@@ -81,10 +80,10 @@ urlpatterns = urls.patterns(
         urls.include('services.configuration.ajax.urls')
     ),
     # ### JSON-Rpc API
-    urls.url(
-        r'^jrpc/$',
-        'rpc4django.views.serve_rpc_request'
-    ),
+    # urls.url(
+    #     r'^jrpc/$',
+    #     'rpc4django.views.serve_rpc_request'
+    # ),
 
     # ### ######################################################################
     # ### ################################################################# MISC
@@ -102,4 +101,4 @@ urlpatterns = urls.patterns(
         urls.include(admin.site.urls)
     )
 
-)
+]

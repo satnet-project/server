@@ -19,11 +19,10 @@ from django.conf import urls
 from django.contrib.auth import decorators
 from services.communications import views as comms_views
 
-urlpatterns = urls.patterns(
-    '',
+urlpatterns = [
     urls.url(
         r'^passive/messages$',
         decorators.login_required(comms_views.PassiveMessages.as_view()),
         name='comms_passive_messages'
     )
-)
+]
