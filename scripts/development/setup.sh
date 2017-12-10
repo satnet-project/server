@@ -23,39 +23,45 @@
 # This script aims at simplifying the process for setting up the development
 # environment of this project in a Debian environment.
 
+
 configure_variables()
 {
 
     # This function simply configures all the variables for executing the
     # different parts of the script.
 
-    _ROOT_=$( pwd )
+    ROOT=$( pwd )
 
     ETC_DIR='/etc'
     ETC_DEFAULT_DIR="$ETC_DIR/default"
     ETC_OS_RELEASE="$ETC_DIR/os-release"
     . $ETC_OS_RELEASE
 
-    SCRIPTS_DEV_DIR="$_ROOT_/scripts/development"
+    SCRIPTS_DIR="$ROOT/scripts"
+    PKGS_DIR="$ROOT/packages"
+    SCRIPTS_DEV_DIR="$SCRIPTS_DIR/development"
     INSTALL_DEB_BIN="$SCRIPTS_DEV_DIR/install-packages.sh"
     INSTALL_REMOTE_BIN="$SCRIPTS_DEV_DIR/install-remote-packages.sh"
-    PKGS_DIR="$SCRIPTS_DEV_DIR/packages"
-    CURRENT_DEB_PKGS="debian.$VERSION_ID.packages"
-    DEB_PKGS="$PKGS_DIR/$CURRENT_DEB_PKGS"
-    REMOTE_PKGS="$PKGS_DIR/debian.$VERSION_ID.remote"
+    INSTALL_TARBALLS_BIN="$SCRIPTS_DEV_DIR/install-tarballs.sh"
 
-    [[ ! -f $DEB_PKGS ]] && {
+    CURRENT_DEB_PKGS="debian.$VERSION_ID.packages"
+    DEB_PKGS_FILE="$PKGS_DIR/$CURRENT_DEB_PKGS"
+
+    [[ ! -f $DEB_PKGS_FILE ]] && {
         echo "»»» [ERROR] »»» Debian $VERSION_ID is not supported"
         exit -1
     }
 
-    REMOTE_PKGS="$PKGS_DIR/"
+    DEV_PKGS_DIR="$SCRIPTS_DEV_DIR/packages"
+    REMOTE_PKGS="$DEV_PKGS_DIR/debian.$VERSION_ID.remote"
+    TARBALL_PKGS="$DEV_PKGS_DIR/debian.$VERSION_ID.tarballs"
+    TARBALLS_DEST_DIR="/opt/satnet"
 
     PY_VENV_NAME='.server'
-    PY_VENV_DIR="$_ROOT_/$PY_VENV_NAME"
+    PY_VENV_DIR="$ROOT/$PY_VENV_NAME"
     PY_VENV_ACTIVATE="$PY_VENV_DIR/bin/activate"
     PY_VENV_DEACTIVATE="$PY_VENV_DIR/bin/deactivate"
-    PY_REQUIREMENTS="$_ROOT_/requirements.txt"
+    PY_REQUIREMENTS="$PKGS_DIR/requirements.txt"
 
 }
 
@@ -84,13 +90,13 @@ install_python_environment()
 configure_variables
 
 # (1) install Debian packages
-clear && echo "»»» Installing Debian packages..."
-bash $INSTALL_DEB_BIN $DEB_PKGS
+echo "»»» Installing Debian packages..."
+sudo bash $INSTALL_DEB_BIN $DEB_PKGS_FILE
 
 # (2) install remote packages
-clear && echo "»»» Installing remote packages..."
-bash $INSTALL_REMOTE_BIN $REMOTE_PKGS
+echo "»»» Installing tarball packages..."
+sudo bash $INSTALL_TARBALLS_BIN $TARBALL_PKGS $TARBALLS_DEST_DIR
 
 # (3) install Python packages
-clear && echo "»»» Installing Python packages..."
+echo "»»» Installing Python packages..."
 install_python_environment

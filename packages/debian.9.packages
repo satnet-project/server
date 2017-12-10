@@ -2,6 +2,7 @@ apache2
 binutils
 build-essential
 curl
+cmake
 gdal-bin
 git-core
 libapache2-mod-wsgi-py3
@@ -30,4 +31,3 @@ python3-dev
 ruby
 rubygems-integration
 yui-compressor
-libsnappy-dev
