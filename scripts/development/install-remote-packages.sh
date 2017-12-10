@@ -55,7 +55,9 @@ do
 
     echo "»»» Installing remote package from $url, filename = $filename"
 
-    [[ "$dry" = false ]] && bash install-remote-package.sh $url $filename || {
+    [[ "$dry" = false ]] && {
+        bash install-remote-package.sh $url $filename
+    } || {
         echo "»»» [DRY]"
     }
 

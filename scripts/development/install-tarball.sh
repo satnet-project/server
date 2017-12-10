@@ -22,6 +22,45 @@
 # ##############################################################################
 
 
+read_params()
+{
+
+    # This function reads the params from the command line and decodes them.
+    #
+    #   $1  URL of the remote tarball file
+    #   $2  Destination directory for the tarball package
+    #   $3  [optional] flag that sets the DRY_RUN flag
+
+    [[ $# -eq 2 ]] && {
+
+        URL="$1"
+        DEST_DIR="$2"
+        DRY_RUN=false
+        printf "\t* DRY_RUN flag not specified, setting it to <$DRY_RUN>\n"
+
+    } || {
+        [[ $# -eq 3 ]] && {
+
+            URL="$1"
+            DEST_DIR="$2"
+            DRY_RUN=$3
+            printf "\t* DRY_RUN = %s\n" $DRY_RUN
+
+        } || {
+
+            echo "[ERROR] Wrong call: no_params = $#"
+            echo "[ERROR] Usage: $0 <tarball_url> <destination_dir> [DRY_RUN]"
+            echo "[ERROR] Usage: [DRY_RUN] is an optional flag (true or false)"
+            exit -1
+
+        }
+    }
+
+    ATTEMPTS=3
+
+}
+
+
 run_checks()
 {
 
@@ -29,6 +68,8 @@ run_checks()
         printf "\t * [ERROR]: Need to be <root>, exiting...\n"
         exit -1
     }
+
+    read_params $*
 
     [[ ! -d $DEST_DIR ]] && {
         printf "\t* Creating destination directory <$DEST_DIR> ..."
@@ -48,7 +89,7 @@ dry_call()
     BIN="$1"
     OPTS="$2"
 
-    [[ "$RUN_DRY" = false ]] && {
+    [[ "$DRY_RUN" = false ]] && {
         $BIN $OPTS
     } || {
         printf "\t* DRY ::: <%s>\n" "$BIN"
@@ -66,8 +107,9 @@ download_tarball()
 
     CURL_OPTS='-sIkL'
     SED_REGEX='/filename=/!d;s/.*filename=(.*)$/\1/'
-    FILENAME="$( curl $CURL_OPTS $URL | sed -r $SED_REGEX | tr -d '\r' )"
+    FILENAME=$( curl $CURL_OPTS $URL | sed -r $SED_REGEX | tr -d '\r' )
     DEST_FILE="$DEST_DIR/$FILENAME"
+
     printf "\t* Remote tarball filename = %s\n" $FILENAME
 
     WGET_BIN='wget'
@@ -84,7 +126,7 @@ detect_type ()
 
     # This function reads out the directory structure and finds what type of
     # package it is.
-
+    #
     #   $1  Path to the root of the uncompressed tarball
 
     ROOT_DIR="$1"
@@ -144,12 +186,12 @@ install_cmake_tarball()
     [[ -d "$CMAKE_BUILD_DIR" ]] && {
         printf "\t* <$CMAKE_BUILD_DIR> exists, replacing it...\n"
 
-        RM_OPTS="-Rf \"$CMAKE_BUILD_DIR\""
+        RM_OPTS="-Rf $CMAKE_BUILD_DIR"
         dry_call 'rm' "$RM_OPTS"
 
     }
 
-    MKDIR_OPTS="-p \"$CMAKE_BUILD_DIR\""
+    MKDIR_OPTS="-p $CMAKE_BUILD_DIR"
     dry_call 'mkdir' "$MKDIR_OPTS"
 
     cd "$CMAKE_BUILD_DIR"
@@ -166,6 +208,7 @@ install_cmake_tarball()
 
 install_configure_tarball()
 {
+
     # TODO # Finish this function whenever necessary
 
     CONFIGURE_BIN="$1/configure"
@@ -177,14 +220,9 @@ install_configure_tarball()
 }
 
 
-URL="$1"
-RUN_DRY="$2"
-DEST_DIR="$3"
-
-ATTEMPTS=3
-
 echo "»»» Checking script's execution environment"
-run_checks
+printf "\t* params[%d] = %s\n" $# "$*"
+run_checks $*
 
 echo "»»» Downloading package from $URL"
 download_tarball
