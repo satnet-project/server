@@ -5,6 +5,7 @@ __v_env/
 .denv
 .idea
 .env
+.server
 test.kml
 coverage.xml
 public_html/

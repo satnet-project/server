@@ -1,0 +1,4 @@
+curl
+libpq-dev
+python-dev
+cmake
